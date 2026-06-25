@@ -17,6 +17,9 @@ export default defineConfig(({ command, mode }) => {
   return {
     base: command === 'build' ? '/MCP-scripts/' : '/',
     plugins: [react()],
+    // host: true binds to 0.0.0.0 so other devices on your LAN (phone, iPad)
+    // can reach the app at http://<your-laptop-ip>:5173
     server: { port: 5173, host: true },
+    preview: { port: 5173, host: true },
   }
 })

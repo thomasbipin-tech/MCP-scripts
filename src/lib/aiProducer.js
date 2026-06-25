@@ -24,6 +24,9 @@ import {
 
 const API_KEY = import.meta.env?.VITE_ANTHROPIC_API_KEY || ''
 const API_MODEL = import.meta.env?.VITE_ANTHROPIC_MODEL || 'claude-sonnet-4-6'
+// Abort a live request that takes too long so the UI never gets stuck
+// "thinking" — on timeout we fall back to the offline interpreter.
+const LIVE_TIMEOUT_MS = Number(import.meta.env?.VITE_ANTHROPIC_TIMEOUT_MS) || 20000
 
 export const usingLiveAI = Boolean(API_KEY)
 
@@ -408,42 +411,67 @@ function padChord(songState) {
 }
 
 // ----- Optional live Claude API path -----
+
+// The producer persona + output contract live in the system prompt (stable
+// across requests, so it caches well and steers more reliably than burying the
+// instructions in the user turn).
+const LIVE_SYSTEM_PROMPT = `You are an expert music producer AI collaborating inside a GarageBand-style, browser-based DAW called AI Music Studio.
+
+The app's single source of truth is "songState":
+{ bpm, key, timeSignature, genre, mood, masterVolume, fadeOut,
+  structure: [ { type, bars, repeat } ],
+  tracks:    [ { id, name, instrument, color, volume (0-100), muted, solo,
+                 effects: { reverb, delay, distortion }, pattern, notes } ] }
+
+Interpret the user's natural-language command and decide what to change.
+
+Respond with ONLY a single JSON object — no prose, no markdown fences — in this exact shape:
+{
+  "changes": { /* only the top-level songState fields to update. For "tracks" or "structure" return the COMPLETE new array. Omit anything you don't change. */ },
+  "message": "Friendly, concise explanation of what you changed",
+  "tip": "A short pro music-production tip",
+  "nextSuggestion": "What the user should try next"
+}`
+
 async function interpretLive(command, songState, context) {
-  const userCommand = command
   const body = {
     model: API_MODEL,
     max_tokens: 1000,
+    system: LIVE_SYSTEM_PROMPT,
     messages: [
       {
         role: 'user',
-        content: `You are an expert music producer AI collaborating inside a GarageBand-style DAW.
-Current song state: ${JSON.stringify(songState)}
+        content: `Current songState: ${JSON.stringify(songState)}
 Selected segment: ${context.selectedSegment || 'none'}; selected track id: ${context.selectedTrackId ?? 'none'}.
-User command: "${userCommand}"
-
-Respond ONLY with a single JSON object (no markdown fences):
-{
-  "changes": { ...top-level fields to update in songState; for "tracks" or "structure" return the COMPLETE new array... },
-  "message": "Friendly explanation of what you changed",
-  "tip": "A short pro music production tip",
-  "nextSuggestion": "What the user should try next"
-}`,
+Command: "${command}"`,
       },
     ],
   }
 
-  const response = await fetch('https://api.anthropic.com/v1/messages', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'x-api-key': API_KEY,
-      'anthropic-version': '2023-06-01',
-      'anthropic-dangerous-direct-browser-access': 'true',
-    },
-    body: JSON.stringify(body),
-  })
+  const controller = new AbortController()
+  const timer = setTimeout(() => controller.abort(), LIVE_TIMEOUT_MS)
+  let response
+  try {
+    response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': API_KEY,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true',
+      },
+      body: JSON.stringify(body),
+      signal: controller.signal,
+    })
+  } finally {
+    clearTimeout(timer)
+  }
+
   if (!response.ok) throw new Error(`Anthropic API ${response.status}`)
   const data = await response.json()
+  // A model may decline a request (HTTP 200 + stop_reason "refusal"); treat it
+  // as a failure so the caller falls back to the offline interpreter.
+  if (data.stop_reason === 'refusal') throw new Error('Anthropic API declined the request')
   const text = (data.content || []).map((c) => c.text || '').join('')
   const match = text.match(/\{[\s\S]*\}/)
   if (!match) throw new Error('No JSON in AI response')
