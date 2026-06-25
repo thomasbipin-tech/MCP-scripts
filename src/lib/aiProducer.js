@@ -318,6 +318,71 @@ export function interpretLocal(command, songState, context = {}) {
   )
 }
 
+// ----- Lyrics generator (offline) -----
+// Produces a structured lyric sheet that follows the song's structure and
+// leans on its mood. Fully local so the Lyrics page works with zero setup.
+const LYRIC_WORDS = {
+  energetic: { adj: ['electric', 'restless', 'blazing', 'wired'], noun: ['fire', 'spark', 'pulse', 'rush'] },
+  aggressive: { adj: ['relentless', 'breaking', 'savage', 'iron'], noun: ['thunder', 'war', 'edge', 'storm'] },
+  chill: { adj: ['easy', 'golden', 'slow', 'quiet'], noun: ['haze', 'shoreline', 'sunset', 'breeze'] },
+  dark: { adj: ['hollow', 'colder', 'shadowed', 'fading'], noun: ['shadow', 'silence', 'ashes', 'void'] },
+  euphoric: { adj: ['weightless', 'glowing', 'endless', 'bright'], noun: ['sky', 'light', 'heartbeat', 'horizon'] },
+  dreamy: { adj: ['floating', 'silver', 'distant', 'soft'], noun: ['dream', 'ocean', 'starlight', 'echo'] },
+  default: { adj: ['electric', 'golden', 'restless', 'bright'], noun: ['fire', 'light', 'night', 'heartbeat'] },
+}
+
+const cap = (s) => (s ? s.charAt(0).toUpperCase() + s.slice(1) : s)
+
+export function generateLyricsLocal(songState, theme = '') {
+  const topic = String(theme || '').trim() || 'tonight'
+  const w = LYRIC_WORDS[songState.mood] || LYRIC_WORDS.default
+  let seed = topic.length + (songState.bpm || 120) + String(songState.genre || '').length
+  const next = () => (seed = (seed * 1103515245 + 12345) & 0x7fffffff)
+  const pickW = (arr) => arr[next() % arr.length]
+
+  const linesFor = (type) => {
+    const adj = pickW(w.adj)
+    const noun = pickW(w.noun)
+    switch (type) {
+      case 'intro':
+        return [`(${topic}... ${topic}...)`]
+      case 'chorus':
+        return [
+          `${cap(topic)}, you're the ${adj} ${noun} in me`,
+          `Hold on, don't let the ${pickW(w.noun)} fade`,
+          `${cap(topic)}, we burn ${adj} and free`,
+          `Tonight we were never afraid`,
+        ]
+      case 'bridge':
+        return [`And if it all falls down`, `I'll find you in the ${pickW(w.noun)}`, `${cap(adj)} and louder now`]
+      case 'outro':
+        return [`(${adj}... ${adj}...)`, `${cap(topic)}, don't fade away`]
+      case 'verse':
+      default:
+        return [
+          `I caught the ${adj} ${noun} in your eyes`,
+          `Chasing ${topic} under ${pickW(w.adj)} skies`,
+          `Every heartbeat a ${pickW(w.noun)} we can't hide`,
+          `So we run, ${topic}, side by side`,
+        ]
+    }
+  }
+
+  const sections =
+    songState.structure && songState.structure.length
+      ? songState.structure
+      : [{ type: 'verse', repeat: 1 }, { type: 'chorus', repeat: 1 }]
+
+  const out = []
+  sections.forEach((s) => {
+    const label = cap(s.type) + (s.repeat > 1 ? ` (x${s.repeat})` : '')
+    out.push(`[${label}]`)
+    out.push(...linesFor(s.type))
+    out.push('')
+  })
+  return out.join('\n').trim()
+}
+
 /** A short, key-aware default melody for a freshly added melodic track. */
 function defaultMelody(songState, instrument) {
   const octave = instrument === 'bass' ? 2 : instrument === 'pad' ? 3 : 4

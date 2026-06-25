@@ -170,6 +170,7 @@ export const DEFAULT_SONG_STATE = {
       pattern: ['kick', '', 'snare', '', 'kick', 'kick', 'snare', ''],
     }),
   ],
+  lyrics: '',
 }
 
 /** Beats-per-bar from a time signature string. */

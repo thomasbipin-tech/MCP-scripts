@@ -1,21 +1,38 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { Music4, Github } from 'lucide-react'
+import { Music4 } from 'lucide-react'
 import VoicePanel from './components/VoicePanel.jsx'
-import ToolsPanel from './components/ToolsPanel.jsx'
 import HumRecorder from './components/HumRecorder.jsx'
 import StructureEditor from './components/StructureEditor.jsx'
 import TrackMixer from './components/TrackMixer.jsx'
 import AICollabPanel from './components/AICollabPanel.jsx'
 import Transport from './components/Transport.jsx'
 import SettingsBar from './components/SettingsBar.jsx'
+import Sidebar from './components/Sidebar.jsx'
+import LyricsPage from './components/LyricsPage.jsx'
+import SunoPage from './components/SunoPage.jsx'
 import { getEngine } from './lib/audioEngine.js'
 import { interpretCommand, generateSurpriseSong, usingLiveAI } from './lib/aiProducer.js'
 import { DEFAULT_SONG_STATE, makeTrack, NEON_COLORS, INSTRUMENTS } from './lib/constants.js'
 
 const clamp = (n, lo, hi) => Math.max(lo, Math.min(hi, n))
 
+// ----- Autosave (localStorage) -----
+const SONG_KEY = 'ai-music-studio:songState:v1'
+const PAGE_KEY = 'ai-music-studio:page:v1'
+
+function loadSong() {
+  try {
+    const raw = localStorage.getItem(SONG_KEY)
+    if (raw) return { ...DEFAULT_SONG_STATE, ...JSON.parse(raw) }
+  } catch {
+    /* ignore corrupt/blocked storage */
+  }
+  return DEFAULT_SONG_STATE
+}
+
 export default function App() {
-  const [songState, setSongState] = useState(DEFAULT_SONG_STATE)
+  const [songState, setSongState] = useState(loadSong)
+  const [page, setPage] = useState(() => localStorage.getItem(PAGE_KEY) || 'studio')
   const [aiLog, setAiLog] = useState([])
   const [thinking, setThinking] = useState(false)
   const [playing, setPlaying] = useState(false)
@@ -26,6 +43,23 @@ export default function App() {
   const engine = getEngine()
   const songStateRef = useRef(songState)
   songStateRef.current = songState
+
+  // Persist song state + active page so nothing is lost on reload.
+  useEffect(() => {
+    try {
+      localStorage.setItem(SONG_KEY, JSON.stringify(songState))
+    } catch {
+      /* ignore */
+    }
+  }, [songState])
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(PAGE_KEY, page)
+    } catch {
+      /* ignore */
+    }
+  }, [page])
 
   // Keep the audio engine in sync with the latest song state (live edits).
   useEffect(() => {
@@ -157,6 +191,10 @@ export default function App() {
     }))
   }, [])
 
+  const updateLyrics = useCallback((text) => {
+    setSongState((p) => ({ ...p, lyrics: text }))
+  }, [])
+
   // ----- Playback -----
   const handlePlay = useCallback(async () => {
     await engine.play()
@@ -194,35 +232,46 @@ export default function App() {
         <SettingsBar songState={songState} onChange={applyChanges} onSurprise={handleSurprise} thinking={thinking} />
       </header>
 
-      <div className="studio-grid">
-        <div className="left-col">
-          <VoicePanel onCommand={runCommand} thinking={thinking} liveAI={usingLiveAI} />
-          <ToolsPanel />
-          <HumRecorder songState={songState} onAddTrack={addTrackFromHum} onPreview={previewMelody} />
-          <StructureEditor
-            songState={songState}
-            selectedSegment={selectedSegment}
-            onSelectSegment={setSelectedSegment}
-            onReorder={reorderStructure}
-            onRepeat={changeRepeat}
-            progress={progress}
-          />
-          <TrackMixer
-            tracks={songState.tracks}
-            playing={playing}
-            structure={songState.structure}
-            selectedTrackId={selectedTrackId}
-            onSelect={setSelectedTrackId}
-            onUpdate={updateTrack}
-            onToggleEffect={toggleEffect}
-            onDelete={deleteTrack}
-            onReorder={reorderTracks}
-          />
-        </div>
+      <div className="app-body">
+        <Sidebar page={page} onNavigate={setPage} />
 
-        <aside className="right-col">
-          <AICollabPanel log={aiLog} onCommand={runCommand} thinking={thinking} />
-        </aside>
+        <div className="page-area">
+          {page === 'studio' && (
+            <div className="studio-grid">
+              <div className="left-col">
+                <VoicePanel onCommand={runCommand} thinking={thinking} liveAI={usingLiveAI} />
+                <HumRecorder songState={songState} onAddTrack={addTrackFromHum} onPreview={previewMelody} />
+                <StructureEditor
+                  songState={songState}
+                  selectedSegment={selectedSegment}
+                  onSelectSegment={setSelectedSegment}
+                  onReorder={reorderStructure}
+                  onRepeat={changeRepeat}
+                  progress={progress}
+                />
+                <TrackMixer
+                  tracks={songState.tracks}
+                  playing={playing}
+                  structure={songState.structure}
+                  selectedTrackId={selectedTrackId}
+                  onSelect={setSelectedTrackId}
+                  onUpdate={updateTrack}
+                  onToggleEffect={toggleEffect}
+                  onDelete={deleteTrack}
+                  onReorder={reorderTracks}
+                />
+              </div>
+
+              <aside className="right-col">
+                <AICollabPanel log={aiLog} onCommand={runCommand} thinking={thinking} />
+              </aside>
+            </div>
+          )}
+
+          {page === 'lyrics' && <LyricsPage songState={songState} onChange={updateLyrics} />}
+
+          {page === 'suno' && <SunoPage />}
+        </div>
       </div>
 
       <Transport
