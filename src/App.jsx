@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { Music4, Github } from 'lucide-react'
 import VoicePanel from './components/VoicePanel.jsx'
+import ToolsPanel from './components/ToolsPanel.jsx'
 import HumRecorder from './components/HumRecorder.jsx'
 import StructureEditor from './components/StructureEditor.jsx'
 import TrackMixer from './components/TrackMixer.jsx'
@@ -196,6 +197,7 @@ export default function App() {
       <div className="studio-grid">
         <div className="left-col">
           <VoicePanel onCommand={runCommand} thinking={thinking} liveAI={usingLiveAI} />
+          <ToolsPanel />
           <HumRecorder songState={songState} onAddTrack={addTrackFromHum} onPreview={previewMelody} />
           <StructureEditor
             songState={songState}

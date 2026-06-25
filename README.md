@@ -28,6 +28,20 @@ npm run preview
 > voice-command experience (Web Speech API). Everywhere else, type commands into
 > the AI Producer panel — every feature still works.
 
+### Use it from your phone or iPad (same Wi‑Fi)
+
+`npm run dev` binds to your whole network (`host: true`) and serves over HTTPS
+(self‑signed cert via `@vitejs/plugin-basic-ssl`). On another device, open the
+**Network** URL Vite prints — `https://<your-laptop-ip>:5173`.
+
+- The first visit shows a "Not Private" / certificate warning — tap through it
+  (**Show Details → visit this website**) to trust the self‑signed cert.
+- HTTPS is what lets iOS Safari grant **microphone** access, so the voice mic and
+  hum recorder work on the iPad. (Over plain HTTP, iOS blocks the mic and only
+  typed commands work.)
+- If a device can't connect, allow port `5173` through your laptop's firewall and
+  confirm both devices are on the same network.
+
 ## Features
 
 | # | Feature | What it does |
