@@ -9,7 +9,6 @@ import Transport from './components/Transport.jsx'
 import SettingsBar from './components/SettingsBar.jsx'
 import Sidebar from './components/Sidebar.jsx'
 import LyricsPage from './components/LyricsPage.jsx'
-import SunoPage from './components/SunoPage.jsx'
 import { getEngine } from './lib/audioEngine.js'
 import { interpretCommand, generateSurpriseSong, usingLiveAI } from './lib/aiProducer.js'
 import { DEFAULT_SONG_STATE, makeTrack, NEON_COLORS, INSTRUMENTS } from './lib/constants.js'
@@ -32,7 +31,9 @@ function loadSong() {
 
 export default function App() {
   const [songState, setSongState] = useState(loadSong)
-  const [page, setPage] = useState(() => localStorage.getItem(PAGE_KEY) || 'studio')
+  const [page, setPage] = useState(() =>
+    localStorage.getItem(PAGE_KEY) === 'lyrics' ? 'lyrics' : 'studio',
+  )
   const [aiLog, setAiLog] = useState([])
   const [thinking, setThinking] = useState(false)
   const [playing, setPlaying] = useState(false)
@@ -269,8 +270,6 @@ export default function App() {
           )}
 
           {page === 'lyrics' && <LyricsPage songState={songState} onChange={updateLyrics} />}
-
-          {page === 'suno' && <SunoPage />}
         </div>
       </div>
 
