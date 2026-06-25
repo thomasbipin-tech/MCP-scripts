@@ -1,0 +1,241 @@
+import { useCallback, useEffect, useRef, useState } from 'react'
+import { Music4, Github } from 'lucide-react'
+import VoicePanel from './components/VoicePanel.jsx'
+import HumRecorder from './components/HumRecorder.jsx'
+import StructureEditor from './components/StructureEditor.jsx'
+import TrackMixer from './components/TrackMixer.jsx'
+import AICollabPanel from './components/AICollabPanel.jsx'
+import Transport from './components/Transport.jsx'
+import SettingsBar from './components/SettingsBar.jsx'
+import { getEngine } from './lib/audioEngine.js'
+import { interpretCommand, generateSurpriseSong, usingLiveAI } from './lib/aiProducer.js'
+import { DEFAULT_SONG_STATE, makeTrack, NEON_COLORS, INSTRUMENTS } from './lib/constants.js'
+
+const clamp = (n, lo, hi) => Math.max(lo, Math.min(hi, n))
+
+export default function App() {
+  const [songState, setSongState] = useState(DEFAULT_SONG_STATE)
+  const [aiLog, setAiLog] = useState([])
+  const [thinking, setThinking] = useState(false)
+  const [playing, setPlaying] = useState(false)
+  const [progress, setProgress] = useState(0)
+  const [selectedTrackId, setSelectedTrackId] = useState(null)
+  const [selectedSegment, setSelectedSegment] = useState(null)
+
+  const engine = getEngine()
+  const songStateRef = useRef(songState)
+  songStateRef.current = songState
+
+  // Keep the audio engine in sync with the latest song state (live edits).
+  useEffect(() => {
+    engine.setSongState(songState)
+  }, [songState, engine])
+
+  // Drive the playhead while playing.
+  useEffect(() => {
+    if (!playing) return
+    let raf
+    const tick = () => {
+      setProgress(engine.getProgress())
+      raf = requestAnimationFrame(tick)
+    }
+    raf = requestAnimationFrame(tick)
+    return () => cancelAnimationFrame(raf)
+  }, [playing, engine])
+
+  useEffect(() => () => engine.dispose(), [engine])
+
+  // ----- Change merging -----
+  const applyChanges = useCallback((changes) => {
+    if (!changes || !Object.keys(changes).length) return
+    setSongState((prev) => ({ ...prev, ...changes }))
+  }, [])
+
+  // ----- Command dispatch (voice + text) -----
+  const runCommand = useCallback(
+    async (command) => {
+      if (!command) return
+      setAiLog((l) => [...l, { role: 'user', command }])
+      setThinking(true)
+      try {
+        const res = await interpretCommand(command, songStateRef.current, {
+          selectedTrackId,
+          selectedSegment,
+        })
+        applyChanges(res.changes)
+        setAiLog((l) => [...l, { role: 'ai', ...res }])
+      } catch (err) {
+        setAiLog((l) => [
+          ...l,
+          { role: 'ai', message: `Something went wrong: ${err.message}`, tip: '', nextSuggestion: '' },
+        ])
+      } finally {
+        setThinking(false)
+      }
+    },
+    [applyChanges, selectedTrackId, selectedSegment],
+  )
+
+  const handleSurprise = useCallback(async () => {
+    setAiLog((l) => [...l, { role: 'user', command: 'Surprise me' }])
+    setThinking(true)
+    await new Promise((r) => setTimeout(r, 450))
+    const res = generateSurpriseSong(songStateRef.current)
+    applyChanges(res.changes)
+    setAiLog((l) => [...l, { role: 'ai', ...res }])
+    setSelectedSegment(null)
+    setSelectedTrackId(null)
+    setThinking(false)
+  }, [applyChanges])
+
+  // ----- Track mutations -----
+  const updateTrack = useCallback((id, patch) => {
+    setSongState((p) => ({
+      ...p,
+      tracks: p.tracks.map((t) => (t.id === id ? { ...t, ...patch } : t)),
+    }))
+  }, [])
+
+  const toggleEffect = useCallback((id, fx) => {
+    setSongState((p) => ({
+      ...p,
+      tracks: p.tracks.map((t) =>
+        t.id === id ? { ...t, effects: { ...t.effects, [fx]: !t.effects[fx] } } : t,
+      ),
+    }))
+  }, [])
+
+  const deleteTrack = useCallback(
+    (id) => {
+      setSongState((p) => ({ ...p, tracks: p.tracks.filter((t) => t.id !== id) }))
+      if (selectedTrackId === id) setSelectedTrackId(null)
+    },
+    [selectedTrackId],
+  )
+
+  const reorderTracks = useCallback((next) => {
+    setSongState((p) => ({ ...p, tracks: next }))
+  }, [])
+
+  const addTrackFromHum = useCallback((notes, instrument) => {
+    setSongState((p) => {
+      const color = NEON_COLORS[p.tracks.length % NEON_COLORS.length]
+      const name = INSTRUMENTS.find((i) => i.id === instrument)?.name || 'Melody'
+      const track = makeTrack({ instrument, color, notes, name })
+      return { ...p, tracks: [...p.tracks, track] }
+    })
+    setAiLog((l) => [
+      ...l,
+      {
+        role: 'ai',
+        message: `Added your hummed melody as a ${instrument} track.`,
+        tip: 'Double the melody an octave up on another instrument to thicken the hook.',
+        nextSuggestion: 'Hit play, or say “add reverb to ' + instrument + '”.',
+      },
+    ])
+  }, [])
+
+  const previewMelody = useCallback(
+    (notes, instrument) => {
+      engine.previewMelody(notes, instrument)
+    },
+    [engine],
+  )
+
+  // ----- Structure mutations -----
+  const reorderStructure = useCallback((next) => {
+    setSongState((p) => ({ ...p, structure: next }))
+  }, [])
+
+  const changeRepeat = useCallback((index, delta) => {
+    setSongState((p) => ({
+      ...p,
+      structure: p.structure.map((s, i) =>
+        i === index ? { ...s, repeat: clamp((s.repeat || 1) + delta, 1, 8) } : s,
+      ),
+    }))
+  }, [])
+
+  // ----- Playback -----
+  const handlePlay = useCallback(async () => {
+    await engine.play()
+    setPlaying(true)
+  }, [engine])
+
+  const handlePause = useCallback(() => {
+    engine.pause()
+    setPlaying(false)
+  }, [engine])
+
+  const handleStop = useCallback(() => {
+    engine.stop()
+    setPlaying(false)
+    setProgress(0)
+  }, [engine])
+
+  const setBpm = useCallback((v) => applyChanges({ bpm: clamp(v, 40, 240) }), [applyChanges])
+  const setMaster = useCallback((v) => applyChanges({ masterVolume: clamp(v, 0, 100) }), [applyChanges])
+
+  return (
+    <div className="app">
+      <header className="app-header">
+        <div className="brand">
+          <div className="brand-mark">
+            <Music4 size={22} />
+          </div>
+          <div>
+            <div className="brand-title">AI MUSIC STUDIO</div>
+            <div className="mono" style={{ fontSize: 9.5, color: 'var(--text-faint)', textTransform: 'uppercase', letterSpacing: '0.18em' }}>
+              GarageBand-style AI DAW
+            </div>
+          </div>
+        </div>
+        <SettingsBar songState={songState} onChange={applyChanges} onSurprise={handleSurprise} thinking={thinking} />
+      </header>
+
+      <div className="studio-grid">
+        <div className="left-col">
+          <VoicePanel onCommand={runCommand} thinking={thinking} liveAI={usingLiveAI} />
+          <HumRecorder songState={songState} onAddTrack={addTrackFromHum} onPreview={previewMelody} />
+          <StructureEditor
+            songState={songState}
+            selectedSegment={selectedSegment}
+            onSelectSegment={setSelectedSegment}
+            onReorder={reorderStructure}
+            onRepeat={changeRepeat}
+            progress={progress}
+          />
+          <TrackMixer
+            tracks={songState.tracks}
+            playing={playing}
+            structure={songState.structure}
+            selectedTrackId={selectedTrackId}
+            onSelect={setSelectedTrackId}
+            onUpdate={updateTrack}
+            onToggleEffect={toggleEffect}
+            onDelete={deleteTrack}
+            onReorder={reorderTracks}
+          />
+        </div>
+
+        <aside className="right-col">
+          <AICollabPanel log={aiLog} onCommand={runCommand} thinking={thinking} />
+        </aside>
+      </div>
+
+      <Transport
+        playing={playing}
+        onPlay={handlePlay}
+        onPause={handlePause}
+        onStop={handleStop}
+        bpm={songState.bpm}
+        onBpmChange={setBpm}
+        masterVolume={songState.masterVolume ?? 80}
+        onMasterChange={setMaster}
+        getSpectrum={() => engine.getSpectrum()}
+        progress={progress}
+        songState={songState}
+      />
+    </div>
+  )
+}
