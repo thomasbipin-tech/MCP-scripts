@@ -51,10 +51,13 @@ export default function VoicePanel({ onCommand, thinking, liveAI }) {
           display: 'grid',
           placeItems: 'center',
           background: listening
-            ? 'radial-gradient(circle, rgba(255,45,90,0.35), rgba(255,45,90,0.08))'
-            : 'radial-gradient(circle, rgba(0,245,255,0.22), rgba(177,76,255,0.1))',
-          border: `2px solid ${listening ? '#ff2d5a' : 'rgba(0,245,255,0.5)'}`,
-          color: listening ? '#ff6b85' : 'var(--neon-blue)',
+            ? 'conic-gradient(from 0deg, #ff2d5a, #ff7a18, #ffb700, #ff2d95, #ff2d5a)'
+            : 'conic-gradient(from 0deg, #00f5ff, #b14cff, #ff2d95, #ffb700, #39ff14, #00f5ff)',
+          border: `2px solid ${listening ? '#ffffff' : 'rgba(255,255,255,0.3)'}`,
+          color: '#ffffff',
+          boxShadow: listening
+            ? '0 0 26px rgba(255,45,90,0.6), 0 0 48px rgba(255,122,24,0.4)'
+            : '0 0 24px rgba(177,76,255,0.55), 0 0 44px rgba(0,245,255,0.35)',
           animation: listening ? 'pulse-rec 1.4s infinite' : 'none',
           transition: 'all 300ms ease',
           opacity: !supported ? 0.45 : 1,
