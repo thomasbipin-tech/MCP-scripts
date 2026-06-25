@@ -33,12 +33,11 @@ jobs:
           node-version: 20
           cache: npm
 
-      # Turns on GitHub Pages for the repo automatically (no manual setting
-      # needed) when the workflow token has permission to do so.
+      # Reads the repo's Pages configuration. Pages must already be enabled in
+      # Settings → Pages → Source: "GitHub Actions" (a one-time manual step;
+      # the workflow token is not permitted to create the Pages site itself).
       - name: Configure Pages
         uses: actions/configure-pages@v5
-        with:
-          enablement: true
 
       - name: Install dependencies
         run: npm ci
