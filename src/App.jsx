@@ -187,7 +187,7 @@ export default function App() {
           <div>
             <div className="brand-title">AI MUSIC STUDIO</div>
             <div className="mono" style={{ fontSize: 9.5, color: 'var(--text-faint)', textTransform: 'uppercase', letterSpacing: '0.18em' }}>
-              GarageBand-style AI DAW
+              GarageBand style AI DAW
             </div>
           </div>
         </div>
