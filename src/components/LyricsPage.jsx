@@ -1,40 +1,59 @@
 import { useState } from 'react'
-import { PenLine, Sparkles, Trash2, Loader2 } from 'lucide-react'
+import { PenLine, Sparkles, Trash2, Loader2, Upload } from 'lucide-react'
 import { generateLyricsLocal } from '../lib/aiProducer.js'
+import { GENRES, MOODS, KEYS } from '../lib/constants.js'
 
-// Lyrics AI page. Generates a structured lyric sheet from the song's mood and
-// structure, fully editable. Lyrics live in songState, so they're preserved
-// across page switches and covered by autosave.
-export default function LyricsPage({ songState, onChange }) {
-  const [theme, setTheme] = useState('')
+// Lyrics AI page. Title (woven into the lyrics), editable genre/mood/key, the
+// instruments in use, a generate button + editable sheet, and a drop/choose box
+// to base lyrics on a song file. Everything lives in songState, so it autosaves.
+
+const selectStyle = {
+  padding: '9px 10px',
+  borderRadius: 9,
+  background: 'var(--panel-solid)',
+  border: '1px solid var(--border)',
+  color: 'var(--text)',
+  fontSize: 13,
+  width: '100%',
+  textTransform: 'capitalize',
+}
+
+function Field({ label, value, options, onChange }) {
+  return (
+    <label style={{ display: 'flex', flexDirection: 'column', gap: 5, flex: 1, minWidth: 120 }}>
+      <span className="label">{label}</span>
+      <select value={value} onChange={(e) => onChange(e.target.value)} style={selectStyle}>
+        {options.map((o) => (
+          <option key={o} value={o}>
+            {o}
+          </option>
+        ))}
+      </select>
+    </label>
+  )
+}
+
+export default function LyricsPage({ songState, onChange, onSettings }) {
+  const [title, setTitle] = useState('')
   const [busy, setBusy] = useState(false)
+  const [dragOver, setDragOver] = useState(false)
   const lyrics = songState.lyrics || ''
+  const instruments = [...new Set((songState.tracks || []).map((t) => t.instrument))]
 
-  const generate = async () => {
+  const generate = async (overrideTitle) => {
+    const t = overrideTitle != null ? overrideTitle : title
     setBusy(true)
-    // Small delay so the "writing…" state is visible.
-    await new Promise((r) => setTimeout(r, 350))
-    onChange(generateLyricsLocal(songState, theme))
+    await new Promise((r) => setTimeout(r, 320))
+    onChange(generateLyricsLocal(songState, t))
     setBusy(false)
   }
 
-  const chip = (text) => (
-    <span
-      className="mono"
-      style={{
-        fontSize: 9.5,
-        padding: '2px 8px',
-        borderRadius: 99,
-        background: 'rgba(0,245,255,0.08)',
-        border: '1px solid rgba(0,245,255,0.2)',
-        color: 'var(--neon-blue)',
-        textTransform: 'uppercase',
-        letterSpacing: '0.08em',
-      }}
-    >
-      {text}
-    </span>
-  )
+  const useFile = (file) => {
+    if (!file) return
+    const name = file.name.replace(/\.[^/.]+$/, '').replace(/[_-]+/g, ' ').trim()
+    setTitle(name)
+    generate(name)
+  }
 
   return (
     <section className="glass page-pane" style={{ padding: 18, display: 'flex', flexDirection: 'column', gap: 14 }}>
@@ -43,40 +62,47 @@ export default function LyricsPage({ songState, onChange }) {
         <span style={{ fontSize: 17, fontWeight: 700 }}>Lyrics AI</span>
       </div>
 
-      <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
-        {chip(songState.genre || 'genre')}
-        {chip(songState.mood || 'mood')}
-        {chip(songState.key || 'key')}
+      {/* Title (woven into the lyrics) */}
+      <label style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
+        <span className="label">Title</span>
+        <input
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          placeholder="Song title — e.g. Midnight Drive, Golden Hour"
+          onKeyDown={(e) => e.key === 'Enter' && generate()}
+          style={{ ...selectStyle, textTransform: 'none' }}
+        />
+      </label>
+
+      {/* Editable song settings (these change the song too) */}
+      <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+        <Field label="Genre" value={songState.genre} options={GENRES} onChange={(v) => onSettings({ genre: v })} />
+        <Field label="Mood" value={songState.mood} options={MOODS} onChange={(v) => onSettings({ mood: v })} />
+        <Field label="Key" value={songState.key} options={KEYS} onChange={(v) => onSettings({ key: v })} />
       </div>
 
+      {/* Instruments in use (change them on the Instruments page) */}
+      {instruments.length > 0 && (
+        <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', alignItems: 'center' }}>
+          <span className="label">Instruments</span>
+          {instruments.map((i) => (
+            <span
+              key={i}
+              className="mono"
+              style={{ fontSize: 9.5, padding: '2px 8px', borderRadius: 99, background: 'rgba(255,255,255,0.05)', border: '1px solid var(--border)', color: 'var(--text-dim)', textTransform: 'capitalize' }}
+            >
+              {i}
+            </span>
+          ))}
+        </div>
+      )}
+
       <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-        <input
-          value={theme}
-          onChange={(e) => setTheme(e.target.value)}
-          placeholder="Theme — e.g. midnight drive, lost love, the city"
-          onKeyDown={(e) => e.key === 'Enter' && generate()}
-          style={{
-            flex: 1,
-            minWidth: 200,
-            padding: '10px 12px',
-            borderRadius: 10,
-            background: 'var(--panel-solid)',
-            border: '1px solid var(--border)',
-            color: 'var(--text)',
-            fontSize: 14,
-          }}
-        />
-        <button className="btn" onClick={generate} disabled={busy} style={{ whiteSpace: 'nowrap' }}>
+        <button className="btn" onClick={() => generate()} disabled={busy} style={{ whiteSpace: 'nowrap' }}>
           {busy ? <Loader2 size={15} className="spin" /> : <Sparkles size={15} />}
           {busy ? 'Writing…' : 'Generate'}
         </button>
-        <button
-          className="btn"
-          onClick={() => onChange('')}
-          disabled={!lyrics}
-          title="Clear lyrics"
-          style={{ opacity: lyrics ? 1 : 0.4 }}
-        >
+        <button className="btn" onClick={() => onChange('')} disabled={!lyrics} title="Clear lyrics" style={{ opacity: lyrics ? 1 : 0.4 }}>
           <Trash2 size={15} />
         </button>
       </div>
@@ -88,7 +114,7 @@ export default function LyricsPage({ songState, onChange }) {
         spellCheck
         style={{
           flex: 1,
-          minHeight: 240,
+          minHeight: 200,
           resize: 'none',
           padding: 14,
           borderRadius: 12,
@@ -102,8 +128,41 @@ export default function LyricsPage({ songState, onChange }) {
         }}
       />
 
-      <div className="mono" style={{ fontSize: 10, color: 'var(--text-faint)' }}>
-        Follows your song structure · saved automatically
+      {/* Drop / choose a song file to base lyrics on */}
+      <label
+        onDragOver={(e) => {
+          e.preventDefault()
+          setDragOver(true)
+        }}
+        onDragLeave={() => setDragOver(false)}
+        onDrop={(e) => {
+          e.preventDefault()
+          setDragOver(false)
+          useFile(e.dataTransfer.files?.[0])
+        }}
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          gap: 10,
+          padding: '16px 14px',
+          borderRadius: 12,
+          border: `1.5px dashed ${dragOver ? 'var(--neon-purple)' : 'var(--border)'}`,
+          background: dragOver ? 'rgba(177,76,255,0.08)' : 'rgba(255,255,255,0.02)',
+          color: 'var(--text-dim)',
+          fontSize: 13,
+          cursor: 'pointer',
+          textAlign: 'center',
+        }}
+      >
+        <Upload size={16} style={{ flexShrink: 0 }} />
+        <span>
+          Drop or choose a song file → lyrics titled after it, matched to your genre &amp; mood.
+        </span>
+        <input type="file" accept="audio/*" hidden onChange={(e) => useFile(e.target.files?.[0])} />
+      </label>
+      <div className="mono" style={{ fontSize: 9.5, color: 'var(--text-faint)' }}>
+        Note: the audio itself isn't transcribed — lyrics are written from the title, genre and mood.
       </div>
     </section>
   )

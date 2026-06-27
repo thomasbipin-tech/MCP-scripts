@@ -319,7 +319,7 @@ export default function App() {
             </div>
           )}
 
-          {page === 'lyrics' && <LyricsPage songState={songState} onChange={updateLyrics} />}
+          {page === 'lyrics' && <LyricsPage songState={songState} onChange={updateLyrics} onSettings={applyChanges} />}
 
           {page === 'super' && <SuperGeneratePage songState={songState} onApply={applyVariation} />}
 
