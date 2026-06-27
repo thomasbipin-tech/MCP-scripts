@@ -588,6 +588,93 @@ function buildKitTrack(inst, tempState, color, genre) {
   return makeTrack({ instrument: inst, color, volume, notes: generateMelodyFromHum(tempState, 'lead') })
 }
 
+// ----- Lyrics → Music -----
+// Infer a song from lyrics: structure from [Section] headers, mood from the
+// words, then build a few arrangements that fit.
+const MOOD_WORDS = {
+  energetic: ['run', 'fire', 'alive', 'burn', 'tonight', 'wild', 'race', 'loud', 'electric', 'jump'],
+  aggressive: ['break', 'war', 'rage', 'fight', 'savage', 'thunder', 'storm', 'blood', 'scream', 'iron'],
+  chill: ['easy', 'slow', 'calm', 'golden', 'sunset', 'breeze', 'quiet', 'drift', 'smooth', 'haze'],
+  dark: ['shadow', 'cold', 'alone', 'fade', 'empty', 'silence', 'ashes', 'grey', 'lost', 'hollow'],
+  euphoric: ['love', 'sky', 'high', 'light', 'heart', 'forever', 'glow', 'rise', 'free', 'alive'],
+  dreamy: ['dream', 'float', 'ocean', 'star', 'silver', 'distant', 'soft', 'echo', 'sleep', 'drift'],
+}
+
+const MOOD_GENRES = {
+  energetic: ['pop', 'rock', 'house'],
+  aggressive: ['rock', 'trap', 'electronic'],
+  chill: ['lo-fi', 'pop', 'ambient'],
+  dark: ['cinematic', 'trap', 'electronic'],
+  euphoric: ['house', 'pop', 'cinematic'],
+  dreamy: ['ambient', 'lo-fi', 'cinematic'],
+}
+
+function inferMood(text) {
+  const t = String(text).toLowerCase()
+  let best = null
+  let bestScore = 0
+  for (const [mood, words] of Object.entries(MOOD_WORDS)) {
+    const score = words.reduce((n, w) => n + (t.includes(w) ? 1 : 0), 0)
+    if (score > bestScore) {
+      bestScore = score
+      best = mood
+    }
+  }
+  return bestScore > 0 ? best : null
+}
+
+function parseStructure(text) {
+  const known = ['intro', 'verse', 'chorus', 'bridge', 'outro']
+  const out = []
+  for (const line of String(text).split('\n')) {
+    const m = line.match(/^\s*\[([a-zA-Z]+)(?:[^\d]*?(\d+))?/)
+    if (!m) continue
+    const type = m[1].toLowerCase()
+    if (!known.includes(type)) continue
+    const repeat = m[2] ? clamp(parseInt(m[2], 10), 1, 8) : 1
+    const bars = type === 'intro' || type === 'outro' || type === 'bridge' ? 4 : 8
+    out.push({ type, bars, repeat })
+  }
+  if (out.length) return out
+  return [
+    { type: 'intro', bars: 4, repeat: 1 },
+    { type: 'verse', bars: 8, repeat: 1 },
+    { type: 'chorus', bars: 8, repeat: 2 },
+    { type: 'verse', bars: 8, repeat: 1 },
+    { type: 'chorus', bars: 8, repeat: 2 },
+    { type: 'outro', bars: 4, repeat: 1 },
+  ]
+}
+
+/** Build N complete songs that fit the given lyrics. */
+export function generateSongFromLyrics(lyrics, songState, count = 3) {
+  const text = String(lyrics || '')
+  const mood = inferMood(text) || songState.mood || 'energetic'
+  const genres = MOOD_GENRES[mood] || ['pop', 'rock', 'lo-fi']
+  const out = []
+  for (let i = 0; i < count; i++) {
+    const genre = genres[i % genres.length]
+    const seed = text.length + i * 31 + (Math.floor(Date.now() / 997) % 100)
+    const key = KEYS[(seed + i * 7) % KEYS.length]
+    const bpm = clamp((BPM_BY_GENRE[genre] || 120) + ((i % 3) - 1) * 4, 60, 180)
+    const tempState = { ...songState, key, mood }
+    const kit = GENRE_KIT[genre] || ['drums', 'bass', 'piano', 'guitar']
+    const tracks = kit.map((inst, k) => buildKitTrack(inst, tempState, NEON_COLORS[k % NEON_COLORS.length], genre))
+    const structure = parseStructure(text).map((s) => ({ ...s }))
+    out.push({
+      id: i,
+      label: `${mood} ${genre}`,
+      genre,
+      mood,
+      key,
+      bpm,
+      instruments: kit,
+      changes: { genre, mood, key, bpm, tracks, structure, fadeOut: true, lyrics: text },
+    })
+  }
+  return out
+}
+
 function bassLine(songState) {
   const scale = scaleNotes(songState.key, 2, 8)
   const order = [0, 0, 4, 0, 5, 0, 4, 2]

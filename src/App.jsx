@@ -11,6 +11,7 @@ import Sidebar from './components/Sidebar.jsx'
 import LyricsPage from './components/LyricsPage.jsx'
 import SuperGeneratePage from './components/SuperGeneratePage.jsx'
 import InstrumentsPage from './components/InstrumentsPage.jsx'
+import LyricsToMusicPage from './components/LyricsToMusicPage.jsx'
 import { getEngine } from './lib/audioEngine.js'
 import { interpretCommand, generateSurpriseSong, usingLiveAI } from './lib/aiProducer.js'
 import { DEFAULT_SONG_STATE, makeTrack, NEON_COLORS, INSTRUMENTS } from './lib/constants.js'
@@ -35,7 +36,7 @@ export default function App() {
   const [songState, setSongState] = useState(loadSong)
   const [page, setPage] = useState(() => {
     const saved = localStorage.getItem(PAGE_KEY)
-    return ['lyrics', 'super', 'sounds'].includes(saved) ? saved : 'studio'
+    return ['lyrics', 'l2m', 'super', 'sounds'].includes(saved) ? saved : 'studio'
   })
   const [sidebarOpen, setSidebarOpen] = useState(false)
 
@@ -320,6 +321,8 @@ export default function App() {
           )}
 
           {page === 'lyrics' && <LyricsPage songState={songState} onChange={updateLyrics} onSettings={applyChanges} />}
+
+          {page === 'l2m' && <LyricsToMusicPage songState={songState} onApply={applyVariation} />}
 
           {page === 'super' && <SuperGeneratePage songState={songState} onApply={applyVariation} />}
 
