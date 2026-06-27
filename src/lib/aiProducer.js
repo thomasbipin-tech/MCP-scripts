@@ -319,53 +319,95 @@ export function interpretLocal(command, songState, context = {}) {
 }
 
 // ----- Lyrics generator (offline) -----
-// Produces a structured lyric sheet that follows the song's structure and
-// leans on its mood. Fully local so the Lyrics page works with zero setup.
-const LYRIC_WORDS = {
-  energetic: { adj: ['electric', 'restless', 'blazing', 'wired'], noun: ['fire', 'spark', 'pulse', 'rush'] },
-  aggressive: { adj: ['relentless', 'breaking', 'savage', 'iron'], noun: ['thunder', 'war', 'edge', 'storm'] },
-  chill: { adj: ['easy', 'golden', 'slow', 'quiet'], noun: ['haze', 'shoreline', 'sunset', 'breeze'] },
-  dark: { adj: ['hollow', 'colder', 'shadowed', 'fading'], noun: ['shadow', 'silence', 'ashes', 'void'] },
-  euphoric: { adj: ['weightless', 'glowing', 'endless', 'bright'], noun: ['sky', 'light', 'heartbeat', 'horizon'] },
-  dreamy: { adj: ['floating', 'silver', 'distant', 'soft'], noun: ['dream', 'ocean', 'starlight', 'echo'] },
-  default: { adj: ['electric', 'golden', 'restless', 'bright'], noun: ['fire', 'light', 'night', 'heartbeat'] },
-}
-
+// Builds a coherent, rhyming lyric sheet from curated couplets: distinct verses,
+// one repeating chorus hook (with the theme woven in), a contrasting bridge, and
+// mood-aware intros/outros. Fully local — works with zero setup.
 const cap = (s) => (s ? s.charAt(0).toUpperCase() + s.slice(1) : s)
 
-export function generateLyricsLocal(songState, theme = '') {
-  const topic = String(theme || '').trim() || 'tonight'
-  const w = LYRIC_WORDS[songState.mood] || LYRIC_WORDS.default
-  let seed = topic.length + (songState.bpm || 120) + String(songState.genre || '').length
-  const next = () => (seed = (seed * 1103515245 + 12345) & 0x7fffffff)
-  const pickW = (arr) => arr[next() % arr.length]
+// Rhyming couplets ({theme}/{Theme} are slotted with the user's theme).
+const VERSE_COUPLETS = [
+  ['I still feel {theme} like a fire in my chest', "Chasing every second, never stopping to rest"],
+  ['Headlights on the highway, neon in the rain', '{Theme} is the only thing that keeps me sane'],
+  ['We were young and restless, dancing in the dark', 'Every spark between us left a permanent mark'],
+  ['Footsteps in the silence, echoes of your name', 'Nothing in the morning ever feels the same'],
+  ['City lights are calling, pulling me away', 'But the thought of {theme} is begging me to stay'],
+  ['Rivers of the moment carry us along', 'Turning every heartbeat into a song'],
+  ['Hold me in the chaos, steady when I fall', "You're the quiet answer underneath it all"],
+  ['Miles of empty asphalt stretching out ahead', 'Living for the words we left but never said'],
+  ['Smoke against the streetlight, shadows on the wall', 'I would trade it all just to hear you call'],
+  ['Clocks are turning slowly, hands that never stay', 'Holding onto {theme} before it fades away'],
+]
 
-  const linesFor = (type) => {
-    const adj = pickW(w.adj)
-    const noun = pickW(w.noun)
-    switch (type) {
-      case 'intro':
-        return [`(${topic}... ${topic}...)`]
-      case 'chorus':
-        return [
-          `${cap(topic)}, you're the ${adj} ${noun} in me`,
-          `Hold on, don't let the ${pickW(w.noun)} fade`,
-          `${cap(topic)}, we burn ${adj} and free`,
-          `Tonight we were never afraid`,
-        ]
-      case 'bridge':
-        return [`And if it all falls down`, `I'll find you in the ${pickW(w.noun)}`, `${cap(adj)} and louder now`]
-      case 'outro':
-        return [`(${adj}... ${adj}...)`, `${cap(topic)}, don't fade away`]
-      case 'verse':
-      default:
-        return [
-          `I caught the ${adj} ${noun} in your eyes`,
-          `Chasing ${topic} under ${pickW(w.adj)} skies`,
-          `Every heartbeat a ${pickW(w.noun)} we can't hide`,
-          `So we run, ${topic}, side by side`,
-        ]
-    }
+const CHORUS_HOOKS = [
+  ["So hold on to {theme}, don't let it go", "We're burning like the embers, stealing the show", 'Hold on to {theme}, we never fold', 'Out here in the moment, breaking the mold'],
+  ['{Theme}, you are the reason I’m alive', "Every time I'm falling, you're the reason I survive", '{Theme}, take me higher tonight', "Everything feels right when you're holding me tight"],
+  ['This is our {theme}, and we own the night', 'Hearts beating louder, chasing the light', "This is our {theme}, we'll never hide", 'Riding every wave with you right by my side'],
+  ['Run with me through {theme} and flame', 'Scream it to the sky, we are not the same', 'Run with me, we’ll never be tame', 'Carving out forever, leaving our name'],
+]
+
+const BRIDGE_COUPLETS = [
+  ['And when the lights go down', "I'll still be around"],
+  ['Maybe we were never meant to stay', "But I'd do it all again the same way"],
+  ['Tear it all apart', "You're still my beating heart"],
+  ['Even in the silence', 'You are my defiance'],
+]
+
+const INTRO_LINES = {
+  energetic: ['(Yeah... here we go)'],
+  aggressive: ['(Let it burn...)'],
+  chill: ['(Mmm... easy now)'],
+  dark: ['(Cold... so cold...)'],
+  euphoric: ['(Ooh-ooh, take me up)'],
+  dreamy: ['(Drifting... {theme}...)'],
+  default: ['(Ooh... {theme}...)'],
+}
+
+const OUTRO_LINES = {
+  default: ['So hold on to {theme}...', '(Don’t let it fade away)'],
+  dreamy: ['(Ooh, {theme}...)', 'Till the morning light'],
+  dark: ['(Fading... fading...)', 'Let the shadows take it all'],
+}
+
+const DEFAULT_THEME = {
+  energetic: 'tonight',
+  aggressive: 'the fire',
+  chill: 'the moment',
+  dark: 'the shadows',
+  euphoric: 'the high',
+  dreamy: 'a dream',
+}
+
+export function generateLyricsLocal(songState, theme = '') {
+  const mood = songState.mood || 'default'
+  const topic = String(theme || '').trim() || DEFAULT_THEME[mood] || 'tonight'
+  const Topic = cap(topic)
+  const fill = (line) => line.split('{theme}').join(topic).split('{Theme}').join(Topic)
+
+  // Seeded RNG (varies a little each generate so "regenerate" gives fresh words).
+  let seed = (topic.length * 7 + (songState.bpm || 120) + String(mood).length + (Math.floor(Date.now() / 1000) % 1000)) >>> 0
+  const rnd = () => {
+    seed = (seed * 1103515245 + 12345) & 0x7fffffff
+    return seed / 0x7fffffff
+  }
+  const pickFrom = (arr) => arr[Math.floor(rnd() * arr.length)]
+
+  // One chorus, reused for every chorus section (like a real song).
+  const chorus = pickFrom(CHORUS_HOOKS).map(fill)
+  const bridge = pickFrom(BRIDGE_COUPLETS).map(fill)
+  const intro = (INTRO_LINES[mood] || INTRO_LINES.default).map(fill)
+  const outro = (OUTRO_LINES[mood] || OUTRO_LINES.default).map(fill)
+
+  // Distinct verses: shuffle couplet indices, take two couplets per verse.
+  const order = VERSE_COUPLETS.map((_, i) => i)
+  for (let i = order.length - 1; i > 0; i--) {
+    const j = Math.floor(rnd() * (i + 1))
+    ;[order[i], order[j]] = [order[j], order[i]]
+  }
+  let vptr = 0
+  const nextVerse = () => {
+    const a = VERSE_COUPLETS[order[vptr++ % order.length]]
+    const b = VERSE_COUPLETS[order[vptr++ % order.length]]
+    return [...a, ...b].map(fill)
   }
 
   const sections =
@@ -377,7 +419,11 @@ export function generateLyricsLocal(songState, theme = '') {
   sections.forEach((s) => {
     const label = cap(s.type) + (s.repeat > 1 ? ` (x${s.repeat})` : '')
     out.push(`[${label}]`)
-    out.push(...linesFor(s.type))
+    if (s.type === 'intro') out.push(...intro)
+    else if (s.type === 'chorus') out.push(...chorus)
+    else if (s.type === 'bridge') out.push(...bridge)
+    else if (s.type === 'outro') out.push(...outro)
+    else out.push(...nextVerse())
     out.push('')
   })
   return out.join('\n').trim()
