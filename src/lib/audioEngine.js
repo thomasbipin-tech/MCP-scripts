@@ -138,6 +138,7 @@ export class AudioEngine {
   constructor() {
     this.ready = false
     this.graphs = new Map() // trackId -> { instrument, dist, delay, reverb, volume }
+    this.clips = new Map() // recordingId -> { player, vol } (real recorded audio)
     this.songState = null
     this.loopId = null
     this.startOffset = 0 // Tone.Transport.seconds at which the current play began
@@ -166,6 +167,31 @@ export class AudioEngine {
 
   setMasterVolume(pct) {
     if (this.master) this.master.volume.rampTo(volToDb(pct), 0.05)
+  }
+
+  // Register a real recorded clip to play (looped) in sync with the transport.
+  async registerClip(id, url, { volume = 90, loop = true } = {}) {
+    await this.init()
+    this.unregisterClip(id)
+    const vol = new Tone.Volume(volToDb(volume))
+    const player = new Tone.Player({ url, loop, autostart: false })
+    player.chain(vol, this.master)
+    player.sync().start(0)
+    this.clips.set(id, { player, vol })
+  }
+
+  unregisterClip(id) {
+    const c = this.clips.get(id)
+    if (!c) return
+    try {
+      c.player.unsync()
+      c.player.stop()
+    } catch (_) {
+      /* ignore */
+    }
+    c.player.dispose()
+    c.vol.dispose()
+    this.clips.delete(id)
   }
 
   setBpm(bpm) {
@@ -440,6 +466,7 @@ export class AudioEngine {
   dispose() {
     if (this.loopId != null) Tone.Transport.clear(this.loopId)
     this.loopId = null
+    for (const id of [...this.clips.keys()]) this.unregisterClip(id)
     for (const g of this.graphs.values()) this.disposeGraph(g)
     this.graphs.clear()
     if (this.analyser) this.analyser.dispose()

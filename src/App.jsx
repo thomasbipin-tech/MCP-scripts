@@ -12,6 +12,7 @@ import LyricsPage from './components/LyricsPage.jsx'
 import SuperGeneratePage from './components/SuperGeneratePage.jsx'
 import InstrumentsPage from './components/InstrumentsPage.jsx'
 import LyricsToMusicPage from './components/LyricsToMusicPage.jsx'
+import StudioRealPage from './components/StudioRealPage.jsx'
 import { getEngine } from './lib/audioEngine.js'
 import { interpretCommand, generateSurpriseSong, usingLiveAI } from './lib/aiProducer.js'
 import { DEFAULT_SONG_STATE, makeTrack, NEON_COLORS, INSTRUMENTS } from './lib/constants.js'
@@ -36,9 +37,10 @@ export default function App() {
   const [songState, setSongState] = useState(loadSong)
   const [page, setPage] = useState(() => {
     const saved = localStorage.getItem(PAGE_KEY)
-    return ['lyrics', 'l2m', 'super', 'sounds'].includes(saved) ? saved : 'studio'
+    return ['real', 'lyrics', 'l2m', 'super', 'sounds'].includes(saved) ? saved : 'studio'
   })
   const [sidebarOpen, setSidebarOpen] = useState(false)
+  const [recordings, setRecordings] = useState([]) // real recorded clips (session-only)
 
   const navigate = useCallback((p) => {
     setPage(p)
@@ -206,6 +208,44 @@ export default function App() {
     setSongState((p) => ({ ...p, lyrics: text }))
   }, [])
 
+  // ----- Real recordings (Studio Real + voice clips) -----
+  const addRecording = useCallback((clip) => {
+    setRecordings((r) => [
+      ...r,
+      {
+        id: `rec-${Date.now()}`,
+        name: `Take ${r.length + 1}`,
+        url: clip.url,
+        duration: clip.duration || 0,
+        waveform: clip.waveform || [],
+        playWithSong: false,
+      },
+    ])
+  }, [])
+
+  const removeRecording = useCallback(
+    (id) => {
+      engine.unregisterClip(id)
+      setRecordings((r) => r.filter((x) => x.id !== id))
+    },
+    [engine],
+  )
+
+  const toggleRecordingPlay = useCallback(
+    (id) => {
+      setRecordings((r) =>
+        r.map((x) => {
+          if (x.id !== id) return x
+          const next = !x.playWithSong
+          if (next) engine.registerClip(id, x.url, { volume: 92, loop: true })
+          else engine.unregisterClip(id)
+          return { ...x, playWithSong: next }
+        }),
+      )
+    },
+    [engine],
+  )
+
   const changeInstrument = useCallback((id, instrument) => {
     setSongState((p) => ({
       ...p,
@@ -322,7 +362,18 @@ export default function App() {
 
           {page === 'lyrics' && <LyricsPage songState={songState} onChange={updateLyrics} onSettings={applyChanges} />}
 
-          {page === 'l2m' && <LyricsToMusicPage songState={songState} onApply={applyVariation} />}
+          {page === 'real' && (
+            <StudioRealPage
+              recordings={recordings}
+              onAdd={addRecording}
+              onRemove={removeRecording}
+              onTogglePlay={toggleRecordingPlay}
+            />
+          )}
+
+          {page === 'l2m' && (
+            <LyricsToMusicPage songState={songState} onApply={applyVariation} onRecord={addRecording} />
+          )}
 
           {page === 'super' && <SuperGeneratePage songState={songState} onApply={applyVariation} />}
 

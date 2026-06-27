@@ -1,13 +1,22 @@
 import { useState } from 'react'
-import { Wand2, Sparkles, Loader2, Play } from 'lucide-react'
+import { Wand2, Sparkles, Loader2, Play, Mic, Square } from 'lucide-react'
 import { generateSongFromLyrics } from '../lib/aiProducer.js'
+import { useClipRecorder } from '../hooks/useClipRecorder.js'
 
 // Lyrics → Music: paste lyrics, get 3 song versions built to fit them.
 // Structure is read from [Section] headers; mood is inferred from the words.
-export default function LyricsToMusicPage({ songState, onApply }) {
+export default function LyricsToMusicPage({ songState, onApply, onRecord }) {
   const [lyrics, setLyrics] = useState(songState.lyrics || '')
   const [versions, setVersions] = useState([])
   const [busy, setBusy] = useState(false)
+  const [voiceClip, setVoiceClip] = useState(null)
+  const voice = useClipRecorder({
+    maxMs: 15000,
+    onClip: (clip) => {
+      setVoiceClip(clip)
+      onRecord?.(clip)
+    },
+  })
 
   const generate = async () => {
     if (!lyrics.trim()) return
@@ -74,6 +83,48 @@ export default function LyricsToMusicPage({ songState, onApply }) {
 
       <div className="mono" style={{ fontSize: 9.5, color: 'var(--text-faint)' }}>
         Note: this composes a backing arrangement that fits your lyrics — it doesn't sing them.
+      </div>
+
+      {/* 15-second voice take */}
+      <div style={{ borderTop: '1px solid var(--border)', paddingTop: 14, display: 'flex', flexDirection: 'column', gap: 10 }}>
+        <span className="label">Sing it · 15-second take</span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          <button
+            type="button"
+            onClick={() => (voice.recording ? voice.stop() : voice.start())}
+            disabled={!voice.supported}
+            aria-label={voice.recording ? 'Stop' : 'Record 15 seconds'}
+            style={{
+              width: 54,
+              height: 54,
+              borderRadius: '50%',
+              display: 'grid',
+              placeItems: 'center',
+              flexShrink: 0,
+              cursor: voice.supported ? 'pointer' : 'not-allowed',
+              border: `2px solid ${voice.recording ? '#ff2d5a' : 'rgba(255,45,149,0.5)'}`,
+              background: voice.recording
+                ? `radial-gradient(circle, rgba(255,45,90,${0.25 + voice.level * 0.5}), rgba(255,45,90,0.08))`
+                : 'radial-gradient(circle, rgba(255,45,149,0.18), rgba(177,76,255,0.08))',
+              color: voice.recording ? '#ff6b85' : 'var(--neon-pink)',
+              opacity: voice.supported ? 1 : 0.45,
+            }}
+          >
+            {voice.recording ? <Square size={18} /> : <Mic size={20} />}
+          </button>
+          <div style={{ fontSize: 12.5, color: 'var(--text-dim)' }}>
+            {!voice.supported
+              ? 'Mic not available here.'
+              : voice.recording
+                ? `Recording… ${voice.elapsed.toFixed(1)}s / 15s`
+                : 'Record up to 15 seconds of you singing.'}
+          </div>
+        </div>
+        {voiceClip && <audio src={voiceClip.url} controls style={{ width: '100%', height: 34 }} />}
+        <div className="mono" style={{ fontSize: 9.5, color: 'var(--text-faint)', lineHeight: 1.5 }}>
+          Saved to Studio Real — toggle “Play with song” there to hear it over the track. Making it
+          actually sing your lyrics in your voice needs an AI voice model (coming later).
+        </div>
       </div>
     </section>
   )
