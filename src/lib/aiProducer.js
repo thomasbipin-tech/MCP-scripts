@@ -454,7 +454,8 @@ export function generateMelodyFromHum(songState, instrument = 'lead', contour = 
       return clamp(Math.round(v * (scale.length - 1)), 0, scale.length - 1)
     })
   } else {
-    degrees = [0, 2, 4, 5, 4, 2, 1, 0]
+    // Triad-leaning contour (root/third/fifth) so it stays consonant and hooky.
+    degrees = [0, 2, 4, 2, 0, 4, 2, 0]
   }
   return degrees.map((d, idx) => ({ note: scale[d], step: idx, duration: '8n' }))
 }
@@ -471,7 +472,7 @@ export function generateSurpriseSong(songState) {
   // Genre-appropriate instrument lineups. Acoustic genres use the real sampled
   // instruments (piano/guitar/violin/bass/drums); electronic genres keep synths.
   const kit = GENRE_KIT[genre] || ['drums', 'bass', 'piano', 'guitar']
-  const tracks = kit.map((inst, i) => buildKitTrack(inst, tempState, NEON_COLORS[i % NEON_COLORS.length]))
+  const tracks = kit.map((inst, i) => buildKitTrack(inst, tempState, NEON_COLORS[i % NEON_COLORS.length], genre))
 
   const structure = [
     { type: 'intro', bars: 4, repeat: 1 },
@@ -531,7 +532,7 @@ export function generateVariations(songState, count = 6) {
     const bpm = clamp((BPM_BY_GENRE[genre] || 120) + ((i % 3) - 1) * 6, 60, 180)
     const tempState = { ...songState, key }
     const kit = GENRE_KIT[genre] || ['drums', 'bass', 'piano', 'guitar']
-    const tracks = kit.map((inst, k) => buildKitTrack(inst, tempState, NEON_COLORS[k % NEON_COLORS.length]))
+    const tracks = kit.map((inst, k) => buildKitTrack(inst, tempState, NEON_COLORS[k % NEON_COLORS.length], genre))
     const structure = [
       { type: 'intro', bars: 4, repeat: 1 },
       { type: 'verse', bars: 8, repeat: 1 + (i % 2) },
@@ -553,18 +554,38 @@ export function generateVariations(songState, count = 6) {
   return out
 }
 
-function buildKitTrack(inst, tempState, color) {
-  if (inst === 'drums') return makeTrack({ instrument: 'drums', color })
-  if (inst === 'bass') return makeTrack({ instrument: 'bass', color, notes: bassLine(tempState) })
+// Genre-appropriate 8-step drum grooves (kick/snare/hat per eighth note).
+const GENRE_GROOVES = {
+  rock: ['kick', 'hat', 'snare', 'hat', 'kick', 'hat', 'snare', 'hat'],
+  pop: ['kick', 'hat', 'snare', 'hat', 'kick', '', 'snare', 'hat'],
+  'lo-fi': ['kick', '', 'snare', '', '', 'kick', 'snare', ''],
+  'hip hop': ['kick', '', 'snare', '', '', 'kick', 'snare', ''],
+  trap: ['kick', '', 'snare', 'hat', 'kick', 'kick', 'snare', 'hat'],
+  house: ['kick', 'hat', 'kick', 'hat', 'kick', 'hat', 'kick', 'hat'],
+  electronic: ['kick', 'hat', 'snare', 'hat', 'kick', 'hat', 'snare', 'hat'],
+  ambient: ['kick', '', '', '', 'snare', '', '', ''],
+  cinematic: ['kick', '', '', '', 'snare', '', '', 'kick'],
+}
+
+// Mix balance: keep drums/bass present, pads/leads back so it isn't muddy.
+const TRACK_VOLUME = { drums: 86, bass: 82, pad: 58, lead: 70, synth: 70, piano: 76, guitar: 74, violin: 70 }
+
+function buildKitTrack(inst, tempState, color, genre) {
+  const volume = TRACK_VOLUME[inst] ?? 76
+  if (inst === 'drums') {
+    return makeTrack({ instrument: 'drums', color, volume, pattern: GENRE_GROOVES[genre] })
+  }
+  if (inst === 'bass') return makeTrack({ instrument: 'bass', color, volume, notes: bassLine(tempState) })
   if (inst === 'pad') {
     return makeTrack({
       instrument: 'pad',
       color,
+      volume,
       effects: { reverb: true, delay: false, distortion: false },
       notes: padChord(tempState),
     })
   }
-  return makeTrack({ instrument: inst, color, notes: generateMelodyFromHum(tempState, 'lead') })
+  return makeTrack({ instrument: inst, color, volume, notes: generateMelodyFromHum(tempState, 'lead') })
 }
 
 function bassLine(songState) {
