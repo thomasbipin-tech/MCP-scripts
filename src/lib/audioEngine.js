@@ -146,6 +146,7 @@ export class AudioEngine {
     this.limiter = null
     this.analyser = null
     this.isPlaying = false
+    this.vocal = null // active "Good Voice" processed-vocal graph
   }
 
   async init() {
@@ -192,6 +193,87 @@ export class AudioEngine {
     c.player.dispose()
     c.vol.dispose()
     this.clips.delete(id)
+  }
+
+  // ----- "Good Voice": play a recorded vocal through a vibe effect chain plus a
+  // simulated group/choir (detuned, panned copies of the take). -----
+  async playVocal(url, { vibe = 'clean', singers = 1 } = {}, onEnd) {
+    await this.init()
+    this.stopVocal()
+    const nodes = []
+    const out = new Tone.Volume(volToDb(92)).toDestination()
+    nodes.push(out)
+
+    let head
+    if (vibe === 'rockstar') {
+      const eq = new Tone.EQ3({ low: 1, mid: 1, high: 4 })
+      const dist = new Tone.Distortion(0.18)
+      dist.wet.value = 0.45
+      const comp = new Tone.Compressor(-24, 4)
+      const rev = new Tone.Reverb({ decay: 1.4, wet: 0.2 })
+      eq.chain(dist, comp, rev, out)
+      head = eq
+      nodes.push(eq, dist, comp, rev)
+    } else if (vibe === 'stage') {
+      const comp = new Tone.Compressor(-22, 3)
+      const delay = new Tone.FeedbackDelay('8n', 0.22)
+      delay.wet.value = 0.2
+      const rev = new Tone.Reverb({ decay: 4.5, wet: 0.45 })
+      comp.chain(delay, rev, out)
+      head = comp
+      nodes.push(comp, delay, rev)
+    } else {
+      const eq = new Tone.EQ3({ low: 0, mid: 1, high: 2 })
+      const comp = new Tone.Compressor(-20, 3)
+      const rev = new Tone.Reverb({ decay: 0.9, wet: 0.12 })
+      eq.chain(comp, rev, out)
+      head = eq
+      nodes.push(eq, comp, rev)
+    }
+
+    // Layer count + detune spread grow with the requested number of singers.
+    const layers = singers <= 1 ? 1 : Math.max(2, Math.min(5, Math.round(Math.log2(singers))))
+    const spread = Math.min(0.35, 0.06 + singers / 2500) // semitones
+    const players = []
+    for (let i = 0; i < layers; i++) {
+      const player = new Tone.Player({ url, autostart: false, fadeIn: 0.01, fadeOut: 0.06 })
+      const pan = new Tone.Panner(i === 0 ? 0 : (Math.random() * 2 - 1) * 0.65)
+      if (i === 0) {
+        player.connect(pan)
+      } else {
+        const ps = new Tone.PitchShift({ pitch: (Math.random() * 2 - 1) * spread })
+        player.connect(ps)
+        ps.connect(pan)
+        nodes.push(ps)
+      }
+      pan.connect(head)
+      nodes.push(player, pan)
+      players.push(player)
+    }
+
+    const t = Tone.now() + 0.12
+    players.forEach((p, i) => p.start(t + (i === 0 ? 0 : Math.random() * 0.02)))
+    if (players[0]) players[0].onstop = () => onEnd?.()
+    this.vocal = { nodes, players }
+  }
+
+  stopVocal() {
+    if (!this.vocal) return
+    this.vocal.players.forEach((p) => {
+      try {
+        p.stop()
+      } catch (_) {
+        /* ignore */
+      }
+    })
+    this.vocal.nodes.forEach((n) => {
+      try {
+        n.dispose()
+      } catch (_) {
+        /* ignore */
+      }
+    })
+    this.vocal = null
   }
 
   setBpm(bpm) {
@@ -466,6 +548,7 @@ export class AudioEngine {
   dispose() {
     if (this.loopId != null) Tone.Transport.clear(this.loopId)
     this.loopId = null
+    this.stopVocal()
     for (const id of [...this.clips.keys()]) this.unregisterClip(id)
     for (const g of this.graphs.values()) this.disposeGraph(g)
     this.graphs.clear()

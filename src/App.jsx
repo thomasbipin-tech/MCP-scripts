@@ -13,6 +13,7 @@ import SuperGeneratePage from './components/SuperGeneratePage.jsx'
 import InstrumentsPage from './components/InstrumentsPage.jsx'
 import LyricsToMusicPage from './components/LyricsToMusicPage.jsx'
 import StudioRealPage from './components/StudioRealPage.jsx'
+import GoodVoicePage from './components/GoodVoicePage.jsx'
 import { getEngine } from './lib/audioEngine.js'
 import { interpretCommand, generateSurpriseSong, usingLiveAI } from './lib/aiProducer.js'
 import { DEFAULT_SONG_STATE, makeTrack, NEON_COLORS, INSTRUMENTS } from './lib/constants.js'
@@ -37,7 +38,7 @@ export default function App() {
   const [songState, setSongState] = useState(loadSong)
   const [page, setPage] = useState(() => {
     const saved = localStorage.getItem(PAGE_KEY)
-    return ['real', 'lyrics', 'l2m', 'super', 'sounds'].includes(saved) ? saved : 'studio'
+    return ['real', 'goodvoice', 'lyrics', 'l2m', 'super', 'sounds'].includes(saved) ? saved : 'studio'
   })
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [recordings, setRecordings] = useState([]) // real recorded clips (session-only)
@@ -412,6 +413,8 @@ export default function App() {
               onTogglePlay={toggleRecordingPlay}
             />
           )}
+
+          {page === 'goodvoice' && <GoodVoicePage />}
 
           {page === 'l2m' && (
             <LyricsToMusicPage songState={songState} onApply={applyVariation} onRecord={addRecording} />

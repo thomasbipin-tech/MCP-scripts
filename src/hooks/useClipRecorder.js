@@ -4,7 +4,7 @@ import { useCallback, useRef, useState } from 'react'
 // (which only samples the amplitude envelope), this keeps the recorded audio and
 // hands back a Blob + object URL on stop via the onClip callback. Optional maxMs
 // auto-stops the take (used for the 15-second voice clip).
-export function useClipRecorder({ maxMs, onClip } = {}) {
+export function useClipRecorder({ maxMs, onClip, constraints } = {}) {
   const supported =
     typeof navigator !== 'undefined' && !!navigator.mediaDevices && !!window.MediaRecorder
 
@@ -55,7 +55,7 @@ export function useClipRecorder({ maxMs, onClip } = {}) {
     samplesRef.current = []
     setElapsed(0)
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: constraints || true })
       streamRef.current = stream
       const AudioCtx = window.AudioContext || window.webkitAudioContext
       const ctx = new AudioCtx()
@@ -109,7 +109,7 @@ export function useClipRecorder({ maxMs, onClip } = {}) {
       setError(e.message || 'mic-error')
       setRecording(false)
     }
-  }, [supported, recording, tick, maxMs, stop])
+  }, [supported, recording, tick, maxMs, stop, constraints])
 
   return { supported, recording, level, elapsed, error, start, stop }
 }
