@@ -270,6 +270,7 @@ export default function App() {
                   tracks={songState.tracks}
                   playing={playing}
                   structure={songState.structure}
+                  songKey={songState.key}
                   selectedTrackId={selectedTrackId}
                   onSelect={setSelectedTrackId}
                   onUpdate={updateTrack}

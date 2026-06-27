@@ -15,7 +15,7 @@ import {
   Repeat,
   GripVertical,
 } from 'lucide-react'
-import { SEGMENT_COLORS } from '../lib/constants.js'
+import { SEGMENT_COLORS, scaleNotes } from '../lib/constants.js'
 
 // Feature 3 — Interactive Layer System (Track Mixer). A draggable vertical
 // stack of track lanes: neon border, instrument icon + name, breathing waveform
@@ -34,41 +34,128 @@ const ICON_FOR = {
   pad: Waves,
 }
 
-function WaveformBlock({ track, playing, structure }) {
-  const bars = track.pattern && track.pattern.length ? track.pattern : Array(8).fill('note')
-  const totalUnits = structure.reduce((s, seg) => s + seg.bars * (seg.repeat || 1), 0) || 1
-  return (
-    <div style={{ position: 'relative', height: 40, borderRadius: 6, overflow: 'hidden', background: 'rgba(0,0,0,0.3)' }}>
-      {/* Section color strip */}
-      <div style={{ position: 'absolute', inset: 0, display: 'flex', opacity: 0.18 }}>
-        {structure.map((seg, i) => (
-          <div
+const STEPS = 8
+const DRUM_CYCLE = ['', 'kick', 'snare', 'hat']
+const DRUM_LABEL = { kick: 'K', snare: 'S', hat: 'H' }
+const octaveFor = (inst) => (inst === 'bass' ? 2 : inst === 'pad' ? 3 : 4)
+
+// Editable step grid. Tap cells to change what a track plays.
+// Drums: each cell cycles Kick → Snare → Hat → off. Melodic: each cell toggles a
+// note (on/off) at that step, pitched from the song's key.
+function StepGrid({ track, songKey, onUpdate }) {
+  const isDrums = track.instrument === 'drums'
+
+  if (isDrums) {
+    const pattern = Array.from({ length: STEPS }, (_, i) => track.pattern?.[i] || '')
+    const tap = (i) => {
+      const next = DRUM_CYCLE[(DRUM_CYCLE.indexOf(pattern[i]) + 1) % DRUM_CYCLE.length]
+      const np = [...pattern]
+      np[i] = next
+      onUpdate(track.id, { pattern: np })
+    }
+    return (
+      <div className="step-grid" onClick={(e) => e.stopPropagation()}>
+        {pattern.map((v, i) => (
+          <button
             key={i}
-            style={{ flex: seg.bars * (seg.repeat || 1), background: SEGMENT_COLORS[seg.type] || '#555' }}
-          />
+            type="button"
+            className="step-cell"
+            onClick={() => tap(i)}
+            style={{
+              background: v ? track.color : 'rgba(255,255,255,0.06)',
+              color: v ? '#0a0a0f' : 'transparent',
+              borderColor: v ? track.color : 'var(--border)',
+            }}
+            aria-label={`step ${i + 1}: ${v || 'off'}`}
+          >
+            {DRUM_LABEL[v] || ''}
+          </button>
         ))}
       </div>
-      {/* Breathing bars */}
-      <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', gap: 2, padding: '0 6px' }}>
-        {bars.map((step, i) => {
-          const active = step && step !== ''
-          const h = active ? 35 + ((i * 13) % 55) : 14
-          return (
-            <div
-              key={i}
-              style={{
-                flex: 1,
-                height: `${h}%`,
-                borderRadius: 2,
-                background: active ? track.color : 'rgba(255,255,255,0.12)',
-                boxShadow: active && playing ? `0 0 6px ${track.color}` : 'none',
-                transformOrigin: 'center',
-                animation: playing && active ? `breathe ${0.6 + (i % 4) * 0.12}s ease-in-out infinite` : 'none',
-              }}
-            />
-          )
-        })}
-      </div>
+    )
+  }
+
+  const onAt = (i) => (track.notes || []).some((n) => (n.step ?? 0) % STEPS === i)
+  const tap = (i) => {
+    let notes = (track.notes || []).filter((n) => (n.step ?? 0) % STEPS !== i)
+    if (!onAt(i)) {
+      const scale = scaleNotes(songKey || 'C major', octaveFor(track.instrument), STEPS)
+      notes = [...notes, { note: scale[i % scale.length], step: i, duration: '8n' }]
+      notes.sort((a, b) => (a.step ?? 0) - (b.step ?? 0))
+    }
+    onUpdate(track.id, { notes })
+  }
+  return (
+    <div className="step-grid" onClick={(e) => e.stopPropagation()}>
+      {Array.from({ length: STEPS }, (_, i) => {
+        const on = onAt(i)
+        return (
+          <button
+            key={i}
+            type="button"
+            className="step-cell"
+            onClick={() => tap(i)}
+            style={{
+              background: on ? track.color : 'rgba(255,255,255,0.06)',
+              borderColor: on ? track.color : 'var(--border)',
+            }}
+            aria-label={`step ${i + 1}: ${on ? 'on' : 'off'}`}
+          />
+        )
+      })}
+    </div>
+  )
+}
+
+// Place a track into specific song sections. No selection = plays everywhere.
+function SectionChips({ track, structure, onUpdate }) {
+  const types = [...new Set((structure || []).map((s) => s.type))]
+  const active = track.sections || []
+  const toggle = (t) => {
+    const next = active.includes(t) ? active.filter((x) => x !== t) : [...active, t]
+    onUpdate(track.id, { sections: next })
+  }
+  return (
+    <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap', alignItems: 'center' }} onClick={(e) => e.stopPropagation()}>
+      <span className="mono" style={{ fontSize: 9, color: 'var(--text-faint)', textTransform: 'uppercase' }}>
+        plays in
+      </span>
+      {types.map((t) => {
+        const explicit = active.includes(t)
+        const color = SEGMENT_COLORS[t] || '#888'
+        return (
+          <button
+            key={t}
+            type="button"
+            onClick={() => toggle(t)}
+            className="mono"
+            style={{
+              fontSize: 9,
+              padding: '3px 7px',
+              borderRadius: 6,
+              textTransform: 'capitalize',
+              background: explicit ? `${color}28` : 'rgba(255,255,255,0.05)',
+              border: `1px solid ${explicit ? color : 'var(--border)'}`,
+              color: explicit ? color : 'var(--text-faint)',
+              opacity: active.length === 0 ? 0.7 : 1,
+            }}
+          >
+            {t}
+          </button>
+        )
+      })}
+      {active.length > 0 ? (
+        <button
+          type="button"
+          onClick={() => onUpdate(track.id, { sections: [] })}
+          className="mono"
+          style={{ fontSize: 9, padding: '3px 6px', borderRadius: 6, background: 'transparent', border: '1px solid var(--border)', color: 'var(--text-dim)' }}
+        >
+          all
+        </button>
+      ) : (
+        <span className="mono" style={{ fontSize: 9, color: 'var(--text-faint)' }}>· everywhere</span>
+      )}
     </div>
   )
 }
@@ -97,7 +184,7 @@ function FxToggle({ on, label, color, onClick }) {
   )
 }
 
-function TrackLane({ track, index, playing, selected, structure, onSelect, onUpdate, onToggleEffect, onDelete, dnd }) {
+function TrackLane({ track, index, playing, selected, structure, songKey, onSelect, onUpdate, onToggleEffect, onDelete, dnd }) {
   const Icon = ICON_FOR[track.instrument] || Radio
   const loops = track.loops || 1
 
@@ -192,7 +279,8 @@ function TrackLane({ track, index, playing, selected, structure, onSelect, onUpd
         </div>
       </div>
 
-      <WaveformBlock track={track} playing={playing} structure={structure} />
+      <StepGrid track={track} songKey={songKey} onUpdate={onUpdate} />
+      <SectionChips track={track} structure={structure} onUpdate={onUpdate} />
 
       <div style={{ display: 'flex', alignItems: 'center', gap: 12 }} onClick={(e) => e.stopPropagation()}>
         <input
@@ -217,7 +305,7 @@ function TrackLane({ track, index, playing, selected, structure, onSelect, onUpd
   )
 }
 
-export default function TrackMixer({ tracks, playing, structure, selectedTrackId, onSelect, onUpdate, onToggleEffect, onDelete, onReorder }) {
+export default function TrackMixer({ tracks, playing, structure, songKey, selectedTrackId, onSelect, onUpdate, onToggleEffect, onDelete, onReorder }) {
   const [dragIndex, setDragIndex] = useState(null)
 
   const onDrop = (index) => {
@@ -249,6 +337,7 @@ export default function TrackMixer({ tracks, playing, structure, selectedTrackId
               index={i}
               playing={playing}
               structure={structure}
+              songKey={songKey}
               selected={selectedTrackId === track.id}
               onSelect={onSelect}
               onUpdate={onUpdate}

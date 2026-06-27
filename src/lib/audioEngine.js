@@ -261,6 +261,16 @@ export class AudioEngine {
     return true
   }
 
+  // Whether a track should sound in a given section. If the track has been
+  // assigned explicit sections (via drag/tap onto sections), honour that;
+  // otherwise fall back to the default instrument heuristic.
+  gateTrack(track, section) {
+    if (Array.isArray(track.sections) && track.sections.length) {
+      return track.sections.includes(section)
+    }
+    return this.gate(track.instrument, section)
+  }
+
   async play() {
     await this.init()
     this.syncTracks(this.songState.tracks)
@@ -311,7 +321,7 @@ export class AudioEngine {
     for (const track of ss.tracks) {
       const g = this.graphs.get(track.id)
       if (!g) continue
-      if (!this.gate(track.instrument, section)) continue
+      if (!this.gateTrack(track, section)) continue
 
       if (track.instrument === 'drums') {
         const hit = track.pattern?.[stepInBar % (track.pattern.length || 8)]
