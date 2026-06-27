@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { Music4 } from 'lucide-react'
+import { Music4, Menu, X } from 'lucide-react'
 import VoicePanel from './components/VoicePanel.jsx'
 import HumRecorder from './components/HumRecorder.jsx'
 import StructureEditor from './components/StructureEditor.jsx'
@@ -34,6 +34,12 @@ export default function App() {
   const [page, setPage] = useState(() =>
     localStorage.getItem(PAGE_KEY) === 'lyrics' ? 'lyrics' : 'studio',
   )
+  const [sidebarOpen, setSidebarOpen] = useState(false)
+
+  const navigate = useCallback((p) => {
+    setPage(p)
+    setSidebarOpen(false)
+  }, [])
   const [aiLog, setAiLog] = useState([])
   const [thinking, setThinking] = useState(false)
   const [playing, setPlaying] = useState(false)
@@ -220,6 +226,15 @@ export default function App() {
     <div className="app">
       <header className="app-header">
         <div className="brand">
+          <button
+            type="button"
+            className="menu-btn"
+            aria-label={sidebarOpen ? 'Close menu' : 'Open menu'}
+            aria-expanded={sidebarOpen}
+            onClick={() => setSidebarOpen((v) => !v)}
+          >
+            {sidebarOpen ? <X size={20} /> : <Menu size={20} />}
+          </button>
           <div className="brand-mark">
             <Music4 size={22} />
           </div>
@@ -234,7 +249,8 @@ export default function App() {
       </header>
 
       <div className="app-body">
-        <Sidebar page={page} onNavigate={setPage} />
+        {sidebarOpen && <div className="sidebar-backdrop" onClick={() => setSidebarOpen(false)} />}
+        <Sidebar page={page} onNavigate={navigate} open={sidebarOpen} />
 
         <div className="page-area">
           {page === 'studio' && (

@@ -337,19 +337,56 @@ select option {
 }
 
 .app-body {
+  position: relative;
   flex: 1;
   display: flex;
   gap: 12px;
   min-height: 0;
 }
 
+/* Pull-out drawer: hidden off-canvas, slides in when opened from the menu button. */
 .sidebar {
-  width: 156px;
-  flex-shrink: 0;
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  z-index: 30;
+  width: 210px;
   display: flex;
   flex-direction: column;
   gap: 6px;
-  padding: 12px 10px;
+  padding: 14px 12px;
+  transform: translateX(-115%);
+  transition: transform 240ms ease;
+  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.5);
+}
+.sidebar.open {
+  transform: translateX(0);
+}
+
+.sidebar-backdrop {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(1px);
+}
+
+.menu-btn {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  display: grid;
+  place-items: center;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  color: var(--text);
+  cursor: pointer;
+  transition: all 160ms ease;
+}
+.menu-btn:hover {
+  border-color: var(--neon-blue);
+  color: var(--neon-blue);
 }
 
 .nav-item {
@@ -390,25 +427,6 @@ select option {
   flex: 1;
   min-height: 0;
   overflow-y: auto;
-}
-
-@media (max-width: 768px) {
-  .app-body {
-    flex-direction: column;
-  }
-  .sidebar {
-    width: auto;
-    flex-direction: row;
-    flex-wrap: wrap;
-    padding: 8px;
-  }
-  .nav-item {
-    width: auto;
-  }
-  .autosave-tag {
-    margin-top: 0 !important;
-    margin-left: auto;
-  }
 }
 
 .studio-grid {

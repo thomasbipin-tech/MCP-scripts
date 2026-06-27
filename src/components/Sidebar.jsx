@@ -7,9 +7,9 @@ const PAGES = [
   { id: 'lyrics', label: 'Lyrics AI', icon: PenLine },
 ]
 
-export default function Sidebar({ page, onNavigate }) {
+export default function Sidebar({ page, onNavigate, open }) {
   return (
-    <nav className="sidebar glass" aria-label="Pages">
+    <nav className={`sidebar glass${open ? ' open' : ''}`} aria-label="Pages" aria-hidden={!open}>
       {PAGES.map(({ id, label, icon: Icon }) => (
         <button
           key={id}

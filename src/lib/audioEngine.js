@@ -19,91 +19,119 @@ function volToDb(pct) {
   return 20 * Math.log10(pct / 100)
 }
 
-function makeInstrument(inst) {
+// Real-instrument sample sets. Piano uses Tone.js's canonical Salamander grand;
+// guitar/bass/violin use the tonejs-instruments library. Each sampled track also
+// gets a synth fallback that plays until the samples finish loading (or if a
+// host is unreachable), so playback is never silent.
+const SAMPLE_LIBRARY = {
+  piano: {
+    baseUrl: 'https://tonejs.github.io/audio/salamander/',
+    urls: {
+      C2: 'C2.mp3', 'F#2': 'Fs2.mp3',
+      C3: 'C3.mp3', 'F#3': 'Fs3.mp3',
+      C4: 'C4.mp3', 'F#4': 'Fs4.mp3',
+      C5: 'C5.mp3', 'F#5': 'Fs5.mp3',
+      C6: 'C6.mp3',
+    },
+  },
+  guitar: {
+    baseUrl: 'https://nbrosowsky.github.io/tonejs-instruments/samples/guitar-acoustic/',
+    urls: { E2: 'E2.mp3', G2: 'G2.mp3', C3: 'C3.mp3', E3: 'E3.mp3', G3: 'G3.mp3', C4: 'C4.mp3', E4: 'E4.mp3' },
+  },
+  bass: {
+    baseUrl: 'https://nbrosowsky.github.io/tonejs-instruments/samples/bass-electric/',
+    urls: { E2: 'E2.mp3', G2: 'G2.mp3', 'C#3': 'Cs3.mp3', E3: 'E3.mp3', G3: 'G3.mp3', 'A#3': 'As3.mp3' },
+  },
+  violin: {
+    baseUrl: 'https://nbrosowsky.github.io/tonejs-instruments/samples/violin/',
+    urls: { A3: 'A3.mp3', C4: 'C4.mp3', E4: 'E4.mp3', G4: 'G4.mp3', A4: 'A4.mp3', C5: 'C5.mp3', E5: 'E5.mp3' },
+  },
+}
+
+function fallbackVoice(inst) {
   switch (inst) {
-    case 'drums':
-      return {
-        kind: 'drums',
-        kick: new Tone.MembraneSynth({
-          pitchDecay: 0.04,
-          octaves: 6,
-          envelope: { attack: 0.001, decay: 0.4, sustain: 0 },
-        }),
-        snare: new Tone.MetalSynth({
-          frequency: 200,
-          envelope: { attack: 0.001, decay: 0.18, release: 0.02 },
-          harmonicity: 5.1,
-          modulationIndex: 32,
-          resonance: 4000,
-          octaves: 1.5,
-        }),
-        hat: new Tone.MetalSynth({
-          frequency: 400,
-          envelope: { attack: 0.001, decay: 0.05, release: 0.01 },
-          harmonicity: 5.1,
-          modulationIndex: 32,
-          resonance: 6000,
-          octaves: 1,
-        }),
-      }
     case 'bass':
-      return {
-        kind: 'mono',
-        node: new Tone.Synth({
-          oscillator: { type: 'square' },
-          envelope: { attack: 0.02, decay: 0.2, sustain: 0.6, release: 0.4 },
-        }),
-      }
+      return new Tone.PolySynth(Tone.Synth, {
+        oscillator: { type: 'square' },
+        envelope: { attack: 0.02, decay: 0.2, sustain: 0.6, release: 0.4 },
+      })
     case 'pad':
-      return {
-        kind: 'poly',
-        node: new Tone.PolySynth(Tone.AMSynth, {
-          harmonicity: 2,
-          envelope: { attack: 0.6, decay: 0.4, sustain: 0.8, release: 2 },
-          modulationEnvelope: { attack: 0.8, decay: 0.2, sustain: 0.6, release: 1.5 },
-        }),
-      }
+      return new Tone.PolySynth(Tone.AMSynth, {
+        harmonicity: 2,
+        envelope: { attack: 0.6, decay: 0.4, sustain: 0.8, release: 2 },
+        modulationEnvelope: { attack: 0.8, decay: 0.2, sustain: 0.6, release: 1.5 },
+      })
     case 'piano':
-      return {
-        kind: 'poly',
-        node: new Tone.PolySynth(Tone.Synth, {
-          oscillator: { type: 'triangle' },
-          envelope: { attack: 0.005, decay: 0.6, sustain: 0.1, release: 0.8 },
-        }),
-      }
-    case 'guitar':
-      return {
-        kind: 'poly',
-        node: new Tone.PolySynth(Tone.Synth, {
-          oscillator: { type: 'sawtooth' },
-          envelope: { attack: 0.005, decay: 0.3, sustain: 0.2, release: 0.5 },
-        }),
-      }
+      return new Tone.PolySynth(Tone.Synth, {
+        oscillator: { type: 'triangle' },
+        envelope: { attack: 0.005, decay: 0.6, sustain: 0.1, release: 0.8 },
+      })
     case 'violin':
-      return {
-        kind: 'poly',
-        node: new Tone.PolySynth(Tone.Synth, {
-          oscillator: { type: 'sawtooth' },
-          envelope: { attack: 0.3, decay: 0.1, sustain: 0.9, release: 0.6 },
-        }),
-      }
-    case 'lead':
-    case 'synth':
+      return new Tone.PolySynth(Tone.Synth, {
+        oscillator: { type: 'sawtooth' },
+        envelope: { attack: 0.3, decay: 0.1, sustain: 0.9, release: 0.6 },
+      })
+    case 'guitar':
+      return new Tone.PolySynth(Tone.Synth, {
+        oscillator: { type: 'sawtooth' },
+        envelope: { attack: 0.005, decay: 0.3, sustain: 0.2, release: 0.5 },
+      })
     default:
-      return {
-        kind: 'poly',
-        node: new Tone.PolySynth(Tone.Synth, {
-          oscillator: { type: 'sawtooth' },
-          envelope: { attack: 0.01, decay: 0.2, sustain: 0.4, release: 0.4 },
-        }),
-      }
+      return new Tone.PolySynth(Tone.Synth, {
+        oscillator: { type: 'sawtooth' },
+        envelope: { attack: 0.01, decay: 0.2, sustain: 0.4, release: 0.4 },
+      })
   }
 }
 
+function makeInstrument(inst, { synthOnly = false } = {}) {
+  if (inst === 'drums') {
+    // A real-kit voicing: tuned membrane kick, noise-burst snare and hi-hat
+    // (noise reads as a real drum far better than the old metallic synth).
+    return {
+      kind: 'drums',
+      kick: new Tone.MembraneSynth({
+        pitchDecay: 0.045,
+        octaves: 7,
+        envelope: { attack: 0.001, decay: 0.45, sustain: 0 },
+      }),
+      snare: new Tone.NoiseSynth({
+        noise: { type: 'white' },
+        envelope: { attack: 0.001, decay: 0.2, sustain: 0 },
+      }),
+      hat: new Tone.NoiseSynth({
+        noise: { type: 'white' },
+        envelope: { attack: 0.001, decay: 0.05, sustain: 0 },
+      }),
+    }
+  }
+
+  // Sampled real instruments (piano/guitar/bass/violin), with a synth fallback.
+  const lib = SAMPLE_LIBRARY[inst]
+  if (lib && !synthOnly) {
+    return {
+      kind: 'sampler',
+      node: new Tone.Sampler({ urls: lib.urls, baseUrl: lib.baseUrl, release: 1 }),
+      fallback: fallbackVoice(inst),
+    }
+  }
+
+  // Synth instruments (lead/synth/pad) and the synth-only preview path.
+  return { kind: 'poly', node: fallbackVoice(inst) }
+}
+
+// Which node to actually trigger: the sampler once loaded, else the synth
+// fallback — so there's never a silent gap while samples download.
+function playerFor(instrument) {
+  if (instrument.kind === 'sampler') return instrument.node.loaded ? instrument.node : instrument.fallback
+  return instrument.node
+}
+
 function instrumentNodes(graph) {
-  return graph.instrument.kind === 'drums'
-    ? [graph.instrument.kick, graph.instrument.snare, graph.instrument.hat]
-    : [graph.instrument.node]
+  const i = graph.instrument
+  if (i.kind === 'drums') return [i.kick, i.snare, i.hat]
+  if (i.kind === 'sampler') return [i.node, i.fallback]
+  return [i.node]
 }
 
 export class AudioEngine {
@@ -297,34 +325,23 @@ export class AudioEngine {
         continue
       }
 
-      // Melodic tracks.
-      const dur = bpb >= 4 ? '8n' : '8n'
+      // Melodic tracks. Sampler and PolySynth both accept a note or an array.
+      const dur = '8n'
+      const node = playerFor(g.instrument)
       try {
         if (Array.isArray(track.notes) && track.notes.length) {
           const hits = track.notes.filter((n) => (n.step ?? 0) % STEPS_PER_BAR === stepInBar)
           if (hits.length) {
-            const node = g.instrument.node
-            if (g.instrument.kind === 'poly') {
-              node.triggerAttackRelease(
-                hits.map((h) => h.note),
-                hits[0].duration || dur,
-                time,
-              )
-            } else {
-              node.triggerAttackRelease(hits[0].note, hits[0].duration || dur, time)
-            }
+            node.triggerAttackRelease(hits.map((h) => h.note), hits[0].duration || dur, time)
           }
         } else if (track.pattern?.[stepInBar]) {
           // No melody assigned: pulse the key root / chord.
-          const node = g.instrument.node
           if (track.instrument === 'pad') {
             node.triggerAttackRelease(rootChord(ss.key, 3), '2n', time)
           } else if (track.instrument === 'bass') {
             node.triggerAttackRelease(scaleNotes(ss.key, 2, 1)[0], dur, time)
-          } else if (g.instrument.kind === 'poly') {
-            node.triggerAttackRelease(scaleNotes(ss.key, 4, 1)[0], dur, time)
           } else {
-            node.triggerAttackRelease(scaleNotes(ss.key, 3, 1)[0], dur, time)
+            node.triggerAttackRelease(scaleNotes(ss.key, 4, 1)[0], dur, time)
           }
         }
       } catch (_) {
@@ -370,7 +387,9 @@ export class AudioEngine {
   /** Preview a melody on a chosen instrument (used by the hum recorder). */
   async previewMelody(notes, instrument = 'lead') {
     await this.init()
-    const inst = makeInstrument(instrument)
+    // Preview uses synth voices (synthOnly) so it stays instant — no sample
+    // downloads just to audition a hummed melody.
+    const inst = makeInstrument(instrument, { synthOnly: true })
     const reverb = new Tone.Reverb({ decay: 2, wet: 0.3 })
     const out = new Tone.Volume(volToDb(85))
     instrumentNodes({ instrument: inst }).forEach((n) => n.chain(reverb, out))
@@ -380,7 +399,7 @@ export class AudioEngine {
     const eighth = 60 / (this.songState?.bpm || 120) / 2
     notes.forEach((n) => {
       const t = now + (n.step ?? 0) * eighth
-      const node = inst.kind === 'drums' ? inst.kick : inst.node
+      const node = inst.kind === 'drums' ? inst.kick : playerFor(inst)
       try {
         node.triggerAttackRelease(n.note, n.duration || '8n', t)
       } catch (_) {
