@@ -142,6 +142,7 @@ export class AudioEngine {
     this.loopId = null
     this.startOffset = 0 // Tone.Transport.seconds at which the current play began
     this.master = null
+    this.limiter = null
     this.analyser = null
     this.isPlaying = false
   }
@@ -149,10 +150,16 @@ export class AudioEngine {
   async init() {
     if (this.ready) return
     await Tone.start()
+    // More scheduler look-ahead → fewer audio dropouts/glitches on mobile.
+    Tone.getContext().lookAhead = 0.2
     this.master = new Tone.Volume(volToDb(80))
+    // Brickwall limiter so the summed tracks can't clip into harsh digital
+    // distortion (a major cause of glitchy / "bad" sound).
+    this.limiter = new Tone.Limiter(-1)
     this.analyser = new Tone.Analyser('fft', 64)
     this.master.connect(this.analyser)
-    this.master.toDestination()
+    this.master.connect(this.limiter)
+    this.limiter.toDestination()
     Tone.Transport.bpm.value = 120
     this.ready = true
   }
@@ -276,6 +283,11 @@ export class AudioEngine {
     this.syncTracks(this.songState.tracks)
     this.setBpm(this.songState.bpm)
     this.setMasterVolume(this.songState.masterVolume ?? 80)
+
+    // Wait for instrument samples so real instruments play from the first note
+    // instead of the synth fallback ("all electric"). Capped so a slow host
+    // can't hang playback.
+    await Promise.race([Tone.loaded(), new Promise((r) => setTimeout(r, 6000))])
 
     if (this.loopId == null) this.scheduleLoop()
 
@@ -431,6 +443,7 @@ export class AudioEngine {
     for (const g of this.graphs.values()) this.disposeGraph(g)
     this.graphs.clear()
     if (this.analyser) this.analyser.dispose()
+    if (this.limiter) this.limiter.dispose()
     if (this.master) this.master.dispose()
     this.ready = false
   }

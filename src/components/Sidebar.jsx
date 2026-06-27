@@ -1,10 +1,11 @@
-import { SlidersHorizontal, PenLine } from 'lucide-react'
+import { SlidersHorizontal, PenLine, Layers } from 'lucide-react'
 
 // Left navigation rail. Each entry switches the active page; the app stays
 // mounted so song state is preserved across page switches.
 const PAGES = [
   { id: 'studio', label: 'Studio', icon: SlidersHorizontal },
   { id: 'lyrics', label: 'Lyrics AI', icon: PenLine },
+  { id: 'super', label: 'Super Generate', icon: Layers },
 ]
 
 export default function Sidebar({ page, onNavigate, open }) {

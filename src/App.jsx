@@ -9,6 +9,7 @@ import Transport from './components/Transport.jsx'
 import SettingsBar from './components/SettingsBar.jsx'
 import Sidebar from './components/Sidebar.jsx'
 import LyricsPage from './components/LyricsPage.jsx'
+import SuperGeneratePage from './components/SuperGeneratePage.jsx'
 import { getEngine } from './lib/audioEngine.js'
 import { interpretCommand, generateSurpriseSong, usingLiveAI } from './lib/aiProducer.js'
 import { DEFAULT_SONG_STATE, makeTrack, NEON_COLORS, INSTRUMENTS } from './lib/constants.js'
@@ -31,9 +32,10 @@ function loadSong() {
 
 export default function App() {
   const [songState, setSongState] = useState(loadSong)
-  const [page, setPage] = useState(() =>
-    localStorage.getItem(PAGE_KEY) === 'lyrics' ? 'lyrics' : 'studio',
-  )
+  const [page, setPage] = useState(() => {
+    const saved = localStorage.getItem(PAGE_KEY)
+    return ['lyrics', 'super'].includes(saved) ? saved : 'studio'
+  })
   const [sidebarOpen, setSidebarOpen] = useState(false)
 
   const navigate = useCallback((p) => {
@@ -202,6 +204,25 @@ export default function App() {
     setSongState((p) => ({ ...p, lyrics: text }))
   }, [])
 
+  const applyVariation = useCallback(
+    (changes) => {
+      applyChanges(changes)
+      setSelectedSegment(null)
+      setSelectedTrackId(null)
+      setPage('studio')
+      setAiLog((l) => [
+        ...l,
+        {
+          role: 'ai',
+          message: `Loaded a ${changes.mood} ${changes.genre} version in ${changes.key}.`,
+          tip: 'Hit play to hear it — real instruments load on the first play.',
+          nextSuggestion: 'Tweak the step grids, or Super Generate again for more options.',
+        },
+      ])
+    },
+    [applyChanges],
+  )
+
   // ----- Playback -----
   const handlePlay = useCallback(async () => {
     await engine.play()
@@ -287,6 +308,8 @@ export default function App() {
           )}
 
           {page === 'lyrics' && <LyricsPage songState={songState} onChange={updateLyrics} />}
+
+          {page === 'super' && <SuperGeneratePage songState={songState} onApply={applyVariation} />}
         </div>
       </div>
 

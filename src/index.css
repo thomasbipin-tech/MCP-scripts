@@ -429,6 +429,29 @@ select option {
   overflow-y: auto;
 }
 
+.version-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 10px;
+}
+.version-card {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 12px;
+  border-radius: 12px;
+  text-align: left;
+  cursor: pointer;
+  background: rgba(10, 10, 16, 0.55);
+  border: 1px solid var(--border);
+  color: var(--text);
+  transition: all 200ms ease;
+}
+.version-card:hover {
+  border-color: var(--neon-amber);
+  box-shadow: 0 0 16px rgba(255, 183, 0, 0.3);
+}
+
 .step-grid {
   display: flex;
   gap: 4px;

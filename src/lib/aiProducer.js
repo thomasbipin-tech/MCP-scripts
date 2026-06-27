@@ -419,18 +419,7 @@ export function generateSurpriseSong(songState) {
   const genre = pick(GENRES, seed)
   const mood = pick(MOODS, seed + 1)
   const key = pick(KEYS, seed + 2)
-  const bpmByGenre = {
-    'lo-fi': 78,
-    ambient: 70,
-    'hip hop': 90,
-    trap: 140,
-    house: 124,
-    electronic: 126,
-    pop: 118,
-    rock: 132,
-    cinematic: 90,
-  }
-  const bpm = bpmByGenre[genre] || 120
+  const bpm = BPM_BY_GENRE[genre] || 120
 
   const tempState = { ...songState, key }
   // Genre-appropriate instrument lineups. Acoustic genres use the real sampled
@@ -465,6 +454,57 @@ const GENRE_KIT = {
   pop: ['drums', 'bass', 'piano', 'guitar'],
   rock: ['drums', 'bass', 'guitar', 'piano'],
   cinematic: ['drums', 'violin', 'piano', 'bass'],
+}
+
+const BPM_BY_GENRE = {
+  'lo-fi': 78,
+  ambient: 70,
+  'hip hop': 90,
+  trap: 140,
+  house: 124,
+  electronic: 126,
+  pop: 118,
+  rock: 132,
+  cinematic: 90,
+}
+
+/**
+ * "Super Generate" — produce N complete song versions derived from the current
+ * song. The first couple keep the current genre; the rest explore neighbours.
+ * Each varies mood, key, tempo, instrument lineup and arrangement.
+ */
+export function generateVariations(songState, count = 6) {
+  const baseGenre = songState.genre || 'pop'
+  const others = GENRES.filter((g) => g !== baseGenre)
+  const out = []
+  for (let i = 0; i < count; i++) {
+    const genre = i < 2 ? baseGenre : others[i % others.length] || baseGenre
+    const seed = baseGenre.length + i * 23 + (Math.floor(Date.now() / 997) % 100)
+    const mood = MOODS[(seed + i) % MOODS.length]
+    const key = KEYS[(seed * 2 + i * 5) % KEYS.length]
+    const bpm = clamp((BPM_BY_GENRE[genre] || 120) + ((i % 3) - 1) * 6, 60, 180)
+    const tempState = { ...songState, key }
+    const kit = GENRE_KIT[genre] || ['drums', 'bass', 'piano', 'guitar']
+    const tracks = kit.map((inst, k) => buildKitTrack(inst, tempState, NEON_COLORS[k % NEON_COLORS.length]))
+    const structure = [
+      { type: 'intro', bars: 4, repeat: 1 },
+      { type: 'verse', bars: 8, repeat: 1 + (i % 2) },
+      { type: 'chorus', bars: 8, repeat: 2 + (i % 2) },
+      { type: 'bridge', bars: 4, repeat: 1 },
+      { type: 'outro', bars: 4, repeat: 1 },
+    ]
+    out.push({
+      id: i,
+      label: `${mood} ${genre}`,
+      genre,
+      mood,
+      key,
+      bpm,
+      instruments: kit,
+      changes: { genre, mood, key, bpm, tracks, structure, fadeOut: true },
+    })
+  }
+  return out
 }
 
 function buildKitTrack(inst, tempState, color) {
