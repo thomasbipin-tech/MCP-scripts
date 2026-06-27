@@ -1,23 +1,26 @@
-import { useRef, useState } from 'react'
-import { Plus, Minus, Clock } from 'lucide-react'
-import { SEGMENT_COLORS, estimateDuration, formatTime } from '../lib/constants.js'
+import { useState } from 'react'
+import { Plus, Minus, Clock, ChevronLeft, ChevronRight, Trash2 } from 'lucide-react'
+import { SEGMENT_COLORS, SEGMENT_TYPES, estimateDuration, formatTime } from '../lib/constants.js'
 
-// Feature 4 — Song Structure Editor. A horizontal timeline of draggable
-// section blocks (Intro/Verse/Chorus/Bridge/Outro), click-to-select, a repeat
-// badge with +/- controls, a duration estimate, and a moving playhead.
-
+// Song Structure Editor. Horizontal timeline of sections; tap a section to edit
+// it (bars, repeat, move, delete) in the toolbar below, and add new sections.
+// Everything is tap-based so it works on touch/iPad (drag reorder kept for
+// desktop as a bonus).
 export default function StructureEditor({
   songState,
   selectedSegment,
   onSelectSegment,
   onReorder,
   onRepeat,
+  onAddSection,
+  onDeleteSection,
+  onChangeBars,
+  onMoveSection,
   progress,
 }) {
   const [dragIndex, setDragIndex] = useState(null)
-  const containerRef = useRef(null)
+  const [editIndex, setEditIndex] = useState(null)
   const structure = songState.structure || []
-  const totalUnits = structure.reduce((s, seg) => s + seg.bars * (seg.repeat || 1), 0) || 1
 
   const handleDrop = (index) => {
     if (dragIndex == null || dragIndex === index) return
@@ -28,6 +31,13 @@ export default function StructureEditor({
     setDragIndex(null)
   }
 
+  const selectBlock = (i, seg) => {
+    setEditIndex(editIndex === i ? null : i)
+    onSelectSegment(selectedSegment === seg.type ? null : seg.type)
+  }
+
+  const edit = editIndex != null ? structure[editIndex] : null
+
   return (
     <section className="glass" style={{ padding: 18, display: 'flex', flexDirection: 'column', gap: 12 }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -37,13 +47,10 @@ export default function StructureEditor({
         </span>
       </div>
 
-      <div
-        ref={containerRef}
-        style={{ position: 'relative', display: 'flex', gap: 6, height: 92, alignItems: 'stretch' }}
-      >
+      <div style={{ position: 'relative', display: 'flex', gap: 6, height: 84, alignItems: 'stretch' }}>
         {structure.map((seg, i) => {
           const units = seg.bars * (seg.repeat || 1)
-          const isSel = selectedSegment === seg.type
+          const isEdit = editIndex === i
           const color = SEGMENT_COLORS[seg.type] || '#888'
           return (
             <div
@@ -52,52 +59,29 @@ export default function StructureEditor({
               onDragStart={() => setDragIndex(i)}
               onDragOver={(e) => e.preventDefault()}
               onDrop={() => handleDrop(i)}
-              onClick={() => onSelectSegment(isSel ? null : seg.type)}
+              onClick={() => selectBlock(i, seg)}
               style={{
                 flex: units,
-                minWidth: 56,
+                minWidth: 52,
                 borderRadius: 10,
                 padding: 10,
                 cursor: 'pointer',
-                position: 'relative',
                 display: 'flex',
                 flexDirection: 'column',
                 justifyContent: 'space-between',
                 background: `linear-gradient(160deg, ${color}33, ${color}12)`,
-                border: `1.5px solid ${isSel ? color : color + '55'}`,
-                boxShadow: isSel ? `0 0 16px ${color}66` : 'none',
+                border: `1.5px solid ${isEdit ? color : color + '55'}`,
+                boxShadow: isEdit ? `0 0 16px ${color}66` : 'none',
                 transition: 'all 200ms ease',
                 opacity: dragIndex === i ? 0.4 : 1,
               }}
             >
-              <span
-                className="mono"
-                style={{ fontSize: 11, fontWeight: 700, color, textTransform: 'capitalize', letterSpacing: '0.04em' }}
-              >
+              <span className="mono" style={{ fontSize: 11, fontWeight: 700, color, textTransform: 'capitalize', letterSpacing: '0.04em' }}>
                 {seg.type}
               </span>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
-                <span className="mono" style={{ fontSize: 9, color: 'var(--text-faint)' }}>{seg.bars} bars</span>
-                <div
-                  style={{ display: 'flex', alignItems: 'center', gap: 3 }}
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  <button
-                    onClick={() => onRepeat(i, -1)}
-                    style={iconBtn}
-                    aria-label={`Decrease ${seg.type} repeat`}
-                    disabled={(seg.repeat || 1) <= 1}
-                  >
-                    <Minus size={10} />
-                  </button>
-                  <span className="mono" style={{ fontSize: 11, color, minWidth: 18, textAlign: 'center' }}>
-                    x{seg.repeat || 1}
-                  </span>
-                  <button onClick={() => onRepeat(i, 1)} style={iconBtn} aria-label={`Increase ${seg.type} repeat`}>
-                    <Plus size={10} />
-                  </button>
-                </div>
-              </div>
+              <span className="mono" style={{ fontSize: 9, color: 'var(--text-faint)' }}>
+                {seg.bars}b ×{seg.repeat || 1}
+              </span>
             </div>
           )
         })}
@@ -117,41 +101,96 @@ export default function StructureEditor({
             opacity: progress > 0 ? 1 : 0,
           }}
         >
-          <div
-            style={{
-              position: 'absolute',
-              top: -5,
-              left: -4,
-              width: 10,
-              height: 10,
-              borderRadius: '50%',
-              background: '#fff',
-              boxShadow: '0 0 10px var(--neon-blue)',
-            }}
-          />
+          <div style={{ position: 'absolute', top: -5, left: -4, width: 10, height: 10, borderRadius: '50%', background: '#fff', boxShadow: '0 0 10px var(--neon-blue)' }} />
         </div>
+      </div>
+
+      {/* Edit toolbar for the selected section */}
+      {edit && (
+        <div
+          style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap', padding: 10, borderRadius: 10, background: 'rgba(10,10,16,0.55)', border: `1px solid ${SEGMENT_COLORS[edit.type] || '#888'}55` }}
+        >
+          <span className="mono" style={{ fontSize: 11, fontWeight: 700, color: SEGMENT_COLORS[edit.type], textTransform: 'capitalize' }}>
+            {edit.type}
+          </span>
+
+          <Stepper label="bars" value={edit.bars} onDec={() => onChangeBars(editIndex, -1)} onInc={() => onChangeBars(editIndex, 1)} />
+          <Stepper label="repeat" value={edit.repeat || 1} prefix="×" onDec={() => onRepeat(editIndex, -1)} onInc={() => onRepeat(editIndex, 1)} />
+
+          <div style={{ display: 'flex', gap: 4, marginLeft: 'auto' }}>
+            <button style={toolBtn} title="Move left" disabled={editIndex === 0} onClick={() => { onMoveSection(editIndex, -1); setEditIndex(Math.max(0, editIndex - 1)) }}>
+              <ChevronLeft size={14} />
+            </button>
+            <button style={toolBtn} title="Move right" disabled={editIndex === structure.length - 1} onClick={() => { onMoveSection(editIndex, 1); setEditIndex(Math.min(structure.length - 1, editIndex + 1)) }}>
+              <ChevronRight size={14} />
+            </button>
+            <button style={{ ...toolBtn, color: '#ff6b85' }} title="Delete section" onClick={() => { onDeleteSection(editIndex); setEditIndex(null) }}>
+              <Trash2 size={14} />
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Add a section */}
+      <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', alignItems: 'center' }}>
+        <span className="mono" style={{ fontSize: 9, color: 'var(--text-faint)', textTransform: 'uppercase' }}>add</span>
+        {SEGMENT_TYPES.map((type) => (
+          <button
+            key={type}
+            type="button"
+            onClick={() => onAddSection(type)}
+            className="mono"
+            style={{
+              fontSize: 10,
+              padding: '4px 8px',
+              borderRadius: 7,
+              textTransform: 'capitalize',
+              cursor: 'pointer',
+              background: `${SEGMENT_COLORS[type] || '#888'}18`,
+              border: `1px solid ${SEGMENT_COLORS[type] || '#888'}55`,
+              color: SEGMENT_COLORS[type] || '#aaa',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 3,
+            }}
+          >
+            <Plus size={10} /> {type}
+          </button>
+        ))}
       </div>
 
       <span className="mono" style={{ fontSize: 10, color: 'var(--text-faint)' }}>
         {selectedSegment ? (
           <>
-            Selected: <span style={{ color: SEGMENT_COLORS[selectedSegment] }}>{selectedSegment}</span> — voice/text
-            commands now target it.
+            Editing <span style={{ color: SEGMENT_COLORS[selectedSegment] }}>{selectedSegment}</span> · voice/text commands target it too.
           </>
         ) : (
-          'Click a section to target it · drag to reorder'
+          'Tap a section to edit it · add new ones below'
         )}
       </span>
     </section>
   )
 }
 
-const iconBtn = {
-  width: 18,
-  height: 18,
-  borderRadius: 5,
+function Stepper({ label, value, prefix = '', onDec, onInc }) {
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+      <span className="mono" style={{ fontSize: 9, color: 'var(--text-faint)', textTransform: 'uppercase' }}>{label}</span>
+      <button style={toolBtn} onClick={onDec}><Minus size={12} /></button>
+      <span className="mono" style={{ fontSize: 11, color: 'var(--text)', minWidth: 20, textAlign: 'center' }}>{prefix}{value}</span>
+      <button style={toolBtn} onClick={onInc}><Plus size={12} /></button>
+    </div>
+  )
+}
+
+const toolBtn = {
+  width: 26,
+  height: 26,
+  borderRadius: 7,
   display: 'grid',
   placeItems: 'center',
-  background: 'rgba(255,255,255,0.08)',
+  background: 'rgba(255,255,255,0.06)',
+  border: '1px solid var(--border)',
   color: 'var(--text)',
+  cursor: 'pointer',
 }

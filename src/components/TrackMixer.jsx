@@ -14,6 +14,7 @@ import {
   Trash2,
   Repeat,
   GripVertical,
+  Plus,
 } from 'lucide-react'
 import { SEGMENT_COLORS, scaleNotes } from '../lib/constants.js'
 
@@ -305,7 +306,7 @@ function TrackLane({ track, index, playing, selected, structure, songKey, onSele
   )
 }
 
-export default function TrackMixer({ tracks, playing, structure, songKey, selectedTrackId, onSelect, onUpdate, onToggleEffect, onDelete, onReorder }) {
+export default function TrackMixer({ tracks, playing, structure, songKey, selectedTrackId, onSelect, onUpdate, onToggleEffect, onDelete, onReorder, onAddTrack }) {
   const [dragIndex, setDragIndex] = useState(null)
 
   const onDrop = (index) => {
@@ -321,7 +322,27 @@ export default function TrackMixer({ tracks, playing, structure, songKey, select
     <section className="glass" style={{ padding: 18, display: 'flex', flexDirection: 'column', gap: 12 }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <span className="label">Tracks · {tracks.length}</span>
-        <span className="mono" style={{ fontSize: 9, color: 'var(--text-faint)' }}>drag to reorder</span>
+        <button
+          type="button"
+          onClick={onAddTrack}
+          className="mono"
+          style={{
+            fontSize: 10,
+            padding: '5px 10px',
+            borderRadius: 7,
+            cursor: 'pointer',
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 4,
+            background: 'rgba(0,245,255,0.1)',
+            border: '1px solid rgba(0,245,255,0.3)',
+            color: 'var(--neon-blue)',
+            textTransform: 'uppercase',
+            letterSpacing: '0.04em',
+          }}
+        >
+          <Plus size={12} /> Add track
+        </button>
       </div>
 
       {tracks.length === 0 ? (

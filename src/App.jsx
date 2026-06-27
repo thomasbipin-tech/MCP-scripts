@@ -204,6 +204,43 @@ export default function App() {
     }))
   }, [])
 
+  const addSection = useCallback((type) => {
+    setSongState((p) => {
+      const bars = type === 'intro' || type === 'outro' || type === 'bridge' ? 4 : 8
+      return { ...p, structure: [...p.structure, { type, bars, repeat: 1 }] }
+    })
+  }, [])
+
+  const deleteSection = useCallback((index) => {
+    setSongState((p) => ({ ...p, structure: p.structure.filter((_, i) => i !== index) }))
+  }, [])
+
+  const changeBars = useCallback((index, delta) => {
+    setSongState((p) => ({
+      ...p,
+      structure: p.structure.map((s, i) =>
+        i === index ? { ...s, bars: clamp((s.bars || 4) + delta, 1, 32) } : s,
+      ),
+    }))
+  }, [])
+
+  const moveSection = useCallback((index, dir) => {
+    setSongState((p) => {
+      const j = index + dir
+      if (j < 0 || j >= p.structure.length) return p
+      const next = [...p.structure]
+      ;[next[index], next[j]] = [next[j], next[index]]
+      return { ...p, structure: next }
+    })
+  }, [])
+
+  const addTrack = useCallback(() => {
+    setSongState((p) => {
+      const color = NEON_COLORS[p.tracks.length % NEON_COLORS.length]
+      return { ...p, tracks: [...p.tracks, makeTrack({ instrument: 'piano', color })] }
+    })
+  }, [])
+
   const updateLyrics = useCallback((text) => {
     setSongState((p) => ({ ...p, lyrics: text }))
   }, [])
@@ -338,6 +375,10 @@ export default function App() {
                   onSelectSegment={setSelectedSegment}
                   onReorder={reorderStructure}
                   onRepeat={changeRepeat}
+                  onAddSection={addSection}
+                  onDeleteSection={deleteSection}
+                  onChangeBars={changeBars}
+                  onMoveSection={moveSection}
                   progress={progress}
                 />
                 <TrackMixer
@@ -351,6 +392,7 @@ export default function App() {
                   onToggleEffect={toggleEffect}
                   onDelete={deleteTrack}
                   onReorder={reorderTracks}
+                  onAddTrack={addTrack}
                 />
               </div>
 
