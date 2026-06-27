@@ -197,67 +197,7 @@ export class AudioEngine {
 
   // ----- "Good Voice": play a recorded vocal through a vibe effect chain plus a
   // simulated group/choir (detuned, panned copies of the take). -----
-  async playVocal(url, { vibe = 'clean', singers = 1 } = {}, onEnd) {
-    await this.init()
-    this.stopVocal()
-    const nodes = []
-    const out = new Tone.Volume(volToDb(92)).toDestination()
-    nodes.push(out)
-
-    let head
-    if (vibe === 'rockstar') {
-      const eq = new Tone.EQ3({ low: 1, mid: 1, high: 4 })
-      const dist = new Tone.Distortion(0.18)
-      dist.wet.value = 0.45
-      const comp = new Tone.Compressor(-24, 4)
-      const rev = new Tone.Reverb({ decay: 1.4, wet: 0.2 })
-      eq.chain(dist, comp, rev, out)
-      head = eq
-      nodes.push(eq, dist, comp, rev)
-    } else if (vibe === 'stage') {
-      const comp = new Tone.Compressor(-22, 3)
-      const delay = new Tone.FeedbackDelay('8n', 0.22)
-      delay.wet.value = 0.2
-      const rev = new Tone.Reverb({ decay: 4.5, wet: 0.45 })
-      comp.chain(delay, rev, out)
-      head = comp
-      nodes.push(comp, delay, rev)
-    } else {
-      const eq = new Tone.EQ3({ low: 0, mid: 1, high: 2 })
-      const comp = new Tone.Compressor(-20, 3)
-      const rev = new Tone.Reverb({ decay: 0.9, wet: 0.12 })
-      eq.chain(comp, rev, out)
-      head = eq
-      nodes.push(eq, comp, rev)
-    }
-
-    // Layer count + detune spread grow with the requested number of singers.
-    const layers = singers <= 1 ? 1 : Math.max(2, Math.min(5, Math.round(Math.log2(singers))))
-    const spread = Math.min(0.35, 0.06 + singers / 2500) // semitones
-    const players = []
-    for (let i = 0; i < layers; i++) {
-      const player = new Tone.Player({ url, autostart: false, fadeIn: 0.01, fadeOut: 0.06 })
-      const pan = new Tone.Panner(i === 0 ? 0 : (Math.random() * 2 - 1) * 0.65)
-      if (i === 0) {
-        player.connect(pan)
-      } else {
-        const ps = new Tone.PitchShift({ pitch: (Math.random() * 2 - 1) * spread })
-        player.connect(ps)
-        ps.connect(pan)
-        nodes.push(ps)
-      }
-      pan.connect(head)
-      nodes.push(player, pan)
-      players.push(player)
-    }
-
-    const t = Tone.now() + 0.12
-    players.forEach((p, i) => p.start(t + (i === 0 ? 0 : Math.random() * 0.02)))
-    if (players[0]) players[0].onstop = () => onEnd?.()
-    this.vocal = { nodes, players }
-  }
-
-  stopVocal() {
+  _disposeVocal() {
     if (!this.vocal) return
     this.vocal.players.forEach((p) => {
       try {
@@ -274,6 +214,102 @@ export class AudioEngine {
       }
     })
     this.vocal = null
+  }
+
+  stopVocal() {
+    // Bump the token so any in-flight playVocal (awaiting reverb) bails out.
+    this._vocalToken = (this._vocalToken || 0) + 1
+    this._disposeVocal()
+  }
+
+  async playVocal(url, { vibe = 'clean', singers = 1 } = {}, onEnd) {
+    await this.init()
+    const myToken = (this._vocalToken = (this._vocalToken || 0) + 1)
+    this._disposeVocal()
+
+    const nodes = []
+    const reverbs = []
+    const out = new Tone.Volume(volToDb(95)).toDestination()
+    nodes.push(out)
+
+    let head
+    if (vibe === 'rockstar') {
+      // Gritty, present, in-your-face.
+      const eq = new Tone.EQ3({ low: 3, mid: 0, high: 6 })
+      const dist = new Tone.Distortion(0.4)
+      dist.wet.value = 0.75
+      const comp = new Tone.Compressor(-30, 5)
+      const rev = new Tone.Reverb({ decay: 1.3, wet: 0.22 })
+      eq.chain(dist, comp, rev, out)
+      head = eq
+      nodes.push(eq, dist, comp, rev)
+      reverbs.push(rev)
+    } else if (vibe === 'stage') {
+      // Big arena: long reverb + slapback echo.
+      const comp = new Tone.Compressor(-22, 3)
+      const delay = new Tone.FeedbackDelay('8n.', 0.35)
+      delay.wet.value = 0.35
+      const rev = new Tone.Reverb({ decay: 6, wet: 0.6 })
+      comp.chain(delay, rev, out)
+      head = comp
+      nodes.push(comp, delay, rev)
+      reverbs.push(rev)
+    } else {
+      // Crystal clear: gentle presence lift + light room.
+      const eq = new Tone.EQ3({ low: -1, mid: 1, high: 4 })
+      const comp = new Tone.Compressor(-20, 3)
+      const rev = new Tone.Reverb({ decay: 1.1, wet: 0.16 })
+      eq.chain(comp, rev, out)
+      head = eq
+      nodes.push(eq, comp, rev)
+      reverbs.push(rev)
+    }
+
+    // Reverb impulse responses generate asynchronously — wait, or the effect is
+    // silently bypassed and every vibe sounds the same.
+    try {
+      await Promise.all(reverbs.map((r) => r.ready))
+    } catch (_) {
+      /* ignore */
+    }
+    // A newer play/stop happened while we were waiting — abandon this build.
+    if (this._vocalToken !== myToken) {
+      nodes.forEach((n) => {
+        try {
+          n.dispose()
+        } catch (_) {
+          /* ignore */
+        }
+      })
+      return
+    }
+
+    // Backing singers: layer the take into detuned, panned copies.
+    const layers = singers <= 1 ? 1 : Math.max(2, Math.min(6, Math.round(Math.log2(singers)) + 1))
+    const spread = Math.min(0.4, 0.08 + singers / 2000) // semitones
+    const players = []
+    for (let i = 0; i < layers; i++) {
+      const player = new Tone.Player({ url, autostart: false, fadeIn: 0.01, fadeOut: 0.06 })
+      const pan = new Tone.Panner(i === 0 ? 0 : (Math.random() * 2 - 1) * 0.7)
+      if (i === 0) {
+        player.connect(pan)
+      } else {
+        const ps = new Tone.PitchShift({ pitch: (Math.random() * 2 - 1) * spread })
+        player.connect(ps)
+        ps.connect(pan)
+        nodes.push(ps)
+      }
+      pan.connect(head)
+      nodes.push(player, pan)
+      players.push(player)
+    }
+
+    const t = Tone.now() + 0.12
+    players.forEach((p, i) => p.start(t + (i === 0 ? 0 : Math.random() * 0.02)))
+    if (players[0]) players[0].onstop = () => {
+      if (this._vocalToken === myToken) onEnd?.()
+    }
+    this.vocal = { nodes, players }
   }
 
   setBpm(bpm) {
