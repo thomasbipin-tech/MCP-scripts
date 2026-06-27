@@ -433,21 +433,11 @@ export function generateSurpriseSong(songState) {
   const bpm = bpmByGenre[genre] || 120
 
   const tempState = { ...songState, key }
-  const tracks = [
-    makeTrack({ instrument: 'drums', color: NEON_COLORS[0] }),
-    makeTrack({ instrument: 'bass', color: NEON_COLORS[1], notes: bassLine(tempState) }),
-    makeTrack({
-      instrument: 'lead',
-      color: NEON_COLORS[2],
-      notes: generateMelodyFromHum(tempState, 'lead'),
-    }),
-    makeTrack({
-      instrument: 'pad',
-      color: NEON_COLORS[3],
-      effects: { reverb: true, delay: false, distortion: false },
-      notes: padChord(tempState),
-    }),
-  ]
+  // Genre-appropriate instrument lineups. Acoustic genres use the real sampled
+  // instruments (piano/guitar/violin/bass/drums); electronic genres keep synths.
+  const kit = GENRE_KIT[genre] || ['drums', 'bass', 'piano', 'guitar']
+  const tracks = kit.map((inst, i) => buildKitTrack(inst, tempState, NEON_COLORS[i % NEON_COLORS.length]))
+
   const structure = [
     { type: 'intro', bars: 4, repeat: 1 },
     { type: 'verse', bars: 8, repeat: 2 },
@@ -456,12 +446,39 @@ export function generateSurpriseSong(songState) {
     { type: 'outro', bars: 4, repeat: 1 },
   ]
 
+  const lineup = tracks.map((t) => t.name.toLowerCase()).join(', ')
   return {
     changes: { genre, mood, key, bpm, tracks, structure, fadeOut: true },
-    message: `Cooked up a ${mood} ${genre} starter in ${key} at ${bpm} BPM — drums, bass, a lead hook, and a lush pad.`,
-    tip: 'Start arrangements with drums + bass; melody and pads layer on top.',
-    nextSuggestion: 'Hit play, then hum a new melody or say “make the chorus repeat 4 times”.',
+    message: `Cooked up a ${mood} ${genre} starter in ${key} at ${bpm} BPM — ${lineup}.`,
+    tip: 'Piano, guitar, bass, violin and drums use real instrument sounds; lead/synth/pad are electronic.',
+    nextSuggestion: 'Hit play, tap the step grids to edit beats, or drop tracks into sections.',
   }
+}
+
+const GENRE_KIT = {
+  'lo-fi': ['drums', 'bass', 'piano', 'guitar'],
+  ambient: ['pad', 'piano', 'violin', 'bass'],
+  'hip hop': ['drums', 'bass', 'piano', 'lead'],
+  trap: ['drums', 'bass', 'lead', 'piano'],
+  house: ['drums', 'bass', 'lead', 'pad'],
+  electronic: ['drums', 'bass', 'lead', 'pad'],
+  pop: ['drums', 'bass', 'piano', 'guitar'],
+  rock: ['drums', 'bass', 'guitar', 'piano'],
+  cinematic: ['drums', 'violin', 'piano', 'bass'],
+}
+
+function buildKitTrack(inst, tempState, color) {
+  if (inst === 'drums') return makeTrack({ instrument: 'drums', color })
+  if (inst === 'bass') return makeTrack({ instrument: 'bass', color, notes: bassLine(tempState) })
+  if (inst === 'pad') {
+    return makeTrack({
+      instrument: 'pad',
+      color,
+      effects: { reverb: true, delay: false, distortion: false },
+      notes: padChord(tempState),
+    })
+  }
+  return makeTrack({ instrument: inst, color, notes: generateMelodyFromHum(tempState, 'lead') })
 }
 
 function bassLine(songState) {
