@@ -10,6 +10,7 @@ import SettingsBar from './components/SettingsBar.jsx'
 import Sidebar from './components/Sidebar.jsx'
 import LyricsPage from './components/LyricsPage.jsx'
 import SuperGeneratePage from './components/SuperGeneratePage.jsx'
+import InstrumentsPage from './components/InstrumentsPage.jsx'
 import { getEngine } from './lib/audioEngine.js'
 import { interpretCommand, generateSurpriseSong, usingLiveAI } from './lib/aiProducer.js'
 import { DEFAULT_SONG_STATE, makeTrack, NEON_COLORS, INSTRUMENTS } from './lib/constants.js'
@@ -34,7 +35,7 @@ export default function App() {
   const [songState, setSongState] = useState(loadSong)
   const [page, setPage] = useState(() => {
     const saved = localStorage.getItem(PAGE_KEY)
-    return ['lyrics', 'super'].includes(saved) ? saved : 'studio'
+    return ['lyrics', 'super', 'sounds'].includes(saved) ? saved : 'studio'
   })
   const [sidebarOpen, setSidebarOpen] = useState(false)
 
@@ -204,6 +205,17 @@ export default function App() {
     setSongState((p) => ({ ...p, lyrics: text }))
   }, [])
 
+  const changeInstrument = useCallback((id, instrument) => {
+    setSongState((p) => ({
+      ...p,
+      tracks: p.tracks.map((t) =>
+        t.id === id
+          ? { ...t, instrument, name: INSTRUMENTS.find((x) => x.id === instrument)?.name || t.name }
+          : t,
+      ),
+    }))
+  }, [])
+
   const applyVariation = useCallback(
     (changes) => {
       applyChanges(changes)
@@ -310,6 +322,8 @@ export default function App() {
           {page === 'lyrics' && <LyricsPage songState={songState} onChange={updateLyrics} />}
 
           {page === 'super' && <SuperGeneratePage songState={songState} onApply={applyVariation} />}
+
+          {page === 'sounds' && <InstrumentsPage songState={songState} onChangeInstrument={changeInstrument} />}
         </div>
       </div>
 
