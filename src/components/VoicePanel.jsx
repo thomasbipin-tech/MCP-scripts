@@ -31,9 +31,9 @@ export default function VoicePanel({ onCommand, thinking, liveAI }) {
             fontSize: 9,
             padding: '2px 7px',
             borderRadius: 99,
-            background: liveAI ? 'rgba(57,255,20,0.12)' : 'rgba(0,245,255,0.1)',
+            background: liveAI ? 'rgba(43,166,64,0.12)' : 'rgba(62,166,255,0.1)',
             color: liveAI ? 'var(--neon-green)' : 'var(--neon-blue)',
-            border: `1px solid ${liveAI ? 'rgba(57,255,20,0.3)' : 'rgba(0,245,255,0.25)'}`,
+            border: `1px solid ${liveAI ? 'rgba(43,166,64,0.3)' : 'rgba(62,166,255,0.25)'}`,
           }}
         >
           {liveAI ? 'LIVE AI' : 'AI: BUILT-IN'}
@@ -51,10 +51,10 @@ export default function VoicePanel({ onCommand, thinking, liveAI }) {
           display: 'grid',
           placeItems: 'center',
           background: listening
-            ? 'radial-gradient(circle, rgba(255,45,90,0.35), rgba(255,45,90,0.08))'
-            : 'radial-gradient(circle, rgba(0,245,255,0.22), rgba(177,76,255,0.1))',
-          border: `2px solid ${listening ? '#ff2d5a' : 'rgba(0,245,255,0.5)'}`,
-          color: listening ? '#ff6b85' : 'var(--neon-blue)',
+            ? 'radial-gradient(circle, rgba(255,0,0,0.35), rgba(255,0,0,0.08))'
+            : 'radial-gradient(circle, rgba(62,166,255,0.22), rgba(62,166,255,0.1))',
+          border: `2px solid ${listening ? '#ff0000' : 'rgba(62,166,255,0.5)'}`,
+          color: listening ? '#ff5252' : 'var(--neon-blue)',
           animation: listening ? 'pulse-rec 1.4s infinite' : 'none',
           transition: 'all 300ms ease',
           opacity: !supported ? 0.45 : 1,
@@ -93,7 +93,7 @@ export default function VoicePanel({ onCommand, thinking, liveAI }) {
       </div>
 
       {error && error !== 'no-speech' && (
-        <span className="mono" style={{ fontSize: 10, color: '#ff6b85' }}>
+        <span className="mono" style={{ fontSize: 10, color: '#ff5252' }}>
           mic: {error}
         </span>
       )}

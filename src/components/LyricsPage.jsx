@@ -148,7 +148,7 @@ export default function LyricsPage({ songState, onChange, onSettings }) {
           padding: '16px 14px',
           borderRadius: 12,
           border: `1.5px dashed ${dragOver ? 'var(--neon-purple)' : 'var(--border)'}`,
-          background: dragOver ? 'rgba(177,76,255,0.08)' : 'rgba(255,255,255,0.02)',
+          background: dragOver ? 'rgba(62,166,255,0.08)' : 'rgba(255,255,255,0.02)',
           color: 'var(--text-dim)',
           fontSize: 13,
           cursor: 'pointer',

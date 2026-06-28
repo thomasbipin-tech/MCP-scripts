@@ -86,17 +86,17 @@ export default function GoodVoicePage() {
             display: 'grid',
             placeItems: 'center',
             cursor: recorder.supported ? 'pointer' : 'not-allowed',
-            border: `2px solid ${recorder.recording ? '#ff2d5a' : 'rgba(57,255,20,0.5)'}`,
+            border: `2px solid ${recorder.recording ? '#ff0000' : 'rgba(43,166,64,0.5)'}`,
             background: recorder.recording
-              ? `radial-gradient(circle, rgba(255,45,90,${0.25 + recorder.level * 0.5}), rgba(255,45,90,0.08))`
-              : 'radial-gradient(circle, rgba(57,255,20,0.16), rgba(0,245,255,0.06))',
-            color: recorder.recording ? '#ff6b85' : 'var(--neon-green)',
+              ? `radial-gradient(circle, rgba(255,0,0,${0.25 + recorder.level * 0.5}), rgba(255,0,0,0.08))`
+              : 'radial-gradient(circle, rgba(43,166,64,0.16), rgba(62,166,255,0.06))',
+            color: recorder.recording ? '#ff5252' : 'var(--neon-green)',
             opacity: recorder.supported ? 1 : 0.45,
           }}
         >
           {recorder.recording ? <Square size={28} /> : <Mic size={32} />}
         </button>
-        <div className="mono" style={{ fontSize: 11, color: recorder.recording ? '#ff6b85' : 'var(--text-faint)' }}>
+        <div className="mono" style={{ fontSize: 11, color: recorder.recording ? '#ff5252' : 'var(--text-faint)' }}>
           {!recorder.supported
             ? 'Mic not available here'
             : recorder.recording
@@ -105,7 +105,7 @@ export default function GoodVoicePage() {
                 ? 'Re-record'
                 : 'Tap to record your song'}
         </div>
-        {recorder.error && <span className="mono" style={{ fontSize: 10, color: '#ff6b85' }}>mic: {recorder.error}</span>}
+        {recorder.error && <span className="mono" style={{ fontSize: 10, color: '#ff5252' }}>mic: {recorder.error}</span>}
       </div>
 
       {clip && (
@@ -133,7 +133,7 @@ export default function GoodVoicePage() {
                       borderRadius: 11,
                       cursor: 'pointer',
                       textAlign: 'left',
-                      background: on ? 'rgba(57,255,20,0.1)' : 'rgba(255,255,255,0.04)',
+                      background: on ? 'rgba(43,166,64,0.1)' : 'rgba(255,255,255,0.04)',
                       border: `1px solid ${on ? 'var(--neon-green)' : 'var(--border)'}`,
                       color: on ? 'var(--neon-green)' : 'var(--text-dim)',
                     }}

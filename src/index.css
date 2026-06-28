@@ -152,25 +152,25 @@ select {
 
 @keyframes pulse-rec {
   0% {
-    box-shadow: 0 0 0 0 rgba(255, 45, 90, 0.55);
+    box-shadow: 0 0 0 0 rgba(255, 0, 0, 0.55);
   }
   70% {
-    box-shadow: 0 0 0 22px rgba(255, 45, 90, 0);
+    box-shadow: 0 0 0 22px rgba(255, 0, 0, 0);
   }
   100% {
-    box-shadow: 0 0 0 0 rgba(255, 45, 90, 0);
+    box-shadow: 0 0 0 0 rgba(255, 0, 0, 0);
   }
 }
 
 @keyframes pulse-listen {
   0% {
-    box-shadow: 0 0 0 0 rgba(0, 245, 255, 0.5);
+    box-shadow: 0 0 0 0 rgba(62, 166, 255, 0.5);
   }
   70% {
-    box-shadow: 0 0 0 22px rgba(0, 245, 255, 0);
+    box-shadow: 0 0 0 22px rgba(62, 166, 255, 0);
   }
   100% {
-    box-shadow: 0 0 0 0 rgba(0, 245, 255, 0);
+    box-shadow: 0 0 0 0 rgba(62, 166, 255, 0);
   }
 }
 
@@ -239,7 +239,7 @@ select {
   left: 0;
   right: 0;
   height: 40%;
-  background: linear-gradient(to bottom, transparent, rgba(0, 245, 255, 0.05), transparent);
+  background: linear-gradient(to bottom, transparent, rgba(62, 166, 255, 0.05), transparent);
   animation: scan 6s linear infinite;
   pointer-events: none;
   z-index: 1;

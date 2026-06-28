@@ -263,7 +263,7 @@ function TrackLane({ track, index, playing, selected, structure, songKey, onSele
           <button
             onClick={() => onUpdate(track.id, { muted: !track.muted })}
             title="Mute"
-            style={ctrlBtn(track.muted, '#ff6b85')}
+            style={ctrlBtn(track.muted, '#ff5252')}
           >
             {track.muted ? <VolumeX size={14} /> : <Volume2 size={14} />}
           </button>
@@ -274,7 +274,7 @@ function TrackLane({ track, index, playing, selected, structure, songKey, onSele
           >
             <Headphones size={14} />
           </button>
-          <button onClick={() => onDelete(track.id)} title="Delete track" style={ctrlBtn(false, '#ff6b85')}>
+          <button onClick={() => onDelete(track.id)} title="Delete track" style={ctrlBtn(false, '#ff5252')}>
             <Trash2 size={14} />
           </button>
         </div>
@@ -334,8 +334,8 @@ export default function TrackMixer({ tracks, playing, structure, songKey, select
             display: 'inline-flex',
             alignItems: 'center',
             gap: 4,
-            background: 'rgba(0,245,255,0.1)',
-            border: '1px solid rgba(0,245,255,0.3)',
+            background: 'rgba(62,166,255,0.1)',
+            border: '1px solid rgba(62,166,255,0.3)',
             color: 'var(--neon-blue)',
             textTransform: 'uppercase',
             letterSpacing: '0.04em',

@@ -73,7 +73,7 @@ export default function InstrumentsPage({ songState, onChangeInstrument }) {
                           padding: '1px 4px',
                           borderRadius: 4,
                           color: real ? 'var(--neon-green)' : 'var(--neon-blue)',
-                          border: `1px solid ${real ? 'rgba(57,255,20,0.3)' : 'rgba(0,245,255,0.3)'}`,
+                          border: `1px solid ${real ? 'rgba(43,166,64,0.3)' : 'rgba(62,166,255,0.3)'}`,
                         }}
                       >
                         {real ? 'REAL' : 'SYN'}

@@ -34,18 +34,18 @@ export default function StudioRealPage({ recordings, onAdd, onRemove, onTogglePl
             display: 'grid',
             placeItems: 'center',
             cursor: supported ? 'pointer' : 'not-allowed',
-            border: `2px solid ${recording ? '#ff2d5a' : 'rgba(255,45,149,0.5)'}`,
+            border: `2px solid ${recording ? '#ff0000' : 'rgba(255,0,0,0.5)'}`,
             background: recording
-              ? `radial-gradient(circle, rgba(255,45,90,${0.25 + level * 0.5}), rgba(255,45,90,0.08))`
-              : 'radial-gradient(circle, rgba(255,45,149,0.18), rgba(177,76,255,0.08))',
-            color: recording ? '#ff6b85' : 'var(--neon-pink)',
+              ? `radial-gradient(circle, rgba(255,0,0,${0.25 + level * 0.5}), rgba(255,0,0,0.08))`
+              : 'radial-gradient(circle, rgba(255,0,0,0.18), rgba(62,166,255,0.08))',
+            color: recording ? '#ff5252' : 'var(--neon-pink)',
             transition: 'background 80ms linear',
             opacity: supported ? 1 : 0.45,
           }}
         >
           {recording ? <Square size={30} /> : <Mic size={34} />}
         </button>
-        <div className="mono" style={{ fontSize: 11, color: recording ? '#ff6b85' : 'var(--text-faint)' }}>
+        <div className="mono" style={{ fontSize: 11, color: recording ? '#ff5252' : 'var(--text-faint)' }}>
           {!supported
             ? 'Mic not available here'
             : recording
@@ -53,7 +53,7 @@ export default function StudioRealPage({ recordings, onAdd, onRemove, onTogglePl
               : 'Tap to record'}
         </div>
         {error && error !== 'no-speech' && (
-          <span className="mono" style={{ fontSize: 10, color: '#ff6b85' }}>mic: {error}</span>
+          <span className="mono" style={{ fontSize: 10, color: '#ff5252' }}>mic: {error}</span>
         )}
       </div>
 
@@ -85,7 +85,7 @@ export default function StudioRealPage({ recordings, onAdd, onRemove, onTogglePl
                   <button
                     onClick={() => onRemove(rec.id)}
                     title="Delete"
-                    style={{ width: 30, height: 30, borderRadius: 7, display: 'grid', placeItems: 'center', border: '1px solid var(--border)', background: 'transparent', color: '#ff6b85', cursor: 'pointer' }}
+                    style={{ width: 30, height: 30, borderRadius: 7, display: 'grid', placeItems: 'center', border: '1px solid var(--border)', background: 'transparent', color: '#ff5252', cursor: 'pointer' }}
                   >
                     <Trash2 size={14} />
                   </button>
@@ -106,7 +106,7 @@ export default function StudioRealPage({ recordings, onAdd, onRemove, onTogglePl
                   cursor: 'pointer',
                   textTransform: 'uppercase',
                   letterSpacing: '0.04em',
-                  background: rec.playWithSong ? 'rgba(57,255,20,0.12)' : 'rgba(255,255,255,0.05)',
+                  background: rec.playWithSong ? 'rgba(43,166,64,0.12)' : 'rgba(255,255,255,0.05)',
                   border: `1px solid ${rec.playWithSong ? 'var(--neon-green)' : 'var(--border)'}`,
                   color: rec.playWithSong ? 'var(--neon-green)' : 'var(--text-dim)',
                 }}

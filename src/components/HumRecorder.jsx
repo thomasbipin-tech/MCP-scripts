@@ -45,8 +45,8 @@ export default function HumRecorder({ songState, onAddTrack, onPreview }) {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <span className="label">Hum → Melody</span>
         {recording && (
-          <span className="mono" style={{ fontSize: 10, color: '#ff6b85', display: 'flex', alignItems: 'center', gap: 6 }}>
-            <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#ff2d5a', animation: 'pulse-rec 1.2s infinite' }} />
+          <span className="mono" style={{ fontSize: 10, color: '#ff5252', display: 'flex', alignItems: 'center', gap: 6 }}>
+            <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#ff0000', animation: 'pulse-rec 1.2s infinite' }} />
             REC
           </span>
         )}
@@ -72,7 +72,7 @@ export default function HumRecorder({ songState, onAddTrack, onPreview }) {
               style={{
                 flex: 1,
                 height: `${Math.max(4, (recording ? Math.random() * v : v) * 100)}%`,
-                background: recording ? '#ff6b85' : 'var(--neon-blue)',
+                background: recording ? '#ff5252' : 'var(--neon-blue)',
                 borderRadius: 2,
                 opacity: recording ? 0.9 : 0.8,
                 transition: 'height 80ms linear',
@@ -112,7 +112,7 @@ export default function HumRecorder({ songState, onAddTrack, onPreview }) {
         </span>
       )}
       {error && (
-        <span className="mono" style={{ fontSize: 10, color: '#ff6b85' }}>
+        <span className="mono" style={{ fontSize: 10, color: '#ff5252' }}>
           {error}
         </span>
       )}
@@ -143,7 +143,7 @@ export default function HumRecorder({ songState, onAddTrack, onPreview }) {
                     width: `${(1 / notes.length) * 100 - 1.5}%`,
                     height: 10,
                     background: 'var(--neon-green)',
-                    boxShadow: '0 0 8px rgba(57,255,20,0.6)',
+                    boxShadow: '0 0 8px rgba(43,166,64,0.6)',
                     borderRadius: 3,
                   }}
                 />

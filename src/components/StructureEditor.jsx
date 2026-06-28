@@ -124,7 +124,7 @@ export default function StructureEditor({
             <button style={toolBtn} title="Move right" disabled={editIndex === structure.length - 1} onClick={() => { onMoveSection(editIndex, 1); setEditIndex(Math.min(structure.length - 1, editIndex + 1)) }}>
               <ChevronRight size={14} />
             </button>
-            <button style={{ ...toolBtn, color: '#ff6b85' }} title="Delete section" onClick={() => { onDeleteSection(editIndex); setEditIndex(null) }}>
+            <button style={{ ...toolBtn, color: '#ff5252' }} title="Delete section" onClick={() => { onDeleteSection(editIndex); setEditIndex(null) }}>
               <Trash2 size={14} />
             </button>
           </div>

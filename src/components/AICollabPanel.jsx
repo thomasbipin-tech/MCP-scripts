@@ -93,8 +93,8 @@ export default function AICollabPanel({ log, onCommand, thinking }) {
             <div key={i} className="fade-in" style={{ alignSelf: 'flex-end', maxWidth: '85%' }}>
               <div
                 style={{
-                  background: 'rgba(0,245,255,0.12)',
-                  border: '1px solid rgba(0,245,255,0.28)',
+                  background: 'rgba(62,166,255,0.12)',
+                  border: '1px solid rgba(62,166,255,0.28)',
                   borderRadius: '12px 12px 2px 12px',
                   padding: '8px 12px',
                   fontSize: 13,

@@ -1,12 +1,13 @@
 // Shared constants, music-theory helpers, and the default song state.
 
+// Per-track accent colors — distinct but tuned to the YouTube-dark scheme.
 export const NEON_COLORS = [
-  '#00f5ff', // electric blue
-  '#39ff14', // neon green
-  '#ff2d95', // hot pink
-  '#ffb700', // amber
-  '#b14cff', // purple
-  '#ff5e3a', // orange-red
+  '#ff0000', // red
+  '#3ea6ff', // blue
+  '#2ba640', // green
+  '#ffb02e', // amber
+  '#a05cff', // violet
+  '#ff7626', // orange
 ]
 
 export const INSTRUMENTS = [
