@@ -284,12 +284,46 @@ export class AudioEngine {
       return
     }
 
+    // Load the recorded audio fully before starting — otherwise the players
+    // trigger before their buffer is ready and nothing is heard at all.
+    let buffer
+    try {
+      buffer = await new Promise((res, rej) => {
+        const b = new Tone.ToneAudioBuffer(url, () => res(b), rej)
+      })
+    } catch (_) {
+      nodes.forEach((n) => {
+        try {
+          n.dispose()
+        } catch (e) {
+          /* ignore */
+        }
+      })
+      return
+    }
+    if (this._vocalToken !== myToken) {
+      try {
+        buffer.dispose()
+      } catch (_) {
+        /* ignore */
+      }
+      nodes.forEach((n) => {
+        try {
+          n.dispose()
+        } catch (e) {
+          /* ignore */
+        }
+      })
+      return
+    }
+    nodes.push(buffer)
+
     // Backing singers: layer the take into detuned, panned copies.
     const layers = singers <= 1 ? 1 : Math.max(2, Math.min(6, Math.round(Math.log2(singers)) + 1))
     const spread = Math.min(0.4, 0.08 + singers / 2000) // semitones
     const players = []
     for (let i = 0; i < layers; i++) {
-      const player = new Tone.Player({ url, autostart: false, fadeIn: 0.01, fadeOut: 0.06 })
+      const player = new Tone.Player({ url: buffer, autostart: false, fadeIn: 0.01, fadeOut: 0.06 })
       const pan = new Tone.Panner(i === 0 ? 0 : (Math.random() * 2 - 1) * 0.7)
       if (i === 0) {
         player.connect(pan)
