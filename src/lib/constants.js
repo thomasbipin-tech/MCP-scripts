@@ -25,12 +25,13 @@ export const INSTRUMENT_IDS = INSTRUMENTS.map((i) => i.id)
 
 export const SEGMENT_TYPES = ['intro', 'verse', 'chorus', 'bridge', 'outro']
 
+// Song-section colors — distinct but tuned to the YouTube-dark scheme.
 export const SEGMENT_COLORS = {
-  intro: '#54546a',
-  verse: '#00f5ff',
-  chorus: '#ff2d95',
-  bridge: '#b14cff',
-  outro: '#ffb700',
+  intro: '#717171',
+  verse: '#3ea6ff',
+  chorus: '#ff0000',
+  bridge: '#a05cff',
+  outro: '#ffb02e',
 }
 
 export const KEYS = [
