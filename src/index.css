@@ -1,22 +1,30 @@
 :root {
-  --bg: #0a0a0f;
-  --bg-2: #12121a;
-  --panel: rgba(18, 18, 26, 0.62);
-  --panel-solid: #12121a;
-  --border: rgba(255, 255, 255, 0.08);
-  --border-strong: rgba(255, 255, 255, 0.16);
-  --text: #e8e8f0;
-  --text-dim: #8a8aa0;
-  --text-faint: #54546a;
+  /* Techno-terminal palette: near-black surfaces, hairline borders, an
+     indigo/periwinkle primary accent and a red/orange alert accent. */
+  --bg: #07070a;
+  --bg-2: #0d0d12;
+  --panel: rgba(13, 13, 18, 0.78);
+  --panel-solid: #0c0c11;
+  --border: rgba(255, 255, 255, 0.09);
+  --border-strong: rgba(255, 255, 255, 0.2);
+  --text: #ececf2;
+  --text-dim: #8d8d9e;
+  --text-faint: #595968;
 
-  --neon-blue: #00f5ff;
-  --neon-green: #39ff14;
-  --neon-pink: #ff2d95;
-  --neon-amber: #ffb700;
-  --neon-purple: #b14cff;
+  --accent: #6c5cff;
+  --accent-2: #4d6bff;
+  --alert: #ff3b2e;
+
+  /* Back-compat accent names used across components, retuned to the palette. */
+  --neon-blue: #6c5cff;
+  --neon-green: #3ad17a;
+  --neon-pink: #ff3b3b;
+  --neon-amber: #ffb02e;
+  --neon-purple: #9b8cff;
 
   --mono: 'Space Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace;
   --sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --display: 'Pirata One', 'Space Mono', monospace;
 
   --ease: 300ms cubic-bezier(0.4, 0, 0.2, 1);
 }
@@ -36,11 +44,10 @@ body,
 body {
   background-color: var(--bg);
   background-image:
-    linear-gradient(rgba(255, 255, 255, 0.022) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.022) 1px, transparent 1px),
-    radial-gradient(circle at 20% 0%, rgba(0, 245, 255, 0.07), transparent 45%),
-    radial-gradient(circle at 90% 100%, rgba(255, 45, 149, 0.07), transparent 45%);
-  background-size: 40px 40px, 40px 40px, 100% 100%, 100% 100%;
+    linear-gradient(rgba(255, 255, 255, 0.028) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.028) 1px, transparent 1px),
+    radial-gradient(circle at 50% -8%, rgba(108, 92, 255, 0.16), transparent 55%);
+  background-size: 38px 38px, 38px 38px, 100% 100%;
   color: var(--text);
   font-family: var(--sans);
   -webkit-font-smoothing: antialiased;
@@ -79,40 +86,60 @@ select {
 /* ---------- Reusable atoms ---------- */
 .glass {
   background: var(--panel);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(7px);
+  -webkit-backdrop-filter: blur(7px);
   border: 1px solid var(--border);
-  border-radius: 14px;
+  border-radius: 8px;
 }
 
 .mono {
   font-family: var(--mono);
 }
 
+/* Blackletter display face for the brand + big headings. */
+.display {
+  font-family: var(--display);
+  font-weight: 400;
+  letter-spacing: 0.01em;
+}
+
+/* Bracketed terminal tag, e.g. [ VOICE COMMAND ]. */
 .label {
   font-family: var(--mono);
   text-transform: uppercase;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.14em;
   font-size: 10px;
   color: var(--text-dim);
+}
+.label::before {
+  content: '[ ';
+  opacity: 0.5;
+}
+.label::after {
+  content: ' ]';
+  opacity: 0.5;
 }
 
 .btn {
   display: inline-flex;
   align-items: center;
   gap: 7px;
-  padding: 8px 14px;
-  border-radius: 10px;
-  background: rgba(255, 255, 255, 0.05);
+  padding: 8px 13px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.04);
   border: 1px solid var(--border);
   color: var(--text);
-  font-size: 13px;
-  font-weight: 600;
+  font-family: var(--mono);
+  font-size: 11.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
   transition: all var(--ease);
 }
 .btn:hover {
-  background: rgba(255, 255, 255, 0.1);
-  border-color: var(--border-strong);
+  background: rgba(108, 92, 255, 0.12);
+  border-color: var(--accent);
+  color: #fff;
 }
 .btn:active {
   transform: scale(0.97);
@@ -122,12 +149,12 @@ select {
   cursor: not-allowed;
 }
 .btn.primary {
-  background: linear-gradient(135deg, rgba(0, 245, 255, 0.22), rgba(177, 76, 255, 0.22));
-  border-color: rgba(0, 245, 255, 0.4);
+  background: linear-gradient(135deg, var(--accent-2), var(--accent));
+  border-color: transparent;
   color: #fff;
 }
 .btn.primary:hover {
-  box-shadow: 0 0 22px rgba(0, 245, 255, 0.35);
+  box-shadow: 0 0 20px rgba(108, 92, 255, 0.45);
 }
 
 /* ---------- Animations ---------- */
@@ -321,18 +348,19 @@ select option {
 .brand-mark {
   width: 40px;
   height: 40px;
-  border-radius: 11px;
+  border-radius: 8px;
   display: grid;
   place-items: center;
-  background: linear-gradient(135deg, var(--neon-blue), var(--neon-purple));
-  color: #0a0a0f;
-  box-shadow: 0 0 22px rgba(0, 245, 255, 0.4);
+  background: linear-gradient(135deg, var(--accent-2), var(--accent));
+  color: #fff;
+  box-shadow: 0 0 22px rgba(108, 92, 255, 0.4);
 }
 
 .brand-title {
-  font-size: 19px;
-  font-weight: 800;
-  letter-spacing: -0.01em;
+  font-family: var(--display);
+  font-size: 25px;
+  font-weight: 400;
+  letter-spacing: 0.02em;
   line-height: 1;
 }
 
@@ -395,12 +423,15 @@ select option {
   gap: 10px;
   width: 100%;
   padding: 10px 12px;
-  border-radius: 10px;
+  border-radius: 6px;
   border: 1px solid transparent;
   background: transparent;
   color: var(--text-dim);
-  font-size: 13px;
-  font-weight: 600;
+  font-family: var(--mono);
+  font-size: 11.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
   text-align: left;
   cursor: pointer;
   transition: all 160ms ease;
@@ -410,9 +441,9 @@ select option {
   background: rgba(255, 255, 255, 0.04);
 }
 .nav-item.active {
-  color: var(--neon-blue);
-  background: rgba(0, 245, 255, 0.08);
-  border-color: rgba(0, 245, 255, 0.25);
+  color: #fff;
+  background: rgba(108, 92, 255, 0.16);
+  border-color: rgba(108, 92, 255, 0.5);
 }
 
 .page-area {
