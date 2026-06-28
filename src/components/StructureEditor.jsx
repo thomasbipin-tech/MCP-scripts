@@ -69,10 +69,9 @@ export default function StructureEditor({
                 display: 'flex',
                 flexDirection: 'column',
                 justifyContent: 'space-between',
-                background: `linear-gradient(160deg, ${color}33, ${color}12)`,
-                border: `1.5px solid ${isEdit ? color : color + '55'}`,
-                boxShadow: isEdit ? `0 0 16px ${color}66` : 'none',
-                transition: 'all 200ms ease',
+                background: isEdit ? `${color}26` : `${color}14`,
+                border: `1px solid ${isEdit ? color : color + '44'}`,
+                transition: 'all 160ms ease',
                 opacity: dragIndex === i ? 0.4 : 1,
               }}
             >
@@ -95,13 +94,12 @@ export default function StructureEditor({
             left: `${progress * 100}%`,
             width: 2,
             background: '#fff',
-            boxShadow: '0 0 10px #fff, 0 0 20px var(--neon-blue)',
             pointerEvents: 'none',
             transition: 'left 90ms linear',
             opacity: progress > 0 ? 1 : 0,
           }}
         >
-          <div style={{ position: 'absolute', top: -5, left: -4, width: 10, height: 10, borderRadius: '50%', background: '#fff', boxShadow: '0 0 10px var(--neon-blue)' }} />
+          <div style={{ position: 'absolute', top: -5, left: -4, width: 10, height: 10, borderRadius: '50%', background: '#fff' }} />
         </div>
       </div>
 

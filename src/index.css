@@ -137,6 +137,29 @@ select {
   background: var(--accent-2);
 }
 
+/* Flat circular record/mic button (YouTube style — no glow/gradient). */
+.rec-btn {
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: #272727;
+  border: none;
+  color: var(--text);
+  cursor: pointer;
+  transition: background 120ms ease;
+}
+.rec-btn:hover:not(:disabled) {
+  background: #3f3f3f;
+}
+.rec-btn.active {
+  background: var(--accent);
+  color: #fff;
+}
+.rec-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
 /* ---------- Animations ---------- */
 @keyframes breathe {
   0%,
@@ -217,32 +240,10 @@ select {
 /* ---------- Scanline overlay (AI panel) ---------- */
 .scanlines {
   position: relative;
-  overflow: hidden;
 }
-.scanlines::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: repeating-linear-gradient(
-    to bottom,
-    rgba(255, 255, 255, 0.03) 0px,
-    rgba(255, 255, 255, 0.03) 1px,
-    transparent 1px,
-    transparent 3px
-  );
-  pointer-events: none;
-  z-index: 1;
-}
+.scanlines::before,
 .scanlines::after {
-  content: '';
-  position: absolute;
-  left: 0;
-  right: 0;
-  height: 40%;
-  background: linear-gradient(to bottom, transparent, rgba(62, 166, 255, 0.05), transparent);
-  animation: scan 6s linear infinite;
-  pointer-events: none;
-  z-index: 1;
+  content: none;
 }
 
 .spin {

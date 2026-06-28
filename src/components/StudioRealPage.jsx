@@ -27,21 +27,8 @@ export default function StudioRealPage({ recordings, onAdd, onRemove, onTogglePl
           onClick={() => (recording ? stop() : start())}
           disabled={!supported}
           aria-label={recording ? 'Stop recording' : 'Start recording'}
-          style={{
-            width: 92,
-            height: 92,
-            borderRadius: '50%',
-            display: 'grid',
-            placeItems: 'center',
-            cursor: supported ? 'pointer' : 'not-allowed',
-            border: `2px solid ${recording ? '#ff0000' : 'rgba(255,0,0,0.5)'}`,
-            background: recording
-              ? `radial-gradient(circle, rgba(255,0,0,${0.25 + level * 0.5}), rgba(255,0,0,0.08))`
-              : 'radial-gradient(circle, rgba(255,0,0,0.18), rgba(62,166,255,0.08))',
-            color: recording ? '#ff5252' : 'var(--neon-pink)',
-            transition: 'background 80ms linear',
-            opacity: supported ? 1 : 0.45,
-          }}
+          className={`rec-btn${recording ? ' active' : ''}`}
+          style={{ width: 92, height: 92 }}
         >
           {recording ? <Square size={30} /> : <Mic size={34} />}
         </button>

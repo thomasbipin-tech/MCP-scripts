@@ -72,9 +72,9 @@ export default function HumRecorder({ songState, onAddTrack, onPreview }) {
               style={{
                 flex: 1,
                 height: `${Math.max(4, (recording ? Math.random() * v : v) * 100)}%`,
-                background: recording ? '#ff5252' : 'var(--neon-blue)',
+                background: recording ? 'var(--accent)' : 'rgba(255,255,255,0.22)',
                 borderRadius: 2,
-                opacity: recording ? 0.9 : 0.8,
+                opacity: recording ? 0.95 : 1,
                 transition: 'height 80ms linear',
               }}
             />
@@ -142,8 +142,7 @@ export default function HumRecorder({ songState, onAddTrack, onPreview }) {
                     top: `${8 + y * 52}px`,
                     width: `${(1 / notes.length) * 100 - 1.5}%`,
                     height: 10,
-                    background: 'var(--neon-green)',
-                    boxShadow: '0 0 8px rgba(43,166,64,0.6)',
+                    background: 'var(--neon-blue)',
                     borderRadius: 3,
                   }}
                 />

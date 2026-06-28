@@ -176,8 +176,7 @@ function FxToggle({ on, label, color, onClick }) {
         background: on ? `${color}28` : 'rgba(255,255,255,0.05)',
         border: `1px solid ${on ? color : 'var(--border)'}`,
         color: on ? color : 'var(--text-dim)',
-        boxShadow: on ? `0 0 8px ${color}55` : 'none',
-        transition: 'all 200ms ease',
+        transition: 'all 160ms ease',
       }}
     >
       {label}
@@ -203,14 +202,11 @@ function TrackLane({ track, index, playing, selected, structure, songKey, onSele
         padding: 12,
         borderRadius: 12,
         cursor: 'pointer',
-        background: 'rgba(10,10,16,0.55)',
-        border: `1.5px solid ${selected ? track.color : track.color + '40'}`,
-        boxShadow: selected ? `0 0 18px ${track.color}55` : 'none',
+        background: 'var(--bg-2)',
+        border: `1px solid ${selected ? track.color : 'var(--border)'}`,
         opacity: dnd.dragIndex === index ? 0.4 : track.muted ? 0.6 : 1,
-        transition: 'all 250ms ease',
+        transition: 'border-color 160ms ease',
       }}
-      onMouseEnter={(e) => (e.currentTarget.style.boxShadow = `0 0 16px ${track.color}55`)}
-      onMouseLeave={(e) => (e.currentTarget.style.boxShadow = selected ? `0 0 18px ${track.color}55` : 'none')}
     >
       <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
         <GripVertical size={15} style={{ color: 'var(--text-faint)', cursor: 'grab', flexShrink: 0 }} />

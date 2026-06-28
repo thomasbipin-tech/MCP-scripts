@@ -79,20 +79,8 @@ export default function GoodVoicePage() {
           onClick={() => (recorder.recording ? recorder.stop() : recorder.start())}
           disabled={!recorder.supported}
           aria-label={recorder.recording ? 'Stop' : 'Record'}
-          style={{
-            width: 84,
-            height: 84,
-            borderRadius: '50%',
-            display: 'grid',
-            placeItems: 'center',
-            cursor: recorder.supported ? 'pointer' : 'not-allowed',
-            border: `2px solid ${recorder.recording ? '#ff0000' : 'rgba(43,166,64,0.5)'}`,
-            background: recorder.recording
-              ? `radial-gradient(circle, rgba(255,0,0,${0.25 + recorder.level * 0.5}), rgba(255,0,0,0.08))`
-              : 'radial-gradient(circle, rgba(43,166,64,0.16), rgba(62,166,255,0.06))',
-            color: recorder.recording ? '#ff5252' : 'var(--neon-green)',
-            opacity: recorder.supported ? 1 : 0.45,
-          }}
+          className={`rec-btn${recorder.recording ? ' active' : ''}`}
+          style={{ width: 84, height: 84 }}
         >
           {recorder.recording ? <Square size={28} /> : <Mic size={32} />}
         </button>

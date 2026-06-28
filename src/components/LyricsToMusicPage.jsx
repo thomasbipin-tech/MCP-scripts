@@ -94,21 +94,8 @@ export default function LyricsToMusicPage({ songState, onApply, onRecord }) {
             onClick={() => (voice.recording ? voice.stop() : voice.start())}
             disabled={!voice.supported}
             aria-label={voice.recording ? 'Stop' : 'Record 15 seconds'}
-            style={{
-              width: 54,
-              height: 54,
-              borderRadius: '50%',
-              display: 'grid',
-              placeItems: 'center',
-              flexShrink: 0,
-              cursor: voice.supported ? 'pointer' : 'not-allowed',
-              border: `2px solid ${voice.recording ? '#ff0000' : 'rgba(255,0,0,0.5)'}`,
-              background: voice.recording
-                ? `radial-gradient(circle, rgba(255,0,0,${0.25 + voice.level * 0.5}), rgba(255,0,0,0.08))`
-                : 'radial-gradient(circle, rgba(255,0,0,0.18), rgba(62,166,255,0.08))',
-              color: voice.recording ? '#ff5252' : 'var(--neon-pink)',
-              opacity: voice.supported ? 1 : 0.45,
-            }}
+            className={`rec-btn${voice.recording ? ' active' : ''}`}
+            style={{ width: 54, height: 54, flexShrink: 0 }}
           >
             {voice.recording ? <Square size={18} /> : <Mic size={20} />}
           </button>

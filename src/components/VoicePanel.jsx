@@ -29,11 +29,10 @@ export default function VoicePanel({ onCommand, thinking, liveAI }) {
           className="mono"
           style={{
             fontSize: 9,
-            padding: '2px 7px',
+            padding: '3px 8px',
             borderRadius: 99,
-            background: liveAI ? 'rgba(43,166,64,0.12)' : 'rgba(62,166,255,0.1)',
-            color: liveAI ? 'var(--neon-green)' : 'var(--neon-blue)',
-            border: `1px solid ${liveAI ? 'rgba(43,166,64,0.3)' : 'rgba(62,166,255,0.25)'}`,
+            background: '#272727',
+            color: 'var(--text-dim)',
           }}
         >
           {liveAI ? 'LIVE AI' : 'AI: BUILT-IN'}
@@ -44,21 +43,8 @@ export default function VoicePanel({ onCommand, thinking, liveAI }) {
         onClick={toggle}
         disabled={!supported || thinking}
         aria-label={listening ? 'Stop listening' : 'Start voice command'}
-        style={{
-          width: 104,
-          height: 104,
-          borderRadius: '50%',
-          display: 'grid',
-          placeItems: 'center',
-          background: listening
-            ? 'radial-gradient(circle, rgba(255,0,0,0.35), rgba(255,0,0,0.08))'
-            : 'radial-gradient(circle, rgba(62,166,255,0.22), rgba(62,166,255,0.1))',
-          border: `2px solid ${listening ? '#ff0000' : 'rgba(62,166,255,0.5)'}`,
-          color: listening ? '#ff5252' : 'var(--neon-blue)',
-          animation: listening ? 'pulse-rec 1.4s infinite' : 'none',
-          transition: 'all 300ms ease',
-          opacity: !supported ? 0.45 : 1,
-        }}
+        className={`rec-btn${listening ? ' active' : ''}`}
+        style={{ width: 104, height: 104 }}
       >
         {thinking ? (
           <Loader2 size={38} className="spin" />

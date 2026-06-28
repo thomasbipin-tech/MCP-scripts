@@ -7,7 +7,7 @@ import { formatTime, estimateDuration } from '../lib/constants.js'
 // spectrum analyser, and a position readout. The playhead itself rides the
 // structure timeline above.
 
-function Knob({ value, onChange, color = 'var(--neon-blue)' }) {
+function Knob({ value, onChange, color = 'var(--accent)' }) {
   const angle = -135 + (value / 100) * 270
   return (
     <div style={{ position: 'relative', width: 46, height: 46 }}>
@@ -25,7 +25,7 @@ function Knob({ value, onChange, color = 'var(--neon-blue)' }) {
             width: '100%',
             height: '100%',
             borderRadius: '50%',
-            background: '#0a0a0f',
+            background: '#212121',
             position: 'relative',
             border: '1px solid var(--border)',
           }}
@@ -41,7 +41,6 @@ function Knob({ value, onChange, color = 'var(--neon-blue)' }) {
               borderRadius: 2,
               transformOrigin: '50% 17px',
               transform: `translateX(-50%) rotate(${angle}deg)`,
-              boxShadow: `0 0 6px ${color}`,
             }}
           />
         </div>
