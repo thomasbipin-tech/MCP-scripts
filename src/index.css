@@ -1,32 +1,32 @@
 :root {
-  /* Techno-terminal palette: near-black surfaces, hairline borders, an
-     indigo/periwinkle primary accent and a red/orange alert accent. */
-  --bg: #07070a;
-  --bg-2: #0d0d12;
-  --panel: rgba(13, 13, 18, 0.78);
-  --panel-solid: #0c0c11;
-  --border: rgba(255, 255, 255, 0.09);
-  --border-strong: rgba(255, 255, 255, 0.2);
-  --text: #ececf2;
-  --text-dim: #8d8d9e;
-  --text-faint: #595968;
+  /* YouTube (dark) palette: flat near-black, grey surfaces, red brand accent,
+     blue link accent, soft hairline borders. */
+  --bg: #0f0f0f;
+  --bg-2: #181818;
+  --panel: #1f1f1f;
+  --panel-solid: #212121;
+  --border: rgba(255, 255, 255, 0.12);
+  --border-strong: rgba(255, 255, 255, 0.25);
+  --text: #f1f1f1;
+  --text-dim: #aaaaaa;
+  --text-faint: #717171;
 
-  --accent: #6c5cff;
-  --accent-2: #4d6bff;
-  --alert: #ff3b2e;
+  --accent: #ff0000; /* YouTube red */
+  --accent-2: #cc0000;
+  --link: #3ea6ff; /* YouTube link/info blue */
 
-  /* Back-compat accent names used across components, retuned to the palette. */
-  --neon-blue: #6c5cff;
-  --neon-green: #3ad17a;
-  --neon-pink: #ff3b3b;
+  /* Back-compat accent names used across components, retuned to YouTube. */
+  --neon-blue: #3ea6ff;
+  --neon-green: #2ba640;
+  --neon-pink: #ff0000;
   --neon-amber: #ffb02e;
-  --neon-purple: #9b8cff;
+  --neon-purple: #3ea6ff;
 
   --mono: 'Space Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace;
-  --sans: 'Inter', system-ui, -apple-system, sans-serif;
-  --display: 'Pirata One', 'Space Mono', monospace;
+  --sans: 'Roboto', system-ui, -apple-system, sans-serif;
+  --display: 'Roboto', system-ui, sans-serif;
 
-  --ease: 300ms cubic-bezier(0.4, 0, 0.2, 1);
+  --ease: 200ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 * {
@@ -43,11 +43,6 @@ body,
 
 body {
   background-color: var(--bg);
-  background-image:
-    linear-gradient(rgba(255, 255, 255, 0.028) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.028) 1px, transparent 1px),
-    radial-gradient(circle at 50% -8%, rgba(108, 92, 255, 0.16), transparent 55%);
-  background-size: 38px 38px, 38px 38px, 100% 100%;
   color: var(--text);
   font-family: var(--sans);
   -webkit-font-smoothing: antialiased;
@@ -86,60 +81,46 @@ select {
 /* ---------- Reusable atoms ---------- */
 .glass {
   background: var(--panel);
-  backdrop-filter: blur(7px);
-  -webkit-backdrop-filter: blur(7px);
   border: 1px solid var(--border);
-  border-radius: 8px;
+  border-radius: 12px;
 }
 
 .mono {
   font-family: var(--mono);
 }
 
-/* Blackletter display face for the brand + big headings. */
 .display {
   font-family: var(--display);
-  font-weight: 400;
-  letter-spacing: 0.01em;
+  font-weight: 700;
 }
 
-/* Bracketed terminal tag, e.g. [ VOICE COMMAND ]. */
+/* Section label — YouTube-style uppercase grey caption. */
 .label {
-  font-family: var(--mono);
+  font-family: var(--sans);
   text-transform: uppercase;
-  letter-spacing: 0.14em;
-  font-size: 10px;
+  letter-spacing: 0.06em;
+  font-size: 11px;
+  font-weight: 500;
   color: var(--text-dim);
 }
-.label::before {
-  content: '[ ';
-  opacity: 0.5;
-}
-.label::after {
-  content: ' ]';
-  opacity: 0.5;
-}
 
+/* YouTube pill button: grey chip by default, red for primary actions. */
 .btn {
   display: inline-flex;
   align-items: center;
-  gap: 7px;
-  padding: 8px 13px;
-  border-radius: 6px;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid var(--border);
+  gap: 8px;
+  padding: 9px 15px;
+  border-radius: 999px;
+  background: #272727;
+  border: 1px solid transparent;
   color: var(--text);
-  font-family: var(--mono);
-  font-size: 11.5px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
+  font-family: var(--sans);
+  font-size: 13.5px;
+  font-weight: 500;
   transition: all var(--ease);
 }
 .btn:hover {
-  background: rgba(108, 92, 255, 0.12);
-  border-color: var(--accent);
-  color: #fff;
+  background: #3f3f3f;
 }
 .btn:active {
   transform: scale(0.97);
@@ -149,12 +130,11 @@ select {
   cursor: not-allowed;
 }
 .btn.primary {
-  background: linear-gradient(135deg, var(--accent-2), var(--accent));
-  border-color: transparent;
+  background: var(--accent);
   color: #fff;
 }
 .btn.primary:hover {
-  box-shadow: 0 0 20px rgba(108, 92, 255, 0.45);
+  background: var(--accent-2);
 }
 
 /* ---------- Animations ---------- */
@@ -285,33 +265,31 @@ input[type='range'] {
 input[type='range']::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
-  width: 14px;
-  height: 14px;
+  width: 13px;
+  height: 13px;
   border-radius: 50%;
-  background: var(--thumb, var(--neon-blue));
+  background: var(--thumb, var(--accent));
   cursor: pointer;
-  box-shadow: 0 0 8px var(--thumb, var(--neon-blue));
   transition: transform 120ms ease;
 }
 input[type='range']::-webkit-slider-thumb:hover {
   transform: scale(1.25);
 }
 input[type='range']::-moz-range-thumb {
-  width: 14px;
-  height: 14px;
+  width: 13px;
+  height: 13px;
   border: none;
   border-radius: 50%;
-  background: var(--thumb, var(--neon-blue));
+  background: var(--thumb, var(--accent));
   cursor: pointer;
-  box-shadow: 0 0 8px var(--thumb, var(--neon-blue));
 }
 
 select {
-  background: rgba(255, 255, 255, 0.05);
+  background: #121212;
   border: 1px solid var(--border);
   border-radius: 8px;
-  padding: 6px 8px;
-  font-size: 12px;
+  padding: 7px 9px;
+  font-size: 13px;
   transition: border-color var(--ease);
 }
 select:hover {
@@ -346,21 +324,20 @@ select option {
 }
 
 .brand-mark {
-  width: 40px;
-  height: 40px;
-  border-radius: 8px;
+  width: 42px;
+  height: 30px;
+  border-radius: 7px;
   display: grid;
   place-items: center;
-  background: linear-gradient(135deg, var(--accent-2), var(--accent));
+  background: var(--accent);
   color: #fff;
-  box-shadow: 0 0 22px rgba(108, 92, 255, 0.4);
 }
 
 .brand-title {
   font-family: var(--display);
-  font-size: 25px;
-  font-weight: 400;
-  letter-spacing: 0.02em;
+  font-size: 19px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
   line-height: 1;
 }
 
@@ -420,30 +397,29 @@ select option {
 .nav-item {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
   width: 100%;
   padding: 10px 12px;
-  border-radius: 6px;
-  border: 1px solid transparent;
+  border-radius: 10px;
+  border: none;
   background: transparent;
-  color: var(--text-dim);
-  font-family: var(--mono);
-  font-size: 11.5px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
+  color: var(--text);
+  font-family: var(--sans);
+  font-size: 14px;
+  font-weight: 400;
   text-align: left;
   cursor: pointer;
-  transition: all 160ms ease;
+  transition: background 120ms ease;
 }
 .nav-item:hover {
-  color: var(--text);
-  background: rgba(255, 255, 255, 0.04);
+  background: #272727;
 }
 .nav-item.active {
-  color: #fff;
-  background: rgba(108, 92, 255, 0.16);
-  border-color: rgba(108, 92, 255, 0.5);
+  background: #272727;
+  font-weight: 500;
+}
+.nav-item.active svg {
+  color: var(--accent);
 }
 
 .page-area {
