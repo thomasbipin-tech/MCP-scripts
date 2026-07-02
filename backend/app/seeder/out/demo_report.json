@@ -1,0 +1,966 @@
+{
+  "deal": {
+    "codename": "Project Summit",
+    "entity_name": "Summit Air Mechanical LLC",
+    "vertical": "hvac",
+    "vertical_label": "HVAC / Home Services",
+    "state": "OH",
+    "deal_type": "asset",
+    "asking_price": "1560000",
+    "claimed_sde": "520000",
+    "stage": "Report Ready",
+    "tier": "Full Diligence Report"
+  },
+  "policy": {
+    "no_score": "DealProof intentionally produces no single score and no recommendation \u2014 only findings, evidence, and questions."
+  },
+  "completeness_score": 78,
+  "watermark": null,
+  "severity_counts": {
+    "CRITICAL": 4,
+    "HIGH": 2,
+    "MEDIUM": 0,
+    "INFO": 1
+  },
+  "triangle": [
+    {
+      "period": 2022,
+      "tax_revenue": "2107000.00",
+      "pnl_revenue": "2150000.00",
+      "bank_deposits": "2120000.00",
+      "tax_vs_pnl_divergence_pct": "-2.0",
+      "deposit_coverage_pct": "98.6",
+      "sources": [
+        {
+          "document_id": "doc-tax-2022",
+          "page": 1,
+          "label": "Gross receipts (1120-S line 1a)"
+        },
+        {
+          "document_id": "doc-pnl-2022",
+          "page": 1,
+          "label": "Total Income"
+        },
+        {
+          "document_id": "doc-bank-2022",
+          "page": 1,
+          "label": "Total deposits and credits (annual)"
+        }
+      ]
+    },
+    {
+      "period": 2023,
+      "tax_revenue": "2332400.00",
+      "pnl_revenue": "2380000.00",
+      "bank_deposits": "2340000.00",
+      "tax_vs_pnl_divergence_pct": "-2.0",
+      "deposit_coverage_pct": "98.3",
+      "sources": [
+        {
+          "document_id": "doc-tax-2023",
+          "page": 1,
+          "label": "Gross receipts (1120-S line 1a)"
+        },
+        {
+          "document_id": "doc-pnl-2023",
+          "page": 1,
+          "label": "Total Income"
+        },
+        {
+          "document_id": "doc-bank-2023",
+          "page": 1,
+          "label": "Total deposits and credits (annual)"
+        }
+      ]
+    },
+    {
+      "period": 2024,
+      "tax_revenue": "2361800.00",
+      "pnl_revenue": "2410000.00",
+      "bank_deposits": "1879800.00",
+      "tax_vs_pnl_divergence_pct": "-2.0",
+      "deposit_coverage_pct": "78.0",
+      "sources": [
+        {
+          "document_id": "doc-tax-2024",
+          "page": 1,
+          "label": "Gross receipts (1120-S line 1a)"
+        },
+        {
+          "document_id": "doc-pnl-2024",
+          "page": 1,
+          "label": "Total Income"
+        },
+        {
+          "document_id": "doc-bank-2024",
+          "page": 1,
+          "label": "Total deposits and credits (annual)"
+        }
+      ]
+    }
+  ],
+  "reconciliation": {
+    "periods": [
+      2022,
+      2023,
+      2024
+    ],
+    "triangle": [
+      {
+        "period": 2022,
+        "tax_revenue": "2107000.00",
+        "pnl_revenue": "2150000.00",
+        "bank_deposits": "2120000.00",
+        "tax_vs_pnl_divergence_pct": "-2.0",
+        "deposit_coverage_pct": "98.6",
+        "sources": [
+          {
+            "document_id": "doc-tax-2022",
+            "page": 1,
+            "label": "Gross receipts (1120-S line 1a)"
+          },
+          {
+            "document_id": "doc-pnl-2022",
+            "page": 1,
+            "label": "Total Income"
+          },
+          {
+            "document_id": "doc-bank-2022",
+            "page": 1,
+            "label": "Total deposits and credits (annual)"
+          }
+        ]
+      },
+      {
+        "period": 2023,
+        "tax_revenue": "2332400.00",
+        "pnl_revenue": "2380000.00",
+        "bank_deposits": "2340000.00",
+        "tax_vs_pnl_divergence_pct": "-2.0",
+        "deposit_coverage_pct": "98.3",
+        "sources": [
+          {
+            "document_id": "doc-tax-2023",
+            "page": 1,
+            "label": "Gross receipts (1120-S line 1a)"
+          },
+          {
+            "document_id": "doc-pnl-2023",
+            "page": 1,
+            "label": "Total Income"
+          },
+          {
+            "document_id": "doc-bank-2023",
+            "page": 1,
+            "label": "Total deposits and credits (annual)"
+          }
+        ]
+      },
+      {
+        "period": 2024,
+        "tax_revenue": "2361800.00",
+        "pnl_revenue": "2410000.00",
+        "bank_deposits": "1879800.00",
+        "tax_vs_pnl_divergence_pct": "-2.0",
+        "deposit_coverage_pct": "78.0",
+        "sources": [
+          {
+            "document_id": "doc-tax-2024",
+            "page": 1,
+            "label": "Gross receipts (1120-S line 1a)"
+          },
+          {
+            "document_id": "doc-pnl-2024",
+            "page": 1,
+            "label": "Total Income"
+          },
+          {
+            "document_id": "doc-bank-2024",
+            "page": 1,
+            "label": "Total deposits and credits (annual)"
+          }
+        ]
+      }
+    ],
+    "gross_margin_pct": [
+      {
+        "period": 2022,
+        "value": "45.0",
+        "sources": [
+          {
+            "document_id": "doc-pnl-2022",
+            "page": 1,
+            "label": "Total Income"
+          },
+          {
+            "document_id": "doc-pnl-2022",
+            "page": 1,
+            "label": "Total Cost of Goods Sold"
+          }
+        ]
+      },
+      {
+        "period": 2023,
+        "value": "45.0",
+        "sources": [
+          {
+            "document_id": "doc-pnl-2023",
+            "page": 1,
+            "label": "Total Income"
+          },
+          {
+            "document_id": "doc-pnl-2023",
+            "page": 1,
+            "label": "Total Cost of Goods Sold"
+          }
+        ]
+      },
+      {
+        "period": 2024,
+        "value": "45.0",
+        "sources": [
+          {
+            "document_id": "doc-pnl-2024",
+            "page": 1,
+            "label": "Total Income"
+          },
+          {
+            "document_id": "doc-pnl-2024",
+            "page": 1,
+            "label": "Total Cost of Goods Sold"
+          }
+        ]
+      }
+    ],
+    "working_capital": [
+      {
+        "period": 2022,
+        "value": "150000.00",
+        "sources": [
+          {
+            "document_id": "doc-bs-2022",
+            "page": 1,
+            "label": "Total current assets"
+          },
+          {
+            "document_id": "doc-bs-2022",
+            "page": 1,
+            "label": "Total current liabilities"
+          }
+        ]
+      },
+      {
+        "period": 2023,
+        "value": "190000.00",
+        "sources": [
+          {
+            "document_id": "doc-bs-2023",
+            "page": 1,
+            "label": "Total current assets"
+          },
+          {
+            "document_id": "doc-bs-2023",
+            "page": 1,
+            "label": "Total current liabilities"
+          }
+        ]
+      },
+      {
+        "period": 2024,
+        "value": "220000.00",
+        "sources": [
+          {
+            "document_id": "doc-bs-2024",
+            "page": 1,
+            "label": "Total current assets"
+          },
+          {
+            "document_id": "doc-bs-2024",
+            "page": 1,
+            "label": "Total current liabilities"
+          }
+        ]
+      }
+    ],
+    "capex_vs_depreciation": [
+      {
+        "period": 2022,
+        "value": "10000.00",
+        "sources": [
+          {
+            "document_id": "doc-pnl-2022",
+            "page": 2,
+            "label": "Capital expenditures (schedule)"
+          },
+          {
+            "document_id": "doc-pnl-2022",
+            "page": 2,
+            "label": "Depreciation expense"
+          }
+        ]
+      },
+      {
+        "period": 2023,
+        "value": "18000.00",
+        "sources": [
+          {
+            "document_id": "doc-pnl-2023",
+            "page": 2,
+            "label": "Capital expenditures (schedule)"
+          },
+          {
+            "document_id": "doc-pnl-2023",
+            "page": 2,
+            "label": "Depreciation expense"
+          }
+        ]
+      },
+      {
+        "period": 2024,
+        "value": "26000.00",
+        "sources": [
+          {
+            "document_id": "doc-pnl-2024",
+            "page": 2,
+            "label": "Capital expenditures (schedule)"
+          },
+          {
+            "document_id": "doc-pnl-2024",
+            "page": 2,
+            "label": "Depreciation expense"
+          }
+        ]
+      }
+    ],
+    "pnl_revenue": [
+      {
+        "period": 2022,
+        "value": "2150000.00",
+        "sources": [
+          {
+            "document_id": "doc-pnl-2022",
+            "page": 1,
+            "label": "Total Income"
+          }
+        ]
+      },
+      {
+        "period": 2023,
+        "value": "2380000.00",
+        "sources": [
+          {
+            "document_id": "doc-pnl-2023",
+            "page": 1,
+            "label": "Total Income"
+          }
+        ]
+      },
+      {
+        "period": 2024,
+        "value": "2410000.00",
+        "sources": [
+          {
+            "document_id": "doc-pnl-2024",
+            "page": 1,
+            "label": "Total Income"
+          }
+        ]
+      }
+    ]
+  },
+  "flags": [
+    {
+      "rule_id": "A1",
+      "rule_version": 1,
+      "category": "Revenue Quality",
+      "severity": "CRITICAL",
+      "title": "Customer concentration risk",
+      "detail": "Customer concentration risk",
+      "computed_values": {
+        "customer": "Metro Regional Hospital",
+        "share": "42.0",
+        "revenue": "1012200.00",
+        "year": 2024
+      },
+      "evidence_refs": [
+        {
+          "document_id": "doc-pnl-2024",
+          "page": 4,
+          "label": "Revenue by customer"
+        }
+      ],
+      "buyer_action": "Model the deal assuming the top customer leaves within 12 months of close.",
+      "ask_seller": [
+        "What is the written contract term and renewal status for Metro Regional Hospital?",
+        "Has Metro Regional Hospital been notified of the sale, and is there a change-of-control clause?"
+      ],
+      "what_resolves": "Signed, assignable contracts for the top customers with terms extending past close, plus a reference call.",
+      "narrative": {
+        "rule_id": "A1",
+        "finding": "Customer concentration risk",
+        "why_it_matters": "Model the deal assuming the top customer leaves within 12 months of close."
+      }
+    },
+    {
+      "rule_id": "C22",
+      "rule_version": 1,
+      "category": "Cash & Balance Sheet",
+      "severity": "CRITICAL",
+      "title": "Merchant cash advance / factoring detected (hidden distress)",
+      "detail": "Merchant cash advance / factoring detected (hidden distress)",
+      "computed_values": {
+        "lenders": "Rapid Capital Funding, Fox Capital Group"
+      },
+      "evidence_refs": [
+        {
+          "document_id": "doc-bank-2024",
+          "page": 3,
+          "label": "Recurring ACH debits \u2014 daily remittance"
+        }
+      ],
+      "buyer_action": "Stop and investigate: MCA/factoring usually signals a business that could not get bank credit.",
+      "ask_seller": [
+        "Bank statements show payments to Rapid Capital Funding, Fox Capital Group. What is the full balance and payoff of every MCA/factoring facility?",
+        "Are there confessions of judgment tied to these advances?"
+      ],
+      "what_resolves": "Full disclosure and payoff of all MCA/factoring facilities at or before close.",
+      "narrative": {
+        "rule_id": "C22",
+        "finding": "Merchant cash advance / factoring detected (hidden distress)",
+        "why_it_matters": "Stop and investigate: MCA/factoring usually signals a business that could not get bank credit."
+      }
+    },
+    {
+      "rule_id": "D24",
+      "rule_version": 1,
+      "category": "Legal & Contracts",
+      "severity": "CRITICAL",
+      "title": "Change-of-control clause in a key contract (deal killer)",
+      "detail": "Change-of-control clause in a key contract (deal killer)",
+      "computed_values": {
+        "counterparty": "Metro Regional Hospital",
+        "clause": "Section 14.3 \u2014 assignment triggers termination on change of control"
+      },
+      "evidence_refs": [
+        {
+          "document_id": "doc-contract-metro-2024",
+          "page": 6,
+          "label": "Master Services Agreement"
+        }
+      ],
+      "buyer_action": "Confirm each key contract survives the sale before wiring earnest money.",
+      "ask_seller": [
+        "The Metro Regional Hospital contract has a change-of-control clause. Will they consent to assignment?",
+        "Provide written consent-to-assignment for every key contract."
+      ],
+      "what_resolves": "Written counterparty consent to assignment for each affected contract.",
+      "narrative": {
+        "rule_id": "D24",
+        "finding": "Change-of-control clause in a key contract (deal killer)",
+        "why_it_matters": "Confirm each key contract survives the sale before wiring earnest money."
+      }
+    },
+    {
+      "rule_id": "TT2",
+      "rule_version": 1,
+      "category": "Revenue Quality",
+      "severity": "CRITICAL",
+      "title": "Bank deposits do not cover reported revenue",
+      "detail": "Bank deposits do not cover reported revenue",
+      "computed_values": {
+        "year": 2024,
+        "coverage": "78.0",
+        "bank_deposits": "1879800.00",
+        "pnl_revenue": "2410000.00"
+      },
+      "evidence_refs": [
+        {
+          "document_id": "doc-tax-2024",
+          "page": 1,
+          "label": "Gross receipts (1120-S line 1a)"
+        },
+        {
+          "document_id": "doc-pnl-2024",
+          "page": 1,
+          "label": "Total Income"
+        },
+        {
+          "document_id": "doc-bank-2024",
+          "page": 1,
+          "label": "Total deposits and credits (annual)"
+        }
+      ],
+      "buyer_action": "Cash is the hardest number to fake. Deposits well under claimed revenue mean the revenue may not be real.",
+      "ask_seller": [
+        "Bank deposits in 2024 were only 78.0% of the revenue you reported. Where is the rest of the cash?",
+        "Do you accept payment outside these bank accounts? If so, provide those statements."
+      ],
+      "what_resolves": "Complete bank statements for every operating account, reconciled to reported revenue with timing differences itemized.",
+      "narrative": {
+        "rule_id": "TT2",
+        "finding": "Bank deposits do not cover reported revenue",
+        "why_it_matters": "Cash is the hardest number to fake. Deposits well under claimed revenue mean the revenue may not be real."
+      }
+    },
+    {
+      "rule_id": "B9",
+      "rule_version": 1,
+      "category": "Earnings Quality",
+      "severity": "HIGH",
+      "title": "Add-backs are a large share of claimed earnings",
+      "detail": "Add-backs are a large share of claimed earnings",
+      "computed_values": {
+        "addback_pct": "30.8",
+        "addback_total": "160000.00",
+        "claimed_sde": "520000.00"
+      },
+      "evidence_refs": [
+        {
+          "document_id": "doc-addbacks-2024",
+          "page": 1,
+          "label": "SDE add-back schedule"
+        },
+        {
+          "document_id": "doc-addbacks-2024",
+          "page": 1,
+          "label": "SDE add-back schedule"
+        },
+        {
+          "document_id": "doc-addbacks-2024",
+          "page": 1,
+          "label": "SDE add-back schedule"
+        },
+        {
+          "document_id": "doc-addbacks-2024",
+          "page": 1,
+          "label": "SDE add-back schedule"
+        }
+      ],
+      "buyer_action": "Verify every add-back with documentation; treat unverified ones as real expenses.",
+      "ask_seller": [
+        "Add-backs total 30.8% of claimed SDE. Provide documentation for each.",
+        "Which add-backs will genuinely not recur under new ownership?"
+      ],
+      "what_resolves": "Line-by-line add-back support (invoices, bank detail) and agreement on which are legitimate.",
+      "narrative": {
+        "rule_id": "B9",
+        "finding": "Add-backs are a large share of claimed earnings",
+        "why_it_matters": "Verify every add-back with documentation; treat unverified ones as real expenses."
+      }
+    },
+    {
+      "rule_id": "D25",
+      "rule_version": 1,
+      "category": "Legal & Contracts",
+      "severity": "HIGH",
+      "title": "Lease risk: short term, no assignment, or personal guarantee",
+      "detail": "Lease risk: short term, no assignment, or personal guarantee",
+      "computed_values": {
+        "issues": "only 2 years remaining; no assignment right; personal guarantee required"
+      },
+      "evidence_refs": [
+        {
+          "document_id": "doc-lease-2024",
+          "page": 1,
+          "label": "Commercial lease \u2014 term & assignment"
+        }
+      ],
+      "buyer_action": "A location-dependent business needs a long, assignable lease; fix this before close.",
+      "ask_seller": [
+        "The lease has only 2 years remaining; no assignment right; personal guarantee required. Will the landlord extend and permit assignment?",
+        "Provide the full lease and any landlord consent."
+      ],
+      "what_resolves": "A lease with adequate remaining term, assignment rights, and no buyer personal guarantee.",
+      "narrative": {
+        "rule_id": "D25",
+        "finding": "Lease risk: short term, no assignment, or personal guarantee",
+        "why_it_matters": "A location-dependent business needs a long, assignable lease; fix this before close."
+      }
+    },
+    {
+      "rule_id": "G39",
+      "rule_version": 1,
+      "category": "Deal Structure",
+      "severity": "INFO",
+      "title": "Asking multiple versus vertical benchmark",
+      "detail": "Asking multiple versus vertical benchmark",
+      "computed_values": {
+        "multiple": "3.00",
+        "p25": "2.5",
+        "p50": "3.0",
+        "p75": "3.7",
+        "vs_median": "1.00"
+      },
+      "evidence_refs": [],
+      "buyer_action": "Use the benchmark band as a negotiating anchor; a premium multiple needs a documented reason.",
+      "ask_seller": [
+        "The asking multiple is 3.00x SDE versus a 3.0x benchmark median. What justifies the premium?"
+      ],
+      "what_resolves": "A documented rationale for any premium (growth, contracts, moat) or a price adjustment toward the band.",
+      "narrative": {
+        "rule_id": "G39",
+        "finding": "Asking multiple versus vertical benchmark",
+        "why_it_matters": "Use the benchmark band as a negotiating anchor; a premium multiple needs a documented reason."
+      }
+    }
+  ],
+  "normalization": {
+    "claimed_sde": "520000.00",
+    "adjusted_sde": "520000.00",
+    "removed_undocumented": "0.00",
+    "rows": [
+      {
+        "description": "Owner compensation normalization",
+        "amount": "95000.00",
+        "category": "owner_salary",
+        "verdict": "Review",
+        "source": {
+          "document_id": "doc-addbacks-2024",
+          "page": 1,
+          "label": "SDE add-back schedule"
+        }
+      },
+      {
+        "description": "One-time legal settlement",
+        "amount": "30000.00",
+        "category": "one_time",
+        "verdict": "Verified",
+        "source": {
+          "document_id": "doc-addbacks-2024",
+          "page": 1,
+          "label": "SDE add-back schedule"
+        }
+      },
+      {
+        "description": "Owner auto and travel",
+        "amount": "20000.00",
+        "category": "auto",
+        "verdict": "Verified",
+        "source": {
+          "document_id": "doc-addbacks-2024",
+          "page": 1,
+          "label": "SDE add-back schedule"
+        }
+      },
+      {
+        "description": "Owner health insurance",
+        "amount": "15000.00",
+        "category": "personal",
+        "verdict": "Verified",
+        "source": {
+          "document_id": "doc-addbacks-2024",
+          "page": 1,
+          "label": "SDE add-back schedule"
+        }
+      }
+    ],
+    "note": "Add-backs marked 'Review' (e.g. owner compensation) require a market replacement-cost assessment and are not removed automatically."
+  },
+  "benchmarks": {
+    "sde_multiple": {
+      "metric": "sde_multiple",
+      "p25": "2.5",
+      "p50": "3.0",
+      "p75": "3.7",
+      "n_deals": 42,
+      "source": "DealProof HVAC benchmark set v1"
+    }
+  },
+  "data_gaps": [
+    {
+      "key": "payroll_941",
+      "label": "Payroll tax filings (Form 941)"
+    },
+    {
+      "key": "insurance",
+      "label": "Insurance policies (GL, workers comp, E&O)"
+    }
+  ],
+  "seller_question_pack": [
+    {
+      "rule_id": "A1",
+      "severity": "CRITICAL",
+      "question": "What is the written contract term and renewal status for Metro Regional Hospital?"
+    },
+    {
+      "rule_id": "A1",
+      "severity": "CRITICAL",
+      "question": "Has Metro Regional Hospital been notified of the sale, and is there a change-of-control clause?"
+    },
+    {
+      "rule_id": "C22",
+      "severity": "CRITICAL",
+      "question": "Bank statements show payments to Rapid Capital Funding, Fox Capital Group. What is the full balance and payoff of every MCA/factoring facility?"
+    },
+    {
+      "rule_id": "C22",
+      "severity": "CRITICAL",
+      "question": "Are there confessions of judgment tied to these advances?"
+    },
+    {
+      "rule_id": "D24",
+      "severity": "CRITICAL",
+      "question": "The Metro Regional Hospital contract has a change-of-control clause. Will they consent to assignment?"
+    },
+    {
+      "rule_id": "D24",
+      "severity": "CRITICAL",
+      "question": "Provide written consent-to-assignment for every key contract."
+    },
+    {
+      "rule_id": "TT2",
+      "severity": "CRITICAL",
+      "question": "Bank deposits in 2024 were only 78.0% of the revenue you reported. Where is the rest of the cash?"
+    },
+    {
+      "rule_id": "TT2",
+      "severity": "CRITICAL",
+      "question": "Do you accept payment outside these bank accounts? If so, provide those statements."
+    },
+    {
+      "rule_id": "B9",
+      "severity": "HIGH",
+      "question": "Add-backs total 30.8% of claimed SDE. Provide documentation for each."
+    },
+    {
+      "rule_id": "B9",
+      "severity": "HIGH",
+      "question": "Which add-backs will genuinely not recur under new ownership?"
+    },
+    {
+      "rule_id": "D25",
+      "severity": "HIGH",
+      "question": "The lease has only 2 years remaining; no assignment right; personal guarantee required. Will the landlord extend and permit assignment?"
+    },
+    {
+      "rule_id": "D25",
+      "severity": "HIGH",
+      "question": "Provide the full lease and any landlord consent."
+    },
+    {
+      "rule_id": "G39",
+      "severity": "INFO",
+      "question": "The asking multiple is 3.00x SDE versus a 3.0x benchmark median. What justifies the premium?"
+    }
+  ],
+  "executive_summary": [
+    "Automated analysis identified 4 critical, 2 high, 0 medium and 1 informational findings for further review.",
+    "Customer concentration risk",
+    "Merchant cash advance / factoring detected (hidden distress)",
+    "Change-of-control clause in a key contract (deal killer)",
+    "Bank deposits do not cover reported revenue"
+  ],
+  "narrative": {
+    "executive_summary": [
+      "Automated analysis identified 4 critical, 2 high, 0 medium and 1 informational findings for further review.",
+      "Customer concentration risk",
+      "Merchant cash advance / factoring detected (hidden distress)",
+      "Change-of-control clause in a key contract (deal killer)",
+      "Bank deposits do not cover reported revenue"
+    ],
+    "flag_narratives": [
+      {
+        "rule_id": "A1",
+        "finding": "Customer concentration risk",
+        "why_it_matters": "Model the deal assuming the top customer leaves within 12 months of close."
+      },
+      {
+        "rule_id": "C22",
+        "finding": "Merchant cash advance / factoring detected (hidden distress)",
+        "why_it_matters": "Stop and investigate: MCA/factoring usually signals a business that could not get bank credit."
+      },
+      {
+        "rule_id": "D24",
+        "finding": "Change-of-control clause in a key contract (deal killer)",
+        "why_it_matters": "Confirm each key contract survives the sale before wiring earnest money."
+      },
+      {
+        "rule_id": "TT2",
+        "finding": "Bank deposits do not cover reported revenue",
+        "why_it_matters": "Cash is the hardest number to fake. Deposits well under claimed revenue mean the revenue may not be real."
+      },
+      {
+        "rule_id": "B9",
+        "finding": "Add-backs are a large share of claimed earnings",
+        "why_it_matters": "Verify every add-back with documentation; treat unverified ones as real expenses."
+      },
+      {
+        "rule_id": "D25",
+        "finding": "Lease risk: short term, no assignment, or personal guarantee",
+        "why_it_matters": "A location-dependent business needs a long, assignable lease; fix this before close."
+      },
+      {
+        "rule_id": "G39",
+        "finding": "Asking multiple versus vertical benchmark",
+        "why_it_matters": "Use the benchmark band as a negotiating anchor; a premium multiple needs a documented reason."
+      }
+    ],
+    "data_gaps_intro": "The following items were not provided or could not be verified from the documents supplied. Each is an area for further review.",
+    "closing_note": "These findings identify areas for further professional review and do not constitute accounting, legal, tax, or valuation advice."
+  },
+  "disclaimer": "DealProof is an automated document-analysis and red-flag identification tool. It does not provide accounting, legal, tax, investment, or valuation advice; is not a CPA firm; and does not perform a Quality of Earnings engagement. Findings identify areas for further professional review.",
+  "documents": [
+    {
+      "id": "doc-tax-2022",
+      "title": "2022 Form 1120-S \u2014 Summit Air Mechanical LLC",
+      "doc_type": "tax_return_1120S",
+      "period": 2022,
+      "page_count": 2,
+      "filename": "doc-tax-2022.pdf",
+      "url": "/demo-docs/doc-tax-2022.pdf"
+    },
+    {
+      "id": "doc-pnl-2022",
+      "title": "2022 Profit & Loss \u2014 Summit Air Mechanical LLC",
+      "doc_type": "pnl",
+      "period": 2022,
+      "page_count": 5,
+      "filename": "doc-pnl-2022.pdf",
+      "url": "/demo-docs/doc-pnl-2022.pdf"
+    },
+    {
+      "id": "doc-bank-2022",
+      "title": "2022 Bank Statement \u2014 Summit Air Mechanical LLC",
+      "doc_type": "bank_statement",
+      "period": 2022,
+      "page_count": 3,
+      "filename": "doc-bank-2022.pdf",
+      "url": "/demo-docs/doc-bank-2022.pdf"
+    },
+    {
+      "id": "doc-bs-2022",
+      "title": "2022 Balance Sheet \u2014 Summit Air Mechanical LLC",
+      "doc_type": "balance_sheet",
+      "period": 2022,
+      "page_count": 2,
+      "filename": "doc-bs-2022.pdf",
+      "url": "/demo-docs/doc-bs-2022.pdf"
+    },
+    {
+      "id": "doc-tax-2023",
+      "title": "2023 Form 1120-S \u2014 Summit Air Mechanical LLC",
+      "doc_type": "tax_return_1120S",
+      "period": 2023,
+      "page_count": 2,
+      "filename": "doc-tax-2023.pdf",
+      "url": "/demo-docs/doc-tax-2023.pdf"
+    },
+    {
+      "id": "doc-pnl-2023",
+      "title": "2023 Profit & Loss \u2014 Summit Air Mechanical LLC",
+      "doc_type": "pnl",
+      "period": 2023,
+      "page_count": 5,
+      "filename": "doc-pnl-2023.pdf",
+      "url": "/demo-docs/doc-pnl-2023.pdf"
+    },
+    {
+      "id": "doc-bank-2023",
+      "title": "2023 Bank Statement \u2014 Summit Air Mechanical LLC",
+      "doc_type": "bank_statement",
+      "period": 2023,
+      "page_count": 3,
+      "filename": "doc-bank-2023.pdf",
+      "url": "/demo-docs/doc-bank-2023.pdf"
+    },
+    {
+      "id": "doc-bs-2023",
+      "title": "2023 Balance Sheet \u2014 Summit Air Mechanical LLC",
+      "doc_type": "balance_sheet",
+      "period": 2023,
+      "page_count": 2,
+      "filename": "doc-bs-2023.pdf",
+      "url": "/demo-docs/doc-bs-2023.pdf"
+    },
+    {
+      "id": "doc-tax-2024",
+      "title": "2024 Form 1120-S \u2014 Summit Air Mechanical LLC",
+      "doc_type": "tax_return_1120S",
+      "period": 2024,
+      "page_count": 2,
+      "filename": "doc-tax-2024.pdf",
+      "url": "/demo-docs/doc-tax-2024.pdf"
+    },
+    {
+      "id": "doc-pnl-2024",
+      "title": "2024 Profit & Loss \u2014 Summit Air Mechanical LLC",
+      "doc_type": "pnl",
+      "period": 2024,
+      "page_count": 5,
+      "filename": "doc-pnl-2024.pdf",
+      "url": "/demo-docs/doc-pnl-2024.pdf"
+    },
+    {
+      "id": "doc-bank-2024",
+      "title": "2024 Bank Statement \u2014 Summit Air Mechanical LLC",
+      "doc_type": "bank_statement",
+      "period": 2024,
+      "page_count": 3,
+      "filename": "doc-bank-2024.pdf",
+      "url": "/demo-docs/doc-bank-2024.pdf"
+    },
+    {
+      "id": "doc-bs-2024",
+      "title": "2024 Balance Sheet \u2014 Summit Air Mechanical LLC",
+      "doc_type": "balance_sheet",
+      "period": 2024,
+      "page_count": 2,
+      "filename": "doc-bs-2024.pdf",
+      "url": "/demo-docs/doc-bs-2024.pdf"
+    },
+    {
+      "id": "doc-ar-2024",
+      "title": "2024 A/R Aging \u2014 Summit Air Mechanical LLC",
+      "doc_type": "ar_aging",
+      "period": 2024,
+      "page_count": 1,
+      "filename": "doc-ar-2024.pdf",
+      "url": "/demo-docs/doc-ar-2024.pdf"
+    },
+    {
+      "id": "doc-addbacks-2024",
+      "title": "2024 SDE Add-back Schedule \u2014 Summit Air Mechanical LLC",
+      "doc_type": "other",
+      "period": 2024,
+      "page_count": 1,
+      "filename": "doc-addbacks-2024.pdf",
+      "url": "/demo-docs/doc-addbacks-2024.pdf"
+    },
+    {
+      "id": "doc-contract-metro-2024",
+      "title": "Master Services Agreement \u2014 Metro Regional Hospital",
+      "doc_type": "contract_customer",
+      "period": 2024,
+      "page_count": 6,
+      "filename": "doc-contract-metro-2024.pdf",
+      "url": "/demo-docs/doc-contract-metro-2024.pdf"
+    },
+    {
+      "id": "doc-contract-supplier-2024",
+      "title": "Distributor Agreement \u2014 Carrier Distribution Partners",
+      "doc_type": "contract_supplier",
+      "period": 2024,
+      "page_count": 2,
+      "filename": "doc-contract-supplier-2024.pdf",
+      "url": "/demo-docs/doc-contract-supplier-2024.pdf"
+    },
+    {
+      "id": "doc-contract-dpg-2024",
+      "title": "Facilities Agreement \u2014 Downtown Property Group",
+      "doc_type": "contract_customer",
+      "period": 2024,
+      "page_count": 3,
+      "filename": "doc-contract-dpg-2024.pdf",
+      "url": "/demo-docs/doc-contract-dpg-2024.pdf"
+    },
+    {
+      "id": "doc-lease-2024",
+      "title": "Commercial Lease \u2014 1400 Industrial Pkwy",
+      "doc_type": "lease",
+      "period": 2024,
+      "page_count": 1,
+      "filename": "doc-lease-2024.pdf",
+      "url": "/demo-docs/doc-lease-2024.pdf"
+    }
+  ]
+}
