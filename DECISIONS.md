@@ -1,0 +1,77 @@
+# DECISIONS — DealProof v1
+
+Engineering decisions made while building Iteration 1, and why. Kept honest:
+what is production-real, what is scaffolded, and what is deferred.
+
+## Architecture
+
+1. **The deterministic core is pure stdlib (Decimal + dataclasses).**
+   The reconciliation engine (`app/engine`) and rules engine (`app/rules`) import
+   no third-party packages. Consequences: the accuracy-critical code has zero
+   dependency surface, its 60+ tests run in ~0.1s in a bare interpreter, and the
+   "LLM extracts, Python computes" boundary (SPEC §2.3) is physically enforced —
+   the engine literally cannot call an LLM.
+
+2. **Money is `Decimal`, never `float`.** `app/engine/money.py` refuses floats at
+   the boundary (`money(1.23)` raises). Percentages and multiples are computed one
+   way, everywhere. Division-by-zero returns `None` (a documented "no basis"),
+   never a misleading `0`.
+
+3. **Rules are data, interpreted by code (SPEC §2.2/§5).** Each rule is a
+   `RuleDef` (id, version, category, `kind`, thresholds, vertical overrides) —
+   the same shape as a `flag_rules` DB row. `evaluators.py` interprets `kind` +
+   thresholds. This is what lets the pattern library be CRUD-edited, versioned,
+   and back-tested without a deploy. Thresholds are copied verbatim from the spec.
+
+4. **v1 ships 17 rules**: the 15 named in the build prompt
+   (A1 A2 A4 A5 B9 B10 B12 B14 C17 C18 C21 C22 D24 D25 G39) plus the two Triangle
+   of Truth reconciliation rules (TT1 tax-vs-P&L divergence, TT2 bank-deposit
+   shortfall) from SPEC §2.1 — the core differentiator. The remaining ~25 flags in
+   the spec's library are defined in `SPEC.md` and are additive `RuleDef`s.
+
+5. **Grounding is enforced mechanically, not by prompt (SPEC §2.3, §8).**
+   `assert_grounded()` scans generated prose for numeric tokens and rejects any
+   not present in the evidence bundle (years and small counts are allowed as
+   prose). The narrator retries on violation and falls back to a deterministic
+   template rather than ship an ungrounded number. This is the accuracy story and
+   the liability story in one function.
+
+6. **No composite score, ever (SPEC §8).** The report exposes severity *counts*,
+   never an aggregate score or buy/don't-buy output. Encoded in the report
+   assembler and the disclaimer module.
+
+7. **Offline-by-default demo.** With no `ANTHROPIC_API_KEY`, the narrator uses the
+   template backend, so `make seed-demo` and `docker compose up` produce a full,
+   grounded report on a clean clone with no network and no keys. Set the key to
+   switch Stage 5 to Claude (guarded by the same grounding check).
+
+## Trade-offs / scope
+
+8. **Auth uses stdlib HMAC tokens, not JWT.** Avoids a `cryptography` native
+   dependency (and a real build panic seen in this environment). Magic-link +
+   session tokens are HMAC-SHA256 signed. TOTP is a column, not yet wired.
+
+9. **SQLite in dev, Postgres in prod.** Models use portable `JSON` + `Numeric`, so
+   the same schema runs on SQLite (tests, local) and Postgres 16 (compose). The
+   API `create_all()` + demo bootstrap on startup is a dev convenience; production
+   uses the Alembic scaffold (`backend/alembic`) + a seed command.
+
+10. **Synthetic source PDFs via a stdlib PDF writer** (`app/services/pdfgen.py`),
+    not WeasyPrint, so the demo has real, browsable documents for the evidence
+    drawer with nothing installed. Production *report* PDFs use WeasyPrint from a
+    print-CSS template (dependency declared; template is a v1.1 item).
+
+11. **Pipeline stages 0–2 (intake/classify/extract) are represented, not fully
+    implemented.** The demo path builds the `DealContext` directly from structured
+    seed data; the real path (`app/pipeline/assemble.py`) reconciles from the
+    persisted `financial_lines` table. Classify/extract prompts exist
+    (`app/llm/prompts`) and the Celery task is wired; wiring real PDF→JSON
+    extraction is the top of the v1.1 backlog.
+
+## What is deferred (documented, not hidden)
+
+- Real document extraction (Stages 1–2) end-to-end from uploaded PDFs.
+- WeasyPrint report PDF template; QuickBooks/Plaid imports (SPEC §4 v2).
+- Ask-the-Deal chat (SPEC §3.8, v1.5).
+- ClamAV/MinIO are in compose and referenced; upload virus-scan + signed-URL
+  fetch are wired at the config/dependency layer, not yet exercised end-to-end.
