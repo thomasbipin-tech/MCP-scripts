@@ -35,6 +35,11 @@ dependencies = [
 where = ["."]
 include = ["app*"]
 
+# Ship non-Python runtime data (versioned LLM prompt files) inside the wheel so
+# the package is self-contained wherever it's imported.
+[tool.setuptools.package-data]
+"app" = ["llm/prompts/*.md"]
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 pythonpath = ["."]
