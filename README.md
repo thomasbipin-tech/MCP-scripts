@@ -62,7 +62,7 @@ cd frontend && npm install && npm run dev
 ## Tests — the accuracy story
 
 ```bash
-cd backend && python -m pytest -q     # 72 tests
+cd backend && python -m pytest -q     # 106 tests
 ```
 
 - **Money & reconciliation** — Decimal rounding, Triangle math, missing-source
@@ -74,7 +74,10 @@ cd backend && python -m pytest -q     # 72 tests
   false positives**.
 - **Traceability** — every evidence citation resolves to a real document page.
 - **Grounding** — hallucinated numbers in narration are caught and rejected.
-- **API smoke** — the app boots, seeds, serves the unlocked report, and enforces
+- **Extraction** — real PDF bytes → classify → extract → report, asserting the
+  extracted numbers match the source pages and the six flags still fire.
+- **API smoke + full lifecycle** — the app boots, seeds, and drives
+  create → upload PDFs → process → publish → pay → unlocked report, enforcing
   org isolation + the payment paywall.
 
 ## The pipeline (SPEC §2.3)

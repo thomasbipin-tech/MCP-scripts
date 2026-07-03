@@ -98,6 +98,31 @@ def get_report(deal: Deal = Depends(get_scoped_deal), db: Session = Depends(get_
     return {"locked": False, "report": report.payload, "watermark": report.watermark}
 
 
+@router.get("/{deal_id}/report.pdf")
+def get_report_pdf(deal: Deal = Depends(get_scoped_deal), db: Session = Depends(get_db)):
+    """WeasyPrint PDF of the report. Same publish + payment gating as the web report."""
+    from fastapi.responses import Response
+
+    from ...services.report_pdf import PDFUnavailable, render_pdf
+
+    report = db.scalar(
+        select(Report).where(Report.deal_id == deal.id).order_by(Report.version.desc())
+    )
+    if report is None or report.published_at is None:
+        raise HTTPException(status_code=409, detail="report not yet published")
+    if not deal.paid:
+        raise HTTPException(status_code=402, detail="payment required")
+    try:
+        pdf = render_pdf(report.payload)
+    except PDFUnavailable as e:
+        raise HTTPException(status_code=503, detail=str(e))
+    return Response(
+        content=pdf,
+        media_type="application/pdf",
+        headers={"Content-Disposition": f'attachment; filename="dealproof-{deal.codename}.pdf"'},
+    )
+
+
 @router.post("/{deal_id}/flags/{flag_id}/status")
 def set_flag_status(
     flag_id: str,

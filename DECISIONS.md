@@ -61,17 +61,26 @@ what is production-real, what is scaffolded, and what is deferred.
     drawer with nothing installed. Production *report* PDFs use WeasyPrint from a
     print-CSS template (dependency declared; template is a v1.1 item).
 
-11. **Pipeline stages 0–2 (intake/classify/extract) are represented, not fully
-    implemented.** The demo path builds the `DealContext` directly from structured
-    seed data; the real path (`app/pipeline/assemble.py`) reconciles from the
-    persisted `financial_lines` table. Classify/extract prompts exist
-    (`app/llm/prompts`) and the Celery task is wired; wiring real PDF→JSON
-    extraction is the top of the v1.1 backlog.
+11. **Pipeline stages 0–2 (intake/classify/extract) are implemented end-to-end.**
+    `app/pipeline/{intake,classify,extract,ingest}.py` take raw PDF bytes →
+    SHA-256 dedupe → classification → structured extraction into
+    `financial_lines` + facts (each with page citations) → `DealContext`, sharing
+    the Stage 3–5 code path with the demo. An offline heuristic classifier/
+    extractor parses the data-room documents so the whole pipe runs without an
+    API key; the Claude path uses the versioned prompts. The upload/process API
+    (`app/api/routers/documents.py`) drives it, and a test asserts extracted
+    numbers match the source pages.
+
+12. **Report PDF via WeasyPrint** (`app/services/report_pdf.py`): `build_html`
+    is pure and tested; `render_pdf` lazily imports WeasyPrint (native libs
+    installed in the backend image). Disclaimer runs in the page footer on every
+    page. The synthetic *source* documents still use the stdlib writer.
 
 ## What is deferred (documented, not hidden)
 
-- Real document extraction (Stages 1–2) end-to-end from uploaded PDFs.
-- WeasyPrint report PDF template; QuickBooks/Plaid imports (SPEC §4 v2).
-- Ask-the-Deal chat (SPEC §3.8, v1.5).
-- ClamAV/MinIO are in compose and referenced; upload virus-scan + signed-URL
-  fetch are wired at the config/dependency layer, not yet exercised end-to-end.
+- Extraction coverage: the offline parser targets the standard statement layouts;
+  arbitrary real-world PDFs rely on the Claude extractor (prompts shipped) and
+  benefit from broader few-shot coverage over time.
+- QuickBooks/Plaid imports (SPEC §4 v2); Ask-the-Deal chat (SPEC §3.8, v1.5).
+- ClamAV/MinIO are in compose and wired at the storage/config layer; upload
+  virus-scan is a boundary hook not yet exercised end-to-end.
