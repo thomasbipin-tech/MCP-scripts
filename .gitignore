@@ -23,3 +23,7 @@ __pycache__/
 venv/
 *.egg-info/
 *.db
+
+# runtime storage
+backend/data/
+data/

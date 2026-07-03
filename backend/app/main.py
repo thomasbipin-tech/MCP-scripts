@@ -7,7 +7,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from .api.routers import admin, auth, deals, meta, payments
+from .api.routers import admin, auth, deals, documents, meta, payments
 from .core.config import settings
 from .core.disclaimer import DISCLAIMER
 
@@ -44,10 +44,25 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-for r in (meta.router, auth.router, deals.router, admin.router, payments.router):
+for r in (meta.router, auth.router, deals.router, documents.router, admin.router, payments.router):
     app.include_router(r, prefix="/api")
 
 
 @app.get("/api")
 def root() -> dict:
     return {"service": "dealproof-api", "docs": "/docs", "health": "/api/health"}
+
+
+@app.get("/api/storage/{key:path}")
+def storage_content(key: str):
+    """Serve locally-stored document bytes (dev only; prod uses signed S3 URLs)."""
+    from fastapi import HTTPException
+    from fastapi.responses import Response
+
+    from .services import storage
+
+    try:
+        data = storage.get_object(key)
+    except FileNotFoundError:
+        raise HTTPException(status_code=404, detail="not found")
+    return Response(content=data, media_type="application/pdf")

@@ -5,13 +5,7 @@ isn't installed (the core engine suite has no such dependency), so a bare
 interpreter still runs everything else green.
 """
 
-import importlib
-import os
-
 import pytest
-
-os.environ.setdefault("DATABASE_URL", "sqlite:///./test_api_smoke.db")
-os.environ.setdefault("ENV", "development")
 
 fastapi = pytest.importorskip("fastapi")
 from fastapi.testclient import TestClient  # noqa: E402
@@ -19,20 +13,12 @@ from fastapi.testclient import TestClient  # noqa: E402
 
 @pytest.fixture(scope="module")
 def client():
-    # Ensure a clean DB file for the module.
-    db_path = "./test_api_smoke.db"
-    if os.path.exists(db_path):
-        os.remove(db_path)
-    # (Re)import app modules so config picks up DATABASE_URL.
-    import app.core.config as cfg
-
-    importlib.reload(cfg)
+    # Shares the session DB pinned in conftest.py; assertions here are written
+    # to be robust to other modules' rows (org-scoped, own-deal only).
     from app.main import app
 
     with TestClient(app) as c:
         yield c
-    if os.path.exists(db_path):
-        os.remove(db_path)
 
 
 def _login(client, email):
