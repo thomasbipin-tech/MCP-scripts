@@ -86,12 +86,20 @@ export default function Landing() {
           </svg>
           <span className="text-base font-semibold tracking-wide">DealProof</span>
         </div>
-        <Link
-          to="/report"
-          className="rounded border border-slate-700 px-4 py-2 text-sm text-slate-200 transition hover:border-slate-500"
-        >
-          View a sample report
-        </Link>
+        <div className="flex items-center gap-2 sm:gap-3">
+          <Link
+            to="/report"
+            className="hidden rounded border border-slate-700 px-4 py-2 text-sm text-slate-200 transition hover:border-slate-500 sm:inline-block"
+          >
+            View a sample report
+          </Link>
+          <Link
+            to="/login"
+            className="rounded bg-signal-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-signal-600"
+          >
+            Sign in
+          </Link>
+        </div>
       </header>
 
       {/* Hero */}
@@ -113,10 +121,10 @@ export default function Landing() {
             View a sample report
           </Link>
           <Link
-            to="/deals"
+            to="/login"
             className="rounded border border-slate-700 px-6 py-3 text-sm font-semibold text-slate-200 transition hover:border-slate-500"
           >
-            Open the deal dashboard
+            Launch app
           </Link>
         </div>
       </section>

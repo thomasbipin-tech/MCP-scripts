@@ -12,7 +12,7 @@ export default function DocViewer() {
       <div className="relative flex h-full w-full max-w-3xl flex-col border-l border-slate-800 bg-slate-900 shadow-2xl">
         <div className="flex items-center justify-between border-b border-slate-800 px-5 py-4">
           <div className="min-w-0">
-            <p className="truncate text-sm font-semibold text-slate-100">{doc.title}</p>
+            <p className="truncate text-sm font-semibold text-slate-100">{doc.title ?? doc.doc_type}</p>
             <p className="mt-0.5 font-mono-num text-xs text-slate-400">
               page {page} of {doc.page_count} &middot; {doc.doc_type}
             </p>
@@ -27,7 +27,7 @@ export default function DocViewer() {
         <div className="flex-1 bg-slate-950">
           <iframe
             key={`${doc.id}-${page}`}
-            title={doc.title}
+            title={doc.title ?? doc.doc_type}
             src={`${asset(doc.url)}#page=${page}`}
             className="h-full w-full"
           />

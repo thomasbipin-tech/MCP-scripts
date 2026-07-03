@@ -1,5 +1,6 @@
 import type { Deal } from '../types/report'
 import { formatMoney } from '../lib/format'
+import { verticalLabel } from '../lib/vertical'
 import StageBadge from './StageBadge'
 
 export default function ReportHeader({ deal, watermark }: { deal: Deal; watermark: string | null }) {
@@ -23,7 +24,9 @@ export default function ReportHeader({ deal, watermark }: { deal: Deal; watermar
             <h1 className="text-2xl font-bold text-slate-50">{deal.codename}</h1>
             <p className="mt-1 text-sm text-slate-400">{deal.entity_name}</p>
             <div className="mt-3 flex flex-wrap items-center gap-2 text-xs text-slate-500">
-              <span className="rounded border border-slate-700 px-2 py-0.5">{deal.vertical_label}</span>
+              <span className="rounded border border-slate-700 px-2 py-0.5">
+                {deal.vertical_label ?? verticalLabel(deal.vertical)}
+              </span>
               <span className="rounded border border-slate-700 px-2 py-0.5">{deal.state}</span>
               <span className="rounded border border-slate-700 px-2 py-0.5 capitalize">
                 {deal.deal_type} deal

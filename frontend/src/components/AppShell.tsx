@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react'
-import { NavLink } from 'react-router-dom'
+import { Link, NavLink, useNavigate } from 'react-router-dom'
+import { useAuth } from '../context/AuthContext'
 
 interface NavItem {
   label: string
@@ -78,16 +79,44 @@ function LockIcon() {
 }
 
 function TopBar({ title }: { title?: string }) {
+  const { user, logout } = useAuth()
+  const navigate = useNavigate()
+
+  function handleLogout() {
+    logout()
+    navigate('/login')
+  }
+
   return (
-    <header className="flex h-14 items-center justify-between border-b border-slate-800 bg-slate-950/80 px-6">
+    <header className="flex h-14 items-center justify-between border-b border-slate-800 bg-slate-950/80 px-4 sm:px-6">
       <div className="flex items-center gap-2 md:hidden">
         <LogoMark />
       </div>
-      <h1 className="text-sm font-medium text-slate-300">{title}</h1>
-      <div className="flex items-center gap-3">
-        <div className="h-7 w-7 rounded-full bg-slate-800 text-center text-xs leading-7 text-slate-400">
-          TB
-        </div>
+      <h1 className="hidden truncate text-sm font-medium text-slate-300 sm:block">{title}</h1>
+      <div className="flex min-w-0 items-center gap-2 sm:gap-3">
+        {user ? (
+          <>
+            <span className="hidden max-w-[180px] truncate text-xs text-slate-400 md:inline">
+              {user.email}
+            </span>
+            <div className="h-7 w-7 shrink-0 rounded-full bg-slate-800 text-center text-xs font-semibold leading-7 text-slate-400">
+              {user.email.slice(0, 2).toUpperCase()}
+            </div>
+            <button
+              onClick={handleLogout}
+              className="shrink-0 rounded border border-slate-700 px-2.5 py-1.5 text-xs text-slate-300 transition hover:border-slate-500 hover:text-slate-100"
+            >
+              Logout
+            </button>
+          </>
+        ) : (
+          <Link
+            to="/login"
+            className="shrink-0 rounded border border-slate-700 px-3 py-1.5 text-xs text-slate-200 transition hover:border-slate-500"
+          >
+            Sign in
+          </Link>
+        )}
       </div>
     </header>
   )

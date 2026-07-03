@@ -6,4 +6,9 @@ export default defineConfig({
   // (https://<user>.github.io/<repo>/) without hardcoding the repo name.
   base: './',
   plugins: [react()],
+  server: {
+    proxy: {
+      '/api': 'http://localhost:8000',
+    },
+  },
 })

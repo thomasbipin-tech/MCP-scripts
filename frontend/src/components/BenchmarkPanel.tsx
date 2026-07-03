@@ -2,8 +2,23 @@ import type { Benchmarks, Deal } from '../types/report'
 import { formatMultiple } from '../lib/format'
 
 export default function BenchmarkPanel({ benchmarks, deal }: { benchmarks: Benchmarks; deal: Deal }) {
-  const { p25, p50, p75, n_deals, source } = benchmarks.sde_multiple
-  const askingMultiple = Number(deal.asking_price) / Number(deal.claimed_sde)
+  const bm = benchmarks?.sde_multiple
+  if (!bm) {
+    return (
+      <div className="rounded border border-slate-800 bg-slate-900/40 p-6">
+        <h2 className="mb-1 text-sm font-semibold uppercase tracking-wide text-slate-300">
+          Benchmark: asking multiple
+        </h2>
+        <p className="text-xs text-slate-500">
+          No vertical benchmark is available for this deal yet. Benchmarks unlock once
+          enough comparable deals have been processed in this vertical.
+        </p>
+      </div>
+    )
+  }
+  const { p25, p50, p75, n_deals, source } = bm
+  const claimed = Number(deal.claimed_sde)
+  const askingMultiple = claimed > 0 ? Number(deal.asking_price) / claimed : NaN
 
   const min = Number(p25) * 0.7
   const max = Number(p75) * 1.3
@@ -27,15 +42,17 @@ export default function BenchmarkPanel({ benchmarks, deal }: { benchmarks: Bench
           className="absolute -top-1 h-4 w-0.5 bg-slate-400"
           style={{ left: `${pct(Number(p50))}%` }}
         />
-        <div
-          className="absolute -top-2.5 flex flex-col items-center"
-          style={{ left: `${pct(askingMultiple)}%`, transform: 'translateX(-50%)' }}
-        >
-          <div className="h-6 w-0.5 bg-signal-500" />
-          <div className="mt-1 whitespace-nowrap rounded border border-signal-500/40 bg-signal-500/10 px-1.5 py-0.5 font-mono-num text-[10px] font-semibold text-signal-400">
-            {formatMultiple(askingMultiple)} asking
+        {Number.isFinite(askingMultiple) && (
+          <div
+            className="absolute -top-2.5 flex flex-col items-center"
+            style={{ left: `${pct(askingMultiple)}%`, transform: 'translateX(-50%)' }}
+          >
+            <div className="h-6 w-0.5 bg-signal-500" />
+            <div className="mt-1 whitespace-nowrap rounded border border-signal-500/40 bg-signal-500/10 px-1.5 py-0.5 font-mono-num text-[10px] font-semibold text-signal-400">
+              {formatMultiple(askingMultiple)} asking
+            </div>
           </div>
-        </div>
+        )}
       </div>
 
       <div className="mt-10 flex justify-between text-xs text-slate-500">

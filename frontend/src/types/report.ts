@@ -7,7 +7,9 @@ export interface Deal {
   codename: string
   entity_name: string
   vertical: string
-  vertical_label: string
+  // Present on the static demo sample; API-produced reports only carry the raw
+  // `vertical` slug, so consumers fall back to lib/vertical.ts#verticalLabel.
+  vertical_label?: string
   state: string
   deal_type: string
   asking_price: string
@@ -92,7 +94,8 @@ export interface SdeMultipleBenchmark {
 }
 
 export interface Benchmarks {
-  sde_multiple: SdeMultipleBenchmark
+  // Optional: a deal's vertical may have no seeded benchmark yet.
+  sde_multiple?: SdeMultipleBenchmark
 }
 
 export interface DataGap {
@@ -108,11 +111,15 @@ export interface SellerQuestion {
 
 export interface ReportDocument {
   id: string
-  title: string
+  // The static demo sample carries a human title/filename; API-produced
+  // reports (assembled from the `/process` pipeline) only carry doc_type,
+  // period, page_count, confidence, and a storage url — so these are optional.
+  title?: string
   doc_type: string
   period: number
   page_count: number
-  filename: string
+  filename?: string
+  confidence?: number
   url: string
 }
 

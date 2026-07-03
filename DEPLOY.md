@@ -53,19 +53,21 @@ docker run -p 8000:8000 \
 
 ## Using the app once it's up
 
-- **Sample report** — no login needed; it's seeded and published on boot.
-  Landing page, `/#/report`, `/#/deals`.
-- **The working flow** (create a deal, upload a data room, process, publish, pay,
-  read the report) is exposed at **`/api/docs`** (interactive Swagger). Steps:
-  1. `POST /api/auth/request` with your email → in demo mode the response
-     contains a `magic_token`.
-  2. `POST /api/auth/verify` with that token → returns your bearer `access_token`
-     (click **Authorize** in Swagger and paste it).
-  3. `POST /api/deals` → `POST /api/deals/{id}/documents` (upload PDFs) →
-     `POST /api/deals/{id}/process` → (admin) `POST /api/admin/deals/{id}/publish`
-     → pay → `GET /api/deals/{id}/report`.
+The whole flow is clickable in the UI (verified end-to-end in a headless
+browser at phone width):
+
+- **Sample report** — no login needed; seeded and published on boot. Open the
+  landing page and tap **View sample report** (`/#/report`).
+- **The working app** — tap **Sign in** / **Launch app** → the login page has
+  **"Continue as admin (demo)"** / **"Continue as buyer (demo)"** shortcuts
+  (magic-link email also works; in demo mode the link is returned instantly).
+  Then: **New Deal** → open it → **drag-and-drop the PDFs** (adjust any detected
+  document type) → **Process documents** → (as admin) **Publish report** →
+  **Pay/Unlock** → the full report renders, with a **Download PDF** button.
+  Sign in as **admin** to be able to publish.
 
 Pre-seeded logins: `admin@dealproof.test` (admin) and `buyer@dealproof.test`.
+The same operations are also available programmatically at **`/api/docs`**.
 
 ## Notes
 
