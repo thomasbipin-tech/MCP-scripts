@@ -5,12 +5,11 @@ name: Deploy sample to GitHub Pages
 # it needs no backend. The full app (auth, upload, processing) runs via
 # docker compose. See README.
 
+# Manual-only: this repo's single GitHub Pages site is used by another app
+# (AI Music Studio) which deploys from the default branch. To avoid the two
+# fighting over one URL, DealProof only publishes to Pages when you explicitly
+# run this workflow. Prefer a separate host (see README) if you want both live.
 on:
-  push:
-    branches: [claude/dealproof-diligence-platform-spy5jm]
-    paths:
-      - frontend/**
-      - .github/workflows/pages.yml
   workflow_dispatch: {}
 
 permissions:
