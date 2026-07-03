@@ -54,8 +54,12 @@ def ingest_documents(
     benchmarks: Optional[dict] = None,
     client=None,
 ) -> IngestResult:
-    """``docs`` = [{"doc_id","filename","pdf_bytes"}]. ``deal_meta`` supplies
-    vertical/deal_type/asking_price (from the deal record, not the PDFs)."""
+    """``docs`` = [{"doc_id","filename","pdf_bytes", "doc_type"?}]. ``deal_meta``
+    supplies vertical/deal_type/asking_price (from the deal record, not the PDFs).
+
+    If a doc carries an explicit ``doc_type`` (a user override from the UI), it is
+    honored instead of re-classifying — period/entity are still detected from the
+    text so extraction stays fully cited."""
     seen: set = set()
     all_lines = []
     customers, channels, monthly, addbacks, contracts = [], [], [], [], []
@@ -66,7 +70,17 @@ def ingest_documents(
 
     for d in docs:
         intake = intake_document(d["pdf_bytes"], seen)
-        cls = classify(intake.pages, d.get("filename", ""), client=client)
+        override = d.get("doc_type")
+        if override:
+            from .classify import Classification, _detect_entity, _detect_period
+
+            text = "\n".join(intake.pages)
+            cls = Classification(
+                doc_type=override, confidence=1.0,
+                period=_detect_period(text), entity_name=_detect_entity(text),
+            )
+        else:
+            cls = classify(intake.pages, d.get("filename", ""), client=client)
         ingested.append(IngestedDoc(
             doc_id=d["doc_id"], filename=d.get("filename", ""), sha256=intake.sha256,
             doc_type=cls.doc_type, confidence=cls.confidence, period=cls.period,

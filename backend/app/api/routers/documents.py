@@ -107,8 +107,13 @@ def process_deal(
     docs = []
     for d in docs_rows:
         data = storage.get_object(d.storage_key)
-        # Honor any user override of the classification.
-        docs.append({"doc_id": d.id, "filename": d.doc_type or "", "pdf_bytes": data})
+        # Honor a user override of the classification; else let ingest classify.
+        docs.append({
+            "doc_id": d.id,
+            "filename": d.doc_type or "",
+            "pdf_bytes": data,
+            "doc_type": d.user_override or None,
+        })
 
     benchmarks = {}
     for b in db.scalars(select(Benchmark).where(Benchmark.vertical == deal.vertical)):

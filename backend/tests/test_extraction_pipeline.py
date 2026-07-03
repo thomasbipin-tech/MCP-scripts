@@ -75,3 +75,14 @@ def test_dedupe_drops_identical_bytes():
     result = ingest_documents(docs + [dup], DEAL_META, BENCHMARKS)
     copy = next(d for d in result.documents if d.doc_id.endswith("-copy"))
     assert copy.duplicate is True
+
+
+def test_doc_type_override_is_honored():
+    # Force the tax-return PDF to be treated as a bank statement; the override
+    # must win over the heuristic classifier.
+    _ensure_docs()
+    data = (DOCS_DIR / "doc-tax-2024.pdf").read_bytes()
+    docs = [{"doc_id": "x", "filename": "tax", "pdf_bytes": data, "doc_type": "bank_statement"}]
+    result = ingest_documents(docs, DEAL_META, BENCHMARKS)
+    assert result.documents[0].doc_type == "bank_statement"
+    assert result.documents[0].confidence == 1.0
