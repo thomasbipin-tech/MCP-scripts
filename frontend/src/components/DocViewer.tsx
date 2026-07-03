@@ -1,4 +1,5 @@
 import { useDocViewer } from '../context/DocViewerContext'
+import { asset } from '../lib/loadReport'
 
 export default function DocViewer() {
   const { document: doc, page, close } = useDocViewer()
@@ -27,7 +28,7 @@ export default function DocViewer() {
           <iframe
             key={`${doc.id}-${page}`}
             title={doc.title}
-            src={`${doc.url}#page=${page}`}
+            src={`${asset(doc.url)}#page=${page}`}
             className="h-full w-full"
           />
         </div>

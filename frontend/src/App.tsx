@@ -1,4 +1,4 @@
-import { BrowserRouter, Route, Routes } from 'react-router-dom'
+import { HashRouter, Route, Routes } from 'react-router-dom'
 import Landing from './pages/Landing'
 import Deals from './pages/Deals'
 import Report from './pages/Report'
@@ -7,7 +7,7 @@ import DocViewer from './components/DocViewer'
 
 export default function App() {
   return (
-    <BrowserRouter>
+    <HashRouter>
       <DocViewerProvider>
         <Routes>
           <Route path="/" element={<Landing />} />
@@ -16,6 +16,6 @@ export default function App() {
         </Routes>
         <DocViewer />
       </DocViewerProvider>
-    </BrowserRouter>
+    </HashRouter>
   )
 }
