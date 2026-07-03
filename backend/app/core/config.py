@@ -18,10 +18,23 @@ def _b(name: str, default: bool) -> bool:
     return v.lower() in ("1", "true", "yes", "on")
 
 
+def _normalize_db_url(url: str) -> str:
+    """Managed Postgres providers (Render/Railway/Heroku) hand out
+    ``postgres://`` or ``postgresql://`` URLs; SQLAlchemy + psycopg3 needs the
+    ``postgresql+psycopg://`` driver prefix. Normalize so the same code runs on
+    SQLite locally and managed Postgres in the cloud."""
+    if url.startswith("postgres://"):
+        return "postgresql+psycopg://" + url[len("postgres://"):]
+    if url.startswith("postgresql://"):
+        return "postgresql+psycopg://" + url[len("postgresql://"):]
+    return url
+
+
 @dataclass
 class Settings:
     env: str = os.getenv("ENV", "development")
-    database_url: str = os.getenv("DATABASE_URL", "sqlite:///./dealproof.db")
+    database_url: str = _normalize_db_url(os.getenv("DATABASE_URL", "sqlite:///./dealproof.db"))
+    frontend_dist: str = os.getenv("FRONTEND_DIST", "")
     redis_url: str = os.getenv("REDIS_URL", "redis://redis:6379/0")
     anthropic_api_key: str = os.getenv("ANTHROPIC_API_KEY", "")
     jwt_secret: str = os.getenv("JWT_SECRET", "dev-insecure-change-me")

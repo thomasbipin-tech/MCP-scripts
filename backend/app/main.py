@@ -66,3 +66,20 @@ def storage_content(key: str):
     except FileNotFoundError:
         raise HTTPException(status_code=404, detail="not found")
     return Response(content=data, media_type="application/pdf")
+
+
+# Serve the built React app (single-service cloud deploy). Mounted last so the
+# /api routes above always win; skipped when no build is present (tests/local).
+def _mount_frontend() -> None:
+    import os
+
+    from fastapi.staticfiles import StaticFiles
+
+    dist = settings.frontend_dist or os.path.join(
+        os.path.dirname(__file__), "..", "..", "frontend", "dist"
+    )
+    if os.path.isdir(dist):
+        app.mount("/", StaticFiles(directory=dist, html=True), name="frontend")
+
+
+_mount_frontend()
