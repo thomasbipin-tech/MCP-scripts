@@ -48,10 +48,11 @@ def test_health(client):
     assert client.get("/api/health").json()["status"] == "ok"
 
 
-def test_rules_catalog_has_17(client):
+def test_rules_catalog_full_library(client):
     rules = client.get("/api/rules").json()
-    assert len(rules) == 17
-    assert {r["rule_id"] for r in rules} >= {"TT1", "TT2", "A1", "C22", "D24"}
+    assert len(rules) == 42  # 40 spec flags + TT1/TT2 Triangle rules
+    ids = {r["rule_id"] for r in rules}
+    assert ids >= {"TT1", "TT2", "A1", "C22", "D24", "E31", "F35", "G40"}
 
 
 def test_demo_deal_visible_to_admin_with_report(client):

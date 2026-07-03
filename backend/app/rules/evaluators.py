@@ -483,7 +483,256 @@ def eval_asking_multiple(rule, ctx, th) -> List[Flag]:
     ]
 
 
+# --- Full-library additions (A3/A6/A7/A8, B11/B13/B15/B16, C19/C20/C23,
+#     D26-D30, E31-E34, F35-F38, G40). Each requires its specific extracted
+#     input and no-ops otherwise, so absent data never produces a false flag. ---
+
+
+def _ev(src) -> List[dict]:
+    return [src.as_dict()] if src is not None else []
+
+
+def eval_wc_peg_absent(rule, ctx, th) -> List[Flag]:
+    if ctx.facts.compliance.working_capital_peg_in_loi is not False:
+        return []
+    return [_mk(rule, rule.default_severity, {}, _ev(ctx.facts.compliance.source))]
+
+
+def eval_related_party_revenue(rule, ctx, th) -> List[Flag]:
+    out = []
+    for rp in ctx.facts.related_parties:
+        out.append(_mk(rule, rule.default_severity,
+                       {"name": rp.name, "amount": str(rp.amount), "note": rp.note, "year": rp.period},
+                       [rp.source.as_dict()]))
+    return out
+
+
+def eval_deferred_revenue(rule, ctx, th) -> List[Flag]:
+    items = [d for d in ctx.facts.compliance.deferred_revenue if d.amount > 0]
+    if not items:
+        return []
+    latest = max(items, key=lambda d: d.period)
+    return [_mk(rule, rule.default_severity,
+                {"amount": str(latest.amount), "year": latest.period},
+                [latest.source.as_dict()])]
+
+
+def eval_round_number(rule, ctx, th) -> List[Flag]:
+    s = ctx.facts.invoice_stats
+    if s is None or s.total_count <= 0:
+        return []
+    r = pct(Decimal(s.round_count), Decimal(s.total_count))
+    if r is None or r < th["round_ratio_pct"]:
+        return []
+    return [_mk(rule, rule.default_severity,
+                {"round_pct": str(r), "round_count": s.round_count, "total_count": s.total_count},
+                _ev(s.source))]
+
+
+def eval_seasonality_mismatch(rule, ctx, th) -> List[Flag]:
+    if ctx.facts.compliance.seasonality_anomaly is not True:
+        return []
+    return [_mk(rule, rule.default_severity, {}, _ev(ctx.facts.compliance.source))]
+
+
+def eval_owner_salary_replacement(rule, ctx, th) -> List[Flag]:
+    hrs = ctx.facts.people.owner_hours_per_week
+    has_owner_addback = any(a.category == "owner_salary" for a in ctx.facts.addbacks)
+    if not has_owner_addback or hrs is None or hrs < th["hours_threshold"]:
+        return []
+    ev = _ev(ctx.facts.people.source)
+    ev += [a.source.as_dict() for a in ctx.facts.addbacks if a.category == "owner_salary"]
+    return [_mk(rule, rule.default_severity, {"hours": hrs}, ev)]
+
+
+def eval_family_below_market_payroll(rule, ctx, th) -> List[Flag]:
+    amt = ctx.facts.people.family_below_market_payroll
+    if amt is None or amt <= 0:
+        return []
+    return [_mk(rule, rule.default_severity, {"amount": str(amt)}, _ev(ctx.facts.people.source))]
+
+
+def _gross_margin(ctx, period):
+    for m in ctx.reconciliation.gross_margin_pct:
+        if m.period == period:
+            return m
+    return None
+
+
+def eval_margin_drift(rule, ctx, th) -> List[Flag]:
+    bm = ctx.facts.benchmarks.get("gross_margin")
+    period = _latest_period(ctx)
+    if bm is None or period is None:
+        return []
+    gm = _gross_margin(ctx, period)
+    if gm is None or gm.value is None:
+        return []
+    if bm.p25 <= gm.value <= bm.p75:
+        return []
+    return [_mk(rule, rule.default_severity,
+                {"margin": str(gm.value), "p25": str(bm.p25), "p50": str(bm.p50), "p75": str(bm.p75)},
+                gm.sources)]
+
+
+def eval_cogs_reclassification(rule, ctx, th) -> List[Flag]:
+    series = [m for m in ctx.reconciliation.gross_margin_pct if m.value is not None]
+    if len(series) < 2:
+        return []
+    swing = series[-1].value - series[-2].value
+    if abs(swing) < Decimal(str(th["margin_swing_pts"])):
+        return []
+    return [_mk(rule, rule.default_severity,
+                {"swing": str(swing), "year": series[-1].period},
+                series[-1].sources + series[-2].sources)]
+
+
+def eval_inventory_bloat(rule, ctx, th) -> List[Flag]:
+    periods = ctx.reconciliation.periods
+    if len(periods) < 2:
+        return []
+    cur, prev = periods[-1], periods[-2]
+    inv_c = get_line(ctx.lines, StatementType.BALANCE_SHEET, cur, LineCode.INVENTORY)
+    inv_p = get_line(ctx.lines, StatementType.BALANCE_SHEET, prev, LineCode.INVENTORY)
+    rev_c = _pnl_revenue(ctx, cur)
+    rev_p = _pnl_revenue(ctx, prev)
+    if not (inv_c and inv_p and rev_c and rev_p) or inv_p.amount == 0 or rev_p == 0:
+        return []
+    inv_growth = pct(inv_c.amount - inv_p.amount, inv_p.amount)
+    rev_growth = pct(rev_c - rev_p, rev_p)
+    if inv_growth is None or rev_growth is None:
+        return []
+    if inv_growth - rev_growth < Decimal(str(th["excess_growth_pts"])):
+        return []
+    return [_mk(rule, rule.default_severity,
+                {"inv_growth": str(inv_growth), "rev_growth": str(rev_growth)},
+                [inv_c.source.as_dict(), inv_p.source.as_dict()])]
+
+
+def eval_shareholder_loans(rule, ctx, th) -> List[Flag]:
+    period = _latest_period(ctx)
+    if period is None:
+        return []
+    ln = get_line(ctx.lines, StatementType.BALANCE_SHEET, period, LineCode.SHAREHOLDER_LOAN)
+    if ln is None or ln.amount == 0:
+        return []
+    return [_mk(rule, rule.default_severity, {"amount": str(ln.amount)}, [ln.source.as_dict()])]
+
+
+def _list_flag(rule, ctx, items, key):
+    if not items:
+        return []
+    src = ctx.facts.compliance.source
+    label = ", ".join(items)
+    return [_mk(rule, rule.default_severity, {key: label, "count": len(items)}, _ev(src))]
+
+
+def eval_undisclosed_debt_service(rule, ctx, th) -> List[Flag]:
+    return _list_flag(rule, ctx, ctx.facts.compliance.undisclosed_debt_service, "lenders")
+
+
+def eval_non_assignable_licenses(rule, ctx, th) -> List[Flag]:
+    return _list_flag(rule, ctx, ctx.facts.compliance.non_assignable_licenses, "licenses")
+
+
+def eval_missing_top_customer_contracts(rule, ctx, th) -> List[Flag]:
+    return _list_flag(rule, ctx, ctx.facts.compliance.missing_top_customer_contracts, "customers")
+
+
+def eval_litigation(rule, ctx, th) -> List[Flag]:
+    return _list_flag(rule, ctx, ctx.facts.compliance.litigation_mentions, "matters")
+
+
+def eval_seller_noncompete(rule, ctx, th) -> List[Flag]:
+    if ctx.facts.compliance.seller_noncompete_ok is not False:
+        return []
+    return [_mk(rule, rule.default_severity, {}, _ev(ctx.facts.compliance.source))]
+
+
+def eval_franchise_transfer(rule, ctx, th) -> List[Flag]:
+    if ctx.facts.compliance.franchise_transfer_restriction is not True:
+        return []
+    return [_mk(rule, rule.default_severity, {}, _ev(ctx.facts.compliance.source))]
+
+
+def eval_key_person_risk(rule, ctx, th) -> List[Flag]:
+    roles = ctx.facts.people.key_person_roles
+    if not roles:
+        return []
+    return [_mk(rule, rule.default_severity, {"roles": ", ".join(roles)}, _ev(ctx.facts.people.source))]
+
+
+def eval_worker_misclassification(rule, ctx, th) -> List[Flag]:
+    p = ctx.facts.people
+    denom = p.count_1099 + p.count_w2_typical_roles
+    if p.count_1099 <= 0 or denom == 0:
+        return []
+    ratio_pct = pct(Decimal(p.count_1099), Decimal(denom))
+    if ratio_pct is None or ratio_pct < th["contractor_ratio_pct"]:
+        return []
+    return [_mk(rule, rule.default_severity, {"ratio": str(ratio_pct), "count_1099": p.count_1099}, _ev(p.source))]
+
+
+def eval_tenure_cliff(rule, ctx, th) -> List[Flag]:
+    n = ctx.facts.people.near_retirement_count
+    if n < th["count"]:
+        return []
+    return [_mk(rule, rule.default_severity, {"count": n}, _ev(ctx.facts.people.source))]
+
+
+def eval_missing_insurance(rule, ctx, th) -> List[Flag]:
+    return _list_flag(rule, ctx, ctx.facts.compliance.missing_insurance, "policies")
+
+
+def eval_sales_tax_nexus(rule, ctx, th) -> List[Flag]:
+    return _list_flag(rule, ctx, ctx.facts.compliance.sales_tax_nexus_states, "states")
+
+
+def eval_payroll_tax_irregularities(rule, ctx, th) -> List[Flag]:
+    if not ctx.facts.compliance.payroll_tax_irregularities:
+        return []
+    return [_mk(rule, rule.default_severity, {}, _ev(ctx.facts.compliance.source))]
+
+
+def eval_cash_heavy_inconsistency(rule, ctx, th) -> List[Flag]:
+    if not ctx.facts.compliance.cash_heavy_inconsistency:
+        return []
+    return [_mk(rule, rule.default_severity, {}, _ev(ctx.facts.compliance.source))]
+
+
+def eval_aggressive_erc(rule, ctx, th) -> List[Flag]:
+    amt = ctx.facts.compliance.aggressive_erc
+    if amt is None or amt <= 0:
+        return []
+    sev = Severity.HIGH if ctx.facts.deal_type == "stock" else rule.default_severity
+    return [_mk(rule, sev, {"amount": str(amt)}, _ev(ctx.facts.compliance.source))]
+
+
 EVALUATORS: Dict[str, Callable] = {
+    "wc_peg_absent": eval_wc_peg_absent,
+    "related_party_revenue": eval_related_party_revenue,
+    "deferred_revenue": eval_deferred_revenue,
+    "round_number": eval_round_number,
+    "seasonality_mismatch": eval_seasonality_mismatch,
+    "owner_salary_replacement": eval_owner_salary_replacement,
+    "family_below_market_payroll": eval_family_below_market_payroll,
+    "margin_drift": eval_margin_drift,
+    "cogs_reclassification": eval_cogs_reclassification,
+    "inventory_bloat": eval_inventory_bloat,
+    "shareholder_loans": eval_shareholder_loans,
+    "undisclosed_debt_service": eval_undisclosed_debt_service,
+    "non_assignable_licenses": eval_non_assignable_licenses,
+    "missing_top_customer_contracts": eval_missing_top_customer_contracts,
+    "litigation": eval_litigation,
+    "seller_noncompete": eval_seller_noncompete,
+    "franchise_transfer": eval_franchise_transfer,
+    "key_person_risk": eval_key_person_risk,
+    "worker_misclassification": eval_worker_misclassification,
+    "tenure_cliff": eval_tenure_cliff,
+    "missing_insurance": eval_missing_insurance,
+    "sales_tax_nexus": eval_sales_tax_nexus,
+    "payroll_tax_irregularities": eval_payroll_tax_irregularities,
+    "cash_heavy_inconsistency": eval_cash_heavy_inconsistency,
+    "aggressive_erc": eval_aggressive_erc,
     "tax_pnl_divergence": eval_tax_pnl_divergence,
     "deposit_shortfall": eval_deposit_shortfall,
     "customer_concentration": eval_customer_concentration,

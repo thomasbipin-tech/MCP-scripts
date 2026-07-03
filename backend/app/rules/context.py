@@ -156,6 +156,87 @@ class Benchmark:
 
 
 @dataclass
+class YearAmount:
+    """A dated amount with a citation (deferred revenue, ERC, etc.)."""
+
+    period: int
+    amount: Decimal
+    source: PageRef
+    label: str = ""
+
+    def __post_init__(self) -> None:
+        self.amount = money(self.amount)
+
+
+@dataclass
+class RelatedParty:
+    """Revenue booked with an entity connected to the seller (A3)."""
+
+    name: str
+    amount: Decimal
+    period: int
+    note: str
+    source: PageRef
+
+    def __post_init__(self) -> None:
+        self.amount = money(self.amount)
+
+
+@dataclass
+class InvoiceStats:
+    """Aggregate invoice shape used for the round-number fabrication signal (A7)."""
+
+    total_count: int
+    round_count: int  # invoices landing on a round amount ($X,000 etc.)
+    source: Optional[PageRef] = None
+
+
+@dataclass
+class PeopleFacts:
+    """Org/people signals (E31-E33, E32 misclassification)."""
+
+    key_person_roles: List[str] = field(default_factory=list)  # E31
+    count_1099: int = 0  # E32
+    count_w2_typical_roles: int = 0  # E32 denominator
+    near_retirement_count: int = 0  # E33
+    owner_hours_per_week: Optional[int] = None  # B11
+    family_below_market_payroll: Optional[Decimal] = None  # B13
+    source: Optional[PageRef] = None
+
+    def __post_init__(self) -> None:
+        if self.family_below_market_payroll is not None:
+            self.family_below_market_payroll = money(self.family_below_market_payroll)
+
+
+@dataclass
+class ComplianceFacts:
+    """Legal / tax / compliance signals detected across the data room.
+
+    Every field defaults to 'absent' (empty / None) so a rule only fires when
+    extraction actually surfaced the signal — never on missing data."""
+
+    non_assignable_licenses: List[str] = field(default_factory=list)  # D26
+    missing_top_customer_contracts: List[str] = field(default_factory=list)  # D27
+    litigation_mentions: List[str] = field(default_factory=list)  # D28
+    seller_noncompete_ok: Optional[bool] = None  # D29 (fires only when explicitly False)
+    franchise_transfer_restriction: Optional[bool] = None  # D30
+    missing_insurance: List[str] = field(default_factory=list)  # E34
+    sales_tax_nexus_states: List[str] = field(default_factory=list)  # F35
+    payroll_tax_irregularities: bool = False  # F36
+    cash_heavy_inconsistency: bool = False  # F37
+    aggressive_erc: Optional[Decimal] = None  # F38
+    undisclosed_debt_service: List[str] = field(default_factory=list)  # C23
+    deferred_revenue: List[YearAmount] = field(default_factory=list)  # A6
+    seasonality_anomaly: Optional[bool] = None  # A8
+    working_capital_peg_in_loi: Optional[bool] = None  # G40 (fires only when False)
+    source: Optional[PageRef] = None
+
+    def __post_init__(self) -> None:
+        if self.aggressive_erc is not None:
+            self.aggressive_erc = money(self.aggressive_erc)
+
+
+@dataclass
 class DealFacts:
     vertical: str
     deal_type: str  # "asset" | "stock"
@@ -171,6 +252,10 @@ class DealFacts:
     bank_signals: BankSignals = field(default_factory=BankSignals)
     real_estate: RealEstate = field(default_factory=RealEstate)
     benchmarks: Dict[str, Benchmark] = field(default_factory=dict)
+    related_parties: List[RelatedParty] = field(default_factory=list)
+    invoice_stats: Optional[InvoiceStats] = None
+    people: PeopleFacts = field(default_factory=PeopleFacts)
+    compliance: ComplianceFacts = field(default_factory=ComplianceFacts)
 
     def __post_init__(self) -> None:
         self.asking_price = money(self.asking_price)
