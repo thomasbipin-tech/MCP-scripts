@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { Music4, Menu, X } from 'lucide-react'
+import { Music4, Menu, X, Sparkles, SlidersHorizontal } from 'lucide-react'
 import VoicePanel from './components/VoicePanel.jsx'
 import HumRecorder from './components/HumRecorder.jsx'
 import StructureEditor from './components/StructureEditor.jsx'
@@ -13,6 +13,7 @@ import SuperGeneratePage from './components/SuperGeneratePage.jsx'
 import InstrumentsPage from './components/InstrumentsPage.jsx'
 import LyricsToMusicPage from './components/LyricsToMusicPage.jsx'
 import GoodVoicePage from './components/GoodVoicePage.jsx'
+import SimpleStudio from './components/SimpleStudio.jsx'
 import { getEngine } from './lib/audioEngine.js'
 import { interpretCommand, generateSurpriseSong, usingLiveAI } from './lib/aiProducer.js'
 import { DEFAULT_SONG_STATE, makeTrack, NEON_COLORS, INSTRUMENTS } from './lib/constants.js'
@@ -22,6 +23,7 @@ const clamp = (n, lo, hi) => Math.max(lo, Math.min(hi, n))
 // ----- Autosave (localStorage) -----
 const SONG_KEY = 'ai-music-studio:songState:v1'
 const PAGE_KEY = 'ai-music-studio:page:v1'
+const MODE_KEY = 'ai-music-studio:mode:v1'
 
 function loadSong() {
   try {
@@ -40,6 +42,9 @@ export default function App() {
     return ['goodvoice', 'lyrics', 'l2m', 'super', 'sounds'].includes(saved) ? saved : 'studio'
   })
   const [sidebarOpen, setSidebarOpen] = useState(false)
+  const [mode, setMode] = useState(() =>
+    localStorage.getItem(MODE_KEY) === 'simple' ? 'simple' : 'advanced',
+  )
   const [recordings, setRecordings] = useState([]) // real recorded clips (session-only)
 
   const navigate = useCallback((p) => {
@@ -73,6 +78,27 @@ export default function App() {
       /* ignore */
     }
   }, [page])
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(MODE_KEY, mode)
+    } catch {
+      /* ignore */
+    }
+  }, [mode])
+
+  const toggleMode = useCallback(() => {
+    setSidebarOpen(false)
+    setMode((m) => (m === 'simple' ? 'advanced' : 'simple'))
+  }, [])
+
+  const openAdvanced = useCallback(
+    (p) => {
+      setMode('advanced')
+      navigate(p)
+    },
+    [navigate],
+  )
 
   // Keep the audio engine in sync with the latest song state (live edits).
   useEffect(() => {
@@ -337,15 +363,17 @@ export default function App() {
     <div className="app">
       <header className="app-header">
         <div className="brand">
-          <button
-            type="button"
-            className="menu-btn"
-            aria-label={sidebarOpen ? 'Close menu' : 'Open menu'}
-            aria-expanded={sidebarOpen}
-            onClick={() => setSidebarOpen((v) => !v)}
-          >
-            {sidebarOpen ? <X size={20} /> : <Menu size={20} />}
-          </button>
+          {mode === 'advanced' && (
+            <button
+              type="button"
+              className="menu-btn"
+              aria-label={sidebarOpen ? 'Close menu' : 'Open menu'}
+              aria-expanded={sidebarOpen}
+              onClick={() => setSidebarOpen((v) => !v)}
+            >
+              {sidebarOpen ? <X size={20} /> : <Menu size={20} />}
+            </button>
+          )}
           <div className="brand-mark">
             <Music4 size={22} />
           </div>
@@ -356,9 +384,40 @@ export default function App() {
             </div>
           </div>
         </div>
-        <SettingsBar songState={songState} onChange={applyChanges} onSurprise={handleSurprise} thinking={thinking} />
+
+        <div style={{ display: 'flex', alignItems: 'flex-end', gap: 14, flexWrap: 'wrap', marginLeft: 'auto' }}>
+          {mode === 'advanced' && (
+            <SettingsBar songState={songState} onChange={applyChanges} onSurprise={handleSurprise} thinking={thinking} />
+          )}
+          <button
+            type="button"
+            className="btn"
+            onClick={toggleMode}
+            style={{ height: 34, whiteSpace: 'nowrap' }}
+            aria-label={mode === 'simple' ? 'Switch to advanced view' : 'Switch to simple view'}
+          >
+            {mode === 'simple' ? <SlidersHorizontal size={15} /> : <Sparkles size={15} />}
+            {mode === 'simple' ? 'Advanced' : 'Simple'}
+          </button>
+        </div>
       </header>
 
+      {mode === 'simple' ? (
+        <div className="app-body">
+          <div className="page-area">
+            <SimpleStudio
+              songState={songState}
+              playing={playing}
+              onPlay={handlePlay}
+              onPause={handlePause}
+              onSurprise={handleSurprise}
+              onCommand={runCommand}
+              thinking={thinking}
+              onOpenAdvanced={openAdvanced}
+            />
+          </div>
+        </div>
+      ) : (
       <div className="app-body">
         {sidebarOpen && <div className="sidebar-backdrop" onClick={() => setSidebarOpen(false)} />}
         <Sidebar page={page} onNavigate={navigate} open={sidebarOpen} />
@@ -422,6 +481,7 @@ export default function App() {
           {page === 'sounds' && <InstrumentsPage songState={songState} onChangeInstrument={changeInstrument} />}
         </div>
       </div>
+      )}
 
       <Transport
         playing={playing}

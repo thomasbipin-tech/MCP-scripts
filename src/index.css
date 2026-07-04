@@ -531,3 +531,39 @@ select option {
   overflow: hidden;
   clip: rect(0 0 0 0);
 }
+
+/* Simple view — friendly centered layout */
+.simple-wrap {
+  max-width: 620px;
+  margin: 0 auto;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.simple-shortcuts {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+.simple-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 18px 12px;
+  border: 1px solid var(--border);
+  color: var(--text);
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  transition: background 140ms ease;
+}
+.simple-card:hover {
+  background: #272727;
+}
+@media (max-width: 560px) {
+  .simple-shortcuts {
+    grid-template-columns: 1fr;
+  }
+}
