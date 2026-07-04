@@ -1,11 +1,10 @@
-import { SlidersHorizontal, PenLine, Layers, SlidersVertical, Wand2, Disc3, Mic } from 'lucide-react'
+import { SlidersHorizontal, PenLine, Layers, SlidersVertical, Wand2, Mic } from 'lucide-react'
 
 // Left navigation rail. Each entry switches the active page; the app stays
 // mounted so song state is preserved across page switches.
 const PAGES = [
   { id: 'studio', label: 'Studio', icon: SlidersHorizontal },
-  { id: 'real', label: 'Studio Real', icon: Disc3 },
-  { id: 'goodvoice', label: 'Good Voice', icon: Mic },
+  { id: 'goodvoice', label: 'Edit Voice', icon: Mic },
   { id: 'lyrics', label: 'Lyrics AI', icon: PenLine },
   { id: 'l2m', label: 'Lyrics → Music', icon: Wand2 },
   { id: 'super', label: 'Super Generate', icon: Layers },

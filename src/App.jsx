@@ -12,7 +12,6 @@ import LyricsPage from './components/LyricsPage.jsx'
 import SuperGeneratePage from './components/SuperGeneratePage.jsx'
 import InstrumentsPage from './components/InstrumentsPage.jsx'
 import LyricsToMusicPage from './components/LyricsToMusicPage.jsx'
-import StudioRealPage from './components/StudioRealPage.jsx'
 import GoodVoicePage from './components/GoodVoicePage.jsx'
 import { getEngine } from './lib/audioEngine.js'
 import { interpretCommand, generateSurpriseSong, usingLiveAI } from './lib/aiProducer.js'
@@ -38,7 +37,7 @@ export default function App() {
   const [songState, setSongState] = useState(loadSong)
   const [page, setPage] = useState(() => {
     const saved = localStorage.getItem(PAGE_KEY)
-    return ['real', 'goodvoice', 'lyrics', 'l2m', 'super', 'sounds'].includes(saved) ? saved : 'studio'
+    return ['goodvoice', 'lyrics', 'l2m', 'super', 'sounds'].includes(saved) ? saved : 'studio'
   })
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [recordings, setRecordings] = useState([]) // real recorded clips (session-only)
@@ -404,15 +403,6 @@ export default function App() {
           )}
 
           {page === 'lyrics' && <LyricsPage songState={songState} onChange={updateLyrics} onSettings={applyChanges} />}
-
-          {page === 'real' && (
-            <StudioRealPage
-              recordings={recordings}
-              onAdd={addRecording}
-              onRemove={removeRecording}
-              onTogglePlay={toggleRecordingPlay}
-            />
-          )}
 
           {page === 'goodvoice' && (
             <GoodVoicePage

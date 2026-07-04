@@ -67,7 +67,7 @@ export default function GoodVoicePage({ recordings, onAdd, onRemove, onTogglePla
     <section className="glass page-pane" style={{ padding: 18, display: 'flex', flexDirection: 'column', gap: 16 }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
         <Mic size={18} style={{ color: 'var(--neon-green)' }} />
-        <span style={{ fontSize: 17, fontWeight: 700 }}>Good Voice</span>
+        <span style={{ fontSize: 17, fontWeight: 700 }}>Edit Voice</span>
         <span className="mono" style={{ fontSize: 9, color: 'var(--text-faint)', textTransform: 'uppercase' }}>recording booth</span>
       </div>
       <p style={{ color: 'var(--text-dim)', fontSize: 13.5, lineHeight: 1.6, margin: 0 }}>
