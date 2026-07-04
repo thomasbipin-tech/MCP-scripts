@@ -109,7 +109,7 @@ export default function LyricsToMusicPage({ songState, onApply, onRecord }) {
         </div>
         {voiceClip && <audio src={voiceClip.url} controls style={{ width: '100%', height: 34 }} />}
         <div className="mono" style={{ fontSize: 9.5, color: 'var(--text-faint)', lineHeight: 1.5 }}>
-          Saved to Studio Real — toggle “Play with song” there to hear it over the track. Making it
+          Saved to Edit Voice — toggle “Play with song” there to hear it over the track. Making it
           actually sing your lyrics in your voice needs an AI voice model (coming later).
         </div>
       </div>
