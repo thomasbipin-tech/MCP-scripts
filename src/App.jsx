@@ -414,7 +414,14 @@ export default function App() {
             />
           )}
 
-          {page === 'goodvoice' && <GoodVoicePage />}
+          {page === 'goodvoice' && (
+            <GoodVoicePage
+              recordings={recordings}
+              onAdd={addRecording}
+              onRemove={removeRecording}
+              onTogglePlay={toggleRecordingPlay}
+            />
+          )}
 
           {page === 'l2m' && (
             <LyricsToMusicPage songState={songState} onApply={applyVariation} onRecord={addRecording} />
