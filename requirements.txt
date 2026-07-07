@@ -1,0 +1,26 @@
+# ---- Core pipeline (always needed) ----
+pymupdf>=1.24        # PDF text extraction
+soundfile>=0.12      # read/write WAV
+numpy>=1.24
+pydub>=0.25          # audio helpers (needs ffmpeg on PATH)
+pyyaml>=6.0
+
+# ---- Web UI (for app.py) ----
+gradio>=4.0
+
+# ---- Voice A: Indic Parler-TTS ----
+torch>=2.1
+transformers>=4.43
+# Parler library (install separately, it's a git package):
+#   pip install git+https://github.com/huggingface/parler-tts.git
+
+# ---- Voice B / Own voice: IndicF5 ----
+# Uses transformers (AutoModel, trust_remote_code=True) + torch above.
+# First run downloads ai4bharat/IndicF5 from Hugging Face.
+
+# ---- Optional: scanned-PDF OCR ----
+pytesseract>=0.3     # also: apt-get install tesseract-ocr tesseract-ocr-mal
+pillow>=10.0
+
+# ---- Optional: online fallback voice ----
+gtts>=2.5            # needs internet at generation time

@@ -1,0 +1,27 @@
+# Personal Audiobook — configuration
+# Edit voice descriptions, chunk sizes, and chapter length here.
+
+# ---- Voice A: Indic Parler-TTS (description-controlled male narrator) ----
+# The caption controls gender, pace, tone. Malayalam officially supports the
+# "Narration" emotion — ideal for audiobooks. Tweak freely.
+parler_male_narrator: >
+  A middle-aged male speaker narrates in Malayalam with a calm, warm and clear
+  voice. He speaks slowly and expressively at a measured, storytelling pace.
+  The recording is very clear and close-sounding with no background noise.
+
+# Alternate: deeper/slower grandfather-style narrator
+parler_deep_slow: >
+  An older male speaker reads Malayalam very slowly in a deep, gentle voice,
+  like a grandfather telling a story. Very clear, close, studio-quality audio.
+
+# ---- Chunking ----
+max_chars: 350          # per-chunk character cap fed to the model
+chapter_minutes: 20     # target length of each .m4b chapter
+
+# ---- Output ----
+bitrate: "64k"          # AAC bitrate for the .m4b (spoken word compresses well)
+gap_seconds: 0.45       # pause between sentences
+chapter_gap_seconds: 1.2
+
+# ---- OCR ----
+ocr: auto               # auto | always | never  (auto OCRs only scanned pages)

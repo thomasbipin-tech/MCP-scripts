@@ -1,115 +1,170 @@
-# 🎛️ AI Music Studio
+# 📖🔊 Personal Audiobook — Malayalam
 
-A GarageBand-style, AI-powered DAW that runs entirely in the browser — voice
-commands, hum-to-melody, layered tracks, a song-structure timeline, real Tone.js
-playback, and an AI producer that responds to everything you do.
+Turn a Malayalam PDF (even a 500-page one) into an authentic, chaptered
+audiobook. **100% free**, runs locally, resumable. No paid APIs, no paid content.
 
-Built with **React + Vite**, **Tone.js**, and the native **Web Speech** /
-**MediaRecorder** APIs.
+---
 
-![dark studio UI](https://img.shields.io/badge/aesthetic-neon%20studio-00f5ff) ![stack](https://img.shields.io/badge/react%20+%20vite%20+%20tone.js-12121a)
+## The honest version first (read this)
 
-## Quick start
+- **Authenticity comes from the model, not tricks.** This uses **AI4Bharat**
+  models built by native-language researchers — the best free Malayalam TTS
+  available today. Two are wired in (details below).
+- **A 500-page book is 15-30+ hours of audio.** On a **CPU** neural TTS is
+  painfully slow (potentially days). On a **GPU** it's practical. If you don't
+  have a local GPU, render on a **free** Colab/Kaggle GPU — the same code runs
+  there. See "Capacity & speed".
+- **"Your own voice" reading Malayalam** works because `IndicF5` clones a voice
+  *within Malayalam* (not a cross-lingual hack). Quality depends on your
+  reference recording. You may only clone a voice you have the right to use
+  (your own is fine).
+- Everything is **resumable**. Interrupt a 20-hour render and re-run; it picks
+  up where it left off.
+
+---
+
+## Hear the voices right now (zero setup)
+
+Before installing anything, try the official demos in your browser:
+
+- **Voice A — Indic Parler-TTS:** https://huggingface.co/spaces/ai4bharat/indic-parler-tts
+- **Voice B — IndicF5 (cloning):** https://huggingface.co/spaces/ai4bharat/IndicF5
+
+Pick Malayalam, type a sentence, and listen. That tells you which voice you want
+before committing to the full book.
+
+---
+
+## The two Malayalam voices (choose before generating)
+
+| | **Voice A — Male Narrator** | **Voice B / Own Voice — Clone** |
+|---|---|---|
+| Model | `ai4bharat/indic-parler-tts` | `ai4bharat/IndicF5` |
+| How it picks a voice | A **text description** ("a calm middle-aged male…") | A **5-10s reference clip** it imitates |
+| Reference needed? | No | Yes (a native-male clip, or **your own voice**) |
+| Best for | A clean, consistent narrator with no setup | Maximum authenticity, or *your* voice |
+| Malayalam "Narration" emotion | ✅ officially supported | via the reference clip's tone |
+| License | Apache-2.0 (free) | Free (AI4Bharat) |
+
+**Own voice** is just Voice B pointed at a recording of *you*: upload a clear
+5-10 second clip of yourself reading Malayalam plus the exact transcript, and
+the whole book is narrated in your voice.
+
+An always-available **fallback** (`gtts`) exists for emergencies — a single
+female-ish, non-audiobook-grade voice that needs internet. Use only if the
+neural models are unavailable.
+
+---
+
+## Setup
 
 ```bash
-npm install
-npm run dev      # http://localhost:5173
+python -m venv .venv && source .venv/bin/activate
+pip install -r requirements.txt
+# Voice A also needs the Parler library:
+pip install git+https://github.com/huggingface/parler-tts.git
+# Scanned PDFs only (OCR):
+sudo apt-get install -y tesseract-ocr tesseract-ocr-mal ffmpeg
 ```
 
-Build / preview a production bundle:
+`ffmpeg` is required (for assembling the `.m4b`). First run downloads the
+model from Hugging Face (a few GB), then it's cached.
+
+---
+
+## Use it
+
+### Option 1 — Web UI (the link to execute)
 
 ```bash
-npm run build
-npm run preview
+python app.py
 ```
 
-> **Audio note:** browsers only start audio after a user gesture — click **Play**
-> (or **Preview**) once and the engine spins up. Use Chrome/Edge for the full
-> voice-command experience (Web Speech API). Everywhere else, type commands into
-> the AI Producer panel — every feature still works.
+Open the link it prints: **http://127.0.0.1:7860**
 
-### Use it from your phone or iPad (same Wi‑Fi)
+Then: drop your PDF → pick a voice → **Generate sample** (hear a few sentences)
+→ **Generate full audiobook**. A progress bar tracks the long render; the
+finished `.m4b` appears for download.
 
-`npm run dev` binds to your whole network (`host: true`) and serves over HTTPS
-(self‑signed cert via `@vitejs/plugin-basic-ssl`). On another device, open the
-**Network** URL Vite prints — `https://<your-laptop-ip>:5173`.
+### Option 2 — Headless CLI (best for the full 500-page run on a server)
 
-- The first visit shows a "Not Private" / certificate warning — tap through it
-  (**Show Details → visit this website**) to trust the self‑signed cert.
-- HTTPS is what lets iOS Safari grant **microphone** access, so the voice mic and
-  hum recorder work on the iPad. (Over plain HTTP, iOS blocks the mic and only
-  typed commands work.)
-- If a device can't connect, allow port `5173` through your laptop's firewall and
-  confirm both devices are on the same network.
+```bash
+# Voice A — male narrator, nothing else needed
+python run.py mybook.pdf --voice parler --title "എന്റെ പുസ്തകം"
 
-## Features
-
-| # | Feature | What it does |
-|---|---------|--------------|
-| 1 | **Voice Command System** | Big mic button (Web Speech API), live transcript, "AI is thinking…" state. Parses commands like *"add a drum track"*, *"speed up to 140 BPM"*, *"add reverb to track 2"*, *"make it heavier"*. |
-| 2 | **Hum-to-Melody Recorder** | Record a hum (MediaRecorder), see its waveform, generate a key-aware note sequence, view it as a piano-roll strip, pick an instrument, and preview it with Tone.js. |
-| 3 | **Interactive Layer System** | Draggable track lanes with neon borders, instrument icons, breathing waveform blocks, volume sliders, mute/solo, reverb/delay/distortion toggles, loop badges, and delete. |
-| 4 | **Song Structure Editor** | Horizontal timeline of draggable Intro/Verse/Chorus/Bridge/Outro blocks, click-to-select, `x3` repeat badges with +/- controls, live duration estimate, and a moving playhead. |
-| 5 | **AI Collaboration Panel** | Chat log of every change. After each command the AI replies with *what it changed*, a *production tip*, and a *next-step suggestion*. Text-input fallback included. |
-| 6 | **Playback Engine (Tone.js)** | Play/Pause/Stop transport, BPM +/-, bouncing playhead, MembraneSynth/MetalSynth drums, square-wave bass, PolySynth lead, AMSynth pad with reverb, master volume knob, and a live spectrum analyser. |
-| 7 | **Song Settings** | Key, time-signature, genre and mood selectors (the AI uses these to bias suggestions) and a **Surprise me** button that generates a full 4-track starter song. |
-
-## How the "AI producer" works
-
-Every voice/text command, plus the "Surprise me" and melody generators, runs
-through `src/lib/aiProducer.js`.
-
-- **Built-in mode (default).** A robust rule-based interpreter maps natural
-  language onto changes to the central `songState`. No keys, no network — the
-  whole app works offline, end to end.
-- **Live Claude mode (optional).** Copy `.env.example` to `.env` and set
-  `VITE_ANTHROPIC_API_KEY`. Commands are then sent to the real Claude API
-  (`claude-sonnet-4-6` by default), and the app falls back to the built-in
-  interpreter automatically if a request fails.
-
-  ⚠️ A key placed in a Vite env var is bundled into client-side JS. Use a
-  throwaway/scoped key for local experimentation only; for production, proxy the
-  request through a backend.
-
-The single source of truth is the `songState` object (see
-`src/lib/constants.js`):
-
-```js
-{
-  bpm: 120, key: "C major", timeSignature: "4/4",
-  genre: "electronic", mood: "energetic", masterVolume: 80,
-  structure: [ { type: "chorus", bars: 8, repeat: 3 }, … ],
-  tracks:    [ { id, name, instrument, color, volume, muted, solo,
-                 effects: { reverb, delay, distortion }, pattern, notes }, … ],
-}
+# Voice B / your own voice — clone a reference clip
+python run.py mybook.pdf --voice indicf5 \
+    --ref reference/native_male.wav \
+    --ref-text "റഫറൻസ് ക്ലിപ്പിന്റെ കൃത്യമായ ട്രാൻസ്ക്രിപ്റ്റ്"
 ```
 
-The interpreter returns `{ changes, message, tip, nextSuggestion }`; `changes`
-is shallow-merged into `songState` (arrays like `tracks`/`structure` are
-replaced wholesale).
+Ctrl-C any time and re-run the same command to resume. Output lands in
+`output/<book>.m4b`.
 
-## Project layout
+### Quick voice sample only
 
-```
-src/
-  App.jsx                  # orchestrator: owns songState, wires everything
-  lib/
-    constants.js           # song schema, palettes, music-theory helpers
-    aiProducer.js          # command interpreter + surprise/melody generators
-    audioEngine.js         # Tone.js graph, scheduler, analyser, playhead
-  hooks/
-    useSpeechRecognition.js
-    useHumRecorder.js
-  components/
-    VoicePanel.jsx  HumRecorder.jsx  StructureEditor.jsx
-    TrackMixer.jsx  AICollabPanel.jsx  Transport.jsx
-    SettingsBar.jsx  SpectrumAnalyser.jsx
+```bash
+python samples/make_sample.py --voice parler
+# -> output/sample.m4b
 ```
 
-## Try this flow
+---
 
-1. Hit **Surprise me** for an instant 4-track song.
-2. Press **Play** — watch the playhead ride the timeline and the spectrum react.
-3. Type or say **"make the chorus repeat 4 times"**.
-4. **Record Melody**, hum something, **Generate**, then **Add as Track**.
-5. Say **"make it heavier"** and hear the distortion + tempo bump land.
+## Capacity & speed (the 500-page reality)
+
+- Text is split into short chunks and rendered one at a time; each finished
+  chunk is saved, so memory stays flat no matter how long the book is.
+- Assembly never loads the audio into RAM — `ffmpeg` streams the concat, so
+  20+ hours of audio assembles fine on a laptop.
+- **Speed is the real constraint.** Rough guide per hour of *output* audio:
+  CPU ≈ many hours; a modern GPU ≈ minutes-to-tens-of-minutes.
+- **No local GPU?** Run the exact same code on a **free** GPU:
+  - Google Colab (free T4) or Kaggle (free GPU, ~30h/week).
+  - Upload the folder + your PDF, `pip install -r requirements.txt`, run
+    `run.py`, download the `.m4b`. Still $0.
+
+---
+
+## How it works
+
+```
+PDF ──extract──► raw text ──normalize──► clean text ──chunk──► sentences
+      (PyMuPDF,        (NFC, strip page      (≤350 chars,
+       OCR fallback)    numbers, de-wrap)     sentence-safe)
+                                                   │
+                                          synth (resumable, per-chunk WAV)
+                                                   │  Indic Parler / IndicF5
+                                                   ▼
+                                     assemble ──► chaptered .m4b (ffmpeg)
+```
+
+Files: `pipeline/extract.py`, `textnorm.py`, `engines.py`, `synth.py`,
+`assemble.py`; `run.py` (CLI), `app.py` (UI), `config.yaml` (voice presets).
+
+---
+
+## Testing
+
+```bash
+pip install pymupdf soundfile numpy pyyaml pytesseract pillow
+python scripts/selftest.py
+```
+
+Builds a throwaway Malayalam PDF (using the bundled `test_ml.ttf` — Noto Sans
+Malayalam, SIL OFL-1.1), runs the full extract → normalize → chunk → synth →
+assemble pipeline with the silent `stub` engine (no GPU/model download
+needed), and checks the resume logic and chapter markers. No network or
+neural-TTS deps required.
+
+---
+
+## Limitations / honest notes
+
+- **Scanned books:** Malayalam OCR (Tesseract `mal`) is decent but not perfect
+  on complex ligatures. A clean text-layer PDF gives the best result. The
+  pipeline auto-detects scanned pages and OCRs only those.
+- **Own-voice quality** is only as good as your reference clip — record clean,
+  quiet, 5-10s, natural pace.
+- **Pronunciation** of rare proper nouns/English loanwords can wobble; the
+  chunker keeps punctuation to help prosody.
+- This is a personal-use tool. Respect the source book's copyright.

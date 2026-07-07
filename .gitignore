@@ -1,13 +1,16 @@
-node_modules
-dist
-dist-single
-AI-Music-Studio.html
-dist-ssr
-*.local
-.env
-.env.*
-!.env.example
-.DS_Store
-*.log
-npm-debug.log*
-.vite
+__pycache__/
+*.pyc
+.venv/
+*.egg-info/
+
+# Generated audiobook output (keep the folder, not the renders)
+output/*
+!output/.gitkeep
+
+# Self-test scratch artifacts
+/test_book.pdf
+/_selftest_work/
+/_selftest_out.m4b
+
+# User-provided reference clip (personal recordings, not for git)
+reference/*.wav
