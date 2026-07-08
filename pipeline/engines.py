@@ -132,12 +132,130 @@ class GTTSEngine:
         return samples / (2 ** (8 * seg.sample_width - 1))
 
 
+# Microsoft's free Malayalam neural voices (Edge TTS): a solid male narrator
+# and a female one. No gated model, no GPU, no login — just internet.
+EDGE_MALE = "ml-IN-MidhunNeural"
+EDGE_FEMALE = "ml-IN-SobhanaNeural"
+
+
+class EdgeTTSEngine:
+    """Microsoft Edge neural TTS (free, online, no GPU, no gated model).
+
+    A strong, natural Malayalam narrator that works where the AI4Bharat
+    models can't be run — no local GPU, or a locked-down box that can't
+    download the (multi-GB, sometimes gated) Hugging Face weights. Pick the
+    male (default) or female voice; `rate`/`pitch` shape the delivery (e.g.
+    rate="-10%", pitch="-15Hz" for a slower, deeper storytelling tone).
+
+    `proxy` is passed through to edge-tts for environments behind an
+    HTTPS proxy.
+    """
+    sample_rate = 24000
+
+    def __init__(self, voice: str = EDGE_MALE, rate: str = "-6%",
+                 pitch: str = "+0Hz", proxy: str | None = None):
+        self.voice = voice
+        self.rate = rate
+        self.pitch = pitch
+        self.proxy = proxy
+
+    def synth(self, text: str) -> np.ndarray:
+        import io, asyncio
+        import edge_tts
+        from pydub import AudioSegment
+
+        async def _stream() -> bytes:
+            comm = edge_tts.Communicate(text, voice=self.voice, rate=self.rate,
+                                        pitch=self.pitch, proxy=self.proxy)
+            buf = io.BytesIO()
+            async for chunk in comm.stream():
+                if chunk["type"] == "audio":
+                    buf.write(chunk["data"])
+            return buf.getvalue()
+
+        mp3 = asyncio.run(_stream())
+        seg = (AudioSegment.from_file(io.BytesIO(mp3), format="mp3")
+               .set_channels(1).set_frame_rate(self.sample_rate))
+        samples = np.array(seg.get_array_of_samples()).astype(np.float32)
+        return samples / (2 ** (8 * seg.sample_width - 1))
+
+
+class VoiceMatchEngine:
+    """Token-free voice *matching* (timbre transfer) — NOT true cloning.
+
+    Renders text with a base neural voice (Edge TTS by default), then applies
+    OpenVoice v2 tone-color conversion toward a reference clip. The OpenVoice
+    converter is a small, ungated Hugging Face model, so this runs on CPU with
+    no login — useful when IndicF5 (the real cloning engine) is out of reach.
+
+    Honest limits: it matches the reference's *timbre and pitch*, but NOT its
+    accent, rhythm or pronunciation — those come from the base voice. For an
+    accent-faithful clone use `IndicF5Engine` (needs its gated model + a GPU).
+
+    `ref_audio_path` may be a single clip or a list of clean segments (the
+    speaker embedding is averaged over them, which is more robust).
+    """
+
+    def __init__(self, ref_audio_path, base_engine=None, tau: float = 0.9,
+                 device: str | None = None, edge_proxy: str | None = None):
+        if not ref_audio_path:
+            raise ValueError("VoiceMatch needs a reference WAV (or list of WAVs).")
+        self.ref = [ref_audio_path] if isinstance(ref_audio_path, str) else list(ref_audio_path)
+        self.base = base_engine or EdgeTTSEngine(proxy=edge_proxy)
+        self.tau = tau
+        self.device = device
+        self._model = None
+        self._tgt_se = None
+        self.sample_rate = 22050  # OpenVoice v2 converter output rate
+
+    def _load(self):
+        import os
+        os.environ.setdefault("COQUI_TOS_AGREED", "1")
+        from TTS.api import TTS
+        api = TTS(
+            model_name="voice_conversion_models/multilingual/multi-dataset/openvoice_v2",
+            progress_bar=False,
+        )
+        self._model = api.voice_converter.vc_model
+        self._model.tau = self.tau
+        # Cache the target speaker embedding once (not per chunk).
+        self._tgt_se = self._model.clone_voice(self.ref)["speaker_embedding"]
+
+    def synth(self, text: str) -> np.ndarray:
+        import tempfile, os
+        import soundfile as sf
+        import torch
+        if self._model is None:
+            self._load()
+        base_audio = self.base.synth(text)
+        with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as tf:
+            src_path = tf.name
+        try:
+            sf.write(src_path, base_audio, self.base.sample_rate)
+            with torch.inference_mode():
+                src_se, src_spec = self._model.extract_se(src_path)
+                out = self._model.inference(src_spec, {"g_src": src_se, "g_tgt": self._tgt_se})
+            return out["model_outputs"][0, 0].data.cpu().float().numpy()
+        finally:
+            try:
+                os.remove(src_path)
+            except OSError:
+                pass
+
+
 def build_engine(name: str, **kwargs):
     name = name.lower()
     if name in ("parler", "indic-parler", "a"):
         return IndicParlerEngine(**{k: v for k, v in kwargs.items() if k in ("description", "device")})
     if name in ("indicf5", "f5", "clone", "own", "b"):
         return IndicF5Engine(**{k: v for k, v in kwargs.items() if k in ("ref_audio_path", "ref_text", "device")})
+    if name in ("edge", "edge-tts", "neural"):
+        return EdgeTTSEngine(**{k: v for k, v in kwargs.items()
+                                if k in ("voice", "rate", "pitch", "proxy")})
+    if name in ("voicematch", "match", "openvoice"):
+        return VoiceMatchEngine(**{k: v for k, v in kwargs.items()
+                                   if k in ("ref_audio_path", "base_engine", "tau",
+                                            "device", "edge_proxy")})
     if name in ("gtts", "fallback"):
         return GTTSEngine()
     if name in ("stub", "test"):

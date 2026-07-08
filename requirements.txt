@@ -24,3 +24,13 @@ pillow>=10.0
 
 # ---- Optional: online fallback voice ----
 gtts>=2.5            # needs internet at generation time
+
+# ---- Optional: Edge neural voice + token-free voice-matching ----
+# edge=free Malayalam neural narrator (no GPU, no login, needs internet).
+# voicematch=timbre-match to a reference clip via OpenVoice v2 (ungated),
+#            no Hugging Face token needed — a CPU-friendly alternative to
+#            IndicF5 when you can't run the gated model. Matches timbre,
+#            not accent.
+edge-tts>=6.1        # Microsoft Edge neural TTS (ml-IN-Midhun/Sobhana)
+coqui-tts>=0.25      # bundles OpenVoice v2 voice conversion; use torch<2.9
+                     # (>=2.9 pulls a torchcodec dependency)

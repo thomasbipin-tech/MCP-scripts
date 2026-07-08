@@ -26,10 +26,18 @@ def main():
     ap = argparse.ArgumentParser(description="Malayalam PDF -> chaptered audiobook")
     ap.add_argument("pdf", help="Path to the Malayalam PDF")
     ap.add_argument("--voice", default="parler",
-                    choices=["parler", "indicf5", "gtts", "stub"],
-                    help="parler=male narrator (default), indicf5=clone a reference/your voice")
-    ap.add_argument("--ref", help="Reference WAV (5-10s) for indicf5")
-    ap.add_argument("--ref-text", help="Exact Malayalam transcript of --ref")
+                    choices=["parler", "indicf5", "edge", "voicematch", "gtts", "stub"],
+                    help="parler=AI4Bharat male narrator (default); indicf5=true clone "
+                         "(gated model+GPU); edge=free neural male, no GPU/login; "
+                         "voicematch=token-free timbre match to --ref (needs internet)")
+    ap.add_argument("--ref", help="Reference WAV for indicf5/voicematch "
+                                  "(voicematch also accepts several clips, comma-separated)")
+    ap.add_argument("--ref-text", help="Exact Malayalam transcript of --ref (indicf5 only)")
+    ap.add_argument("--edge-voice", default=None,
+                    help="Edge voice id (default male ml-IN-MidhunNeural; "
+                         "female ml-IN-SobhanaNeural)")
+    ap.add_argument("--rate", default="-6%", help="Edge speaking rate, e.g. -10%%")
+    ap.add_argument("--pitch", default="+0Hz", help="Edge pitch, e.g. -15Hz for deeper")
     ap.add_argument("--title", default=None)
     ap.add_argument("--author", default="Personal Audiobook")
     ap.add_argument("--out", default=None, help="Output .m4b path")
@@ -60,6 +68,17 @@ def main():
         if not args.ref or not args.ref_text:
             sys.exit("indicf5 needs --ref and --ref-text")
         kwargs = {"ref_audio_path": args.ref, "ref_text": args.ref_text}
+    elif args.voice == "voicematch":
+        if not args.ref:
+            sys.exit("voicematch needs --ref (a WAV, or comma-separated WAVs)")
+        refs = [r.strip() for r in args.ref.split(",") if r.strip()]
+        kwargs = {"ref_audio_path": refs if len(refs) > 1 else refs[0],
+                  "edge_proxy": os.environ.get("HTTPS_PROXY")}
+    elif args.voice == "edge":
+        if args.edge_voice:
+            kwargs["voice"] = args.edge_voice
+        kwargs.update(rate=args.rate, pitch=args.pitch,
+                      proxy=os.environ.get("HTTPS_PROXY"))
     engine = build_engine(args.voice, **kwargs)
 
     t0 = time.time()
