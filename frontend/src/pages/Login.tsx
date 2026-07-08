@@ -52,12 +52,18 @@ export default function Login() {
     <div className="flex min-h-screen items-center justify-center bg-slate-950 px-4 py-10">
       <div className="w-full max-w-sm rounded border border-slate-800 bg-slate-900/40 p-6 sm:p-8">
         <div className="mb-6 flex items-center gap-2">
-          <svg width="22" height="22" viewBox="0 0 32 32" className="shrink-0">
-            <rect width="32" height="32" rx="4" fill="#020617" />
-            <path d="M16 6 L26 24 L6 24 Z" fill="none" stroke="#e5484d" strokeWidth="2" />
-            <circle cx="16" cy="19" r="1.4" fill="#e5484d" />
+          <svg width="22" height="22" viewBox="0 0 32 32" className="shrink-0" aria-hidden="true">
+            <rect width="32" height="32" rx="7" fill="#0b1220" />
+            <path
+              d="M16 4.5 L26 8 V15.2 C26 21.8 21.7 26.4 16 27.8 C10.3 26.4 6 21.8 6 15.2 V8 Z"
+              fill="none" stroke="#4cc0b4" strokeWidth="2" strokeLinejoin="round"
+            />
+            <path
+              d="M11.4 15.8 L14.7 19.1 L20.6 12.4"
+              fill="none" stroke="#4cc0b4" strokeWidth="2.3" strokeLinecap="round" strokeLinejoin="round"
+            />
           </svg>
-          <span className="text-base font-semibold tracking-wide text-slate-100">DealProof</span>
+          <span className="text-base font-semibold tracking-wide text-slate-100">DealProofing</span>
         </div>
 
         <h1 className="text-lg font-semibold text-slate-100">Sign in</h1>

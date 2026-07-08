@@ -3,18 +3,18 @@ import { Link } from 'react-router-dom'
 const STEPS = [
   {
     n: '01',
-    title: 'Upload the data room',
-    body: 'Drop in tax returns, P&Ls, bank statements, leases, and contracts. We accept the messy pile a seller actually hands you.',
+    title: 'Upload the seller’s paperwork',
+    body: 'Drop in the tax returns, profit statements, bank records, lease, and contracts the seller gave you. The messy pile is fine — we sort it out.',
   },
   {
     n: '02',
-    title: 'Triangle of Truth reconciliation + red-flag scan',
-    body: 'We cross-reference tax filings, P&L, and bank deposits, then run a rules engine tuned to small-business acquisition risk.',
+    title: 'We cross-check the numbers',
+    body: 'The same figures get compared across the tax return, the profit report, and the money that actually hit the bank. Where they disagree is where the risk hides.',
   },
   {
     n: '03',
-    title: 'Human-reviewed report in 48h',
-    body: 'A analyst reviews every automated finding before it reaches you, with evidence linked to the exact page it came from.',
+    title: 'You get a plain-English report',
+    body: 'A clear list of what looks risky — ranked by how serious — each backed by the exact source page and the question to ask the seller.',
   },
 ]
 
@@ -57,11 +57,11 @@ const PLANS = [
 
 const FAQS = [
   {
-    q: 'What is DealProof?',
-    a: 'A red-flag scanner and diligence accelerant. We reconcile the numbers a seller gives you against each other and surface the specific issues worth investigating before you spend money on lawyers and accountants.',
+    q: 'What is DealProofing?',
+    a: 'A warning-sign scanner for business purchases. We check the numbers a seller gives you against each other and surface the specific things worth investigating — before you spend money on lawyers and accountants.',
   },
   {
-    q: 'What is DealProof NOT?',
+    q: 'What is DealProofing NOT?',
     a: 'We are not a CPA firm. We do not perform a Quality of Earnings engagement. Nothing we produce is financial, legal, or valuation advice. Findings identify areas for further professional review.',
   },
   {
@@ -70,7 +70,7 @@ const FAQS = [
   },
   {
     q: 'Do you give a single risk score or a recommendation?',
-    a: 'No. DealProof intentionally produces no single score and no go/no-go recommendation — only findings, evidence, and questions for the seller.',
+    a: 'No. DealProofing intentionally produces no single score and no go/no-go recommendation — only findings, evidence, and questions for the seller.',
   },
 ]
 
@@ -79,12 +79,18 @@ export default function Landing() {
     <div className="min-h-screen bg-slate-950 text-slate-100">
       <header className="mx-auto flex max-w-6xl items-center justify-between px-6 py-6">
         <div className="flex items-center gap-2">
-          <svg width="22" height="22" viewBox="0 0 32 32" className="shrink-0">
-            <rect width="32" height="32" rx="4" fill="#020617" />
-            <path d="M16 6 L26 24 L6 24 Z" fill="none" stroke="#e5484d" strokeWidth="2" />
-            <circle cx="16" cy="19" r="1.4" fill="#e5484d" />
+          <svg width="24" height="24" viewBox="0 0 32 32" className="shrink-0" aria-hidden="true">
+            <rect width="32" height="32" rx="7" fill="#0b1220" />
+            <path
+              d="M16 4.5 L26 8 V15.2 C26 21.8 21.7 26.4 16 27.8 C10.3 26.4 6 21.8 6 15.2 V8 Z"
+              fill="none" stroke="#4cc0b4" strokeWidth="2" strokeLinejoin="round"
+            />
+            <path
+              d="M11.4 15.8 L14.7 19.1 L20.6 12.4"
+              fill="none" stroke="#4cc0b4" strokeWidth="2.3" strokeLinecap="round" strokeLinejoin="round"
+            />
           </svg>
-          <span className="text-base font-semibold tracking-wide">DealProof</span>
+          <span className="text-base font-semibold tracking-wide">DealProofing</span>
         </div>
         <div className="flex items-center gap-2 sm:gap-3">
           <Link
@@ -105,13 +111,14 @@ export default function Landing() {
       {/* Hero */}
       <section className="mx-auto max-w-5xl px-6 pb-24 pt-16 text-center">
         <p className="mb-4 inline-block rounded-full border border-slate-800 px-3 py-1 text-xs uppercase tracking-widest text-slate-400">
-          Small-business acquisition diligence
+          Buying a small business?
         </p>
         <h1 className="text-5xl font-bold leading-tight tracking-tight text-slate-50 sm:text-6xl">
           Know before you buy.
         </h1>
         <p className="mx-auto mt-6 max-w-2xl text-lg text-slate-400">
-          Institutional-grade red-flag analysis on any small business acquisition. 48 hours. Flat fee.
+          Upload the seller’s financials. In minutes, DealProofing shows you the warning signs — and
+          the exact questions to ask — so you know where to dig before you spend real money.
         </p>
         <div className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row">
           <Link
@@ -202,7 +209,7 @@ export default function Landing() {
 
           <div className="mt-8 rounded border border-signal-500/30 bg-signal-500/[0.04] p-5">
             <p className="text-xs leading-relaxed text-slate-400">
-              DealProof is an automated document-analysis and red-flag identification tool. It does not
+              DealProofing is an automated document-analysis and red-flag identification tool. It does not
               provide accounting, legal, tax, investment, or valuation advice; is not a CPA firm; and does
               not perform a Quality of Earnings engagement. Findings identify areas for further
               professional review.
@@ -213,7 +220,7 @@ export default function Landing() {
 
       <footer className="border-t border-slate-900 py-10">
         <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 px-6 text-xs text-slate-600 sm:flex-row">
-          <span>&copy; {new Date().getFullYear()} DealProof.</span>
+          <span>&copy; {new Date().getFullYear()} DealProofing.</span>
           <Link to="/report" className="text-slate-400 hover:text-slate-200">
             View a sample report &rarr;
           </Link>

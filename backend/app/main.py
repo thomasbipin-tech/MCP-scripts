@@ -30,7 +30,7 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(
-    title="DealProof API",
+    title="DealProofing API",
     version="0.1.0",
     description=DISCLAIMER,
     lifespan=lifespan,

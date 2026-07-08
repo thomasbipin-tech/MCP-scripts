@@ -143,7 +143,7 @@ def build_html(report: dict) -> str:
 
     return f"""<!doctype html><html><head><meta charset="utf-8">
 <style>{_css()}</style></head><body>
-<h1>DealProof Red-Flag Report</h1>
+<h1>DealProofing Red-Flag Report</h1>
 <p class="sub">{_e(deal.get('codename',''))} — {_e(deal.get('entity_name',''))} · {_e(deal.get('vertical_label') or deal.get('vertical',''))} · Asking <span class="num">{_money(deal.get('asking_price'))}</span></p>
 {wm}
 {_tiles(report.get('severity_counts', {}))}
