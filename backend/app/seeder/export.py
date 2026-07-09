@@ -53,6 +53,7 @@ def generate_pdfs(target_dir: Path) -> list:
                 "doc_type": doc["doc_type"],
                 "period": doc["period"],
                 "page_count": len(doc["pages"]),
+                "confidence": 0.96,  # synthetic docs classify cleanly
                 "filename": filename,
                 "url": f"/demo-docs/{filename}",
             }
@@ -66,6 +67,9 @@ def main() -> dict:
 
     docs_dir = FRONTEND_PUBLIC / "demo-docs"
     report["documents"] = generate_pdfs(docs_dir)
+    from ..pipeline.report import build_verification
+
+    report["verification"] = build_verification(report["documents"])
 
     for path in (FRONTEND_PUBLIC / "demo_report.json", BACKEND_OUT / "demo_report.json"):
         path.parent.mkdir(parents=True, exist_ok=True)

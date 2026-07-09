@@ -798,7 +798,6 @@
     "data_gaps_intro": "The following items were not provided or could not be verified from the documents supplied. Each is an area for further review.",
     "closing_note": "These findings identify areas for further professional review and do not constitute accounting, legal, tax, or valuation advice."
   },
-  "disclaimer": "DealProof is an automated document-analysis and red-flag identification tool. It does not provide accounting, legal, tax, investment, or valuation advice; is not a CPA firm; and does not perform a Quality of Earnings engagement. Findings identify areas for further professional review.",
   "documents": [
     {
       "id": "doc-tax-2022",
@@ -806,6 +805,7 @@
       "doc_type": "tax_return_1120S",
       "period": 2022,
       "page_count": 2,
+      "confidence": 0.96,
       "filename": "doc-tax-2022.pdf",
       "url": "/demo-docs/doc-tax-2022.pdf"
     },
@@ -815,6 +815,7 @@
       "doc_type": "pnl",
       "period": 2022,
       "page_count": 5,
+      "confidence": 0.96,
       "filename": "doc-pnl-2022.pdf",
       "url": "/demo-docs/doc-pnl-2022.pdf"
     },
@@ -824,6 +825,7 @@
       "doc_type": "bank_statement",
       "period": 2022,
       "page_count": 3,
+      "confidence": 0.96,
       "filename": "doc-bank-2022.pdf",
       "url": "/demo-docs/doc-bank-2022.pdf"
     },
@@ -833,6 +835,7 @@
       "doc_type": "balance_sheet",
       "period": 2022,
       "page_count": 2,
+      "confidence": 0.96,
       "filename": "doc-bs-2022.pdf",
       "url": "/demo-docs/doc-bs-2022.pdf"
     },
@@ -842,6 +845,7 @@
       "doc_type": "tax_return_1120S",
       "period": 2023,
       "page_count": 2,
+      "confidence": 0.96,
       "filename": "doc-tax-2023.pdf",
       "url": "/demo-docs/doc-tax-2023.pdf"
     },
@@ -851,6 +855,7 @@
       "doc_type": "pnl",
       "period": 2023,
       "page_count": 5,
+      "confidence": 0.96,
       "filename": "doc-pnl-2023.pdf",
       "url": "/demo-docs/doc-pnl-2023.pdf"
     },
@@ -860,6 +865,7 @@
       "doc_type": "bank_statement",
       "period": 2023,
       "page_count": 3,
+      "confidence": 0.96,
       "filename": "doc-bank-2023.pdf",
       "url": "/demo-docs/doc-bank-2023.pdf"
     },
@@ -869,6 +875,7 @@
       "doc_type": "balance_sheet",
       "period": 2023,
       "page_count": 2,
+      "confidence": 0.96,
       "filename": "doc-bs-2023.pdf",
       "url": "/demo-docs/doc-bs-2023.pdf"
     },
@@ -878,6 +885,7 @@
       "doc_type": "tax_return_1120S",
       "period": 2024,
       "page_count": 2,
+      "confidence": 0.96,
       "filename": "doc-tax-2024.pdf",
       "url": "/demo-docs/doc-tax-2024.pdf"
     },
@@ -887,6 +895,7 @@
       "doc_type": "pnl",
       "period": 2024,
       "page_count": 5,
+      "confidence": 0.96,
       "filename": "doc-pnl-2024.pdf",
       "url": "/demo-docs/doc-pnl-2024.pdf"
     },
@@ -896,6 +905,7 @@
       "doc_type": "bank_statement",
       "period": 2024,
       "page_count": 3,
+      "confidence": 0.96,
       "filename": "doc-bank-2024.pdf",
       "url": "/demo-docs/doc-bank-2024.pdf"
     },
@@ -905,6 +915,7 @@
       "doc_type": "balance_sheet",
       "period": 2024,
       "page_count": 2,
+      "confidence": 0.96,
       "filename": "doc-bs-2024.pdf",
       "url": "/demo-docs/doc-bs-2024.pdf"
     },
@@ -914,6 +925,7 @@
       "doc_type": "ar_aging",
       "period": 2024,
       "page_count": 1,
+      "confidence": 0.96,
       "filename": "doc-ar-2024.pdf",
       "url": "/demo-docs/doc-ar-2024.pdf"
     },
@@ -923,6 +935,7 @@
       "doc_type": "other",
       "period": 2024,
       "page_count": 1,
+      "confidence": 0.96,
       "filename": "doc-addbacks-2024.pdf",
       "url": "/demo-docs/doc-addbacks-2024.pdf"
     },
@@ -932,6 +945,7 @@
       "doc_type": "contract_customer",
       "period": 2024,
       "page_count": 6,
+      "confidence": 0.96,
       "filename": "doc-contract-metro-2024.pdf",
       "url": "/demo-docs/doc-contract-metro-2024.pdf"
     },
@@ -941,6 +955,7 @@
       "doc_type": "contract_supplier",
       "period": 2024,
       "page_count": 2,
+      "confidence": 0.96,
       "filename": "doc-contract-supplier-2024.pdf",
       "url": "/demo-docs/doc-contract-supplier-2024.pdf"
     },
@@ -950,6 +965,7 @@
       "doc_type": "contract_customer",
       "period": 2024,
       "page_count": 3,
+      "confidence": 0.96,
       "filename": "doc-contract-dpg-2024.pdf",
       "url": "/demo-docs/doc-contract-dpg-2024.pdf"
     },
@@ -959,8 +975,16 @@
       "doc_type": "lease",
       "period": 2024,
       "page_count": 1,
+      "confidence": 0.96,
       "filename": "doc-lease-2024.pdf",
       "url": "/demo-docs/doc-lease-2024.pdf"
     }
-  ]
+  ],
+  "verification": {
+    "document_count": 18,
+    "avg_confidence": 0.96,
+    "low_confidence": [],
+    "reliable": true
+  },
+  "disclaimer": "DealProof is an automated document-analysis and red-flag identification tool. It does not provide accounting, legal, tax, investment, or valuation advice; is not a CPA firm; and does not perform a Quality of Earnings engagement. Findings identify areas for further professional review."
 }

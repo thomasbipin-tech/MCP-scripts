@@ -171,3 +171,26 @@ def test_duplicate_contradictory_lines_are_combined():
     ]
     r = reconcile(lines)
     assert r.triangle_for(2024).pnl_revenue == Decimal("1000000.00")
+
+
+# --- extraction verification summary ----------------------------------------
+
+from app.pipeline.report import build_verification  # noqa: E402
+
+
+def test_verification_reliable_when_high_confidence():
+    docs = [{"doc_type": "pnl", "confidence": 0.95}, {"doc_type": "bank_statement", "confidence": 0.9}]
+    v = build_verification(docs)
+    assert v["document_count"] == 2 and v["reliable"] is True and v["low_confidence"] == []
+
+
+def test_verification_flags_low_confidence_docs():
+    docs = [{"doc_type": "pnl", "confidence": 0.95}, {"doc_type": "other", "confidence": 0.3}]
+    v = build_verification(docs)
+    assert v["reliable"] is False
+    assert len(v["low_confidence"]) == 1 and v["low_confidence"][0]["doc_type"] == "other"
+
+
+def test_verification_empty_is_not_reliable():
+    v = build_verification([])
+    assert v["document_count"] == 0 and v["reliable"] is False

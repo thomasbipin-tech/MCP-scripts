@@ -143,6 +143,9 @@ def process_deal(
          "confidence": d.confidence, "url": storage.signed_url(storage.storage_key(deal.id, d.doc_id))}
         for d in result.documents
     ]
+    from ...pipeline.report import build_verification
+
+    report["verification"] = build_verification(report["documents"])
 
     db.query(FlagRow).filter(FlagRow.deal_id == deal.id).delete()
     for f in flags:

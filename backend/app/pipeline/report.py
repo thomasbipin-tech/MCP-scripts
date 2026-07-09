@@ -107,6 +107,29 @@ def completeness_score(ctx: DealContext) -> int:
     return round((total - gaps) / total * 100)
 
 
+def build_verification(documents: List[dict]) -> dict:
+    """Summarize how confident the extraction was, so a buyer knows how much to
+    trust the figures. Reads the per-document classification confidence produced
+    by ingest (0.0–1.0). Low-confidence documents mean the numbers pulled from
+    them are less certain — the accuracy caveat that pairs with Data-Quality
+    flags."""
+    docs = documents or []
+    confs = [float(d.get("confidence", 0)) for d in docs if d.get("confidence") is not None]
+    avg = round(sum(confs) / len(confs), 2) if confs else 0.0
+    low = [
+        {"doc_type": d.get("doc_type", "document"), "confidence": round(float(d.get("confidence", 0)), 2)}
+        for d in docs
+        if d.get("confidence") is not None and float(d["confidence"]) < 0.6
+    ]
+    return {
+        "document_count": len(docs),
+        "avg_confidence": avg,
+        "low_confidence": low,
+        # "reliable" is a coarse gate: enough documents, decently classified.
+        "reliable": bool(docs) and avg >= 0.7 and len(low) == 0,
+    }
+
+
 def build_seller_questions(flags: List[Flag]) -> List[dict]:
     pack = []
     for f in flags:
@@ -157,5 +180,7 @@ def assemble_report(
         "seller_question_pack": build_seller_questions(flags),
         "executive_summary": narrative.get("executive_summary", []),
         "narrative": narrative,
+        "documents": [],  # populated by the caller with the analysed document set
+        "verification": None,  # populated via build_verification(documents)
         "disclaimer": DISCLAIMER,
     }

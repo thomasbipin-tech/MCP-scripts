@@ -143,4 +143,12 @@ export interface DealProofReport {
   }
   disclaimer: string
   documents: ReportDocument[]
+  verification?: Verification | null
+}
+
+export interface Verification {
+  document_count: number
+  avg_confidence: number
+  low_confidence: { doc_type: string; confidence: number }[]
+  reliable: boolean
 }
