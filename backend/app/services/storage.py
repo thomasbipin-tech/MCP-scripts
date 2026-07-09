@@ -38,6 +38,35 @@ def get_object(key: str) -> bytes:
     return (DATA_DIR / key).read_bytes()
 
 
+def delete_prefix(prefix: str) -> int:
+    """Delete every stored object under ``prefix`` (e.g. ``deals/<id>``).
+    Returns the number of objects removed. Used by the data-purge endpoint so a
+    buyer can prove the seller's documents were destroyed."""
+    if settings.s3_endpoint:
+        s3 = _s3()
+        removed = 0
+        token = None
+        while True:
+            kw = {"Bucket": settings.s3_bucket, "Prefix": prefix}
+            if token:
+                kw["ContinuationToken"] = token
+            resp = s3.list_objects_v2(**kw)
+            for obj in resp.get("Contents", []):
+                s3.delete_object(Bucket=settings.s3_bucket, Key=obj["Key"])
+                removed += 1
+            if not resp.get("IsTruncated"):
+                return removed
+            token = resp.get("NextContinuationToken")
+    import shutil
+
+    p = DATA_DIR / prefix
+    if p.exists():
+        n = sum(1 for _ in p.rglob("*") if _.is_file())
+        shutil.rmtree(p, ignore_errors=True)
+        return n
+    return 0
+
+
 def signed_url(key: str) -> str:
     if settings.s3_endpoint:
         return _s3().generate_presigned_url(
@@ -45,8 +74,10 @@ def signed_url(key: str) -> str:
             Params={"Bucket": settings.s3_bucket, "Key": key},
             ExpiresIn=settings.signed_url_ttl,
         )
-    # Local dev: served via the API's document-content route.
-    return f"/api/storage/{key}"
+    # Local: a short-lived signed link the API's document route validates.
+    from ..core.security import sign_storage_token  # lazy to avoid import cycle
+
+    return f"/api/storage/{key}?token={sign_storage_token(key)}"
 
 
 _client = None

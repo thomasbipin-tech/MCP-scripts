@@ -5,7 +5,7 @@ import DocumentUploader from '../components/DocumentUploader'
 import ReportView from '../components/ReportView'
 import SeverityTiles from '../components/SeverityTiles'
 import StageBadge from '../components/StageBadge'
-import { apiGet, apiGetBlob, apiPost, apiPostForm, ApiError } from '../lib/api'
+import { apiDelete, apiGet, apiGetBlob, apiPost, apiPostForm, ApiError } from '../lib/api'
 import { formatMoney } from '../lib/format'
 import { verticalLabel } from '../lib/vertical'
 import { useAuth } from '../context/AuthContext'
@@ -67,6 +67,10 @@ export default function DealWorkspace() {
 
   const [downloading, setDownloading] = useState(false)
   const [downloadError, setDownloadError] = useState<string | null>(null)
+
+  const [deleting, setDeleting] = useState(false)
+  const [deleteCert, setDeleteCert] = useState<string | null>(null)
+  const [deleteError, setDeleteError] = useState<string | null>(null)
 
   const loadDeal = useCallback(async () => {
     if (!id) return
@@ -233,6 +237,30 @@ export default function DealWorkspace() {
       setDownloadError(e instanceof Error ? e.message : 'Download failed')
     } finally {
       setDownloading(false)
+    }
+  }
+
+  async function handleDeleteData() {
+    if (!id) return
+    const ok = window.confirm(
+      'Permanently purge every uploaded document, extraction, flag and report for this deal? ' +
+        'This is irreversible. You will receive a signed deletion certificate.',
+    )
+    if (!ok) return
+    setDeleting(true)
+    setDeleteError(null)
+    setDeleteCert(null)
+    try {
+      const res = await apiDelete<{ certificate: { certificate_id: string } }>(`/deals/${id}/data`)
+      setDeleteCert(res.certificate.certificate_id)
+      // The report and documents are gone now — refresh so the UI reflects it.
+      setReportResp(null)
+      await loadDeal()
+      await loadDocuments()
+    } catch (e) {
+      setDeleteError(e instanceof Error ? e.message : 'Purge failed')
+    } finally {
+      setDeleting(false)
     }
   }
 
@@ -437,6 +465,39 @@ export default function DealWorkspace() {
               <div className="-mx-5 -mb-5 rounded border border-slate-800 sm:-mx-6 sm:-mb-6">
                 <ReportView report={unlockedResp.report} />
               </div>
+            </div>
+          )}
+        </section>
+
+        {/* Confidentiality & data rights */}
+        <section className="rounded border border-slate-800 bg-slate-900/40 p-5 sm:p-6">
+          <h2 className="mb-1 text-sm font-semibold uppercase tracking-wide text-slate-300">
+            Confidentiality &amp; data
+          </h2>
+          <p className="mb-4 text-xs leading-relaxed text-slate-500">
+            The seller's documents are their confidential information. DealProofing analyses them on your
+            behalf — it does not resell, train on, or share them. Source files open only through
+            short-lived signed links, and the analysis stays inside your organisation. When your review is
+            done, purge everything and keep the signed certificate as proof of deletion for the seller and
+            their NDA.
+          </p>
+
+          <button
+            onClick={handleDeleteData}
+            disabled={deleting}
+            className="rounded border border-signal-500/50 px-4 py-2 text-sm font-semibold text-signal-300 transition hover:border-signal-400 hover:text-signal-200 disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            {deleting ? 'Purging…' : 'Purge all data for this deal'}
+          </button>
+          {deleteError && <p className="mt-2 text-xs text-signal-400">{deleteError}</p>}
+          {deleteCert && (
+            <div className="mt-3 rounded border border-emerald-500/30 bg-emerald-500/10 p-3 text-xs text-emerald-200">
+              <p className="font-semibold">Data purged. Deletion certificate issued.</p>
+              <p className="mt-1 font-mono-num break-all text-emerald-300">{deleteCert}</p>
+              <p className="mt-1 text-slate-400">
+                This certificate is recorded in the tamper-evident audit log. Share it with the seller as
+                proof the data room was destroyed.
+              </p>
             </div>
           )}
         </section>

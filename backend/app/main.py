@@ -7,7 +7,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from .api.routers import admin, auth, deals, documents, meta, payments
+from .api.routers import admin, auth, deals, documents, meta, payments, privacy
 from .core.config import settings
 from .core.disclaimer import DISCLAIMER
 
@@ -44,7 +44,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-for r in (meta.router, auth.router, deals.router, documents.router, admin.router, payments.router):
+for r in (meta.router, auth.router, deals.router, documents.router, admin.router, payments.router, privacy.router):
     app.include_router(r, prefix="/api")
 
 
@@ -54,13 +54,18 @@ def root() -> dict:
 
 
 @app.get("/api/storage/{key:path}")
-def storage_content(key: str):
-    """Serve locally-stored document bytes (dev only; prod uses signed S3 URLs)."""
+def storage_content(key: str, token: str = ""):
+    """Serve locally-stored document bytes, gated by a short-lived signed token
+    (prod uses presigned S3 URLs). Without a valid token this refuses — the
+    documents are the seller's confidential information."""
     from fastapi import HTTPException
     from fastapi.responses import Response
 
+    from .core.security import verify_storage_token
     from .services import storage
 
+    if not verify_storage_token(key, token):
+        raise HTTPException(status_code=403, detail="invalid or expired link")
     try:
         data = storage.get_object(key)
     except FileNotFoundError:

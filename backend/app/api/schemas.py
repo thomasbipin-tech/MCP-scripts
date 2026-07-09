@@ -49,3 +49,8 @@ class CheckoutRequest(BaseModel):
 
 class SimulatePayment(BaseModel):
     payment_id: str
+
+
+class ConfidentialityAttestation(BaseModel):
+    right_to_share: bool
+    nda_permits_advisors: bool

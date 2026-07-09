@@ -97,3 +97,16 @@ def test_flag_status_workflow(client):
         json={"status": "resolved"},
     )
     assert r.status_code == 404
+
+
+def test_storage_requires_signed_token(client):
+    # Unsigned access to a document path is refused (403), signed access works.
+    from app.core.security import sign_storage_token
+    from app.services import storage
+
+    key = "deals/nope/none.pdf"
+    assert client.get(f"/api/storage/{key}").status_code == 403
+    assert client.get(f"/api/storage/{key}?token=garbage").status_code == 403
+    # A validly-signed but nonexistent object passes auth then 404s (not 403).
+    tok = sign_storage_token(key)
+    assert client.get(f"/api/storage/{key}?token={tok}").status_code == 404

@@ -100,3 +100,18 @@ def require_admin(user: User = Depends(get_current_user)) -> User:
     if user.role != "admin":
         raise HTTPException(status_code=403, detail="admin only")
     return user
+
+
+def sign_storage_token(key: str) -> str:
+    """Short-lived (config TTL) signed token for a storage object, so document
+    URLs can be embedded in an <iframe> without leaking access to anyone who
+    guesses the key."""
+    return _sign({"k": key, "aud": "storage", "exp": int(time.time()) + settings.signed_url_ttl})
+
+
+def verify_storage_token(key: str, token: str) -> bool:
+    try:
+        payload = _verify(token)
+    except HTTPException:
+        return False
+    return payload.get("aud") == "storage" and payload.get("k") == key

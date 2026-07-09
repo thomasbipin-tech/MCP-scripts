@@ -90,3 +90,33 @@ def test_upload_process_publish_pay_flow(client):
     assert body["report"]["severity_counts"]["CRITICAL"] == 4
     rule_ids = {f["rule_id"] for f in body["report"]["flags"]}
     assert {"TT2", "A1", "C22", "D24"} <= rule_ids
+
+
+def test_attest_and_purge_with_deletion_certificate(client):
+    _ensure_docs()
+    token = _login(client, "privacy-buyer@example.com")
+    h = {"Authorization": f"Bearer {token}"}
+    deal = client.post("/api/deals", headers=h, json={
+        "codename": "Privacy Co", "vertical": "hvac", "asking_price": "1000000", "claimed_sde": "250000",
+    }).json()
+    did = deal["id"]
+
+    # Attestation is recorded.
+    a = client.post(f"/api/deals/{did}/attest", headers=h,
+                    json={"right_to_share": True, "nda_permits_advisors": True})
+    assert a.status_code == 200 and a.json()["attested"] is True
+
+    # Upload a couple of documents, then purge everything.
+    for pdf in list(DOCS_DIR.glob("*.pdf"))[:2]:
+        with open(pdf, "rb") as fh:
+            client.post(f"/api/deals/{did}/documents", headers=h,
+                        files={"file": (pdf.name, fh, "application/pdf")})
+    assert len(client.get(f"/api/deals/{did}/documents", headers=h).json()) >= 1
+
+    r = client.request("DELETE", f"/api/deals/{did}/data", headers=h)
+    assert r.status_code == 200
+    cert = r.json()["certificate"]
+    assert cert["documents_deleted"] >= 1
+    assert cert["sha256"] and cert["certificate_id"]
+    # Documents are gone afterwards.
+    assert client.get(f"/api/deals/{did}/documents", headers=h).json() == []

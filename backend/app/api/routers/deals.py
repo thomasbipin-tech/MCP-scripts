@@ -95,7 +95,16 @@ def get_report(deal: Deal = Depends(get_scoped_deal), db: Session = Depends(get_
     counts = report.payload.get("severity_counts", {})
     if not deal.paid:
         return {"locked": True, "severity_counts": counts, "reason": "payment_required"}
-    return {"locked": False, "report": report.payload, "watermark": report.watermark}
+
+    # Re-mint short-lived signed URLs for the source documents so the evidence
+    # viewer never opens a stale/expired link (and never an unsigned one).
+    from ...services import storage
+
+    payload = report.payload
+    for d in payload.get("documents", []):
+        if isinstance(d.get("url"), str) and d["url"].startswith("/api/storage/") and d.get("id"):
+            d["url"] = storage.signed_url(storage.storage_key(deal.id, d["id"]))
+    return {"locked": False, "report": payload, "watermark": report.watermark}
 
 
 @router.get("/{deal_id}/report.pdf")
