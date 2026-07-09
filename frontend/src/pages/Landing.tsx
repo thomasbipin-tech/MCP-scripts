@@ -1,4 +1,45 @@
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
+
+const DEMO_SRC = `${import.meta.env.BASE_URL}dealproofing-demo.mp4`
+
+function PlayIcon({ className = '' }: { className?: string }) {
+  return (
+    <svg width="14" height="14" viewBox="0 0 16 16" className={className} aria-hidden="true">
+      <path d="M4 3 L13 8 L4 13 Z" fill="currentColor" />
+    </svg>
+  )
+}
+
+function DemoModal({ onClose }: { onClose: () => void }) {
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/85 p-4 backdrop-blur-sm"
+      role="dialog"
+      aria-modal="true"
+      onClick={onClose}
+    >
+      <div className="w-full max-w-4xl" onClick={(e) => e.stopPropagation()}>
+        <div className="mb-3 flex items-center justify-between">
+          <span className="text-sm font-semibold text-slate-200">DealProofing — 2-minute demo</span>
+          <button
+            onClick={onClose}
+            className="rounded-lg border border-slate-700 px-3 py-1.5 text-xs text-slate-300 transition hover:border-slate-500 hover:text-slate-100"
+          >
+            Close
+          </button>
+        </div>
+        <video
+          src={DEMO_SRC}
+          controls
+          autoPlay
+          playsInline
+          className="w-full rounded-xl border border-slate-800 bg-black shadow-2xl"
+        />
+      </div>
+    </div>
+  )
+}
 
 const STEPS = [
   {
@@ -204,8 +245,10 @@ function ReportPreview() {
 }
 
 export default function Landing() {
+  const [demoOpen, setDemoOpen] = useState(false)
   return (
     <div className="relative min-h-screen overflow-hidden bg-slate-950 text-slate-100">
+      {demoOpen && <DemoModal onClose={() => setDemoOpen(false)} />}
       {/* warm ambient glows so the page never feels blank */}
       <div className="pointer-events-none absolute -left-40 -top-40 h-[32rem] w-[32rem] rounded-full bg-[#4cc0b4]/10 blur-[120px]" />
       <div className="pointer-events-none absolute right-[-12rem] top-40 h-[34rem] w-[34rem] rounded-full bg-blue-500/10 blur-[130px]" />
@@ -213,9 +256,16 @@ export default function Landing() {
       <header className="relative z-10 mx-auto flex max-w-6xl items-center justify-between px-6 py-6">
         <Logo />
         <div className="flex items-center gap-2 sm:gap-3">
+          <button
+            onClick={() => setDemoOpen(true)}
+            className="inline-flex items-center gap-2 rounded-lg border border-slate-700 px-4 py-2 text-sm text-slate-200 transition hover:border-[#4cc0b4]/60 hover:bg-slate-800/40"
+          >
+            <PlayIcon className="text-[#4cc0b4]" />
+            Watch demo
+          </button>
           <Link
             to="/report"
-            className="hidden rounded-lg border border-slate-700 px-4 py-2 text-sm text-slate-200 transition hover:border-slate-500 hover:bg-slate-800/40 sm:inline-block"
+            className="hidden rounded-lg border border-slate-700 px-4 py-2 text-sm text-slate-200 transition hover:border-slate-500 hover:bg-slate-800/40 md:inline-block"
           >
             See a sample report
           </Link>
@@ -262,6 +312,15 @@ export default function Landing() {
                 Try it with your deal
               </Link>
             </div>
+            <button
+              onClick={() => setDemoOpen(true)}
+              className="mt-4 inline-flex items-center gap-2 text-sm text-slate-300 transition hover:text-[#4cc0b4]"
+            >
+              <span className="flex h-7 w-7 items-center justify-center rounded-full border border-[#4cc0b4]/40 bg-[#4cc0b4]/10">
+                <PlayIcon className="text-[#4cc0b4]" />
+              </span>
+              Watch the 2-minute demo
+            </button>
             <div className="mt-6 flex flex-wrap gap-x-5 gap-y-2 text-xs text-slate-500">
               <span>✓ Plain English</span>
               <span>✓ Every number linked to its source</span>
