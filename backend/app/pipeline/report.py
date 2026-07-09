@@ -12,6 +12,7 @@ from ..core.disclaimer import DISCLAIMER, NO_SCORE_POLICY
 from ..engine.money import money
 from ..rules.context import DealContext, Flag
 from ..rules.engine import severity_counts
+from .workstreams import build_workstreams
 
 # Documents we expect for a complete Full report; anything missing becomes a gap.
 EXPECTED_DOC_TYPES = {
@@ -180,6 +181,7 @@ def assemble_report(
         "seller_question_pack": build_seller_questions(flags),
         "executive_summary": narrative.get("executive_summary", []),
         "narrative": narrative,
+        "workstreams": build_workstreams(flag_payload, ctx),
         "documents": [],  # populated by the caller with the analysed document set
         "verification": None,  # populated via build_verification(documents)
         "disclaimer": DISCLAIMER,

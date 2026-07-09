@@ -144,6 +144,7 @@ export interface DealProofReport {
   disclaimer: string
   documents: ReportDocument[]
   verification?: Verification | null
+  workstreams?: Workstream[]
 }
 
 export interface Verification {
@@ -151,4 +152,21 @@ export interface Verification {
   avg_confidence: number
   low_confidence: { doc_type: string; confidence: number }[]
   reliable: boolean
+}
+
+export interface Workstream {
+  key: string
+  title: string
+  description: string
+  coverage: 'automated' | 'partial' | 'guided'
+  coverage_label: string
+  findings: { rule_id: string; severity: string; title: string }[]
+  finding_count: number
+  checklist: string[]
+  interview_targets?: {
+    name: string
+    revenue: string
+    share_pct: string | null
+    script: string[]
+  }[]
 }

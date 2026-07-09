@@ -798,6 +798,247 @@
     "data_gaps_intro": "The following items were not provided or could not be verified from the documents supplied. Each is an area for further review.",
     "closing_note": "These findings identify areas for further professional review and do not constitute accounting, legal, tax, or valuation advice."
   },
+  "workstreams": [
+    {
+      "key": "financial",
+      "title": "Financial review",
+      "description": "Reconcile revenue and earnings across tax returns, the P&L, and bank deposits; test add-backs, margins, working capital and cash.",
+      "coverage": "automated",
+      "coverage_label": "Automated by DealProofing",
+      "findings": [
+        {
+          "rule_id": "A1",
+          "severity": "CRITICAL",
+          "title": "Customer concentration risk"
+        },
+        {
+          "rule_id": "C22",
+          "severity": "CRITICAL",
+          "title": "Merchant cash advance / factoring detected (hidden distress)"
+        },
+        {
+          "rule_id": "TT2",
+          "severity": "CRITICAL",
+          "title": "Bank deposits do not cover reported revenue"
+        },
+        {
+          "rule_id": "B9",
+          "severity": "HIGH",
+          "title": "Add-backs are a large share of claimed earnings"
+        }
+      ],
+      "finding_count": 4,
+      "checklist": [
+        "3 years of business tax returns, P&Ls, and 12 months of bank statements",
+        "A/R and A/P aging detail; inventory listing",
+        "Add-back schedule with documentation for each item",
+        "Trailing-12-month P&L to catch a recent decline",
+        "Confirm the Triangle of Truth gaps with the seller"
+      ]
+    },
+    {
+      "key": "tax",
+      "title": "Tax diligence",
+      "description": "Surface tax exposures that can transfer to a buyer \u2014 sales-tax nexus, payroll-tax irregularities, aggressive ERC claims.",
+      "coverage": "automated",
+      "coverage_label": "Automated by DealProofing",
+      "findings": [],
+      "finding_count": 0,
+      "checklist": [
+        "Filed sales-tax returns for every state with sales (nexus study)",
+        "Payroll-tax (941) transcripts confirming deposits are current",
+        "ERC claim eligibility analysis and preparer details",
+        "IRS account transcripts; any open audits or notices"
+      ]
+    },
+    {
+      "key": "legal",
+      "title": "Legal & contract diligence",
+      "description": "Contracts that could break on sale \u2014 change-of-control clauses, non-assignable licenses, litigation, the lease, and non-competes.",
+      "coverage": "automated",
+      "coverage_label": "Automated by DealProofing",
+      "findings": [
+        {
+          "rule_id": "D24",
+          "severity": "CRITICAL",
+          "title": "Change-of-control clause in a key contract (deal killer)"
+        },
+        {
+          "rule_id": "D25",
+          "severity": "HIGH",
+          "title": "Lease risk: short term, no assignment, or personal guarantee"
+        }
+      ],
+      "finding_count": 2,
+      "checklist": [
+        "Written consent-to-assignment for every key customer/supplier contract",
+        "Litigation, lien (UCC) and judgment searches on the entity and owner",
+        "Confirm all licenses/permits transfer (or plan to re-license)",
+        "Full lease with assignment rights and adequate remaining term",
+        "Enforceable seller non-compete executed at close"
+      ]
+    },
+    {
+      "key": "insurance",
+      "title": "Insurance diligence",
+      "description": "Confirm the coverage a business of this type must carry, and check the claims history.",
+      "coverage": "partial",
+      "coverage_label": "Partly automated \u2014 human work remains",
+      "findings": [],
+      "finding_count": 0,
+      "checklist": [
+        "Current certificates: general liability, workers' comp, and E&O where relevant",
+        "5-year claims/loss-run history",
+        "Coverage limits vs. the risk profile of the vertical",
+        "Bind equivalent coverage effective at close"
+      ]
+    },
+    {
+      "key": "people",
+      "title": "People & owner transition",
+      "description": "Understand exactly what changes when the owner steps down: who holds the relationships and skills, and how the business runs without them.",
+      "coverage": "partial",
+      "coverage_label": "Partly automated \u2014 human work remains",
+      "findings": [],
+      "finding_count": 0,
+      "checklist": [
+        "Org chart with roles, tenure, and compensation",
+        "Owner's true weekly hours and every hat they wear (sales, technician, relationships)",
+        "Documented transition plan; consulting/earnout period if the owner is central",
+        "Retention plan for key staff; identify anyone near retirement",
+        "Standard operating procedures for owner-held processes"
+      ]
+    },
+    {
+      "key": "customers",
+      "title": "Customer diligence & reference calls",
+      "description": "Test the durability of the revenue directly with the people who pay for it \u2014 especially any concentrated accounts.",
+      "coverage": "partial",
+      "coverage_label": "Partly automated \u2014 human work remains",
+      "findings": [
+        {
+          "rule_id": "A1",
+          "severity": "CRITICAL",
+          "title": "Customer concentration risk"
+        },
+        {
+          "rule_id": "D24",
+          "severity": "CRITICAL",
+          "title": "Change-of-control clause in a key contract (deal killer)"
+        }
+      ],
+      "finding_count": 2,
+      "checklist": [
+        "Reference calls with the top customers (see targets below)",
+        "Written, assignable contracts for concentrated accounts",
+        "Churn/retention history and pipeline",
+        "Confirm no customer plans to leave on a change of ownership"
+      ],
+      "interview_targets": [
+        {
+          "name": "Metro Regional Hospital",
+          "revenue": "1012200.00",
+          "share_pct": "42.0",
+          "script": [
+            "How long have you worked with them, and how did the relationship start?",
+            "Is there a written contract, and when does it renew?",
+            "How likely are you to stay if the business changes hands?",
+            "What would make you leave, and are you considering alternatives?"
+          ]
+        },
+        {
+          "name": "Downtown Property Group",
+          "revenue": "361500.00",
+          "share_pct": "15.0",
+          "script": [
+            "How long have you worked with them, and how did the relationship start?",
+            "Is there a written contract, and when does it renew?",
+            "How likely are you to stay if the business changes hands?",
+            "What would make you leave, and are you considering alternatives?"
+          ]
+        },
+        {
+          "name": "Riverside School District",
+          "revenue": "192800.00",
+          "share_pct": "8.0",
+          "script": [
+            "How long have you worked with them, and how did the relationship start?",
+            "Is there a written contract, and when does it renew?",
+            "How likely are you to stay if the business changes hands?",
+            "What would make you leave, and are you considering alternatives?"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "commercial",
+      "title": "Commercial & market research",
+      "description": "Is the market growing, flat, or shrinking? What drives demand, and how exposed is this business to it?",
+      "coverage": "guided",
+      "coverage_label": "Human-led \u2014 checklist provided",
+      "findings": [],
+      "finding_count": 0,
+      "checklist": [
+        "Market size and 3\u20135 year growth trend for the vertical and region",
+        "Demand drivers and their outlook (housing, weather, regulation, etc.)",
+        "Seasonality vs. the vertical norm",
+        "Channel/platform dependency and its risk",
+        "Pricing power and how it has moved recently"
+      ]
+    },
+    {
+      "key": "competitor",
+      "title": "Competitor analysis",
+      "description": "Who else serves these customers, and why do they choose this business?",
+      "coverage": "guided",
+      "coverage_label": "Human-led \u2014 checklist provided",
+      "findings": [],
+      "finding_count": 0,
+      "checklist": [
+        "Identify the top 3\u20135 competitors and their positioning",
+        "Relative pricing and service differentiation",
+        "Customer switching costs and barriers to entry",
+        "Online reputation vs. competitors (reviews, ratings)"
+      ]
+    },
+    {
+      "key": "background",
+      "title": "Background & entity checks",
+      "description": "Verify the seller and the entity are what they claim to be.",
+      "coverage": "guided",
+      "coverage_label": "Human-led \u2014 checklist provided",
+      "findings": [],
+      "finding_count": 0,
+      "checklist": [
+        "Owner/principal background and litigation/judgment history",
+        "Entity good-standing, corporate records, and cap table",
+        "UCC/lien filings and any undisclosed debt",
+        "Licensing status and disciplinary history"
+      ]
+    },
+    {
+      "key": "structuring",
+      "title": "Deal & legal structuring",
+      "description": "Shape the deal to protect the buyer \u2014 price, structure, protections, and financing.",
+      "coverage": "partial",
+      "coverage_label": "Partly automated \u2014 human work remains",
+      "findings": [
+        {
+          "rule_id": "G39",
+          "severity": "INFO",
+          "title": "Asking multiple versus vertical benchmark"
+        }
+      ],
+      "finding_count": 1,
+      "checklist": [
+        "Asset vs. stock deal and purchase-price allocation",
+        "Working-capital peg with a true-up at close",
+        "Escrow/holdback and indemnification tied to the red flags found",
+        "Earnout or seller note where the owner is central",
+        "Reps & warranties; financing plan (e.g. SBA 7(a))"
+      ]
+    }
+  ],
   "documents": [
     {
       "id": "doc-tax-2022",

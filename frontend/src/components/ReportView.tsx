@@ -9,6 +9,7 @@ import BenchmarkPanel from './BenchmarkPanel'
 import DataGaps from './DataGaps'
 import SellerQuestionPack from './SellerQuestionPack'
 import DisclaimerFooter from './DisclaimerFooter'
+import WorkstreamsPanel from './WorkstreamsPanel'
 import type { DealProofReport, ReportDocument, Verification } from '../types/report'
 
 function SectionTitle({ children }: { children: ReactNode }) {
@@ -75,6 +76,13 @@ export default function ReportView({ report }: { report: DealProofReport }) {
         <section>
           <TrianglePanel triangle={report.triangle} />
         </section>
+
+        {report.workstreams && report.workstreams.length > 0 && (
+          <section>
+            <SectionTitle>Diligence workstreams</SectionTitle>
+            <WorkstreamsPanel workstreams={report.workstreams} />
+          </section>
+        )}
 
         <section>
           <SectionTitle>Red flag ledger</SectionTitle>
