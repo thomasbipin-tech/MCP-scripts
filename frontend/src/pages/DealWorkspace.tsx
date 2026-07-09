@@ -18,7 +18,6 @@ import {
   type PublishResult,
   type ReportResponse,
   type UploadResult,
-  type WebhookResult,
 } from '../types/api'
 
 const DOC_TYPE_OPTIONS = [
@@ -199,10 +198,14 @@ export default function DealWorkspace() {
       const checkout = await apiPost<CheckoutResult>(`/payments/deals/${id}/checkout`, {
         tier: 'Full Diligence Report',
       })
-      const match = checkout.checkout_url.match(/payment_id=([^&]+)/)
-      const paymentId = match?.[1]
-      if (!paymentId) throw new Error('Could not determine payment id from checkout response')
-      await apiPost<WebhookResult>('/payments/webhook', { payment_id: paymentId })
+      if (checkout.mode === 'stripe' && checkout.checkout_url) {
+        // Real payment: hand off to Stripe Checkout; we return here.
+        window.location.href = checkout.checkout_url
+        return
+      }
+      // Demo mode: unlock via the org-scoped simulate endpoint.
+      if (!checkout.payment_id) throw new Error('No payment id returned')
+      await apiPost(`/payments/deals/${id}/simulate`, { payment_id: checkout.payment_id })
       await loadDeal()
       await loadReport()
     } catch (e) {

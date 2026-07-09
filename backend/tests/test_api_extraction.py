@@ -76,11 +76,13 @@ def test_upload_process_publish_pay_flow(client):
     assert locked["locked"] is True
     assert locked["severity_counts"]["CRITICAL"] == 4
 
-    # Pay via dev webhook simulate.
+    # Pay: demo mode returns a payment id we unlock via /simulate (org-scoped).
     checkout = client.post(f"/api/payments/deals/{did}/checkout", headers=hb,
                            json={"tier": "Full Diligence Report"}).json()
-    pid = checkout["checkout_url"].split("payment_id=")[1]
-    client.post("/api/payments/webhook", json={"payment_id": pid})
+    assert checkout["mode"] == "demo"
+    r = client.post(f"/api/payments/deals/{did}/simulate", headers=hb,
+                    json={"payment_id": checkout["payment_id"]})
+    assert r.status_code == 200 and r.json()["paid"] is True
 
     # Now unlocked with the full report.
     body = client.get(f"/api/deals/{did}/report", headers=hb).json()

@@ -45,3 +45,7 @@ class QASubmit(BaseModel):
 
 class CheckoutRequest(BaseModel):
     tier: str  # "Snapshot" | "Full Diligence Report"
+
+
+class SimulatePayment(BaseModel):
+    payment_id: str

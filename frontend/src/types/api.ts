@@ -102,14 +102,11 @@ export interface ReportUnlocked {
 export type ReportResponse = ReportLocked | ReportUnlocked
 
 export interface CheckoutResult {
-  checkout_url: string
-  stub: boolean
+  mode: 'demo' | 'stripe'
+  payment_id?: string
+  checkout_url?: string
   amount: string
-}
-
-export interface WebhookResult {
-  received: boolean
-  dev?: boolean
+  tier: string
 }
 
 export interface PublishResult {

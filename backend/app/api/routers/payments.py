@@ -1,15 +1,18 @@
-"""Stripe checkout + webhook (SPEC §4 / build prompt §6).
+"""Payments: per-deal one-time checkout (Snapshot $499 / Full $2,950).
 
-Checkout is per-deal one-time payment (Snapshot $499 / Full $2,950). The report
-unlocks on the webhook. Stripe is imported lazily so the module loads without
-the SDK; when unconfigured, checkout returns a stub URL for local flows."""
+Two clean paths:
+  * **Stripe configured** — checkout returns a real Stripe Checkout URL; the
+    browser redirects there and the report unlocks on the signed webhook.
+  * **Demo (no Stripe key)** — checkout creates a pending payment and returns
+    its id; the UI calls the org-scoped `/simulate` endpoint to unlock it. The
+    browser never touches the Stripe webhook.
+Stripe is imported lazily so the module loads without the SDK."""
 
 from __future__ import annotations
 
 from decimal import Decimal
 
-from fastapi import APIRouter, Depends, Request
-from sqlalchemy import select
+from fastapi import APIRouter, Depends, HTTPException, Request
 from sqlalchemy.orm import Session
 
 from ...core.config import settings
@@ -18,7 +21,7 @@ from ...db.session import get_db
 from ...models import Deal, Payment, User
 from ...services import audit
 from ..deps import get_scoped_deal
-from ..schemas import CheckoutRequest
+from ..schemas import CheckoutRequest, SimulatePayment
 
 router = APIRouter(prefix="/payments", tags=["payments"])
 
@@ -34,8 +37,6 @@ def checkout(
 ) -> dict:
     amount = PRICES.get(body.tier)
     if amount is None:
-        from fastapi import HTTPException
-
         raise HTTPException(status_code=422, detail="unknown tier")
     payment = Payment(deal_id=deal.id, tier=body.tier, amount=amount, status="pending")
     db.add(payment)
@@ -43,10 +44,9 @@ def checkout(
     audit.record(db, actor=user.email, action="payment.checkout", entity_type="payment", entity_id=payment.id, after={"tier": body.tier})
 
     if not settings.stripe_secret_key:
-        # Local/dev: no Stripe configured -> return a stub that the UI can call
-        # back to /webhook/simulate to unlock. Never used in production.
+        # Demo mode: hand the UI the payment id to unlock via /simulate.
         db.commit()
-        return {"checkout_url": f"/dev-checkout?payment_id={payment.id}", "stub": True, "amount": str(amount)}
+        return {"mode": "demo", "payment_id": payment.id, "amount": str(amount), "tier": body.tier}
 
     import stripe  # lazy
 
@@ -56,56 +56,63 @@ def checkout(
         line_items=[{
             "price_data": {
                 "currency": "usd",
-                "product_data": {"name": f"DealProof — {body.tier} ({deal.codename})"},
+                "product_data": {"name": f"DealProofing — {body.tier} ({deal.codename})"},
                 "unit_amount": int(amount * 100),
             },
             "quantity": 1,
         }],
-        success_url=f"{settings.frontend_origin}/deals/{deal.id}?paid=1",
-        cancel_url=f"{settings.frontend_origin}/deals/{deal.id}",
+        success_url=f"{settings.frontend_origin}/#/deals/{deal.id}?paid=1",
+        cancel_url=f"{settings.frontend_origin}/#/deals/{deal.id}",
         metadata={"payment_id": payment.id, "deal_id": deal.id},
     )
     payment.stripe_ref = session.id
     db.commit()
-    return {"checkout_url": session.url, "stub": False}
+    return {"mode": "stripe", "checkout_url": session.url, "amount": str(amount), "tier": body.tier}
 
 
-def _unlock(db: Session, payment_id: str) -> bool:
-    payment = db.get(Payment, payment_id)
-    if payment is None:
-        return False
+def _unlock(db: Session, payment: Payment, actor: str) -> None:
     payment.status = "paid"
     deal = db.get(Deal, payment.deal_id)
     if deal:
         deal.paid = True
-    audit.record(db, actor="stripe", action="payment.paid", entity_type="payment", entity_id=payment.id, after={"status": "paid"})
+    audit.record(db, actor=actor, action="payment.paid", entity_type="payment", entity_id=payment.id, after={"status": "paid"})
     db.commit()
-    return True
+
+
+@router.post("/deals/{deal_id}/simulate")
+def simulate_payment(
+    body: SimulatePayment,
+    deal: Deal = Depends(get_scoped_deal),
+    user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+) -> dict:
+    """Demo-only unlock. Disabled when Stripe is configured (real money must go
+    through Stripe's signed webhook)."""
+    if settings.stripe_secret_key:
+        raise HTTPException(status_code=403, detail="simulate is disabled when Stripe is configured")
+    payment = db.get(Payment, body.payment_id)
+    if payment is None or payment.deal_id != deal.id:
+        raise HTTPException(status_code=404, detail="payment not found for this deal")
+    _unlock(db, payment, actor=user.email)
+    return {"paid": True, "deal_id": deal.id}
 
 
 @router.post("/webhook")
 async def stripe_webhook(request: Request, db: Session = Depends(get_db)) -> dict:
+    """Stripe -> us. Requires a signing secret; unsigned calls are rejected."""
     payload = await request.body()
     sig = request.headers.get("stripe-signature", "")
-    if settings.stripe_webhook_secret:
-        import stripe  # lazy
-
-        try:
-            event = stripe.Webhook.construct_event(payload, sig, settings.stripe_webhook_secret)
-        except Exception:
-            from fastapi import HTTPException
-
-            raise HTTPException(status_code=400, detail="invalid signature")
-        if event["type"] == "checkout.session.completed":
-            _unlock(db, event["data"]["object"]["metadata"]["payment_id"])
-        return {"received": True}
-    # Dev fallback: accept a simple JSON {payment_id} to simulate payment.
-    import json
+    if not settings.stripe_webhook_secret:
+        raise HTTPException(status_code=400, detail="webhook not configured")
+    import stripe  # lazy
 
     try:
-        data = json.loads(payload or b"{}")
-    except json.JSONDecodeError:
-        data = {}
-    if data.get("payment_id"):
-        _unlock(db, data["payment_id"])
-    return {"received": True, "dev": True}
+        event = stripe.Webhook.construct_event(payload, sig, settings.stripe_webhook_secret)
+    except Exception:
+        raise HTTPException(status_code=400, detail="invalid signature")
+    if event["type"] == "checkout.session.completed":
+        pid = event["data"]["object"]["metadata"].get("payment_id")
+        payment = db.get(Payment, pid) if pid else None
+        if payment:
+            _unlock(db, payment, actor="stripe")
+    return {"received": True}
