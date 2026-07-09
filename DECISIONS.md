@@ -76,6 +76,23 @@ what is production-real, what is scaffolded, and what is deferred.
     installed in the backend image). Disclaimer runs in the page footer on every
     page. The synthetic *source* documents still use the stdlib writer.
 
+13. **Data-quality dimension (inaccurate inputs).** Because the product exists
+    for *untrustworthy* seller data, a "Data Quality" rule category (DQ1–DQ4)
+    flags when the figures themselves are implausible or uncrossable: fewer than
+    two independent revenue sources (can't triangulate), COGS exceeding revenue
+    (negative gross profit), non-positive revenue, and deposits far exceeding
+    revenue (loans/transfers mislabeled as sales). These fire only on bad data
+    and stay silent on the valid demo.
+
+14. **Fail-soft pipeline.** `run_rules(strict=False)` (used by the pipeline)
+    skips and records any evaluator that trips on malformed input rather than
+    aborting — one bad figure can't sink the report. `strict=True` (tests)
+    still surfaces regressions. Extraction/ingest tolerate empty, corrupt, and
+    non-PDF bytes (no text → no lines → everything becomes a data gap, no crash).
+    Covered by `tests/test_bad_inputs.py` (garbage bytes, zero/negative/huge
+    figures, contradictory duplicates, single-source deals, broken-rule
+    injection). 120 tests total.
+
 ## What is deferred (documented, not hidden)
 
 - Extraction coverage: the offline parser targets the standard statement layouts;

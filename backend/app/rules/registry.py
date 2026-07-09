@@ -528,6 +528,39 @@ RULES: List[RuleDef] = [
         ask_seller=["The {amount} ERC claim looks aggressive. Provide the eligibility analysis and preparer."],
         what_resolves="ERC eligibility documentation, and an indemnity/holdback for clawback risk.",
     ),
+    # ---- Data Quality: the provided figures themselves look wrong -----------
+    RuleDef(
+        rule_id="DQ1", version=1, category="Data Quality", kind="missing_triangulation",
+        default_severity=Severity.MEDIUM, thresholds={"min_sources": 2},
+        title="Revenue cannot be cross-verified — sources missing",
+        buyer_action="Without at least two independent sources, the revenue figure can't be triangulated. Treat it as unverified until the missing statements arrive.",
+        ask_seller=["For {year} only {present} was provided. Please provide tax returns and bank statements so the numbers can be reconciled."],
+        what_resolves="Tax returns, an internal P&L, and bank statements for each year.",
+    ),
+    RuleDef(
+        rule_id="DQ2", version=1, category="Data Quality", kind="impossible_margin",
+        default_severity=Severity.MEDIUM, thresholds={},
+        title="Reported cost of goods exceeds revenue",
+        buyer_action="A negative gross profit is implausible for an ongoing business — the figures are likely misstated or mis-transcribed. Verify against the source documents.",
+        ask_seller=["In {year}, cost of goods sold exceeds revenue (gross margin {margin}%). Is this correct, and if so, why?"],
+        what_resolves="Corrected statements, or an explanation reconciling COGS to revenue.",
+    ),
+    RuleDef(
+        rule_id="DQ3", version=1, category="Data Quality", kind="nonpositive_revenue",
+        default_severity=Severity.MEDIUM, thresholds={},
+        title="Non-positive revenue reported",
+        buyer_action="Zero or negative revenue in a period signals missing data or a reporting error. Confirm the figure before relying on it.",
+        ask_seller=["Revenue for {year} is reported as {amount}. Please confirm or correct this."],
+        what_resolves="A corrected revenue figure with supporting detail.",
+    ),
+    RuleDef(
+        rule_id="DQ4", version=1, category="Data Quality", kind="deposits_exceed_revenue",
+        default_severity=Severity.INFO, thresholds={"coverage_pct": 150},
+        title="Bank deposits materially exceed reported revenue",
+        buyer_action="Deposits far above revenue usually include loans, owner contributions, or transfers — not sales. Identify the non-revenue inflows before treating deposits as revenue.",
+        ask_seller=["In {year}, bank deposits were {coverage}% of reported revenue. What non-sales inflows explain the excess?"],
+        what_resolves="A deposit breakdown separating sales from loans, transfers, and contributions.",
+    ),
 ]
 
 

@@ -20,7 +20,9 @@ from .report import assemble_report
 def run_pipeline(
     ctx: DealContext, deal_meta: dict, narrator: Optional[Narrator] = None
 ) -> dict:
-    flags = run_rules(ctx)
+    # Fail-soft in production: a rule that trips on malformed/inaccurate input
+    # is skipped, never crashing the whole analysis.
+    flags = run_rules(ctx, strict=False)
     bundle = build_evidence_bundle(ctx, flags)
     narrative = (narrator or Narrator()).narrate(bundle)
     return assemble_report(ctx, flags, narrative, deal_meta)

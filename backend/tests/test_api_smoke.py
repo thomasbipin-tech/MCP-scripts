@@ -36,9 +36,9 @@ def test_health(client):
 
 def test_rules_catalog_full_library(client):
     rules = client.get("/api/rules").json()
-    assert len(rules) == 42  # 40 spec flags + TT1/TT2 Triangle rules
+    assert len(rules) == 46  # 40 spec flags + TT1/TT2 + DQ1-DQ4 data-quality
     ids = {r["rule_id"] for r in rules}
-    assert ids >= {"TT1", "TT2", "A1", "C22", "D24", "E31", "F35", "G40"}
+    assert ids >= {"TT1", "TT2", "A1", "C22", "D24", "E31", "F35", "G40", "DQ1", "DQ2"}
 
 
 def test_demo_deal_visible_to_admin_with_report(client):

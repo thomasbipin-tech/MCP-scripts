@@ -32,7 +32,7 @@ def _line(st, yr, code, amt):
 
 
 def test_registry_has_full_library():
-    assert len(RULES_BY_ID) == 42  # 40 named + TT1/TT2
+    assert len(RULES_BY_ID) == 46  # 40 named + TT1/TT2 + DQ1-DQ4 data-quality
 
 
 # A3

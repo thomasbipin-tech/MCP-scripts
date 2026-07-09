@@ -707,7 +707,68 @@ def eval_aggressive_erc(rule, ctx, th) -> List[Flag]:
     return [_mk(rule, sev, {"amount": str(amt)}, _ev(ctx.facts.compliance.source))]
 
 
+# --- Data Quality: detect implausible / uncrossable figures in the inputs ---
+
+
+def eval_missing_triangulation(rule, ctx, th) -> List[Flag]:
+    period = _latest_period(ctx)
+    if period is None:
+        return []
+    t = ctx.reconciliation.triangle_for(period)
+    if t is None:
+        return []
+    present = [
+        name
+        for name, val in (
+            ("the tax return", t.tax_revenue),
+            ("the P&L", t.pnl_revenue),
+            ("bank statements", t.bank_deposits),
+        )
+        if val is not None
+    ]
+    if len(present) >= th["min_sources"]:
+        return []
+    return [
+        _mk(
+            rule, rule.default_severity,
+            {"year": period, "present": ", ".join(present) or "no financial statements"},
+            t.sources,
+        )
+    ]
+
+
+def eval_impossible_margin(rule, ctx, th) -> List[Flag]:
+    out: List[Flag] = []
+    for m in ctx.reconciliation.gross_margin_pct:
+        if m.value is not None and m.value < 0:
+            out.append(_mk(rule, rule.default_severity, {"year": m.period, "margin": str(m.value)}, m.sources))
+    return out
+
+
+def eval_nonpositive_revenue(rule, ctx, th) -> List[Flag]:
+    out: List[Flag] = []
+    for t in ctx.reconciliation.triangle:
+        for val in (t.tax_revenue, t.pnl_revenue):
+            if val is not None and val <= 0:
+                out.append(_mk(rule, rule.default_severity, {"year": t.period, "amount": str(val)}, t.sources))
+                break
+    return out
+
+
+def eval_deposits_exceed_revenue(rule, ctx, th) -> List[Flag]:
+    out: List[Flag] = []
+    for t in ctx.reconciliation.triangle:
+        cov = t.deposit_coverage_pct
+        if cov is not None and cov > th["coverage_pct"]:
+            out.append(_mk(rule, rule.default_severity, {"year": t.period, "coverage": str(cov)}, t.sources))
+    return out
+
+
 EVALUATORS: Dict[str, Callable] = {
+    "missing_triangulation": eval_missing_triangulation,
+    "impossible_margin": eval_impossible_margin,
+    "nonpositive_revenue": eval_nonpositive_revenue,
+    "deposits_exceed_revenue": eval_deposits_exceed_revenue,
     "wc_peg_absent": eval_wc_peg_absent,
     "related_party_revenue": eval_related_party_revenue,
     "deferred_revenue": eval_deferred_revenue,

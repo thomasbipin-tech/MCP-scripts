@@ -33,14 +33,40 @@ def evaluate_rule(rule: RuleDef, ctx: DealContext) -> List[Flag]:
         raise RuleExecutionError(rule.rule_id, exc) from exc
 
 
-def run_rules(ctx: DealContext, rules: List[RuleDef] | None = None) -> List[Flag]:
+def run_rules(
+    ctx: DealContext,
+    rules: List[RuleDef] | None = None,
+    strict: bool = True,
+) -> List[Flag]:
+    """Evaluate all rules and return the fired flags, most-severe first.
+
+    ``strict=True`` (default, used by tests) surfaces any evaluator error so
+    regressions are caught. ``strict=False`` (used by the pipeline) is
+    fail-soft: a rule that trips on malformed/inaccurate input is skipped and
+    recorded, so one bad figure can never sink the entire report. Use
+    ``run_rules_verbose`` when you need the skipped-rule list."""
+    flags, _ = run_rules_verbose(ctx, rules, strict=strict)
+    return flags
+
+
+def run_rules_verbose(
+    ctx: DealContext,
+    rules: List[RuleDef] | None = None,
+    strict: bool = True,
+) -> tuple[List[Flag], List["RuleExecutionError"]]:
     rules = rules if rules is not None else active_rules()
     flags: List[Flag] = []
+    errors: List[RuleExecutionError] = []
     for rule in rules:
-        flags.extend(evaluate_rule(rule, ctx))
+        try:
+            flags.extend(evaluate_rule(rule, ctx))
+        except RuleExecutionError as exc:
+            if strict:
+                raise
+            errors.append(exc)
     # Sort by severity rank, then rule id, for a stable, readable ledger.
     flags.sort(key=lambda f: (f.severity.rank, f.rule_id))
-    return flags
+    return flags, errors
 
 
 def severity_counts(flags: List[Flag]) -> dict:

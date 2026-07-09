@@ -131,7 +131,7 @@ def process_deal(
             deal_id=deal.id, source_doc_id=ln.source.document_id, statement_type=ln.statement_type.value,
             period=ln.period, line_code=ln.line_code.value, amount=ln.amount, page_ref=ln.source.as_dict()))
 
-    flags = run_rules(ctx)
+    flags = run_rules(ctx, strict=False)
     bundle = build_evidence_bundle(ctx, flags)
     narrative = Narrator().narrate(bundle)
     report = assemble_report(ctx, flags, narrative, {
