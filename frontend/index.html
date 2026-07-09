@@ -6,12 +6,24 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>DealProofing — Know before you buy.</title>
     <meta name="description" content="Institutional-grade red-flag analysis on any small business acquisition." />
+    <!-- Fonts load non-render-blocking: the UI paints instantly with the
+         system-font fallback and upgrades to Inter once (if) the stylesheet
+         loads. A blocking stylesheet here caused a white screen on slow or
+         offline networks until it timed out. -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
       href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap"
       rel="stylesheet"
+      media="print"
+      onload="this.media='all'"
     />
+    <noscript>
+      <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap"
+        rel="stylesheet"
+      />
+    </noscript>
   </head>
   <body class="bg-slate-950 text-slate-100">
     <div id="root"></div>
