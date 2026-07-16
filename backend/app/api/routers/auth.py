@@ -41,10 +41,21 @@ def request_magic_link(body: MagicRequest, db: Session = Depends(get_db)) -> dic
         audit.record(db, actor=email, action="user.create", entity_type="user", entity_id=user.id, after={"email": email})
     token = issue_magic_token(user.id)
     db.commit()
+
+    from ...services.email import send_magic_link
+
+    delivered = send_magic_link(email, token)
     resp = {"sent": True, "email": email}
     if settings.env != "production":
         # Dev convenience: hand back the link target so tests/UX can proceed.
+        # NEVER exposed in production — the token would be a bearer credential.
         resp["magic_token"] = token
+    elif not delivered:
+        # Production with no working email provider is a misconfiguration. Fail
+        # loudly rather than silently strand the user — but never leak the token.
+        from fastapi import HTTPException
+
+        raise HTTPException(status_code=503, detail="email delivery is not configured")
     return resp
 
 

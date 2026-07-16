@@ -48,7 +48,13 @@ class Settings:
     stripe_secret_key: str = os.getenv("STRIPE_SECRET_KEY", "")
     stripe_webhook_secret: str = os.getenv("STRIPE_WEBHOOK_SECRET", "")
     resend_api_key: str = os.getenv("RESEND_API_KEY", "")
+    email_from: str = os.getenv("EMAIL_FROM", "DealProofing <noreply@dealproofing.app>")
     frontend_origin: str = os.getenv("FRONTEND_ORIGIN", "http://localhost:8080")
+    app_base_url: str = os.getenv("APP_BASE_URL", os.getenv("FRONTEND_ORIGIN", "http://localhost:8080"))
+    # Upload safety.
+    max_upload_mb: int = int(os.getenv("MAX_UPLOAD_MB", "25"))
+    clamav_host: str = os.getenv("CLAMAV_HOST", "")
+    clamav_port: int = int(os.getenv("CLAMAV_PORT", "3310"))
 
     @property
     def is_sqlite(self) -> bool:

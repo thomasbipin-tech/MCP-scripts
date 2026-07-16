@@ -29,6 +29,15 @@ services:
       # Optional: switch report narration from the deterministic writer to Claude.
       - key: ANTHROPIC_API_KEY
         sync: false
+      # Optional hardening for a real (paying) deployment — see PRODUCTION_READINESS.md:
+      #   RESEND_API_KEY  — email real magic links (required when ENV=production)
+      #   APP_BASE_URL    — public URL used to build the magic-link (e.g. https://dealproof.onrender.com)
+      #   CLAMAV_HOST     — host of a clamd daemon to virus-scan uploads (fail-closed)
+      #   MAX_UPLOAD_MB   — per-file upload cap (default 25)
+      - key: RESEND_API_KEY
+        sync: false
+      - key: APP_BASE_URL
+        sync: false
 
 databases:
   - name: dealproof-db

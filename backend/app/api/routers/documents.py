@@ -24,6 +24,7 @@ from ...pipeline.narrate import Narrator
 from ...engine.evidence import build_evidence_bundle
 from ...rules.engine import run_rules
 from ...services import audit, storage
+from ...services.scan import UnsafeUpload, check_upload
 from ...pipeline.intake import intake_document
 from ..deps import get_scoped_deal
 
@@ -38,8 +39,12 @@ async def upload_document(
     db: Session = Depends(get_db),
 ) -> dict:
     data = await file.read()
-    if not data:
-        raise HTTPException(status_code=422, detail="empty file")
+    # Safety gate: reject non-PDF, oversized, or malware-signatured content
+    # before it ever reaches storage or the parser.
+    try:
+        check_upload(data)
+    except UnsafeUpload as e:
+        raise HTTPException(status_code=e.status, detail=e.reason)
 
     seen = {d.sha256 for d in db.scalars(select(Document).where(Document.deal_id == deal.id))}
     intake = intake_document(data, seen)
