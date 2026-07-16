@@ -14,6 +14,7 @@ from typing import List, Optional
 from ..rules.context import BankSignals, Benchmark, DealContext, DealFacts
 from ..engine.reconcile import reconcile
 from .classify import classify
+from .clauses import scan_document_clauses
 from .extract import extract
 from .intake import intake_document
 
@@ -63,6 +64,7 @@ def ingest_documents(
     seen: set = set()
     all_lines = []
     customers, channels, monthly, addbacks, contracts = [], [], [], [], []
+    contract_clauses = []
     lease = None
     bank_signals: Optional[BankSignals] = None
     claimed_sde: Optional[str] = None
@@ -97,6 +99,9 @@ def ingest_documents(
         monthly.extend(ex.monthly_revenue)
         addbacks.extend(ex.addbacks)
         contracts.extend(ex.contracts)
+        contract_clauses.extend(
+            scan_document_clauses(cls.doc_type, intake.pages, d["doc_id"], d.get("filename", ""))
+        )
         if ex.lease and lease is None:
             lease = ex.lease
         bank_signals = _merge_bank_signals(bank_signals, ex.bank_signals)
@@ -118,6 +123,7 @@ def ingest_documents(
         monthly_revenue=monthly,
         addbacks=addbacks,
         contracts=contracts,
+        contract_clauses=contract_clauses,
         lease=lease,
         bank_signals=bank_signals or BankSignals(),
         benchmarks=bm,

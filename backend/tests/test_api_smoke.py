@@ -54,7 +54,11 @@ def test_demo_deal_visible_to_admin_with_report(client):
     assert r.status_code == 200
     body = r.json()
     assert body["locked"] is False
-    assert body["report"]["severity_counts"] == {"CRITICAL": 4, "HIGH": 2, "MEDIUM": 0, "INFO": 1}
+    report = body["report"]
+    assert report["severity_counts"] == {"CRITICAL": 4, "HIGH": 2, "MEDIUM": 0, "INFO": 1}
+    # One-stop-shop sections are served end-to-end.
+    assert report["contract_review"]["clauses_flagged"] >= 2
+    assert set(report["expert_packets"]) == {"qofe", "attorney", "lender"}
 
 
 def test_org_isolation_hides_other_orgs_deal(client):

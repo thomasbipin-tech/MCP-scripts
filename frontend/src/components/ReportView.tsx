@@ -10,6 +10,8 @@ import DataGaps from './DataGaps'
 import SellerQuestionPack from './SellerQuestionPack'
 import DisclaimerFooter from './DisclaimerFooter'
 import WorkstreamsPanel from './WorkstreamsPanel'
+import ContractReviewPanel from './ContractReviewPanel'
+import ExpertPacketsPanel from './ExpertPacketsPanel'
 import type { DealProofReport, ReportDocument, Verification } from '../types/report'
 
 function SectionTitle({ children }: { children: ReactNode }) {
@@ -84,6 +86,13 @@ export default function ReportView({ report }: { report: DealProofReport }) {
           </section>
         )}
 
+        {report.contract_review && report.contract_review.clauses_flagged > 0 && (
+          <section>
+            <SectionTitle>Contract clause review</SectionTitle>
+            <ContractReviewPanel review={report.contract_review} documentsById={documentsById} />
+          </section>
+        )}
+
         <section>
           <SectionTitle>Red flag ledger</SectionTitle>
           <div className="space-y-3">
@@ -108,6 +117,13 @@ export default function ReportView({ report }: { report: DealProofReport }) {
         <section>
           <SellerQuestionPack questions={report.seller_question_pack} />
         </section>
+
+        {report.expert_packets && (
+          <section>
+            <SectionTitle>Expert hand-off packets</SectionTitle>
+            <ExpertPacketsPanel packets={report.expert_packets} />
+          </section>
+        )}
       </div>
 
       <DisclaimerFooter disclaimer={report.disclaimer} />

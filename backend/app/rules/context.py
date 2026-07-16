@@ -112,6 +112,39 @@ class ContractFact:
 
 
 @dataclass
+class ClauseFinding:
+    """One risky clause detected by the deterministic contract scanner.
+
+    Unlike ``ContractFact`` (a couple of pre-parsed booleans), this is the
+    clause-level result the buyer's attorney actually needs: which risk, in
+    which contract, on which page, in the contract's own words, why it matters,
+    and what to do about it. Severity uses the same 4-tier scale as flags."""
+
+    clause_type: str  # e.g. "change_of_control", "non_assignable", "personal_guarantee"
+    label: str
+    severity: "Severity"
+    counterparty: str
+    doc_type: str  # "contract_customer" | "contract_supplier" | "lease"
+    quote: str  # the matched contract language (verbatim)
+    risk: str  # why it matters to a buyer
+    buyer_action: str
+    source: PageRef
+
+    def as_dict(self) -> dict:
+        return {
+            "clause_type": self.clause_type,
+            "label": self.label,
+            "severity": self.severity.value if isinstance(self.severity, Severity) else str(self.severity),
+            "counterparty": self.counterparty,
+            "doc_type": self.doc_type,
+            "quote": self.quote,
+            "risk": self.risk,
+            "buyer_action": self.buyer_action,
+            "source": self.source.as_dict(),
+        }
+
+
+@dataclass
 class LeaseFact:
     term_remaining_years: Optional[Decimal]
     assignment_allowed: Optional[bool]
@@ -248,6 +281,7 @@ class DealFacts:
     addbacks: List[AddBack] = field(default_factory=list)
     one_time_items: List[OneTimeItem] = field(default_factory=list)
     contracts: List[ContractFact] = field(default_factory=list)
+    contract_clauses: List[ClauseFinding] = field(default_factory=list)
     lease: Optional[LeaseFact] = None
     bank_signals: BankSignals = field(default_factory=BankSignals)
     real_estate: RealEstate = field(default_factory=RealEstate)

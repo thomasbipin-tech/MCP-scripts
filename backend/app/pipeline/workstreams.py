@@ -156,12 +156,52 @@ _WORKSTREAMS = [
             "Reps & warranties; financing plan (e.g. SBA 7(a))",
         ],
     },
+    # --- Software / SaaS target modules -------------------------------------
+    # Honest scoping: these only matter when the target is a software company,
+    # and a credible version requires connecting a *real* scanner — not a stub
+    # that would give false confidence. Shown as roadmap so the coverage map is
+    # complete without ever implying analysis we haven't actually run.
+    {
+        "key": "code_audit",
+        "title": "Code & tech-stack audit",
+        "coverage": "roadmap",
+        "description": "For software/SaaS targets: source-code security, open-source licence exposure, and structural risk.",
+        "checklist": [
+            "Software composition analysis (SCA): open-source components and their licences",
+            "Known-vulnerability (CVE) scan of dependencies",
+            "Static analysis for security defects and hardcoded secrets",
+            "Architecture, test coverage, and key-person code ownership review",
+            "IP provenance — confirm the company owns/licences all shipped code",
+        ],
+        "note": (
+            "Roadmap module for software targets. DealProofing does not yet run code scanning — "
+            "we will not fake it. Until the module ships, pair this checklist with a specialist "
+            "(e.g. an SCA/security review) rather than assume coverage."
+        ),
+    },
+    {
+        "key": "product_metrics",
+        "title": "Product & user-metric audit",
+        "coverage": "roadmap",
+        "description": "For software/SaaS targets: verify that reported users, activity and retention are real.",
+        "checklist": [
+            "Separate active users from dead/trial/duplicate accounts in the raw data",
+            "Reconcile reported MRR/ARR to the billing system and bank deposits",
+            "Cohort retention and churn from event logs, not summary slides",
+            "Confirm no bot/synthetic traffic inflates usage metrics",
+        ],
+        "note": (
+            "Roadmap module for software targets. Requires read access to real product telemetry "
+            "and the billing system; DealProofing does not infer these from documents alone."
+        ),
+    },
 ]
 
 _COVERAGE_LABEL = {
     "automated": "Automated by DealProofing",
     "partial": "Partly automated — human work remains",
     "guided": "Human-led — checklist provided",
+    "roadmap": "Software-target module — roadmap",
 }
 
 
@@ -206,6 +246,16 @@ def build_workstreams(flags: List[dict], ctx: DealContext) -> List[dict]:
             for f in flags
             if f["category"] in cats or f["rule_id"] in rids
         ]
+        # The legal workstream also inherits the clause-scanner's findings, so the
+        # coverage map reflects the deterministic contract review, not just the
+        # structured-fact rules.
+        if ws["key"] == "legal":
+            for cf in ctx.facts.contract_clauses:
+                matched.append({
+                    "rule_id": "clause",
+                    "severity": cf.severity.value,
+                    "title": f"{cf.counterparty}: {cf.label}",
+                })
         entry = {
             "key": ws["key"],
             "title": ws["title"],
@@ -216,6 +266,8 @@ def build_workstreams(flags: List[dict], ctx: DealContext) -> List[dict]:
             "finding_count": len(matched),
             "checklist": ws["checklist"],
         }
+        if ws.get("note"):
+            entry["note"] = ws["note"]
         if ws["key"] == "customers":
             entry["interview_targets"] = _interview_targets(ctx)
         result.append(entry)

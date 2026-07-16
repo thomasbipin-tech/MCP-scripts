@@ -61,8 +61,21 @@ def generate_pdfs(target_dir: Path) -> list:
     return index
 
 
+def _demo_contract_clauses() -> list:
+    """Run the clause scanner over the demo data room so the sample report
+    showcases the contract review (the demo context is hand-built, not ingested)."""
+    from ..pipeline.clauses import scan_document_clauses
+
+    findings = []
+    for doc in build_documents():
+        pages = ["\n".join(page) for page in doc["pages"]]
+        findings.extend(scan_document_clauses(doc["doc_type"], pages, doc["id"], doc["title"]))
+    return findings
+
+
 def main() -> dict:
     ctx = build_demo_context()
+    ctx.facts.contract_clauses = _demo_contract_clauses()
     report = run_pipeline(ctx, deal_meta())
 
     docs_dir = FRONTEND_PUBLIC / "demo-docs"

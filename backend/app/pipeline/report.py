@@ -12,6 +12,8 @@ from ..core.disclaimer import DISCLAIMER, NO_SCORE_POLICY
 from ..engine.money import money
 from ..rules.context import DealContext, Flag
 from ..rules.engine import severity_counts
+from .clauses import build_contract_review
+from .packets import build_expert_packets
 from .workstreams import build_workstreams
 
 # Documents we expect for a complete Full report; anything missing becomes a gap.
@@ -155,17 +157,26 @@ def assemble_report(
 
     gaps = build_data_gaps(ctx)
     score = completeness_score(ctx)
+    counts = severity_counts(flags)
+    triangle = ctx.reconciliation.as_dict()["triangle"]
+    normalization = build_normalization(ctx)
+    contract_review = build_contract_review(ctx.facts.contract_clauses)
+    expert_packets = build_expert_packets(
+        deal_meta, flag_payload, normalization, contract_review, triangle, gaps, counts, ctx
+    )
 
     return {
         "deal": deal_meta,
         "policy": {"no_score": NO_SCORE_POLICY},
         "completeness_score": score,
         "watermark": "PRELIMINARY — MATERIAL GAPS" if score < 70 else None,
-        "severity_counts": severity_counts(flags),
-        "triangle": ctx.reconciliation.as_dict()["triangle"],
+        "severity_counts": counts,
+        "triangle": triangle,
         "reconciliation": ctx.reconciliation.as_dict(),
         "flags": flag_payload,
-        "normalization": build_normalization(ctx),
+        "normalization": normalization,
+        "contract_review": contract_review,
+        "expert_packets": expert_packets,
         "benchmarks": {
             k: {
                 "metric": b.metric,

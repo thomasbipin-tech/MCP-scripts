@@ -656,6 +656,268 @@
     ],
     "note": "Add-backs marked 'Review' (e.g. owner compensation) require a market replacement-cost assessment and are not removed automatically."
   },
+  "contract_review": {
+    "documents_reviewed": 3,
+    "clauses_flagged": 5,
+    "severity_summary": {
+      "CRITICAL": 2,
+      "HIGH": 2,
+      "MEDIUM": 1,
+      "INFO": 0
+    },
+    "contracts": [
+      {
+        "document_id": "doc-contract-metro-2024",
+        "counterparty": "Metro Regional Hospital",
+        "doc_type": "contract_customer",
+        "findings": [
+          {
+            "clause_type": "change_of_control",
+            "label": "Change-of-control / anti-assignment on sale",
+            "severity": "CRITICAL",
+            "counterparty": "Metro Regional Hospital",
+            "doc_type": "contract_customer",
+            "quote": "Section 14 \u2014 Assignment and Change of Control 14",
+            "risk": "The contract can terminate \u2014 or requires the counterparty's consent \u2014 the moment the business is sold. For a concentrated customer, the revenue you are paying for may not survive the closing you are paying for it at.",
+            "buyer_action": "Get written consent-to-assignment (or a novation) signed as a condition of closing. Treat it as a deal gate, not a post-close cleanup item.",
+            "source": {
+              "document_id": "doc-contract-metro-2024",
+              "page": 6,
+              "label": "Change-of-control / anti-assignment on sale"
+            }
+          },
+          {
+            "clause_type": "non_assignable",
+            "label": "Non-assignable (consent may be withheld)",
+            "severity": "CRITICAL",
+            "counterparty": "Metro Regional Hospital",
+            "doc_type": "contract_customer",
+            "quote": "3 This Agreement may not be assigned, and shall terminate automatically, upon a change of control of the Contractor, including a sale of substantially all of its assets, without the prior written consent of Metro Regional Hospital",
+            "risk": "Assignment is blocked or gated by a consent the counterparty can refuse. In an asset deal the contract does not transfer to you automatically \u2014 without consent you may not inherit it at all.",
+            "buyer_action": "Obtain the counterparty's written consent before close. If consent is 'at sole discretion', assume it may be refused and price/structure accordingly.",
+            "source": {
+              "document_id": "doc-contract-metro-2024",
+              "page": 6,
+              "label": "Non-assignable (consent may be withheld)"
+            }
+          }
+        ],
+        "highest_severity": "CRITICAL"
+      },
+      {
+        "document_id": "doc-lease-2024",
+        "counterparty": "Commercial Lease \u2014 1400 Industrial Pkwy",
+        "doc_type": "lease",
+        "findings": [
+          {
+            "clause_type": "non_assignable",
+            "label": "Non-assignable (consent may be withheld)",
+            "severity": "HIGH",
+            "counterparty": "Commercial Lease \u2014 1400 Industrial Pkwy",
+            "doc_type": "lease",
+            "quote": "Assignment: NOT permitted without landlord consent, which may be withheld at landlord's sole discretion",
+            "risk": "Assignment is blocked or gated by a consent the counterparty can refuse. In an asset deal the contract does not transfer to you automatically \u2014 without consent you may not inherit it at all.",
+            "buyer_action": "Obtain the counterparty's written consent before close. If consent is 'at sole discretion', assume it may be refused and price/structure accordingly.",
+            "source": {
+              "document_id": "doc-lease-2024",
+              "page": 1,
+              "label": "Non-assignable (consent may be withheld)"
+            }
+          },
+          {
+            "clause_type": "personal_guarantee",
+            "label": "Personal guarantee",
+            "severity": "HIGH",
+            "counterparty": "Commercial Lease \u2014 1400 Industrial Pkwy",
+            "doc_type": "lease",
+            "quote": "Guaranty: Tenant's principal personally guarantees all obligations",
+            "risk": "An obligation is personally guaranteed by the current owner. That guarantee does not transfer to you \u2014 the counterparty (e.g. a landlord) will want a new guarantee, which may fall on you personally.",
+            "buyer_action": "Negotiate release of the seller's guarantee and understand what the counterparty will require from you.",
+            "source": {
+              "document_id": "doc-lease-2024",
+              "page": 1,
+              "label": "Personal guarantee"
+            }
+          }
+        ],
+        "highest_severity": "HIGH"
+      },
+      {
+        "document_id": "doc-contract-dpg-2024",
+        "counterparty": "Downtown Property Group",
+        "doc_type": "contract_customer",
+        "findings": [
+          {
+            "clause_type": "assignment_consent",
+            "label": "Assignment allowed with notice/consent",
+            "severity": "MEDIUM",
+            "counterparty": "Downtown Property Group",
+            "doc_type": "contract_customer",
+            "quote": "Section 7 \u2014 Assignment Assignable with 30 days' written notice",
+            "risk": "The contract can be assigned to you, but only after giving notice or obtaining consent \u2014 a procedural hurdle that must be completed correctly to keep it in force.",
+            "buyer_action": "Complete the notice/consent step before or at close and keep the signed record.",
+            "source": {
+              "document_id": "doc-contract-dpg-2024",
+              "page": 2,
+              "label": "Assignment allowed with notice/consent"
+            }
+          }
+        ],
+        "highest_severity": "MEDIUM"
+      }
+    ],
+    "note": "A deterministic scan of the contract text \u2014 every item quotes the contract and cites the page. This surfaces clauses for your M&A attorney to review; it is not legal advice."
+  },
+  "expert_packets": {
+    "qofe": {
+      "key": "qofe",
+      "audience": "CPA / Quality-of-Earnings",
+      "title": "Quality-of-Earnings prep packet",
+      "purpose": "Everything your CPA needs to scope a QofE: where the three revenue sources diverge, which earnings adjustments are unproven, and the quality flags to test.",
+      "sections": [
+        {
+          "heading": "Earnings reconciliation (Triangle of Truth)",
+          "items": [
+            "FY2022: tax $2107000.00 vs P&L $2150000.00 (divergence -2.0%); bank deposits cover 98.6% of booked revenue.",
+            "FY2023: tax $2332400.00 vs P&L $2380000.00 (divergence -2.0%); bank deposits cover 98.3% of booked revenue.",
+            "FY2024: tax $2361800.00 vs P&L $2410000.00 (divergence -2.0%); bank deposits cover 78.0% of booked revenue."
+          ]
+        },
+        {
+          "heading": "SDE normalization to verify",
+          "items": [
+            "Seller-claimed SDE $520000.00 \u2192 DealProofing-adjusted $520000.00 after removing $0.00 of undocumented add-backs.",
+            "Verify add-back: Owner compensation normalization $95000.00 \u2014 currently 'Review'."
+          ]
+        },
+        {
+          "heading": "Revenue & earnings-quality flags",
+          "items": [
+            "A1 \u00b7 Customer concentration risk",
+            "TT2 \u00b7 Bank deposits do not cover reported revenue",
+            "B9 \u00b7 Add-backs are a large share of claimed earnings"
+          ]
+        },
+        {
+          "heading": "Cash & working-capital flags",
+          "items": [
+            "C22 \u00b7 Merchant cash advance / factoring detected (hidden distress)"
+          ]
+        },
+        {
+          "heading": "Data gaps affecting the QofE",
+          "items": [
+            "Payroll tax filings (Form 941)",
+            "Insurance policies (GL, workers comp, E&O)"
+          ]
+        }
+      ],
+      "questions": [
+        "What is the written contract term and renewal status for Metro Regional Hospital?",
+        "Has Metro Regional Hospital been notified of the sale, and is there a change-of-control clause?",
+        "Bank statements show payments to Rapid Capital Funding, Fox Capital Group. What is the full balance and payoff of every MCA/factoring facility?",
+        "Are there confessions of judgment tied to these advances?",
+        "Bank deposits in 2024 were only 78.0% of the revenue you reported. Where is the rest of the cash?",
+        "Do you accept payment outside these bank accounts? If so, provide those statements.",
+        "Add-backs total 30.8% of claimed SDE. Provide documentation for each.",
+        "Which add-backs will genuinely not recur under new ownership?"
+      ]
+    },
+    "attorney": {
+      "key": "attorney",
+      "audience": "M&A attorney",
+      "title": "Legal review packet",
+      "purpose": "The contracts and clauses your attorney should rule on \u2014 each quoted from the document and page-cited \u2014 plus the searches and protections to put in place.",
+      "sections": [
+        {
+          "heading": "Contract clause risks (see contract review for quotes)",
+          "items": [
+            "Metro Regional Hospital (customer): 2 clause risk(s), highest CRITICAL \u2014 Change-of-control / anti-assignment on sale, Non-assignable (consent may be withheld).",
+            "Commercial Lease \u2014 1400 Industrial Pkwy (lease): 2 clause risk(s), highest HIGH \u2014 Non-assignable (consent may be withheld), Personal guarantee.",
+            "Downtown Property Group (customer): 1 clause risk(s), highest MEDIUM \u2014 Assignment allowed with notice/consent."
+          ]
+        },
+        {
+          "heading": "Consents / novations required before close",
+          "items": [
+            "Metro Regional Hospital: obtain written consent-to-assignment (or novation) as a closing condition.",
+            "Commercial Lease \u2014 1400 Industrial Pkwy: obtain written consent-to-assignment (or novation) as a closing condition."
+          ]
+        },
+        {
+          "heading": "Legal & contract flags",
+          "items": [
+            "D24 \u00b7 Change-of-control clause in a key contract (deal killer)",
+            "D25 \u00b7 Lease risk: short term, no assignment, or personal guarantee"
+          ]
+        },
+        {
+          "heading": "Searches to run",
+          "items": [
+            "UCC / lien search on the entity and owner (undisclosed secured debt).",
+            "Litigation and judgment search (entity, owner, key principals).",
+            "Entity good-standing, corporate records and cap-table confirmation.",
+            "Confirm every license/permit transfers, or plan to re-license before close."
+          ]
+        },
+        {
+          "heading": "Restrictive covenants",
+          "items": [
+            "Ensure an enforceable seller non-compete is executed at closing."
+          ]
+        }
+      ],
+      "questions": [
+        "Will Metro Regional Hospital consent to assignment of its contract on the change of ownership?",
+        "Will Commercial Lease \u2014 1400 Industrial Pkwy consent to assignment of its contract on the change of ownership?",
+        "The Metro Regional Hospital contract has a change-of-control clause. Will they consent to assignment?",
+        "Provide written consent-to-assignment for every key contract.",
+        "The lease has only 2 years remaining; no assignment right; personal guarantee required. Will the landlord extend and permit assignment?",
+        "Provide the full lease and any landlord consent."
+      ]
+    },
+    "lender": {
+      "key": "lender",
+      "audience": "SBA / acquisition lender",
+      "title": "Lender package",
+      "purpose": "A one-look underwriting brief: valuation snapshot, the cash-flow and debt items that move DSCR, collateral, and the red-flag summary.",
+      "sections": [
+        {
+          "heading": "Deal snapshot",
+          "items": [
+            "Asking price: $1560000.00.",
+            "Seller-claimed SDE $520000.00; DealProofing-adjusted SDE $520000.00.",
+            "Implied multiple on adjusted SDE: 3.00\u00d7."
+          ]
+        },
+        {
+          "heading": "Cash-flow & debt risks (DSCR)",
+          "items": [
+            "C22 \u00b7 Merchant cash advance / factoring detected (hidden distress)",
+            "Merchant-cash-advance daily ACH remittances detected \u2014 these reduce free cash flow and depress DSCR; confirm payoff at or before close."
+          ]
+        },
+        {
+          "heading": "Collateral & lease",
+          "items": [
+            "Premises lease: 2 years remaining; assignment restricted; personal guarantee present.",
+            "Confirm FF&E / equipment schedule and any titled assets for collateral coverage."
+          ]
+        },
+        {
+          "heading": "Red-flag summary",
+          "items": [
+            "4 critical, 2 high, 0 medium, 1 informational."
+          ]
+        }
+      ],
+      "questions": [
+        "Provide 3 years of tax returns and interim financials to the lender.",
+        "Confirm any MCA / short-term debt will be paid off at close.",
+        "Prepare a debt-service coverage projection on the adjusted SDE."
+      ]
+    }
+  },
   "benchmarks": {
     "sde_multiple": {
       "metric": "sde_multiple",
@@ -867,9 +1129,34 @@
           "rule_id": "D25",
           "severity": "HIGH",
           "title": "Lease risk: short term, no assignment, or personal guarantee"
+        },
+        {
+          "rule_id": "clause",
+          "severity": "CRITICAL",
+          "title": "Metro Regional Hospital: Change-of-control / anti-assignment on sale"
+        },
+        {
+          "rule_id": "clause",
+          "severity": "CRITICAL",
+          "title": "Metro Regional Hospital: Non-assignable (consent may be withheld)"
+        },
+        {
+          "rule_id": "clause",
+          "severity": "MEDIUM",
+          "title": "Downtown Property Group: Assignment allowed with notice/consent"
+        },
+        {
+          "rule_id": "clause",
+          "severity": "HIGH",
+          "title": "Commercial Lease \u2014 1400 Industrial Pkwy: Non-assignable (consent may be withheld)"
+        },
+        {
+          "rule_id": "clause",
+          "severity": "HIGH",
+          "title": "Commercial Lease \u2014 1400 Industrial Pkwy: Personal guarantee"
         }
       ],
-      "finding_count": 2,
+      "finding_count": 7,
       "checklist": [
         "Written consent-to-assignment for every key customer/supplier contract",
         "Litigation, lien (UCC) and judgment searches on the entity and owner",
@@ -1037,6 +1324,39 @@
         "Earnout or seller note where the owner is central",
         "Reps & warranties; financing plan (e.g. SBA 7(a))"
       ]
+    },
+    {
+      "key": "code_audit",
+      "title": "Code & tech-stack audit",
+      "description": "For software/SaaS targets: source-code security, open-source licence exposure, and structural risk.",
+      "coverage": "roadmap",
+      "coverage_label": "Software-target module \u2014 roadmap",
+      "findings": [],
+      "finding_count": 0,
+      "checklist": [
+        "Software composition analysis (SCA): open-source components and their licences",
+        "Known-vulnerability (CVE) scan of dependencies",
+        "Static analysis for security defects and hardcoded secrets",
+        "Architecture, test coverage, and key-person code ownership review",
+        "IP provenance \u2014 confirm the company owns/licences all shipped code"
+      ],
+      "note": "Roadmap module for software targets. DealProofing does not yet run code scanning \u2014 we will not fake it. Until the module ships, pair this checklist with a specialist (e.g. an SCA/security review) rather than assume coverage."
+    },
+    {
+      "key": "product_metrics",
+      "title": "Product & user-metric audit",
+      "description": "For software/SaaS targets: verify that reported users, activity and retention are real.",
+      "coverage": "roadmap",
+      "coverage_label": "Software-target module \u2014 roadmap",
+      "findings": [],
+      "finding_count": 0,
+      "checklist": [
+        "Separate active users from dead/trial/duplicate accounts in the raw data",
+        "Reconcile reported MRR/ARR to the billing system and bank deposits",
+        "Cohort retention and churn from event logs, not summary slides",
+        "Confirm no bot/synthetic traffic inflates usage metrics"
+      ],
+      "note": "Roadmap module for software targets. Requires read access to real product telemetry and the billing system; DealProofing does not infer these from documents alone."
     }
   ],
   "documents": [

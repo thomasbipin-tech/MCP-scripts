@@ -123,6 +123,54 @@ export interface ReportDocument {
   url: string
 }
 
+export interface ClauseFinding {
+  clause_type: string
+  label: string
+  severity: Severity
+  counterparty: string
+  doc_type: string
+  quote: string
+  risk: string
+  buyer_action: string
+  source: EvidenceRef
+}
+
+export interface ContractReviewEntry {
+  document_id: string
+  counterparty: string
+  doc_type: string
+  findings: ClauseFinding[]
+  highest_severity: Severity
+}
+
+export interface ContractReview {
+  documents_reviewed: number
+  clauses_flagged: number
+  severity_summary: SeverityCounts
+  contracts: ContractReviewEntry[]
+  note: string
+}
+
+export interface PacketSection {
+  heading: string
+  items: string[]
+}
+
+export interface ExpertPacket {
+  key: string
+  audience: string
+  title: string
+  purpose: string
+  sections: PacketSection[]
+  questions: string[]
+}
+
+export interface ExpertPackets {
+  qofe: ExpertPacket
+  attorney: ExpertPacket
+  lender: ExpertPacket
+}
+
 export interface DealProofReport {
   deal: Deal
   completeness_score: number
@@ -131,6 +179,8 @@ export interface DealProofReport {
   triangle: TrianglePeriod[]
   flags: Flag[]
   normalization: Normalization
+  contract_review?: ContractReview | null
+  expert_packets?: ExpertPackets | null
   benchmarks: Benchmarks
   data_gaps: DataGap[]
   seller_question_pack: SellerQuestion[]
@@ -158,11 +208,12 @@ export interface Workstream {
   key: string
   title: string
   description: string
-  coverage: 'automated' | 'partial' | 'guided'
+  coverage: 'automated' | 'partial' | 'guided' | 'roadmap'
   coverage_label: string
   findings: { rule_id: string; severity: string; title: string }[]
   finding_count: number
   checklist: string[]
+  note?: string
   interview_targets?: {
     name: string
     revenue: string

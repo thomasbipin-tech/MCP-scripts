@@ -130,12 +130,70 @@ def _normalization(n: dict) -> str:
     )
 
 
+def _contract_review(review: dict) -> str:
+    if not review or not review.get("clauses_flagged"):
+        return ""
+    blocks = ""
+    for c in review.get("contracts", []):
+        items = ""
+        for f in c.get("findings", []):
+            color = _SEV_COLOR.get(f["severity"], "#334155")
+            items += (
+                f'<div class="flag" style="border-left-color:{color}">'
+                f'<div><span class="chip" style="background:{color}">{_e(f["severity"])}</span> '
+                f'<b>{_e(f["label"])}</b></div>'
+                f'<div style="margin:3pt 0;font-style:italic">&ldquo;{_e(f["quote"])}&rdquo;</div>'
+                f'<div class="muted"><b>Why it matters:</b> {_e(f["risk"])}</div>'
+                f'<div class="muted"><b>Do this:</b> {_e(f["buyer_action"])}</div>'
+                f'<div class="muted num">Source: {_e(f["source"].get("label"))} · p{_e(f["source"].get("page"))}</div>'
+                f"</div>"
+            )
+        blocks += (
+            f'<div style="break-inside:avoid;margin-top:8pt">'
+            f'<b>{_e(c["counterparty"])}</b> '
+            f'<span class="muted">({_e(c["doc_type"].replace("contract_", "").replace("_", " "))})</span>'
+            f"{items}</div>"
+        )
+    return f'<p class="muted">{_e(review.get("note", ""))}</p>{blocks}'
+
+
+def _packets(packets: dict) -> str:
+    if not packets:
+        return ""
+    out = ""
+    for key in ("qofe", "attorney", "lender"):
+        p = packets.get(key)
+        if not p:
+            continue
+        secs = ""
+        for s in p.get("sections", []):
+            lis = "".join(f"<li>{_e(i)}</li>" for i in s.get("items", []))
+            secs += f'<div style="margin-top:4pt"><b>{_e(s["heading"])}</b><ul>{lis}</ul></div>'
+        qs = "".join(f"<li class='muted'>{_e(q)}</li>" for q in p.get("questions", []))
+        qblock = f'<div style="margin-top:4pt"><b>Questions</b><ul>{qs}</ul></div>' if qs else ""
+        out += (
+            f'<div class="flag" style="break-inside:avoid">'
+            f'<div><b>{_e(p["title"])}</b> — <span class="muted">for {_e(p["audience"])}</span></div>'
+            f'<div class="muted" style="margin:3pt 0">{_e(p["purpose"])}</div>'
+            f"{secs}{qblock}</div>"
+        )
+    return out
+
+
 def build_html(report: dict) -> str:
     deal = report.get("deal", {})
     watermark = report.get("watermark")
     wm = f'<div class="watermark">{_e(watermark)}</div>' if watermark else ""
     summary = "".join(f"<li>{_e(s)}</li>" for s in report.get("executive_summary", []))
     gaps = "".join(f"<li>{_e(g['label'])}</li>" for g in report.get("data_gaps", []))
+    contract_html = _contract_review(report.get("contract_review") or {})
+    contract_section = (
+        f"<h2>Contract clause review</h2>{contract_html}" if contract_html else ""
+    )
+    packets_html = _packets(report.get("expert_packets") or {})
+    packets_section = (
+        f"<h2>Expert hand-off packets</h2>{packets_html}" if packets_html else ""
+    )
     questions = "".join(
         f"<li class='muted'><b>{_e(q['rule_id'])}:</b> {_e(q['question'])}</li>"
         for q in report.get("seller_question_pack", [])
@@ -151,8 +209,10 @@ def build_html(report: dict) -> str:
 <h2>Triangle of Truth — revenue reconciliation</h2>{_triangle(report.get('triangle', []))}
 <h2>Red-flag ledger</h2>{_flags(report.get('flags', []))}
 <h2>Financial normalization</h2>{_normalization(report.get('normalization', {}))}
+{contract_section}
 <h2>Data gaps</h2><ul>{gaps or '<li class="muted">None</li>'}</ul>
 <h2>Seller question pack</h2><ul>{questions}</ul>
+{packets_section}
 <div class="disclaimer">{_e(DISCLAIMER)}</div>
 </body></html>"""
 

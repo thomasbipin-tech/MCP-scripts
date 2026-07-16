@@ -14,7 +14,11 @@ from app.services.report_pdf import build_html
 
 
 def _report():
-    return run_pipeline(build_demo_context(), {
+    from app.seeder.export import _demo_contract_clauses
+
+    ctx = build_demo_context()
+    ctx.facts.contract_clauses = _demo_contract_clauses()
+    return run_pipeline(ctx, {
         "codename": "Project Summit", "entity_name": "Summit Air Mechanical LLC",
         "vertical": "hvac", "vertical_label": "HVAC / Home Services",
         "asking_price": "1560000", "claimed_sde": "520000",
@@ -29,6 +33,15 @@ def test_html_contains_all_sections_and_disclaimer():
         assert section in html
     # Disclaimer runs in the page footer too.
     assert "@bottom-center" in html
+
+
+def test_html_includes_contract_review_and_expert_packets():
+    html = build_html(_report())
+    assert "Contract clause review" in html
+    assert "Metro Regional Hospital" in html  # a flagged contract, quoted
+    assert "Expert hand-off packets" in html
+    for title in ("Quality-of-Earnings prep packet", "Legal review packet", "Lender package"):
+        assert title in html
 
 
 def test_html_has_one_block_per_flag():

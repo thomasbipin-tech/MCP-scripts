@@ -16,14 +16,25 @@ def test_all_diligence_areas_present():
     assert set(ws) == {
         "financial", "tax", "legal", "insurance", "people", "customers",
         "commercial", "competitor", "background", "structuring",
+        # software-target modules, honestly scoped as roadmap
+        "code_audit", "product_metrics",
     }
 
 
 def test_every_workstream_has_a_checklist_and_coverage():
     for w in _workstreams().values():
         assert w["checklist"], f"{w['key']} has no checklist"
-        assert w["coverage"] in ("automated", "partial", "guided")
+        assert w["coverage"] in ("automated", "partial", "guided", "roadmap")
         assert w["coverage_label"]
+
+
+def test_software_target_modules_are_roadmap_and_carry_no_findings():
+    ws = _workstreams()
+    for key in ("code_audit", "product_metrics"):
+        assert ws[key]["coverage"] == "roadmap"
+        assert ws[key]["finding_count"] == 0
+        # honest scoping note that we do not fake code/metric analysis
+        assert "roadmap" in ws[key]["note"].lower()
 
 
 def test_automated_workstreams_carry_the_demo_findings():
