@@ -1,26 +1,70 @@
 # Netforge.ai demo video — production notes
 
-**Current deliverable:** `netforge-demo-v2.mp4` — 1920×1080, 30 fps, H.264 high profile,
-**2:31**, AAC stereo 48 kHz, `+faststart`.
+**Current deliverable:** `netforge-demo-v3.mp4` — 1920×1080, 30 fps, H.264 high profile,
+**2:46**, AAC stereo 48 kHz, `+faststart`.
 
-v2 adds narration and an original score, and fixes the logo. v1 (`netforge-demo-v1.mp4`,
-2:15, silent) is kept for reference.
+| | | |
+|---|---|---|
+| v1 | 2:15 | silent, kinetic captions |
+| v2 | 2:31 | Piper VO + score; invented logo fixed |
+| **v3** | **2:46** | **Kokoro VO (warmer), verified pronunciation** |
 
-## Changes in v2
+## v3 — the voice
 
-**1. Voiceover.** Narration is synthesised locally with [Piper](https://github.com/rhasspy/piper)
-(`en_US-ryan-high`, `--length-scale 1.04`), so no API key or external service is involved.
-`vo.py` holds the script, per-line acronym respellings, and the layout logic.
+**Engine changed from Piper to [Kokoro-82M](https://huggingface.co/hexgrad/Kokoro-82M)
+(ONNX), voice `am_michael` at speed 1.06.** Piper's `en_US-ryan-high` read as obviously
+synthetic. Kokoro is a materially better model — warmer tone, more natural prosody.
+Still local, still no API key.
 
-Acronyms are respelled for the synthesiser only — `CLI` → "C L I", `VXLAN EVPN` →
-"V X LAN E V P N", `YAML` → "YAM'L" — while the printed line stays scripted English, so
-audio and captions never diverge.
+Kokoro reads more deliberately, which is why runtime went 2:31 → 2:46. That was a
+deliberate trade: rushing the read to hit the old length is what makes TTS sound like
+TTS. `VO_SPEED=1.12 python3 vo.py` tightens it to about 2:37 if you want the time back.
 
-**This is TTS, not a human read.** It's clean and correctly paced, but a real voice
-would still be better; the swap is a single command (below). Treat the VO as a solid
-scratch track that happens to be good enough to ship.
+**Pick a different voice by ear:** `voice-options.m4a` (committed here) is the same two
+sentences in six candidate voices, each announced by name — `am_michael`, `am_onyx`,
+`am_eric`, `am_fenrir`, `bm_george`, `bm_lewis` (`am_*` American, `bm_*` British). To
+switch: `VO_VOICE=am_onyx python3 vo.py && python3 music.py && node capture.js all`.
 
-**2. The picture now cuts to the audio.** The original 2:15 timings were written for a
+**What this still is not.** It is not the narrator from the NetBrain reference video —
+that is a specific real person, and cloning an identifiable voice for another company's
+marketing isn't something to do. If you want that register properly, a human read is
+the answer, and the pipeline is built to take one (below).
+
+### Pronunciation — one table, verified not guessed
+
+v2 respelled acronyms by hand in a second copy of each line, and got some wrong. v3 has
+a single `PRONOUNCE` table applied automatically to the scripted text, so there is no
+duplicate string to drift. `python3 vo.py audit` prints each term's phonemes next to
+what the synthesiser would do untreated:
+
+| On screen | Untreated | Wrong how | Spoken as |
+|---|---|---|---|
+| `VLAN` | `vlˈæn` | one syllable, "vlan" | `vee-lan` → `vˈiːlˈæn` |
+| `VLANs` | `vlˈæn` | plural silently dropped | `vee-lans` → `vˈiːlˈænz` |
+| `CLI` | `klˈaɪ` | reads as "cly" | `C. L. I` → `sˈiːˈɛlˈaɪ` |
+| `EVPN` | `ˈɛvpən` | reads as "evpen" | `E. V. P. N` → `ˈiːvˈiːpˈiːˈɛn` |
+| `AVD` | `ˈævd` | reads as "avd" | `A. V. D` → `ˈeɪvˈiːdˈiː` |
+| `Arista` | `ˈæɹɪstə` | "ARR-ista" | `uh-rista` → `ʌɹˈɪstə` |
+| `Visio` | `vˈɪsɪˌoʊ` | "VIS-ee-oh" | `vizzy-oh` → `vˈɪziˈoʊ` |
+| `BOM` | `bˈɑːm` | reads as "bahm" | `bill of materials` |
+
+`BGP`, `IP`, `CVD`, `STP`, `PDF`, `VXLAN`, `AI` and `YAML` phonemise correctly untreated
+and are pinned in the table anyway so a model change can't silently regress them.
+
+Two bugs this caught, both now fixed:
+- Respellings ending in `.` collided with the sentence's own period, merging
+  "Production-ready CLI. AVD Ansible YAML" into one run-on. Trailing periods dropped —
+  phonemes are identical without them.
+- `A. V. D` style spellings must not use `ay`: `ay` phonemises to `ˈaɪ` ("eye"), so
+  "ay vee dee" said *eye*-vee-dee. Period-separated letters give the correct `ˈeɪ`.
+
+**Verified by read-back, not by assumption.** The synthesised audio is transcribed with
+Whisper (`faster-whisper`, `small.en`) and checked for the real terms — the ASR hears
+"VLAN", "VLANs", "BGP", "IP", "CLI", "AVD", "CVD", "YAML", "PDF", "Arista", "Azure",
+"Terraform". ("Visio" comes back spelled "Vizio", which is the ASR spelling the correct
+sound.) Re-run that check any time you change a voice or a line.
+
+**The picture cuts to the audio.** The original 2:15 timings were written for a
 face-led cut. Measured against real narration they overran by 4s and left the read
 81% wall-to-wall — no breathing room. So scene durations are now *derived*:
 
@@ -30,25 +74,26 @@ scene duration = max(visual floor, intro pad + Σ(line duration + gap) + tail pa
 
 `vo.py` measures each rendered line, lays the lines out inside their scene, sizes the
 scene to fit, and emits `timeline.json` (scene in/out points + caption cues) which
-`scenes.html` and `capture.js` both consume. Runtime became 2:31 and speech density
-dropped to 70%. Nine scenes are VO-driven; seven are still held open by their visual
-floor. `vo.py` prints which is which.
+`scenes.html`, `music.py` and `capture.js` all consume. At v3's pace that lands at 2:46
+with speech density 74% — 13 of 16 scenes are sized by their narration, 3 are still held
+open by their visual floor. `vo.py` prints which is which, so a copy edit shows up as a
+timing change rather than a rushed line.
 
 Captions are now **one global track keyed to VO line starts**, not per-scene text, so a
 caption cannot drift out of sync with what's being said.
 
-Four scenes that the VO lengthened got extra motion rather than a longer freeze: the
+The scenes the VO lengthened got extra motion rather than a longer freeze: the
 fabric shot's zoom-to-fit and summary rows build progressively, the conflict ring
 breathes, the AI Architect write-out is stretched, and the export fan's stagger is wider.
 
-**3. Music.** Original score, synthesised from scratch in `music.py` — **no third-party
+**Music.** Original score, synthesised from scratch in `music.py` — **no third-party
 track, so nothing to license.** A minor, 100 BPM, structured to the cut: sparse low
-drone under the problem, a drop at the turn (0:41) then a rising swell, a steady pulse
+drone under the problem, a drop at the turn (0:49) then a rising swell, a steady pulse
 under the product act, a lift on the "0 conflicts" payoff, and a resolve under the end
 card. It sidechain-ducks against the VO envelope (up to about −8 dB) so narration always
 sits on top. Final mix is loudness-normalised to −16 LUFS, true peak −1.5 dBTP.
 
-**4. Logo fixed.** v1 used an invented "N" monogram. The real mark is now pulled from the
+**Logo.** v1 used an invented "N" monogram. The real mark is now pulled from the
 site's own `/icon.svg` (the `NetworkLogo.tsx` badge): a gradient circle
 (`#0ea5e9` → `#0369a1`) with a ringed border and a five-node network glyph. It appears in
 the topbar and on the end card. Nothing else in the video was invented — the palette,
@@ -58,27 +103,27 @@ sidebar metrics and vendor colours all come from the site's stylesheet.
 
 | | |
 |---|---|
-| 0:00–0:41 | The gap — hook, stale `.vsdx` vs live CLI, the rift opens |
-| 0:41–0:52 | The turn — reframe, `From Sketch to Spine. Instantly Connected.` |
-| 0:52–1:17 | **Design** — drag device, link ports, scale to leaf-spine fabric |
-| 1:17–1:49 | **Validate** — checks stream, IP conflict caught, AI Architect, then green |
-| 1:49–2:12 | **Ship** — export package, CLI, artefact fan, Cloud on Canvas → Terraform |
-| 2:12–2:31 | Outcome + end card |
+| 0:00–0:49 | The gap — hook, stale `.vsdx` vs live CLI, the rift opens |
+| 0:49–1:02 | The turn — reframe, `From Sketch to Spine. Instantly Connected.` |
+| 1:02–1:29 | **Design** — drag device, link ports, scale to leaf-spine fabric |
+| 1:29–2:06 | **Validate** — checks stream, IP conflict caught, AI Architect, then green |
+| 2:06–2:26 | **Ship** — export package, CLI, artefact fan, Cloud on Canvas → Terraform |
+| 2:26–2:46 | Outcome + end card |
 
 ## Still outstanding
 
 - **No faces** — left aside per your call. Insert points below; they still work.
 - **The UI is a faithful re-creation, not a screen recording.** The build environment
   can't reach netforge.ai (egress policy) and the designer is behind sign-in. Swapping in
-  real recordings for 0:52–2:12 remains the biggest available upgrade.
+  real recordings for 1:02–2:26 remains the biggest available upgrade.
 
 ### Face insert points (~26s), if you revisit them
 
 | Slot | TC | Replaces |
 |---|---|---|
-| 1 | 0:00–0:10 | Hook text card |
-| 2 | 0:43–0:52 | Reframe text card |
-| 3 | 2:12–2:22 | Outcome text card |
+| 1 | 0:00–0:11 | Hook text card |
+| 2 | 0:51–1:02 | Reframe text card |
+| 3 | 2:26–2:36 | Outcome text card |
 
 Each is a self-contained kinetic-text beat, so footage drops in without re-timing
 anything around it. The VO lines for these slots already exist and can be re-cut to a
@@ -100,20 +145,23 @@ human read.
 ## Rebuilding
 
 ```bash
-pip install imageio-ffmpeg piper-tts scipy numpy
+pip install imageio-ffmpeg kokoro-onnx scipy numpy faster-whisper
+apt-get install -y espeak-ng     # phonemiser, also used by vo.py audit
 npm i -g playwright && playwright install chromium
 export NODE_PATH=$(npm root -g)
 cd build
 
-# voice model (~116 MB, not committed)
-mkdir -p voices && curl -L -o voices/en_US-ryan-high.onnx \
-  https://huggingface.co/rhasspy/piper-voices/resolve/main/en/en_US/ryan/high/en_US-ryan-high.onnx
-curl -L -o voices/en_US-ryan-high.onnx.json \
-  https://huggingface.co/rhasspy/piper-voices/resolve/main/en/en_US/ryan/high/en_US-ryan-high.onnx.json
+# model files (~338 MB, not committed)
+mkdir -p kokoro && cd kokoro
+curl -LO https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files-v1.0/kokoro-v1.0.onnx
+curl -LO https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files-v1.0/voices-v1.0.bin
+cd ..
 
-python3 vo.py          # narration + timeline.json  (vo.py skip = re-time without re-synth)
+python3 vo.py          # narration + timeline.json
+python3 vo.py audit     # pronunciation table -> phonemes
+python3 vo.py voices    # voice-options.wav for picking by ear
 python3 music.py       # score, keyed to timeline.json
-node capture.js all    # 4530 frames -> frames/       (~11 min)
+node capture.js all    # 4982 frames -> frames/       (~12 min)
 
 ffmpeg -i vo.wav -i music.wav -filter_complex \
  "[0:a]aresample=48000,pan=stereo|c0=c0|c1=c0,volume=0.92[v];[1:a]aresample=48000[m];\
@@ -122,7 +170,7 @@ ffmpeg -i vo.wav -i music.wav -filter_complex \
 
 ffmpeg -framerate 30 -i frames/%05d.png -i audio.wav \
   -c:v libx264 -preset slow -crf 17 -pix_fmt yuv420p -profile:v high -level 4.2 \
-  -c:a aac -b:a 192k -movflags +faststart -shortest netforge-demo-v2.mp4
+  -c:a aac -b:a 192k -movflags +faststart -shortest netforge-demo-v3.mp4
 ```
 
 **Order matters:** `vo.py` writes `timeline.json`, which `music.py`, `scenes.html` and

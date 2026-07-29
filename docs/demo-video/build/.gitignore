@@ -2,5 +2,6 @@ frames/
 probe/
 verify*/
 voices/
+kokoro/
 vo/
 *.wav

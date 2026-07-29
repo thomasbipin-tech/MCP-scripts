@@ -1,170 +1,172 @@
 {
- "duration": 150.99,
+ "duration": 166.07,
+ "voice": "am_michael",
+ "speed": 1.06,
  "scenes": [
   {
    "a": 0.0,
-   "b": 10.0
+   "b": 10.7
   },
   {
-   "a": 10.0,
-   "b": 29.2
+   "a": 10.7,
+   "b": 32.44
   },
   {
-   "a": 29.2,
-   "b": 41.52
+   "a": 32.44,
+   "b": 46.55
   },
   {
-   "a": 41.52,
-   "b": 52.55
+   "a": 46.55,
+   "b": 58.42
   },
   {
-   "a": 52.55,
-   "b": 59.05
+   "a": 58.42,
+   "b": 64.92
   },
   {
-   "a": 59.05,
-   "b": 65.55
+   "a": 64.92,
+   "b": 71.42
   },
   {
-   "a": 65.55,
-   "b": 77.83
+   "a": 71.42,
+   "b": 85.12
   },
   {
-   "a": 77.83,
-   "b": 83.33
+   "a": 85.12,
+   "b": 90.62
   },
   {
-   "a": 83.33,
-   "b": 94.16
+   "a": 90.62,
+   "b": 102.78
   },
   {
-   "a": 94.16,
-   "b": 103.98
+   "a": 102.78,
+   "b": 114.53
   },
   {
-   "a": 103.98,
-   "b": 109.48
+   "a": 114.53,
+   "b": 120.03
   },
   {
-   "a": 109.48,
-   "b": 116.26
+   "a": 120.03,
+   "b": 127.16
   },
   {
-   "a": 116.26,
-   "b": 125.3
+   "a": 127.16,
+   "b": 138.1
   },
   {
-   "a": 125.3,
-   "b": 132.41
+   "a": 138.1,
+   "b": 145.63
   },
   {
-   "a": 132.41,
-   "b": 142.39
+   "a": 145.63,
+   "b": 156.23
   },
   {
-   "a": 142.39,
-   "b": 150.99
+   "a": 156.23,
+   "b": 166.07
   }
  ],
  "cues": [
   {
-   "t0": 0.44999999999999996,
-   "t1": 3.64,
+   "t0": 0.45,
+   "t1": 4.14,
    "html": "Every network change starts as a drawing."
   },
   {
-   "t0": 3.54,
-   "t1": 9.39,
+   "t0": 4.04,
+   "t1": 10.6,
    "html": "And every outage starts with the gap between that drawing \u2014<br>and <em>what's actually on the box</em>."
   },
   {
-   "t0": 10.45,
-   "t1": 15.63,
+   "t0": 11.15,
+   "t1": 17.46,
    "html": "You design it in Visio. You build it by hand, in CLI."
   },
   {
-   "t0": 15.53,
-   "t1": 21.93,
+   "t0": 17.36,
+   "t1": 24.29,
    "html": "Somewhere between the two, a VLAN gets transposed.<br>A BGP neighbour never comes up."
   },
   {
-   "t0": 21.83,
-   "t1": 29.3,
+   "t0": 24.19,
+   "t1": 32.54,
    "html": "You find out at 2am \u2014 inside a maintenance window,<br>with no time left to use the rollback plan."
   },
   {
-   "t0": 29.95,
-   "t1": 33.87,
+   "t0": 33.19,
+   "t1": 37.83,
    "html": "The drawing was never wrong.<br>It was just never <em>connected to anything</em>."
   },
   {
-   "t0": 33.77,
-   "t1": 41.22,
+   "t0": 37.73,
+   "t1": 46.25,
    "html": "Every diagram tool gives you a picture of the network.<br>Then it hands you a keyboard and wishes you luck."
   },
   {
-   "t0": 43.27,
-   "t1": 46.48,
+   "t0": 48.3,
+   "t1": 51.76,
    "html": "So what if the drawing <em>was</em> the source of truth?"
   },
   {
-   "t0": 46.38,
-   "t1": 50.25,
+   "t0": 51.66,
+   "t1": 56.12,
    "html": "Not a picture of the network. The network itself."
   },
   {
-   "t0": 53.1,
-   "t1": 57.99,
+   "t0": 58.97,
+   "t1": 64.44,
    "html": "Drag a device onto the canvas."
   },
   {
-   "t0": 59.6,
-   "t1": 64.47,
+   "t0": 65.47,
+   "t1": 70.75,
    "html": "Connect the ports. Set your VLANs, your routing, your management."
   },
   {
-   "t0": 66.1,
-   "t1": 72.16,
+   "t0": 71.97,
+   "t1": 79.1,
    "html": "Scale the same canvas to a full <em>leaf-spine VXLAN EVPN fabric</em>."
   },
   {
-   "t0": 72.06,
-   "t1": 77.73,
+   "t0": 79.0,
+   "t1": 85.02,
    "html": "Cisco. Arista. Aruba. Palo Alto. Silver Peak. <em>One canvas.</em>"
   },
   {
-   "t0": 78.18,
-   "t1": 81.77,
+   "t0": 85.47,
+   "t1": 89.42,
    "html": "Before anything ships \u2014 it gets checked."
   },
   {
-   "t0": 83.68,
-   "t1": 89.26,
+   "t0": 90.97,
+   "t1": 97.67,
    "html": "IP conflicts. VLAN mismatches. BGP peer gaps. Spanning-tree errors."
   },
   {
-   "t0": 89.16,
-   "t1": 94.16,
+   "t0": 97.57,
+   "t1": 102.78,
    "html": "Caught <em>here</em>, on the canvas \u2014<br>not out there, in the maintenance window."
   },
   {
-   "t0": 94.51,
-   "t1": 103.98,
+   "t0": 103.13,
+   "t1": 114.53,
    "html": "Then the AI Network Architect reviews the whole design \u2014<br>and tells you what to fix."
   },
   {
-   "t0": 109.83,
-   "t1": 116.36,
+   "t0": 120.38,
+   "t1": 127.26,
    "html": "Production-ready CLI. AVD Ansible YAML.<br>Generated from the same canvas."
   },
   {
-   "t0": 116.61,
-   "t1": 125.4,
+   "t0": 127.51,
+   "t1": 138.2,
    "html": "PDF packages, Visio diagrams, Excel BOM, cable schedules \u2014<br>documentation that <em>can't drift</em> from the design."
   },
   {
-   "t0": 125.65,
-   "t1": 132.51,
+   "t0": 138.45,
+   "t1": 145.73,
    "html": "Reverse-engineer a live Azure subscription onto the canvas \u2014<br>and push it back as <em>Terraform</em>."
   }
  ],
@@ -172,127 +174,127 @@
   {
    "id": "01",
    "start": 0.7,
-   "dur": 2.29
+   "dur": 2.79
   },
   {
    "id": "02",
-   "start": 3.79,
-   "dur": 4.5
+   "start": 4.29,
+   "dur": 5.21
   },
   {
    "id": "03",
-   "start": 10.7,
-   "dur": 4.48
+   "start": 11.4,
+   "dur": 5.61
   },
   {
    "id": "04",
-   "start": 15.78,
-   "dur": 5.7
+   "start": 17.61,
+   "dur": 6.23
   },
   {
    "id": "05",
-   "start": 22.08,
-   "dur": 6.12
+   "start": 24.44,
+   "dur": 7.0
   },
   {
    "id": "06",
-   "start": 30.2,
-   "dur": 3.12
+   "start": 33.44,
+   "dur": 3.84
   },
   {
    "id": "07",
-   "start": 34.02,
-   "dur": 6.1
+   "start": 37.98,
+   "dur": 7.17
   },
   {
    "id": "08",
-   "start": 43.52,
-   "dur": 2.31
+   "start": 48.55,
+   "dur": 2.56
   },
   {
    "id": "09",
-   "start": 46.63,
-   "dur": 2.52
+   "start": 51.91,
+   "dur": 3.11
   },
   {
    "id": "10",
-   "start": 53.35,
-   "dur": 3.54
+   "start": 59.22,
+   "dur": 4.12
   },
   {
    "id": "11",
-   "start": 59.85,
-   "dur": 3.52
+   "start": 65.72,
+   "dur": 3.93
   },
   {
    "id": "12",
-   "start": 66.35,
-   "dur": 5.46
+   "start": 72.22,
+   "dur": 6.53
   },
   {
    "id": "13",
-   "start": 72.31,
-   "dur": 4.32
+   "start": 79.25,
+   "dur": 4.67
   },
   {
    "id": "14",
-   "start": 78.43,
-   "dur": 2.24
+   "start": 85.72,
+   "dur": 2.6
   },
   {
    "id": "15",
-   "start": 83.93,
-   "dur": 4.98
+   "start": 91.22,
+   "dur": 6.1
   },
   {
    "id": "16",
-   "start": 89.41,
-   "dur": 3.65
+   "start": 97.82,
+   "dur": 3.86
   },
   {
    "id": "17",
-   "start": 94.76,
-   "dur": 8.12
+   "start": 103.38,
+   "dur": 10.05
   },
   {
    "id": "18",
-   "start": 104.48,
-   "dur": 2.52
+   "start": 115.03,
+   "dur": 2.77
   },
   {
    "id": "19",
-   "start": 110.08,
-   "dur": 5.18
+   "start": 120.63,
+   "dur": 5.53
   },
   {
    "id": "20",
-   "start": 116.86,
-   "dur": 7.44
+   "start": 127.76,
+   "dur": 9.34
   },
   {
    "id": "21",
-   "start": 125.9,
-   "dur": 5.51
+   "start": 138.7,
+   "dur": 5.93
   },
   {
    "id": "22",
-   "start": 133.21,
-   "dur": 4.7
+   "start": 146.43,
+   "dur": 4.91
   },
   {
    "id": "23",
-   "start": 138.51,
-   "dur": 2.68
+   "start": 151.94,
+   "dur": 3.09
   },
   {
    "id": "24",
-   "start": 143.19,
-   "dur": 3.58
+   "start": 157.03,
+   "dur": 4.48
   },
   {
    "id": "25",
-   "start": 147.27,
-   "dur": 1.52
+   "start": 162.01,
+   "dur": 1.86
   }
  ]
 }
