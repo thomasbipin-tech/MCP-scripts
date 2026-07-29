@@ -1,0 +1,879 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Flagbound — Collapse Prototype</title>
+<style>
+  :root{
+    --void:#0b0e12; --panel:#141922; --panel-2:#1b2230;
+    --stone:#8d9099; --muted:#767d8a;
+    --gold:#e8b23a; --azure:#3d8fd6; --crimson:#d64545;
+    --parchment:#e6e3dc;
+    --mono: ui-monospace, "SF Mono", "Cascadia Mono", Menlo, Consolas, "Liberation Mono", monospace;
+    --sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%;margin:0;background:var(--void);color:var(--parchment);
+    font-family:var(--sans);overflow:hidden;-webkit-font-smoothing:antialiased}
+  #stage{position:fixed;inset:0}
+  canvas{display:block;width:100%;height:100%;cursor:crosshair}
+
+  /* ---- top status rail ---- */
+  #rail{position:fixed;top:0;left:0;right:0;display:flex;justify-content:center;
+    pointer-events:none;padding:14px 16px 0}
+  .railInner{display:flex;align-items:stretch;gap:0;background:rgba(11,14,18,.82);
+    border:1px solid rgba(141,144,153,.22);backdrop-filter:blur(6px);
+    box-shadow:0 8px 28px rgba(0,0,0,.5)}
+  .team{display:flex;flex-direction:column;justify-content:center;gap:3px;padding:9px 16px;min-width:112px}
+  .team.b{align-items:flex-end;text-align:right}
+  .teamName{font-family:var(--mono);font-size:10px;letter-spacing:.18em;text-transform:uppercase}
+  .azure .teamName{color:var(--azure)} .crimson .teamName{color:var(--crimson)}
+  .score{font-family:var(--mono);font-size:30px;line-height:1;font-weight:700;
+    font-variant-numeric:tabular-nums}
+  .flagState{font-family:var(--mono);font-size:9.5px;letter-spacing:.1em;color:var(--muted);
+    text-transform:uppercase}
+  .flagState.alert{color:var(--gold)}
+  #clockCol{display:flex;flex-direction:column;align-items:center;justify-content:center;
+    gap:4px;padding:9px 20px;border-left:1px solid rgba(141,144,153,.22);
+    border-right:1px solid rgba(141,144,153,.22);min-width:126px}
+  #clock{font-family:var(--mono);font-size:26px;line-height:1;font-weight:700;
+    font-variant-numeric:tabular-nums;letter-spacing:.02em}
+  #phase{font-family:var(--mono);font-size:9.5px;letter-spacing:.2em;text-transform:uppercase;
+    color:var(--gold)}
+  #phase.warn{animation:pulse .7s steps(2,end) infinite}
+  @keyframes pulse{50%{opacity:.25}}
+  @media (prefers-reduced-motion:reduce){#phase.warn{animation:none;opacity:.85}}
+
+  /* ---- F.C.S. terminal ---- */
+  #fcs{position:fixed;left:16px;bottom:16px;max-width:min(460px,calc(100% - 32px));
+    display:flex;gap:11px;padding:11px 14px 11px 12px;
+    background:rgba(11,14,18,.86);border:1px solid rgba(232,178,58,.28);
+    border-left:3px solid var(--gold);backdrop-filter:blur(6px);
+    opacity:0;transform:translateY(6px);transition:opacity .22s ease,transform .22s ease}
+  #fcs.on{opacity:1;transform:none}
+  #fcsTag{font-family:var(--mono);font-size:9.5px;letter-spacing:.14em;color:var(--gold);
+    padding-top:2px;flex-shrink:0}
+  #fcsMsg{font-family:var(--mono);font-size:12.5px;line-height:1.5;color:var(--parchment)}
+  @media (prefers-reduced-motion:reduce){#fcs{transition:none}}
+
+  /* ---- controls legend ---- */
+  /* the legend sits over bright sky in Act I and dark rock in Act II — it carries
+     its own ground so it stays legible against both */
+  #legend{position:fixed;right:16px;bottom:16px;text-align:right;font-family:var(--mono);
+    font-size:10.5px;line-height:1.85;color:#9aa1ac;pointer-events:none;
+    background:rgba(11,14,18,.72);border:1px solid rgba(141,144,153,.16);
+    padding:8px 12px;backdrop-filter:blur(4px)}
+  #legend b{color:var(--parchment);font-weight:600}
+  @media (max-width:720px){#legend{display:none}}
+
+  /* ---- overlays ---- */
+  .veil{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;
+    padding:24px;background:radial-gradient(120% 90% at 50% 0%,#1b2230 0%,#0b0e12 70%);
+    z-index:20}
+  .veil.hidden{display:none}
+  .card{width:100%;max-width:620px;max-height:100%;overflow-y:auto}
+  .eyebrow{font-family:var(--mono);font-size:10px;letter-spacing:.3em;text-transform:uppercase;
+    color:var(--gold);margin-bottom:14px}
+  h1{font-family:var(--mono);font-weight:700;font-size:clamp(30px,6.4vw,50px);line-height:1.02;
+    letter-spacing:-.01em;margin:0 0 6px;text-transform:uppercase;text-wrap:balance}
+  .sub{font-family:var(--mono);font-size:clamp(11px,2.2vw,13px);letter-spacing:.16em;
+    text-transform:uppercase;color:var(--stone);margin:0 0 26px}
+  .brief{border-left:2px solid rgba(232,178,58,.4);padding:2px 0 2px 16px;margin:0 0 22px;
+    display:flex;flex-direction:column;gap:11px}
+  .brief p{margin:0;font-size:14.5px;line-height:1.62;color:#cfd3da;max-width:60ch}
+  .keys{display:grid;grid-template-columns:repeat(auto-fit,minmax(148px,1fr));gap:7px 18px;
+    font-family:var(--mono);font-size:11.5px;color:var(--muted);margin:0 0 26px}
+  .keys div{display:flex;justify-content:space-between;gap:10px;
+    border-bottom:1px dotted rgba(141,144,153,.24);padding-bottom:5px}
+  .keys b{color:var(--parchment);font-weight:600}
+  button{font-family:var(--mono);font-size:13px;letter-spacing:.2em;text-transform:uppercase;
+    font-weight:700;color:#0b0e12;background:var(--gold);border:0;padding:14px 30px;
+    cursor:pointer;transition:filter .15s ease}
+  button:hover{filter:brightness(1.12)}
+  button:focus-visible{outline:2px solid var(--parchment);outline-offset:3px}
+  .note{font-family:var(--mono);font-size:10.5px;line-height:1.7;color:#6b7280;margin:22px 0 0;
+    max-width:62ch}
+  .note b{color:var(--stone);font-weight:600}
+  #resultLine{font-family:var(--mono);font-size:13px;letter-spacing:.1em;color:var(--stone);
+    margin:0 0 24px;text-transform:uppercase}
+</style>
+</head>
+<body>
+<div id="stage"><canvas id="gl"></canvas></div>
+
+<div id="rail">
+  <div class="railInner">
+    <div class="team azure">
+      <span class="teamName">Azure — you</span>
+      <span class="score" id="scoreA">0</span>
+      <span class="flagState" id="flagA">flag secure</span>
+    </div>
+    <div id="clockCol">
+      <span id="clock">3:00</span>
+      <span id="phase">surface</span>
+    </div>
+    <div class="team crimson b">
+      <span class="teamName">Crimson</span>
+      <span class="score" id="scoreB">0</span>
+      <span class="flagState" id="flagB">flag secure</span>
+    </div>
+  </div>
+</div>
+
+<div id="fcs"><span id="fcsTag">F.C.S.</span><span id="fcsMsg"></span></div>
+
+<div id="legend">
+  <div><b>WASD</b> move &nbsp; <b>Space</b> jump</div>
+  <div><b>Mouse</b> look (click to capture) &nbsp; <b>← →</b> turn</div>
+  <div><b>Click</b> / <b>F</b> attack &nbsp; <b>Shift</b> sprint</div>
+</div>
+
+<div class="veil" id="startVeil">
+  <div class="card">
+    <div class="eyebrow">Playable prototype · Act I → Collapse</div>
+    <h1>Flagbound</h1>
+    <p class="sub">The Shifting Battlefield</p>
+    <div class="brief">
+      <p>Steal the <strong style="color:var(--crimson)">crimson flag</strong> from the far base and carry it back to your own. Your flag must be home for a capture to count.</p>
+      <p>Sixty seconds in, the ground breaks apart. Everything you are standing on shatters into falling blocks and drops you into the kingdom underneath, where the battle continues. Your flag comes with you if you are carrying it.</p>
+    </div>
+    <div class="keys">
+      <div><span>Move</span><b>W A S D</b></div>
+      <div><span>Jump</span><b>Space</b></div>
+      <div><span>Look</span><b>Mouse / ← →</b></div>
+      <div><span>Attack</span><b>Click / F</b></div>
+      <div><span>Sprint</span><b>Shift</b></div>
+      <div><span>Free the mouse</span><b>Esc</b></div>
+    </div>
+    <button id="playBtn" type="button">Deploy</button>
+    <p class="note"><b>Scope.</b> This demonstrates one idea from the design docket — a battlefield that transforms mid-match — with 5v5 bots on a voxel arena. Not in this build: online multiplayer, the four character classes, the sky-tower act, and voice F.C.S. Those are specified in the docket, not implemented here.</p>
+  </div>
+</div>
+
+<div class="veil hidden" id="endVeil">
+  <div class="card">
+    <div class="eyebrow">Match complete</div>
+    <h1 id="resultTitle">Draw</h1>
+    <p id="resultLine">0 — 0</p>
+    <button id="againBtn" type="button">Run it again</button>
+  </div>
+</div>
+
+<script>
+"use strict";
+/* ==========================================================================
+   Flagbound — Collapse Prototype
+   Hand-written WebGL2 instanced-cube renderer. No external libraries.
+   ========================================================================== */
+
+const cvs = document.getElementById('gl');
+const gl = cvs.getContext('webgl2', {antialias:true, powerPreference:'high-performance'});
+if(!gl){
+  document.getElementById('startVeil').innerHTML =
+    '<div class="card"><div class="eyebrow">Cannot start</div>' +
+    '<h1>WebGL2 unavailable</h1><p class="sub">This prototype needs WebGL2</p>' +
+    '<p class="note">Your browser or graphics driver did not provide a WebGL2 context. ' +
+    'Try a recent Chrome, Edge, Firefox or Safari, and make sure hardware acceleration is enabled.</p></div>';
+  throw new Error('WebGL2 unavailable');
+}
+
+/* ---------------------------- world constants ---------------------------- */
+const SX=80, SY=96, SZ=80, YOFF=48;          // grid dims; worldY = idx - YOFF
+const GROUND_Y = 0;                          // top of surface soil
+const UNDER_Y  = -30;                        // top of underground floor
+const COLLAPSE_CUT = -20;                    // blocks above this are destroyed
+const MATCH_TIME = 180, TREMOR_AT = 50, COLLAPSE_AT = 60;
+const DEBRIS_CAP = 4200;                     // see docket 12, Q9
+
+const T = { AIR:0, GRASS:1, DIRT:2, STONE:3, DARKSTONE:4, WOOD:5, LEAF:6,
+            AZURE:7, CRIMSON:8, BASALT:9, CRYSTAL:10, LAVA:11, GOLD:12, PLANK:13 };
+const COL = {
+  1:[0.36,0.56,0.24], 2:[0.38,0.29,0.19], 3:[0.55,0.56,0.60], 4:[0.33,0.34,0.38],
+  5:[0.44,0.31,0.19], 6:[0.26,0.45,0.19], 7:[0.24,0.56,0.84], 8:[0.84,0.27,0.27],
+  9:[0.15,0.17,0.20], 10:[0.27,0.77,0.85], 11:[0.89,0.38,0.16], 12:[0.91,0.70,0.23],
+  13:[0.58,0.44,0.27]
+};
+const EMIS = {10:0.55, 11:0.60, 12:0.14};
+
+const grid = new Uint8Array(SX*SY*SZ);
+const gi = (x,y,z)=> x + SX*((y+YOFF) + SY*z);
+const inB = (x,y,z)=> x>=0&&x<SX&&z>=0&&z<SZ&&(y+YOFF)>=0&&(y+YOFF)<SY;
+function setB(x,y,z,t){ if(inB(x,y,z)) grid[gi(x,y,z)]=t; }
+function getB(x,y,z){ return inB(x,y,z) ? grid[gi(x,y,z)] : 0; }
+const solid = (x,y,z)=> getB(x,y,z)!==0;
+
+/* seeded RNG so the arena is identical every run */
+let _s = 20260729;
+function rnd(){ _s = (_s*1664525 + 1013904223) >>> 0; return _s/4294967296; }
+const ri = (a,b)=> a + Math.floor(rnd()*(b-a+1));
+
+/* ------------------------------ arena build ------------------------------ */
+const BASE = {
+  A:{ surf:{x:40,z:11}, und:{x:40,z:13} },
+  B:{ surf:{x:40,z:68}, und:{x:40,z:66} }
+};
+
+function buildSurface(){
+  for(let z=0;z<SZ;z++) for(let x=0;x<SX;x++){
+    for(let y=GROUND_Y-3;y<=GROUND_Y;y++) setB(x,y,z, y===GROUND_Y?T.GRASS:T.DIRT);
+    if(x<2||z<2||x>=SX-2||z>=SZ-2) for(let y=1;y<=7;y++) setB(x,y,z,T.STONE);
+  }
+  // central wall with two gaps — the chokepoints
+  const mz = SZ>>1;
+  for(let x=2;x<SX-2;x++){
+    const gap = (x>=21&&x<=29)||(x>=50&&x<=58);
+    if(gap) continue;
+    for(let y=1;y<=5;y++){ setB(x,y,mz,T.STONE); setB(x,y,mz+1,T.STONE); }
+    if(x%4===0) setB(x,6,mz,T.DARKSTONE);
+  }
+  // four towers flanking the gaps
+  for(const [tx,tz] of [[18,mz-6],[32,mz-6],[48,mz+6],[62,mz+6]]){
+    for(let y=1;y<=11;y++) for(let dx=-2;dx<=2;dx++) for(let dz=-2;dz<=2;dz++){
+      const rim = Math.abs(dx)===2||Math.abs(dz)===2;
+      if(rim || y===1) setB(tx+dx,y,tz+dz, y>9?T.DARKSTONE:T.STONE);
+    }
+  }
+  // bases
+  for(const key of ['A','B']){
+    const {x:bx,z:bz} = BASE[key].surf;
+    const mat = key==='A'?T.AZURE:T.CRIMSON;
+    const facing = key==='A'? 1 : -1;         // opening points toward midfield
+    for(let dx=-7;dx<=7;dx++) for(let dz=-7;dz<=7;dz++){
+      setB(bx+dx, GROUND_Y, bz+dz, T.PLANK);
+      const rim = Math.abs(dx)===7||Math.abs(dz)===7;
+      const doorway = (dz*facing===7) && Math.abs(dx)<=2;
+      if(rim && !doorway) for(let y=1;y<=4;y++) setB(bx+dx,y,bz+dz, y===4?mat:T.STONE);
+    }
+    for(let dx=-1;dx<=1;dx++) for(let dz=-1;dz<=1;dz++) setB(bx+dx,1,bz+dz,T.GOLD);
+  }
+  // scattered trees for cover
+  for(let i=0;i<46;i++){
+    const x=ri(6,SX-7), z=ri(6,SZ-7);
+    if(Math.abs(z-mz)<4) continue;
+    if(Math.abs(x-BASE.A.surf.x)<10 && Math.abs(z-BASE.A.surf.z)<10) continue;
+    if(Math.abs(x-BASE.B.surf.x)<10 && Math.abs(z-BASE.B.surf.z)<10) continue;
+    const h=ri(5,8);
+    for(let y=1;y<=h;y++) setB(x,y,z,T.WOOD);
+    for(let dx=-2;dx<=2;dx++) for(let dz=-2;dz<=2;dz++) for(let dy=0;dy<3;dy++){
+      if(Math.abs(dx)===2&&Math.abs(dz)===2) continue;
+      setB(x+dx,h+dy,z+dz,T.LEAF);
+    }
+  }
+}
+
+function buildUnderground(){
+  for(let z=0;z<SZ;z++) for(let x=0;x<SX;x++){
+    for(let y=UNDER_Y-3;y<=UNDER_Y;y++) setB(x,y,z,T.BASALT);
+    if(x<2||z<2||x>=SX-2||z>=SZ-2) for(let y=UNDER_Y+1;y<=UNDER_Y+9;y++) setB(x,y,z,T.DARKSTONE);
+  }
+  // lava channels
+  for(let i=0;i<3;i++){
+    const cz = 22 + i*18, w = ri(2,4);
+    for(let x=6;x<SX-6;x++) for(let dz=0;dz<w;dz++){
+      if(x>34&&x<46) continue;                       // crossing
+      setB(x,UNDER_Y,cz+dz,T.LAVA);
+    }
+    for(let x=34;x<=46;x++) for(let dz=0;dz<w;dz++) setB(x,UNDER_Y,cz+dz,T.PLANK);
+  }
+  // ruin pillars + crystal clusters
+  for(let i=0;i<40;i++){
+    const x=ri(6,SX-7), z=ri(6,SZ-7);
+    if(getB(x,UNDER_Y,z)===T.LAVA) continue;
+    const h=ri(3,8);
+    for(let y=UNDER_Y+1;y<=UNDER_Y+h;y++) for(let dx=0;dx<=1;dx++) for(let dz=0;dz<=1;dz++)
+      setB(x+dx,y,z+dz,T.DARKSTONE);
+    if(rnd()<0.45) setB(x,UNDER_Y+h+1,z,T.CRYSTAL);
+  }
+  for(let i=0;i<70;i++){
+    const x=ri(4,SX-5), z=ri(4,SZ-5);
+    if(getB(x,UNDER_Y,z)!==T.BASALT) continue;
+    setB(x,UNDER_Y+1,z,T.CRYSTAL);
+  }
+  // bases
+  for(const key of ['A','B']){
+    const {x:bx,z:bz} = BASE[key].und;
+    const mat = key==='A'?T.AZURE:T.CRIMSON;
+    for(let dx=-6;dx<=6;dx++) for(let dz=-6;dz<=6;dz++){
+      setB(bx+dx,UNDER_Y,bz+dz,T.PLANK);
+      if(Math.abs(dx)===6||Math.abs(dz)===6)
+        for(let y=UNDER_Y+1;y<=UNDER_Y+3;y++) setB(bx+dx,y,bz+dz, y===UNDER_Y+3?mat:T.DARKSTONE);
+    }
+    for(let dx=-1;dx<=1;dx++) for(let dz=-1;dz<=1;dz++) setB(bx+dx,UNDER_Y+1,bz+dz,T.GOLD);
+  }
+}
+
+buildSurface();
+buildUnderground();
+
+/* ------------------------------- GL program ------------------------------- */
+const VS = `#version 300 es
+layout(location=0) in vec3 a_pos;
+layout(location=1) in vec3 a_nrm;
+layout(location=2) in vec3 i_off;
+layout(location=3) in vec3 i_scl;
+layout(location=4) in vec3 i_rot;
+layout(location=5) in vec3 i_col;
+layout(location=6) in float i_emis;
+uniform mat4 u_vp; uniform vec3 u_cam;
+out vec3 v_nrm; out vec3 v_loc; out vec3 v_col; out float v_emis; out float v_dist;
+void main(){
+  vec3 p = a_pos * i_scl; vec3 n = a_nrm;
+  if(dot(i_rot,i_rot) > 0.000001){
+    float cx=cos(i_rot.x), sx=sin(i_rot.x), cy=cos(i_rot.y), sy=sin(i_rot.y),
+          cz=cos(i_rot.z), sz=sin(i_rot.z);
+    mat3 R = mat3(cz,sz,0.0, -sz,cz,0.0, 0.0,0.0,1.0)
+           * mat3(cy,0.0,-sy, 0.0,1.0,0.0, sy,0.0,cy)
+           * mat3(1.0,0.0,0.0, 0.0,cx,sx, 0.0,-sx,cx);
+    p = R*p; n = R*n;
+  }
+  vec3 w = p + i_off;
+  gl_Position = u_vp * vec4(w,1.0);
+  v_nrm=n; v_loc=a_pos; v_col=i_col; v_emis=i_emis; v_dist=length(w-u_cam);
+}`;
+
+const FS = `#version 300 es
+precision highp float;
+in vec3 v_nrm; in vec3 v_loc; in vec3 v_col; in float v_emis; in float v_dist;
+uniform vec3 u_light; uniform vec3 u_fog; uniform vec2 u_fogRange; uniform float u_amb;
+out vec4 outColor;
+void main(){
+  vec3 n = normalize(v_nrm);
+  float d = max(dot(n, normalize(u_light)), 0.0);
+  vec3 c = v_col * (u_amb + (1.0-u_amb)*d);
+  vec3 t = abs(v_loc) * (1.0 - abs(n));            // block edge outline
+  float e = max(t.x, max(t.y, t.z));
+  c *= 1.0 - 0.40*smoothstep(0.39, 0.5, e);
+  c += v_col * v_emis;
+  float f = clamp((v_dist-u_fogRange.x)/(u_fogRange.y-u_fogRange.x), 0.0, 1.0);
+  outColor = vec4(mix(c, u_fog, f), 1.0);
+}`;
+
+function sh(type,src){
+  const s=gl.createShader(type); gl.shaderSource(s,src); gl.compileShader(s);
+  if(!gl.getShaderParameter(s,gl.COMPILE_STATUS)) throw new Error(gl.getShaderInfoLog(s));
+  return s;
+}
+const prog = gl.createProgram();
+gl.attachShader(prog, sh(gl.VERTEX_SHADER,VS));
+gl.attachShader(prog, sh(gl.FRAGMENT_SHADER,FS));
+gl.linkProgram(prog);
+if(!gl.getProgramParameter(prog,gl.LINK_STATUS)) throw new Error(gl.getProgramInfoLog(prog));
+gl.useProgram(prog);
+const U = {
+  vp:gl.getUniformLocation(prog,'u_vp'), cam:gl.getUniformLocation(prog,'u_cam'),
+  light:gl.getUniformLocation(prog,'u_light'), fog:gl.getUniformLocation(prog,'u_fog'),
+  fogRange:gl.getUniformLocation(prog,'u_fogRange'), amb:gl.getUniformLocation(prog,'u_amb')
+};
+
+/* cube: 24 verts / 36 indices */
+(function(){
+  const F=[[[1,0,0],[[.5,-.5,.5],[.5,-.5,-.5],[.5,.5,-.5],[.5,.5,.5]]],
+           [[-1,0,0],[[-.5,-.5,-.5],[-.5,-.5,.5],[-.5,.5,.5],[-.5,.5,-.5]]],
+           [[0,1,0],[[-.5,.5,.5],[.5,.5,.5],[.5,.5,-.5],[-.5,.5,-.5]]],
+           [[0,-1,0],[[-.5,-.5,-.5],[.5,-.5,-.5],[.5,-.5,.5],[-.5,-.5,.5]]],
+           [[0,0,1],[[-.5,-.5,.5],[.5,-.5,.5],[.5,.5,.5],[-.5,.5,.5]]],
+           [[0,0,-1],[[.5,-.5,-.5],[-.5,-.5,-.5],[-.5,.5,-.5],[.5,.5,-.5]]]];
+  const vd=[], idx=[];
+  F.forEach(([n,q],f)=>{ q.forEach(p=>vd.push(...p,...n));
+    const b=f*4; idx.push(b,b+1,b+2, b,b+2,b+3); });
+  const vb=gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER,vb); gl.bufferData(gl.ARRAY_BUFFER,new Float32Array(vd),gl.STATIC_DRAW);
+  const ib=gl.createBuffer();
+  gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,ib);
+  gl.bufferData(gl.ELEMENT_ARRAY_BUFFER,new Uint16Array(idx),gl.STATIC_DRAW);
+  window.__cube={vb,ib};
+})();
+
+const STRIDE = 13;
+function makeBatch(cap){
+  const data = new Float32Array(cap*STRIDE);
+  const buf = gl.createBuffer();
+  const vao = gl.createVertexArray();
+  gl.bindVertexArray(vao);
+  gl.bindBuffer(gl.ARRAY_BUFFER, window.__cube.vb);
+  gl.enableVertexAttribArray(0); gl.vertexAttribPointer(0,3,gl.FLOAT,false,24,0);
+  gl.enableVertexAttribArray(1); gl.vertexAttribPointer(1,3,gl.FLOAT,false,24,12);
+  gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, window.__cube.ib);
+  gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+  gl.bufferData(gl.ARRAY_BUFFER, data.byteLength, gl.DYNAMIC_DRAW);
+  [[2,3,0],[3,3,3],[4,3,6],[5,3,9],[6,1,12]].forEach(([loc,size,off])=>{
+    gl.enableVertexAttribArray(loc);
+    gl.vertexAttribPointer(loc,size,gl.FLOAT,false,STRIDE*4,off*4);
+    gl.vertexAttribDivisor(loc,1);
+  });
+  gl.bindVertexArray(null);
+  return {data, buf, vao, cap, n:0};
+}
+function push(b,x,y,z,sx,sy,sz,rx,ry,rz,col,emis){
+  if(b.n>=b.cap) return;
+  const o=b.n*STRIDE, d=b.data;
+  d[o]=x; d[o+1]=y; d[o+2]=z; d[o+3]=sx; d[o+4]=sy; d[o+5]=sz;
+  d[o+6]=rx; d[o+7]=ry; d[o+8]=rz;
+  d[o+9]=col[0]; d[o+10]=col[1]; d[o+11]=col[2]; d[o+12]=emis||0;
+  b.n++;
+}
+function upload(b){
+  gl.bindBuffer(gl.ARRAY_BUFFER,b.buf);
+  gl.bufferSubData(gl.ARRAY_BUFFER,0,b.data,0,b.n*STRIDE);
+}
+function draw(b){
+  if(!b.n) return;
+  gl.bindVertexArray(b.vao);
+  gl.drawElementsInstanced(gl.TRIANGLES,36,gl.UNSIGNED_SHORT,0,b.n);
+}
+
+const world = makeBatch(46000);
+const dyn   = makeBatch(DEBRIS_CAP + 400);
+
+/* only blocks with an exposed face get an instance */
+function rebuildWorld(){
+  world.n = 0;
+  for(let z=0;z<SZ;z++) for(let y=-YOFF;y<SY-YOFF;y++) for(let x=0;x<SX;x++){
+    const t = getB(x,y,z); if(!t) continue;
+    if(solid(x+1,y,z)&&solid(x-1,y,z)&&solid(x,y+1,z)&&solid(x,y-1,z)&&solid(x,y,z+1)&&solid(x,y,z-1)) continue;
+    push(world, x+0.5, y+0.5, z+0.5, 1,1,1, 0,0,0, COL[t], EMIS[t]||0);
+  }
+  upload(world);
+}
+rebuildWorld();
+
+/* ------------------------------ math helpers ----------------------------- */
+function perspective(fovy,asp,near,far){
+  const f=1/Math.tan(fovy/2), nf=1/(near-far);
+  return [f/asp,0,0,0, 0,f,0,0, 0,0,(far+near)*nf,-1, 0,0,2*far*near*nf,0];
+}
+function lookAt(e,c,up){
+  let zx=e[0]-c[0], zy=e[1]-c[1], zz=e[2]-c[2];
+  let l=Math.hypot(zx,zy,zz)||1; zx/=l; zy/=l; zz/=l;
+  let xx=up[1]*zz-up[2]*zy, xy=up[2]*zx-up[0]*zz, xz=up[0]*zy-up[1]*zx;
+  l=Math.hypot(xx,xy,xz)||1; xx/=l; xy/=l; xz/=l;
+  const yx=zy*xz-zz*xy, yy=zz*xx-zx*xz, yz=zx*xy-zy*xx;
+  return [xx,yx,zx,0, xy,yy,zy,0, xz,yz,zz,0,
+          -(xx*e[0]+xy*e[1]+xz*e[2]), -(yx*e[0]+yy*e[1]+yz*e[2]), -(zx*e[0]+zy*e[1]+zz*e[2]), 1];
+}
+function mul(a,b){
+  const o=new Array(16);
+  for(let i=0;i<4;i++) for(let j=0;j<4;j++){
+    let s=0; for(let k=0;k<4;k++) s+=a[k*4+j]*b[i*4+k];
+    o[i*4+j]=s;
+  }
+  return o;
+}
+
+/* -------------------------------- entities -------------------------------- */
+const HW=0.55, HH=3.2;                  // half-width, height (blocks are 0.5m — docket 10)
+function boxHits(x,y,z){
+  const x0=Math.floor(x-HW), x1=Math.floor(x+HW);
+  const z0=Math.floor(z-HW), z1=Math.floor(z+HW);
+  const y0=Math.floor(y),    y1=Math.floor(y+HH-0.001);
+  for(let bx=x0;bx<=x1;bx++) for(let bz=z0;bz<=z1;bz++) for(let by=y0;by<=y1;by++)
+    if(solid(bx,by,bz)) return true;
+  return false;
+}
+
+let ents=[], flags={}, phase='surface', clock=MATCH_TIME, score={A:0,B:0}, running=false;
+const dead = e => e.respawn > 0;
+
+function spawnPoint(team){
+  const b = phase==='surface' ? BASE[team].surf : BASE[team].und;
+  // ring 3.5–5.5 blocks out, clear of the flag pedestal and inside the base walls
+  const a = rnd()*Math.PI*2, r = 3.5 + rnd()*2;
+  const y = (phase==='surface' ? GROUND_Y : UNDER_Y) + 2.5;
+  return {x:b.x + Math.cos(a)*r, y, z:b.z + Math.sin(a)*r};
+}
+function makeEnt(team,isPlayer,i){
+  const s=spawnPoint(team);
+  return {team,isPlayer,id:(team+i),x:s.x,y:s.y,z:s.z,vy:0,yaw:team==='A'?0:Math.PI,
+    grounded:false,respawn:0,carrying:null,cool:0,stray:0,strayDir:0,swing:0,invuln:1.5};
+}
+function resetMatch(){
+  ents=[makeEnt('A',true,0)];
+  for(let i=1;i<5;i++) ents.push(makeEnt('A',false,i));
+  for(let i=0;i<5;i++) ents.push(makeEnt('B',false,i));
+  flags={ A:mkFlag('A'), B:mkFlag('B') };
+  phase='surface'; clock=MATCH_TIME; score={A:0,B:0};
+  camYaw=0; camPitch=-0.22; shake=0; debris.length=0;
+  fcs('Objective: take the crimson flag and bring it home. The battlefield will not stay still.',6);
+}
+function mkFlag(team){
+  const b=BASE[team].surf;
+  return {team,x:b.x+0.5,y:GROUND_Y+2,z:b.z+0.5,home:true,carrier:null,vy:0,timer:0};
+}
+function baseOf(team){
+  const b = phase==='surface' ? BASE[team].surf : BASE[team].und;
+  return {x:b.x+0.5, y:(phase==='surface'?GROUND_Y+2:UNDER_Y+2), z:b.z+0.5};
+}
+function homeFlag(f){ const b=baseOf(f.team); f.x=b.x; f.y=b.y; f.z=b.z; f.home=true; f.carrier=null; f.timer=0; }
+
+/* -------------------------------- movement -------------------------------- */
+function moveEnt(e,dx,dz,dt){
+  // X then Z with a 1-block auto step-up, then gravity on Y
+  let nx=e.x+dx;
+  if(!boxHits(nx,e.y,e.z)) e.x=nx;
+  else if(e.grounded && !boxHits(nx,e.y+1,e.z)){ e.x=nx; e.y+=1; }
+  let nz=e.z+dz;
+  if(!boxHits(e.x,e.y,nz)) e.z=nz;
+  else if(e.grounded && !boxHits(e.x,e.y+1,nz)){ e.z=nz; e.y+=1; }
+
+  e.vy -= 26*dt; if(e.vy < -50) e.vy = -50;
+  let ny=e.y+e.vy*dt;
+  e.grounded=false;
+  if(boxHits(e.x,ny,e.z)){
+    const step = e.vy>0 ? 0.02 : -0.02;
+    while(!boxHits(e.x,e.y+step,e.z) && Math.abs(e.y-ny)>0.02) e.y+=step;
+    if(e.vy<0) e.grounded=true;
+    e.vy=0;
+  } else e.y=ny;
+
+  e.x=Math.max(2.5,Math.min(SX-2.5,e.x));
+  e.z=Math.max(2.5,Math.min(SZ-2.5,e.z));
+  if(e.y < -YOFF+2){ e.y=-YOFF+2; e.vy=0; e.grounded=true; }
+}
+
+/* ------------------------------- combat ---------------------------------- */
+function strike(a){
+  if(a.cool>0) return; a.cool=0.55; a.swing=0.18;
+  for(const b of ents){
+    if(b.team===a.team || dead(b) || b.invuln>0) continue;
+    const dx=b.x-a.x, dz=b.z-a.z, dy=b.y-a.y;
+    if(Math.abs(dy)>4) continue;
+    const d=Math.hypot(dx,dz); if(d>3.4) continue;
+    const fx=Math.sin(a.yaw), fz=Math.cos(a.yaw);
+    if((dx*fx+dz*fz)/(d||1) < 0.25) continue;      // ~150° cone
+    eliminate(b, a);
+    break;
+  }
+}
+function eliminate(e, by){
+  e.respawn=4; e.vy=0;
+  if(e.carrying){
+    const f=flags[e.carrying]; f.carrier=null; f.x=e.x; f.y=e.y+1; f.z=e.z; f.timer=20; f.vy=0;
+    e.carrying=null;
+    if(by && by.isPlayer) fcs('Carrier down. Their flag is loose — get it back.',3.5);
+    else if(e.isPlayer) fcs('You were taken out carrying the flag. It dropped where you fell.',3.5);
+  } else if(e.isPlayer) fcs('You are down. Respawning at base.',2.5);
+}
+
+/* -------------------------------- flags ---------------------------------- */
+function updateFlags(dt){
+  for(const key of ['A','B']){
+    const f=flags[key];
+    if(f.carrier){
+      const c=f.carrier;
+      f.x=c.x; f.y=c.y+HH+0.4; f.z=c.z; f.home=false; f.timer=0;
+      continue;
+    }
+    if(!f.home){
+      f.vy-=26*dt; const ny=f.y+f.vy*dt;
+      if(boxHits(f.x,ny,f.z)||ny<-YOFF+2){ f.vy=0; } else f.y=ny;
+      f.timer-=dt;
+      if(f.timer<=0){ homeFlag(f); fcs(key==='A'?'Our flag returned to base.':'Their flag reset to their base.',3); }
+    }
+    // interactions
+    for(const e of ents){
+      if(dead(e)) continue;
+      if(Math.hypot(e.x-f.x, e.z-f.z)>2.2 || Math.abs(e.y-f.y)>4) continue;
+      if(e.team!==f.team){
+        if(!e.carrying){ f.carrier=e; e.carrying=key;
+          fcs(e.isPlayer ? 'Flag taken. Get it home — your own flag must be safe to score.'
+                         : (e.team==='A'?'Teammate has their flag. Escort them home.':'They have our flag. Stop the carrier.'),4);
+          break;                                   // one carrier only
+        }
+      } else if(!f.home){
+        homeFlag(f); fcs(e.isPlayer?'Flag returned.':(f.team==='A'?'Our flag is secure again.':'They recovered their flag.'),3);
+      }
+    }
+  }
+  // captures
+  for(const e of ents){
+    if(dead(e) || !e.carrying) continue;
+    const own=flags[e.team]; if(!own.home) continue;
+    const b=baseOf(e.team);
+    if(Math.hypot(e.x-b.x, e.z-b.z)<7 && Math.abs(e.y-b.y)<6){
+      score[e.team]++;
+      const f=flags[e.carrying]; e.carrying=null; homeFlag(f);
+      fcs(e.team==='A' ? (e.isPlayer?'Capture. That is yours.':'Capture — Azure scores.')
+                       : 'Crimson captured. Even it up.',4);
+    }
+  }
+}
+
+/* -------------------------------- bot AI --------------------------------- */
+function botThink(e,dt){
+  const enemy = e.team==='A'?'B':'A';
+  const ownFlag=flags[e.team], tgtFlag=flags[enemy];
+  let tx,tz;
+  if(e.carrying){ const b=baseOf(e.team); tx=b.x; tz=b.z; }
+  else if(ownFlag.carrier){ tx=ownFlag.carrier.x; tz=ownFlag.carrier.z; }
+  else if(!ownFlag.home){ tx=ownFlag.x; tz=ownFlag.z; }
+  else if(tgtFlag.carrier && tgtFlag.carrier.team===e.team){
+    // escort our carrier
+    tx=tgtFlag.carrier.x + (rnd()*4-2); tz=tgtFlag.carrier.z + (rnd()*4-2);
+  }
+  else { tx=tgtFlag.x; tz=tgtFlag.z; }
+
+  let dx=tx-e.x, dz=tz-e.z;
+  const d=Math.hypot(dx,dz)||1;
+  // sidestep when wedged
+  if(e.stray>0){ e.stray-=dt;
+    const a=Math.atan2(dz,dx)+e.strayDir;
+    dx=Math.cos(a); dz=Math.sin(a);
+  } else { dx/=d; dz/=d; }
+
+  e.yaw=Math.atan2(dx,dz);
+  const sp = e.carrying?7.5:9.0;
+  const px=e.x, pz=e.z;
+  moveEnt(e, dx*sp*dt, dz*sp*dt, dt);
+  if(Math.hypot(e.x-px,e.z-pz) < sp*dt*0.35){
+    if(e.grounded && rnd()<0.35) e.vy=10.5;
+    if(e.stray<=0){ e.stray=0.7; e.strayDir=(rnd()<0.5?-1:1)*1.25; }
+  }
+  // opportunistic attack
+  if(e.cool<=0) for(const o of ents){
+    if(o.team===e.team||dead(o)||o.invuln>0) continue;
+    if(Math.hypot(o.x-e.x,o.z-e.z)<3.0 && Math.abs(o.y-e.y)<4){ e.yaw=Math.atan2(o.x-e.x,o.z-e.z); strike(e); break; }
+  }
+}
+
+/* ------------------------------- collapse -------------------------------- */
+const debris=[];
+function doCollapse(){
+  const p=ents[0];
+  const cand=[];
+  for(let z=0;z<SZ;z++) for(let y=COLLAPSE_CUT+1;y<SY-YOFF;y++) for(let x=0;x<SX;x++){
+    const t=getB(x,y,z); if(!t) continue;
+    const exposed = !(solid(x+1,y,z)&&solid(x-1,y,z)&&solid(x,y+1,z)&&solid(x,y-1,z)&&solid(x,y,z+1)&&solid(x,y,z-1));
+    if(exposed) cand.push([x,y,z,t,(x-p.x)**2+(z-p.z)**2]);
+    grid[gi(x,y,z)]=0;
+  }
+  cand.sort((a,b)=>a[4]-b[4]);
+  const take=Math.min(cand.length, DEBRIS_CAP);
+  for(let i=0;i<take;i++){
+    const [x,y,z,t]=cand[i];
+    debris.push({x:x+0.5,y:y+0.5,z:z+0.5,
+      vx:(rnd()-0.5)*3.5, vy:-(rnd()*4), vz:(rnd()-0.5)*3.5,
+      rx:0,ry:0,rz:0, sx:(rnd()-0.5)*4, sy:(rnd()-0.5)*4, sz:(rnd()-0.5)*4,
+      t, life:9, settle:0, s:1});
+  }
+  rebuildWorld();
+  phase='underground';
+  for(const key of ['A','B']){
+    const f=flags[key];
+    if(!f.carrier) homeFlag(f);                       // re-anchor to the underground base
+  }
+  for(const e of ents) e.invuln=Math.max(e.invuln,2.5);
+  fcs('Underground kingdom. Flags re-anchored to the new bases. Find the routes.',6);
+}
+function updateDebris(dt){
+  for(let i=debris.length-1;i>=0;i--){
+    const d=debris[i];
+    if(d.settle>0){ d.settle-=dt; d.s=Math.max(0,d.settle/1.6); if(d.s<=0){ debris.splice(i,1); } continue; }
+    d.vy-=30*dt;
+    d.x+=d.vx*dt; d.y+=d.vy*dt; d.z+=d.vz*dt;
+    d.rx+=d.sx*dt; d.ry+=d.sy*dt; d.rz+=d.sz*dt;
+    d.life-=dt;
+    if(solid(Math.floor(d.x),Math.floor(d.y),Math.floor(d.z)) || d.y<-YOFF+2 || d.life<=0){
+      d.settle=1.6; d.vx=d.vy=d.vz=0;
+    }
+  }
+}
+
+/* --------------------------------- input --------------------------------- */
+const keys={};
+let camYaw=0, camPitch=-0.22, shake=0, locked=false, dragging=false, lastMX=0, lastMY=0;
+addEventListener('keydown',e=>{
+  keys[e.code]=true;
+  if(['ArrowLeft','ArrowRight','ArrowUp','ArrowDown','Space'].includes(e.code)) e.preventDefault();
+  if(e.code==='KeyF' && running) strike(ents[0]);
+});
+addEventListener('keyup',e=>{ keys[e.code]=false; });
+cvs.addEventListener('mousedown',e=>{
+  if(!running) return;
+  if(locked){ strike(ents[0]); return; }
+  dragging=true; lastMX=e.clientX; lastMY=e.clientY;
+  if(cvs.requestPointerLock){ try{ cvs.requestPointerLock(); }catch(_){} }
+});
+addEventListener('mouseup',()=>{ dragging=false; });
+addEventListener('mousemove',e=>{
+  if(!running) return;
+  if(locked){ camYaw -= e.movementX*0.0026; camPitch = Math.max(-1.2, Math.min(0.75, camPitch - e.movementY*0.0022)); }
+  else if(dragging){
+    camYaw -= (e.clientX-lastMX)*0.006;
+    camPitch = Math.max(-1.2, Math.min(0.75, camPitch - (e.clientY-lastMY)*0.005));
+    lastMX=e.clientX; lastMY=e.clientY;
+  }
+});
+document.addEventListener('pointerlockchange',()=>{ locked = document.pointerLockElement===cvs; });
+cvs.addEventListener('contextmenu',e=>e.preventDefault());
+
+/* ---------------------------------- HUD ---------------------------------- */
+const el = id => document.getElementById(id);
+let fcsTimer=0;
+function fcs(msg,dur){
+  el('fcsMsg').textContent=msg; el('fcs').classList.add('on'); fcsTimer=dur||4;
+}
+function syncHUD(){
+  el('scoreA').textContent=score.A; el('scoreB').textContent=score.B;
+  const m=Math.max(0,Math.floor(clock/60)), s=Math.max(0,Math.floor(clock%60));
+  el('clock').textContent=m+':'+String(s).padStart(2,'0');
+  const ph=el('phase');
+  if(phase==='surface' && clock<=MATCH_TIME-TREMOR_AT){ ph.textContent='collapse imminent'; ph.classList.add('warn'); }
+  else { ph.textContent = phase==='surface'?'surface':'underground'; ph.classList.remove('warn'); }
+  for(const [k,id] of [['A','flagA'],['B','flagB']]){
+    const f=flags[k], n=el(id);
+    const txt = f.carrier ? (f.carrier.team==='A'?'taken by azure':'taken by crimson')
+              : f.home ? 'flag secure' : 'dropped';
+    n.textContent=txt; n.classList.toggle('alert', !f.home);
+  }
+}
+
+/* --------------------------------- render -------------------------------- */
+function drawEnt(b,e){
+  const col = e.team==='A'?COL[7]:COL[8];
+  const hl = e.isPlayer ? COL[12] : col;
+  const a = e.swing>0 ? 0.5 : 0;
+  push(b, e.x, e.y+0.8, e.z, 1.0,1.6,1.0, 0,e.yaw,0, col, 0);           // legs
+  push(b, e.x, e.y+2.1, e.z, 1.5,1.1,1.0, 0,e.yaw,0, hl, e.isPlayer?0.12:0); // torso
+  push(b, e.x, e.y+3.0, e.z, 0.95,0.9,0.95, 0,e.yaw,0, col, 0);          // head
+  if(a) push(b, e.x+Math.sin(e.yaw)*1.4, e.y+2.2, e.z+Math.cos(e.yaw)*1.4,
+             0.35,0.35,1.6, 0,e.yaw,0, COL[12], 0.4);                    // swing
+}
+function drawFlag(b,f){
+  const col = f.team==='A'?COL[7]:COL[8];
+  push(b, f.x, f.y, f.z, 0.22,3.0,0.22, 0,0,0, COL[13], 0);
+  push(b, f.x+0.7, f.y+1.0, f.z, 1.4,0.9,0.14, 0,0,0, col, 0.42);
+}
+
+let vpArr=new Float32Array(16);
+function render(){
+  const p=ents[0];
+  if(!p){                                  // pre-match: nothing to frame yet
+    gl.clearColor(0.043,0.055,0.071,1);
+    gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);
+    return;
+  }
+  const dist=9.5, hy=p.y+2.6;
+  let cx=p.x - Math.sin(camYaw)*Math.cos(camPitch)*dist;
+  let cy=hy   - Math.sin(camPitch)*dist;
+  let cz=p.z - Math.cos(camYaw)*Math.cos(camPitch)*dist;
+  // pull the camera in if it would sit inside blocks
+  for(let s=1;s<=10;s++){
+    const t=s/10, tx=p.x+(cx-p.x)*t, ty=hy+(cy-hy)*t, tz=p.z+(cz-p.z)*t;
+    if(solid(Math.floor(tx),Math.floor(ty),Math.floor(tz))){
+      const u=(s-1)/10; cx=p.x+(cx-p.x)*u; cy=hy+(cy-hy)*u; cz=p.z+(cz-p.z)*u; break;
+    }
+  }
+  if(shake>0){ cx+=(rnd()-0.5)*shake; cy+=(rnd()-0.5)*shake; cz+=(rnd()-0.5)*shake; }
+
+  const asp=cvs.width/cvs.height||1;
+  vpArr.set(mul(perspective(1.15,asp,0.1,320), lookAt([cx,cy,cz],[p.x,hy,p.z],[0,1,0])));
+  gl.uniformMatrix4fv(U.vp,false,vpArr);
+  gl.uniform3f(U.cam,cx,cy,cz);
+
+  const under = phase==='underground';
+  if(under){
+    gl.uniform3f(U.light,0.35,0.85,0.2); gl.uniform3f(U.fog,0.043,0.055,0.071);
+    gl.uniform2f(U.fogRange,22,96); gl.uniform1f(U.amb,0.36);
+    gl.clearColor(0.043,0.055,0.071,1);
+  } else {
+    gl.uniform3f(U.light,0.45,0.82,0.35); gl.uniform3f(U.fog,0.60,0.72,0.82);
+    gl.uniform2f(U.fogRange,60,230); gl.uniform1f(U.amb,0.52);
+    gl.clearColor(0.60,0.72,0.82,1);
+  }
+  gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);
+  draw(world);
+
+  dyn.n=0;
+  for(const e of ents) if(!dead(e)) drawEnt(dyn,e);
+  for(const k of ['A','B']) if(!flags[k].carrier) drawFlag(dyn,flags[k]);
+  for(const d of debris)
+    push(dyn,d.x,d.y,d.z,d.s,d.s,d.s,d.rx,d.ry,d.rz,COL[d.t],EMIS[d.t]||0);
+  upload(dyn); draw(dyn);
+}
+
+/* ---------------------------------- loop --------------------------------- */
+function resize(){
+  const dpr=Math.min(devicePixelRatio||1, 2);
+  cvs.width=Math.floor(innerWidth*dpr); cvs.height=Math.floor(innerHeight*dpr);
+  gl.viewport(0,0,cvs.width,cvs.height);
+}
+addEventListener('resize',resize); resize();
+gl.enable(gl.DEPTH_TEST); gl.enable(gl.CULL_FACE); gl.cullFace(gl.BACK);
+
+let prev=0;
+function frame(now){
+  requestAnimationFrame(frame);
+  const dt=Math.min(0.05,(now-prev)/1000||0); prev=now;
+  if(running){
+    clock-=dt;
+    const elapsed=MATCH_TIME-clock;
+    if(phase==='surface'){
+      if(elapsed>=TREMOR_AT && elapsed<COLLAPSE_AT){
+        shake=0.10+0.5*((elapsed-TREMOR_AT)/(COLLAPSE_AT-TREMOR_AT));
+        if(!doCollapse.warned){ doCollapse.warned=true;
+          fcs('Structural failure. The battlefield breaks apart in ten seconds — get off the walls.',7); }
+      }
+      if(elapsed>=COLLAPSE_AT){ shake=1.5; doCollapse(); }
+    } else if(shake>0) shake=Math.max(0,shake-dt*1.6);
+
+    const p=ents[0];
+    for(const e of ents){
+      if(e.cool>0) e.cool-=dt;
+      if(e.swing>0) e.swing-=dt;
+      if(e.invuln>0) e.invuln-=dt;
+      if(dead(e)){
+        e.respawn-=dt;
+        if(e.respawn<=0){ const s=spawnPoint(e.team); e.x=s.x; e.y=s.y; e.z=s.z; e.vy=0; e.invuln=1.5; }
+        continue;
+      }
+      if(e.isPlayer){
+        if(keys.ArrowLeft) camYaw+=1.9*dt;
+        if(keys.ArrowRight) camYaw-=1.9*dt;
+        if(keys.ArrowUp) camPitch=Math.min(0.75,camPitch+1.3*dt);
+        if(keys.ArrowDown) camPitch=Math.max(-1.2,camPitch-1.3*dt);
+        let fx=0,fz=0;
+        if(keys.KeyW){fx+=Math.sin(camYaw);fz+=Math.cos(camYaw);}
+        if(keys.KeyS){fx-=Math.sin(camYaw);fz-=Math.cos(camYaw);}
+        if(keys.KeyA){fx+=Math.cos(camYaw);fz-=Math.sin(camYaw);}
+        if(keys.KeyD){fx-=Math.cos(camYaw);fz+=Math.sin(camYaw);}
+        const m=Math.hypot(fx,fz);
+        let sp=(keys.ShiftLeft||keys.ShiftRight)?13:9;
+        if(e.carrying) sp*=0.82;
+        if(m>0){ fx/=m; fz/=m; e.yaw=Math.atan2(fx,fz); }
+        if((keys.Space) && e.grounded) e.vy=11.5;
+        moveEnt(e, fx*sp*dt, fz*sp*dt, dt);
+      } else botThink(e,dt);
+    }
+    updateFlags(dt);
+    updateDebris(dt);
+    if(fcsTimer>0){ fcsTimer-=dt; if(fcsTimer<=0) el('fcs').classList.remove('on'); }
+    syncHUD();
+    if(clock<=0) endMatch();
+  }
+  render();
+}
+requestAnimationFrame(frame);
+
+function endMatch(){
+  running=false;
+  if(document.pointerLockElement===cvs && document.exitPointerLock) document.exitPointerLock();
+  const win = score.A>score.B ? 'Azure wins' : score.B>score.A ? 'Crimson wins' : 'Draw';
+  el('resultTitle').textContent=win;
+  el('resultLine').textContent='Azure '+score.A+' — '+score.B+' Crimson';
+  el('endVeil').classList.remove('hidden');
+}
+function start(){
+  doCollapse.warned=false;
+  for(let z=0;z<SZ;z++) for(let y=-YOFF;y<SY-YOFF;y++) for(let x=0;x<SX;x++) grid[gi(x,y,z)]=0;
+  _s=20260729; buildSurface(); buildUnderground(); rebuildWorld();
+  resetMatch(); syncHUD();
+  el('startVeil').classList.add('hidden'); el('endVeil').classList.add('hidden');
+  running=true;
+}
+el('playBtn').addEventListener('click',start);
+el('againBtn').addEventListener('click',start);
+</script>
+
+</body>
+</html>
