@@ -47,6 +47,20 @@ The game is built for ages 10 and up. Combat is fantasy-adventure action, not
 gore, and communication is actively moderated. A competitive game can still be a
 respectful one.
 
+## Visual identity
+
+Flagbound is a **voxel game** — the entire world is built from blocks, and it
+shatters and re-stacks into blocks when the battlefield transforms.
+
+This is a load-bearing decision, not a coat of paint. It makes the world
+readable at a glance for younger players, keeps the fantasy combat firmly in
+adventure territory, makes enormous environments affordable, and — most
+importantly — makes the collapse and the ascent *natural* instead of being the
+hardest thing in the project to build.
+
+Full treatment in [10 — Art Direction](10-art-direction-and-cinematics.md),
+including the rules that keep it from reading as a Minecraft clone.
+
 ## Audience
 
 **Primary:** players aged 10+ who want a team game with real strategy and real
@@ -96,10 +110,12 @@ rather than an anticlimax.
 - **Minute 1.** F.C.S. briefs the objective. Teams split — some rush, some hold.
 - **Minute 4.** First capture attempt. A carrier gets escorted halfway home and
   is dropped at the bridge.
-- **Minute 6.** The ground shakes. F.C.S. calls the collapse. Everything falls.
-- **Minute 8.** Underground. A Shadow Runner finds a tunnel straight into the
-  enemy base and the whole defensive plan is wrong.
-- **Minute 11.** Ancient machinery activates. The ruins start rising.
+- **Minute 6.** The ground shakes. F.C.S. calls the collapse. The battlefield
+  shatters into forty thousand falling blocks and everyone falls with it.
+- **Minute 8.** Underground, standing in the wreckage of their own castle. A
+  Shadow Runner finds a tunnel straight into the enemy base and the whole
+  defensive plan is wrong.
+- **Minute 11.** Ancient machinery activates. The ruins start re-stacking upward.
 - **Minute 13.** Sky towers. Flags have relocated. Wind pushes a carrier off a
   bridge.
 - **Minute 15.** A Swiftblade takes a suicidal shortcut across open sky with the

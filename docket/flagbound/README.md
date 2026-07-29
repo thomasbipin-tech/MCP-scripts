@@ -15,6 +15,7 @@
 | **Match length** | ~15 minutes |
 | **Players** | Real players, backfilled by intelligent AI bots |
 | **Target audience** | Ages 10+ |
+| **Art style** | Voxel — a block-built world that shatters and rebuilds |
 | **Main goal** | Steal the enemy flag and return it to your base while the battlefield transforms underneath you |
 
 ## The one-line pitch
@@ -25,6 +26,8 @@ so no strategy survives the whole match.
 
 ## Core features
 
+- **Voxel world** — everything is built from blocks, and the battlefield shatters
+  and re-stacks into blocks when it transforms
 - Dynamic transforming world (surface → underground → sky), three acts per match
 - Skill-based action combat: attack, block, dodge, sprint, jump, class abilities
 - Four classes — Guardian, Swiftblade, Element Warrior, Shadow Runner

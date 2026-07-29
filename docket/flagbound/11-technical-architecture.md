@@ -28,12 +28,71 @@
 
 ## Engine
 
-*Proposed:* an off-the-shelf engine with mature networking, large-world
-streaming and destruction tooling — Unreal or Unity. The differentiator in
-Flagbound is world transformation and AI behaviour, not renderer technology, so
-building an engine would spend the budget in exactly the wrong place.
+*Proposed:* an off-the-shelf engine with mature networking and large-world
+streaming — Unreal or Unity — with a **custom voxel layer** on top.
 
-The engine question should be settled by which one the team can move fastest in.
+The voxel art direction ([10](10-art-direction-and-cinematics.md)) changes this
+calculation. Off-the-shelf engines do not ship a production-grade voxel terrain
+system, so this is the one place a custom subsystem is unavoidable. Options, in
+order of preference:
+
+1. **Existing voxel plugin/middleware** on Unreal or Unity, extended. Fastest
+   path; the risk is hitting the plugin's ceiling on the transitions and having
+   to fork it anyway.
+2. **Custom voxel layer** inside a commercial engine, using it for rendering,
+   networking, audio and tooling. Most likely the correct answer.
+3. **Fully custom engine.** Almost certainly wrong — it spends the budget on
+   solved problems instead of on the world transformation and AI that actually
+   differentiate the game.
+
+The engine question should be settled by which combination the team can build the
+phase-1 slice in fastest.
+
+## The voxel data model
+
+The single most important architectural decision in the project, because
+everything else — transitions, netcode, bot navigation, memory — falls out of it.
+
+*Proposed:* **one continuous vertical voxel world**, not three maps.
+
+```
+   ┌──────────────────────┐  y = +400   Act III   sky towers
+   │      (open sky)       │
+   ├──────────────────────┤  y =    0   Act I     surface battlefield
+   │       (bedrock)       │
+   ├──────────────────────┤  y = -300   Act II    underground kingdom
+   └──────────────────────┘  y = -400
+```
+
+All three acts are regions of the **same block grid**, stacked vertically. This
+is the payoff the art direction promised: there is no world swap, no second map
+to load, no handoff to get wrong. The Collapse deletes and drops blocks between
+y=0 and y=-300; the Ascent lifts blocks from y=-300 to y=+400. The brief's
+requirement that the underground *"feel like a continuation of the same
+battle"* stops being an illusion to maintain and becomes a fact about the data.
+
+**Two distinct kinds of block, and the distinction is critical:**
+
+| Kind | Authority | Count | Purpose |
+|---|---|---|---|
+| **World blocks** | Server-authoritative, in the grid | Millions | Collision, gameplay, structure |
+| **Debris blocks** | Client-side visual only | Thousands, transient | The spectacle of the collapse |
+
+A block that detaches during a transition is **removed from the authoritative
+grid and spawned as client-side debris**. Debris has no gameplay effect — it
+cannot block, damage, or be landed on. This is what makes the collapse
+affordable: the server replicates *"these regions are now empty"*, not the
+trajectory of 40,000 individual cubes.
+
+## Chunking and streaming
+
+- World divided into chunks (*proposed:* 32³ blocks) with per-chunk meshes
+- Clients stream chunks by proximity plus phase relevance
+- **Act III geometry does not exist until the Ascent builds it**, so it costs
+  nothing to hold during Acts I and II
+- Only Act I's surface region can be freed after the Collapse — *proposed:* keep
+  it, since a visible ruined surface above the cavern is a strong visual and a
+  cheap one once its collision is stripped
 
 ## The Phase Director
 
@@ -44,12 +103,11 @@ authoritative, and the heart of the game.
 
 - Owns the phase clock and broadcasts phase state to all clients
 - Fires the warning cascade before each transition
-- Coordinates the transition: freeze-safe, relocate players, hand over the new
-  world
+- Executes the authoritative block operations for each transition
 - Guarantees the carry-over rules from [02](02-match-flow-and-world-phases.md) —
   carriers keep flags, score persists, nobody dies to a transition
-- Verifies every client is loaded and simulating the new phase before returning
-  control
+- Relocates players to valid landing positions and applies the spawn-protection
+  window
 
 **Proposed phase state machine:**
 
@@ -58,36 +116,81 @@ BRIEFING → ACT_I → TREMORS → COLLAPSE → ACT_II
          → AWAKENING → ASCENT → ACT_III → RESULTS
 ```
 
-Each transition state has an entry gate (all clients confirmed ready or timed
-out to a safe fallback) and an exit gate (all players relocated to valid
-positions).
+Each transition state has an entry gate (all clients confirmed at the correct
+world version, or timed out to a safe fallback) and an exit gate (all players in
+valid positions on solid blocks).
 
-## The biggest technical risk
+## Technical risks
 
-**Two full world swaps mid-match, live, with no loading screen.**
+Going voxel **retired the project's original defining risk** — two full world
+swaps mid-match with no loading screen. There is now one continuous block world
+and nothing to swap. That was the risk most likely to kill the concept, and the
+art direction dissolved it.
 
-This is the project's defining engineering problem. If it is solved, the game
-works; if the collapse becomes a 20-second loading screen, the central pillar
-dies and no other system can compensate.
+Three real risks remain. None of them threatens the concept the way the original
+one did, but all three need answers in phase 1.
 
-**Mitigations to plan for from day one:**
+### Risk 1 — Replicating mass destruction to 16 clients
 
-1. **Pre-stream aggressively.** Act II geometry loads during Act I; Act III
-   during Act II. The transition should be a visibility and simulation handoff,
-   not a load.
-2. **Budget for three worlds resident at once.** Memory ceiling drives the
-   fidelity budget for all three acts. Set this number before art production
-   starts, not after.
-3. **Prototype the collapse first.** Before combat, before classes, before art —
-   build a grey-box vertical slice of surface → collapse → underground with 16
-   players. If that does not hold, the design needs to change while it is still
-   cheap to change.
-4. **Design a graceful fallback.** If a client cannot complete the handoff in
-   time, it needs a defined recovery — a short scripted fall sequence covering a
-   forced load — rather than a desync or a drop.
-5. **Choreograph, don't simulate.** The collapse and ascent should be authored
-   destruction with physics flourish, not fully simulated physics. Sixteen
-   clients must see the same collapse; only authored motion guarantees that.
+Forty thousand blocks falling at once cannot be replicated per-block. Bandwidth
+does not allow it, and it does not need to.
+
+**Mitigation — split authority from spectacle:**
+
+- The server replicates a compact **region diff**: "blocks in this volume are now
+  removed." Bounded, small, cheap.
+- Each client spawns its own **debris** from that diff, driven by a
+  **server-provided seed** so all 16 clients see a visually near-identical
+  collapse without a byte of per-block traffic.
+- Debris is cosmetic. Divergence between clients is invisible because debris
+  never touches gameplay.
+- Only **player positions and the authoritative grid** are synchronised.
+
+The rule: *the collapse the players see is client-simulated; the collapse that
+matters is a server region diff.*
+
+### Risk 2 — Physics and memory cost of the spectacle
+
+Tens of thousands of simultaneously simulated rigid bodies will not hold frame
+rate on a mid-range machine, let alone a console.
+
+**Mitigations:**
+
+- Hard cap on live debris (*proposed:* 5,000 concurrent, LRU-retired) with
+  density scaled by graphics settings — a low-end machine sees a thinner collapse,
+  not a slower one
+- Debris uses simplified non-interacting physics, not full rigid-body collision
+- Aggressive lifetime culling: debris fades once it leaves view or lands
+- Distant destruction plays as pre-baked chunk animation rather than per-block
+  simulation
+
+**This must be measured on the lowest target spec before art production commits
+to a block count.** Getting this wrong is not a crash; it is a game that only
+looks impressive on expensive hardware, which contradicts the whole point of
+choosing a cheap-to-render art style.
+
+### Risk 3 — Bot navigation on a world that keeps changing
+
+Bots need to path through a voxel world that rearranges twice per match, plus
+tunnels that collapse mid-act ([02](02-match-flow-and-world-phases.md)). A
+conventional baked navmesh cannot survive that.
+
+**Mitigation:** *proposed:* **voxel-native pathfinding** — path directly over the
+block grid with a chunk-level coarse graph for long routes and block-level
+detail locally. Chunks mark themselves dirty when their blocks change and only
+those chunks re-cost. No global rebuild, so a tunnel collapsing at minute 8
+invalidates a handful of chunks rather than the whole map.
+
+This is also the cleanest way to satisfy the brief's requirement that bots
+*"react to changing environments."*
+
+### Still true: prototype the collapse first
+
+Before combat, before classes, before art — build a grey-box slice of
+surface → collapse → underground with 16 players and measure bandwidth, frame
+time on minimum spec, and bot pathing across the transition. The concept risk is
+gone; the *performance* risk is not, and it is far cheaper to learn in week 4
+than in year 2.
 
 ## Bot AI
 
@@ -98,8 +201,8 @@ more than a hysteresis margin. That margin is what stops the visible
 role-flip-flopping that makes bots look broken.
 
 - Runs server-side, one AI context per match instance
-- Navigation meshes are **per-phase**, rebuilt on transition; runtime
-  invalidation handles mid-act tunnel collapses
+- **Voxel-native pathfinding** over the block grid, with per-chunk dirty-marking
+  so changed blocks re-cost only their own chunks (see Risk 3 above)
 - Bots consume only information their team legitimately possesses — the same
   rule as F.C.S. (see [05](05-fcs-ai-assistant.md))
 - Route-pressure tracking implements the brief's adaptation requirement (see
@@ -142,16 +245,23 @@ A sequencing proposal that puts the risky things first:
 
 | Phase | Deliverable |
 |---|---|
-| 1 | Grey-box vertical slice: surface → collapse → underground, 16 players, no art, no classes. **Proves or kills the concept.** |
+| 0 | **Voxel foundation** — block grid, chunking, streaming, meshing, collision. Everything else sits on this. |
+| 1 | **Collapse slice** — surface → collapse → underground, 16 players, untextured blocks. Measures bandwidth, min-spec frame time, bot pathing across the transition. |
 | 2 | Core CTF loop — flags, capture, respawn, score, one class |
 | 3 | All four classes and the combat verb set |
-| 4 | Bot AI to the behavioural bar in [06](06-ai-bots.md) |
-| 5 | Act III and the ascent transition |
+| 4 | Bot AI to the behavioural bar in [06](06-ai-bots.md), on voxel pathing |
+| 5 | Act III and the ascent (block re-stacking) |
 | 6 | F.C.S. event engine and callouts |
 | 7 | Matchmaking, concurrency, server browser |
 | 8 | Chat and the moderation pipeline |
 | 9 | Progression, cosmetics, achievements |
-| 10 | Art production pass, cinematics, audio, highlight capture |
+| 10 | Art pass — block palettes, lighting, animation, audio, highlight capture |
 
-Phase 1 is not a prototype to skip. Everything else in this docket is
-conventional-to-hard; phase 1 is the part nobody has proof of yet.
+Phases 0 and 1 are not prototypes to skip. Everything after them is
+conventional-to-hard; the voxel foundation and the collapse are the parts nobody
+has proof of yet.
+
+**The good news about this ordering:** phase 0 is a well-understood problem with
+prior art and available middleware, and phase 1 is now a *performance*
+investigation rather than an existential one. Before the art direction was
+settled, phase 1 could have ended the project. It no longer can.

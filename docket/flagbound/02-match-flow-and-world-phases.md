@@ -23,6 +23,21 @@ The split below is a proposal for playtesting.
 long enough to establish a plan, Act II long enough to break it, Act III short
 enough that it is pure adrenaline.
 
+## One world, three altitudes
+
+The three acts are **not three maps**. They are three regions of a single
+continuous vertical block world — surface at the top, the underground kingdom
+several hundred metres below it, the sky towers built high above. The Collapse
+drops players down through it; the Ascent lifts them up through it.
+
+This is a structural fact, not just a visual one, and it is what makes the
+brief's requirement that the underground *"feel like a continuation of the same
+battle"* literally true. See
+[11 — The voxel data model](11-technical-architecture.md#the-voxel-data-model).
+
+Consequence worth designing around: **debris from Act I stays visible in Act II.**
+Players land amid the shattered blocks of the castle they were just defending.
+
 ## Rules that carry across phases
 
 These make it feel like *one battle in a changing world*, not three maps.
@@ -67,15 +82,22 @@ underground.
 
 **Staging:**
 
-1. **Tremors (60s out).** Screen shake, dust, distant rumbling. F.C.S. warns.
-   Combat continues normally — this is a countdown players can play around.
-2. **Fracture lines (30s out).** Glowing cracks trace the ground along the
-   pre-authored break lines. Players can see where it will open. Structures
-   start shedding pieces.
-3. **The break (0s).** The battlefield fragments and falls. Castles come apart.
-   Players fall with the terrain into the cavern below.
-4. **Landing.** Players land on stable underground ground with a brief
+1. **Tremors (60s out).** Loose blocks rattle in place, dust lifts off surfaces,
+   distant rumbling. F.C.S. warns. Combat continues normally — this is a
+   countdown players can play around.
+2. **Fracture lines (30s out).** Glowing seams trace the ground *along block
+   boundaries*, so players can see exactly which blocks are about to go.
+   Structures start shedding pieces.
+3. **The break (0s).** The battlefield **shatters into its constituent blocks**.
+   Castle walls come apart course by course, towers topple as stacks, and
+   thousands of cubes tumble into the dark. Players fall with the wreckage.
+4. **Landing.** Players land on stable underground blocks with a brief
    invulnerability window so the transition cannot be spawn-camped.
+
+The voxel world does most of this work natively — see
+[10](10-art-direction-and-cinematics.md) for why the block-based art direction
+makes the collapse the cheapest spectacle in the game rather than the most
+expensive.
 
 **Playable falling:** players keep camera and limited air control during the
 drop. It is a moment, not a cutscene. Nobody wants their best flag run
@@ -116,10 +138,12 @@ battlefield transforms again.
 
 **Staging:**
 
-1. **Awakening.** Dormant machinery in the ruins lights up. Glyphs ignite along
-   the tunnel walls. Deep mechanical sound builds. F.C.S. calls it.
-2. **Lift.** The ruins tear free of the earth and climb. Ceiling becomes sky.
-   Players ride the rising structures upward — again, playable, not a cutscene.
+1. **Awakening.** Dormant machinery in the ruins lights up. Gold glyph-blocks
+   ignite in sequence along the tunnel walls. Deep mechanical sound builds.
+   F.C.S. calls it.
+2. **Lift.** Blocks tear free of the cavern floor and **re-stack upward** into
+   towers, the world assembling itself as it climbs. Players ride the rising
+   structures — again, playable, not a cutscene.
 3. **Arrival.** The structures lock into a floating configuration above the
    clouds. Sunlight after ten minutes underground: the visual payoff of the
    match.
