@@ -42,7 +42,9 @@ function serve(port) {
       console.log('probe', t);
     }
   } else {
-    const FPS = 30, DUR = 135, N = FPS * DUR;
+    const FPS = 30;
+    const DUR = JSON.parse(fs.readFileSync(path.join(ROOT, 'timeline.json'), 'utf8')).duration;
+    const N = Math.round(FPS * DUR);
     const OUT = path.join(ROOT, 'frames');
     fs.rmSync(OUT, { recursive: true, force: true });
     fs.mkdirSync(OUT, { recursive: true });

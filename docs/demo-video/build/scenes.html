@@ -50,8 +50,8 @@ body{font-family:Inter,sans-serif;color:var(--tp);-webkit-font-smoothing:antiali
 #app{position:absolute;inset:0;background:var(--bg);display:flex;flex-direction:column}
 .topbar{height:var(--topbar);flex:0 0 var(--topbar);background:var(--bg2);border-bottom:1px solid var(--bd);display:flex;align-items:center;padding:0 18px;gap:16px;z-index:5}
 .logo{display:flex;align-items:center;gap:9px;font-weight:700;font-size:16px;letter-spacing:-.3px}
-.logo .m{width:22px;height:22px;border-radius:var(--r-xs);background:linear-gradient(135deg,var(--ac),#0369a1);display:flex;align-items:center;justify-content:center}
-.logo .m svg{width:13px;height:13px}
+.logo .m{width:24px;height:24px;display:flex;align-items:center;justify-content:center}
+.logo .m svg{width:24px;height:24px}
 .crumb{font-size:13.5px;color:var(--ts)}.crumb b{color:var(--tp);font-weight:500}
 .tbtns{margin-left:auto;display:flex;align-items:center;gap:9px}
 .btn{height:32px;padding:0 15px;border-radius:99px;border:1px solid var(--bd2);background:#ffffff0a;color:var(--tp);font-size:13.5px;font-weight:500;display:flex;align-items:center;gap:7px}
@@ -150,8 +150,8 @@ body{font-family:Inter,sans-serif;color:var(--tp);-webkit-font-smoothing:antiali
 /* end card */
 .endwrap{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:26px;background:radial-gradient(ellipse 60% 50% at 50% 45%,#38bdf814 0%,#0000 70%),#000}
 .endlogo{display:flex;align-items:center;gap:16px}
-.endlogo .m{width:64px;height:64px;border-radius:var(--r-md);background:linear-gradient(135deg,var(--ac),#0369a1);display:flex;align-items:center;justify-content:center}
-.endlogo .m svg{width:36px;height:36px}
+.endlogo .m{width:82px;height:82px;display:flex;align-items:center;justify-content:center}
+.endlogo .m svg{width:82px;height:82px}
 .endlogo .n{font-size:52px;font-weight:700;letter-spacing:-1.4px}
 .endcta{height:60px;padding:0 34px;border-radius:99px;background:var(--ac);color:#00121c;font-size:21px;font-weight:600;display:flex;align-items:center;gap:11px;white-space:nowrap}
 .endcta svg{width:24px;height:24px;flex:0 0 24px}
@@ -206,7 +206,14 @@ const env=(lt,d,fi=.45,fo=.45)=>Math.min(seg(lt,0,fi),1-seg(lt,d-fo,d));
 const typed=(s,p)=>s.slice(0,Math.round(clamp(p)*s.length));
 
 const I={
-  logo:'<svg viewBox="0 0 24 24" fill="none" stroke="#00121c" stroke-width="2.4" stroke-linecap="round"><path d="M4 20V6l16 12V4"/></svg>',
+  // Netforge.ai mark, taken from the site's own /icon.svg (NetworkLogo.tsx)
+  logo:'<svg viewBox="0 0 32 32"><defs><linearGradient id="nfg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#0ea5e9"/><stop offset="1" stop-color="#0369a1"/></linearGradient></defs>'
+    +'<circle cx="16" cy="16" r="14.4" fill="none" stroke="url(#nfg)" stroke-width="3" stroke-opacity="0.55"/>'
+    +'<circle cx="16" cy="16" r="12.4" fill="url(#nfg)"/>'
+    +'<g transform="translate(16 16) scale(0.93) translate(-12 -12)" stroke="rgba(255,255,255,0.45)" stroke-width="1.5">'
+    +'<line x1="5" y1="5" x2="12" y2="12"/><line x1="19" y1="5" x2="12" y2="12"/><line x1="5" y1="19" x2="12" y2="12"/><line x1="19" y1="19" x2="12" y2="12"/></g>'
+    +'<g transform="translate(16 16) scale(0.93) translate(-12 -12)" fill="#fff">'
+    +'<circle cx="5" cy="5" r="2.5"/><circle cx="19" cy="5" r="2.5"/><circle cx="5" cy="19" r="2.5"/><circle cx="19" cy="19" r="2.5"/><circle cx="12" cy="12" r="3"/></g></svg>',
   router:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h18M12 3v18M7 7l10 10M17 7L7 17"/></svg>',
   switch:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="7" width="19" height="10" rx="2"/><path d="M6.5 11.5h2M11 11.5h2M15.5 11.5h2"/></svg>',
   fw:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"><path d="M12 3l8 3.5v5c0 5-3.4 8.6-8 9.5-4.6-.9-8-4.5-8-9.5v-5z"/></svg>',
@@ -485,7 +492,7 @@ CORE-SW-01# <b>show interface trunk</b>
 <s>Po1   native 1    allowed 10,20,30</s>
 <s>Eth1/7 native 1   allowed <u>ALL</u></s>`;
   // type by visible characters, keeping tags intact
-  const plain=script.replace(/<[^>]+>/g,''); const want=Math.round(clamp(seg(lt,4.6,12.5))*plain.length);
+  const plain=script.replace(/<[^>]+>/g,''); const want=Math.round(clamp(seg(lt,4.6,d-4.2))*plain.length);
   let out='',seen=0,i=0;
   while(i<script.length&&seen<want){ if(script[i]==='<'){const j=script.indexOf('>',i);out+=script.slice(i,j+1);i=j+1;} else {out+=script[i];i++;seen++;} }
   term.innerHTML=out+(seen<plain.length&&Math.floor(lt*2.2)%2?'<span class="caret"></span>':'');
@@ -591,16 +598,17 @@ CORE-SW-01# <b>show interface trunk</b>
   showApp();
   buildNodes(FABRIC,FABRIC_LINKS);
   // app's own zoom-to-fit: canvas content scales, frame never crops
-  const p=easeInOut(seg(lt,.3,3.0));
+  const p=easeInOut(seg(lt,.4,4.2));
   setCanvasView(lerp(1.5,.94,p),0,lerp(120,60,p));
-  drawLinks(seg(lt,.5,2.8));
+  drawLinks(seg(lt,1.0,5.0));
   $('#sbr').innerHTML=panelValidate({n:0});
   $('#sbr').querySelector('.pbody').innerHTML=`<div class="sbtitle" style="padding:0;margin:0 0 12px">Fabric summary</div>
     ${[['Topology','leaf-spine · L3LS'],['Spines','4 · Arista 7280R3'],['Leaves','8 · Arista 7050X3'],['Underlay','eBGP · AS 65100-65108'],['Overlay','EVPN · VXLAN'],['Output','EOS CLI + AVD YAML']]
-      .map(([a,b])=>`<div class="vrow"><span class="nmx">${a}</span><span class="mt">${b}</span></div>`).join('')}`;
+      .map(([a,b],i)=>{const o=clamp(seg(lt,2.2+i*.9,3.0+i*.9));
+        return `<div class="vrow" style="opacity:${o};transform:translateX(${lerp(14,0,o)}px)"><span class="nmx">${a}</span><span class="mt">${b}</span></div>`}).join('')}`;
   cursorAt(0,0,false);
   caption('Scale the same canvas to a full <em>leaf-spine VXLAN EVPN fabric</em> — without leaving the designer.',easeOut(seg(lt,1.6,2.6))*(1-seg(lt,d-.5,d)));
-  chips(['IOS-XE','NX-OS','EOS / AVD','ArubaOS-CX','PAN-OS','EdgeConnect'],seg(lt,2.4,4.6));
+  chips(['IOS-XE','NX-OS','EOS / AVD','ArubaOS-CX','PAN-OS','EdgeConnect'],seg(lt,6.2,9.4));
 }},
 
 /* ---------- 8. validation runs (1:16–1:22) ---------- */
@@ -622,9 +630,10 @@ CORE-SW-01# <b>show interface trunk</b>
   const bad=$('#n-a2'); bad.classList.add('bad');
   // callout ring on the offending node — no crop, ring + magnifier instead
   const ov=$('#overlay'); ov.classList.remove('hide');
-  const p=easeOut(seg(lt,.3,1.1)), rx=272+610-9, ry=50+470-9+CY;
-  ov.innerHTML=`<div class="ring" style="left:${rx}px;top:${ry}px;width:${NW+18}px;height:${NH+18}px;opacity:${p};transform:scale(${lerp(1.09,1,p)})"></div>
-    <div class="mag" style="left:300px;top:702px;width:392px;opacity:${easeOut(seg(lt,1.0,1.8))};transform:translateY(${lerp(12,0,easeOut(seg(lt,1.0,1.8)))}px)">
+  const p=easeOut(seg(lt,.4,1.5)), rx=272+610-9, ry=50+470-9+CY;
+  const breathe=.72+.28*Math.cos(Math.max(0,lt-2.6)*1.5);
+  ov.innerHTML=`<div class="ring" style="left:${rx}px;top:${ry}px;width:${NW+18}px;height:${NH+18}px;opacity:${p*(lt>2.6?breathe:1)};transform:scale(${lerp(1.09,1,p)})"></div>
+    <div class="mag" style="left:300px;top:702px;width:392px;opacity:${easeOut(seg(lt,1.7,2.7))};transform:translateY(${lerp(12,0,easeOut(seg(lt,1.7,2.7)))}px)">
       <div class="mt">Duplicate IPv4 assignment</div>
       <div class="mv">RSITE-ACC-02 · Vlan30<br>10.50.30.1/24<br><span style="color:var(--err)">↑ also on RSITE-ACC-01 · Vlan30</span></div></div>`;
   cursorAt(0,0,false);
@@ -636,8 +645,8 @@ CORE-SW-01# <b>show interface trunk</b>
   showApp(); buildNodes(BRANCH,BRANCH_LINKS); setCanvasView(1,0,CY); drawLinks(1);
   $('#overlay').classList.add('hide'); $('#btnVal').className='btn on';
   const txt='RSITE-ACC-02 is single-homed to RSITE-CORE-01. Loss of that uplink isolates 48 access ports and the voice VLAN.';
-  const p=seg(lt,.4,3.0);
-  $('#sbr').innerHTML=panelAI({text:typed(txt,p),caret:p<1,fix:p>=1,second:lt>3.4});
+  const p=seg(lt,.6,6.2);
+  $('#sbr').innerHTML=panelAI({text:typed(txt,p),caret:p<1,fix:p>=1,second:lt>7.0});
   cursorAt(0,0,false);
   caption('Then the AI Network Architect reviews the design — and tells you what to fix.',easeOut(seg(lt,1.2,2.2))*(1-seg(lt,d-.5,d)));
 }},
@@ -678,7 +687,7 @@ CORE-SW-01# <b>show interface trunk</b>
     g.innerHTML=items.map(([x,y,c],i)=>`<div class="expcard" id="e${i}"><div class="ix" style="background:${c}1a;color:${c}">${I.doc}</div>
       <div class="x" style="color:${c}">${x}</div><div class="y">${y}</div></div>`).join('');}
   items.forEach((_,i)=>{const c=g.querySelector('#e'+i);
-    const p=easeOutBack(clamp(seg(lt,.5+i*.22,1.5+i*.22)));
+    const p=easeOutBack(clamp(seg(lt,.6+i*.42,1.7+i*.42)));
     const X=960+(i-(items.length-1)/2)*210-91, Y=418;
     c.style.left=X+'px'; c.style.top=Y+'px';
     c.style.opacity=clamp(p*1.4)*(1-seg(lt,d-.6,d));
@@ -743,7 +752,14 @@ function showApp(){$('#app').classList.remove('hide');$('#gfx').classList.add('h
 function hideApp(){$('#app').classList.add('hide');$('#gfx').classList.remove('hide');$('#overlay').classList.add('hide');vignette(true);}
 
 /* ============================ seek ============================ */
-const DURATION=135;
+let DURATION=135, TL=null;
+// caption track is global and synced to the VO, so scene-local caption() calls are overridden below
+function renderCues(t){
+  if(!TL)return;
+  const c=TL.cues.find(q=>t>=q.t0&&t<q.t1);
+  if(!c){caption('',0);return}
+  caption(c.html, Math.min(seg(t,c.t0,c.t0+.45), 1-seg(t,c.t1-.4,c.t1)));
+}
 window.seek=function(t){
   t=Math.max(0,Math.min(DURATION-.001,t));
   // reset per-frame transient state
@@ -756,12 +772,16 @@ window.seek=function(t){
   }
   caption('',0); chips(null); cursorAt(0,0,false);
   sc.go(t-sc.a, sc.b-sc.a, t);
+  renderCues(t);
   // global fade from/to black at the very top and tail
   $('#vig').style.background=`radial-gradient(ellipse 70% 55% at 50% 50%,#0000 0%,#000000d9 100%)`;
   document.documentElement.style.setProperty('--gfade',1);
   const g=Math.min(seg(t,0,.7),1-seg(t,DURATION-.7,DURATION));
   $('#stage').style.opacity=g;
 };
-window.__ready=true;
-seek(0);
+fetch('timeline.json').then(r=>r.json()).then(j=>{
+  TL=j; DURATION=j.duration;
+  j.scenes.forEach((s,i)=>{ if(SCENES[i]){SCENES[i].a=s.a; SCENES[i].b=s.b;} });
+  window.__scene=null; seek(0); window.__ready=true;
+});
 </script>

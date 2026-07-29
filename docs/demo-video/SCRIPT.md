@@ -1,6 +1,12 @@
 # Netforge.ai — Demo Video Script (v1)
 
 **Runtime target:** 2:15 · **Aspect:** 16:9, 1920×1080 · **VO:** ~340 words @ ~150 wpm
+
+> **Timecodes below are the original plan, not the shipped cut.** Once real narration
+> was measured, scene durations were derived from it and the runtime became **2:31** —
+> see `PRODUCTION-NOTES.md`. The spoken lines live in `build/vo.py` and the authoritative
+> in/out points live in `build/timeline.json`. This file remains the source for tone,
+> structure and the claims audit.
 **Tonal reference:** NetBrain, *"Powerful intent-based Change Management Automation"* —
 structure and pacing only. No copied lines, footage, or music.
 
