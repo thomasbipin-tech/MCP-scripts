@@ -88,7 +88,7 @@ legal hygiene:
 |---|---|
 | **Structural block** | 0.5 m — walls, terrain, towers |
 | **Detail voxel** | 0.125 m — props, weapons, armour trim, characters |
-| **Player height** | ~3.5 structural blocks |
+| **Player height** | ~2.5 structural blocks (1.25 m) — short and wide, see Characters |
 | **Castle wall height** | 24–40 blocks (12–20 m) — must feel like a siege |
 | **Sky tower height** | 200+ blocks |
 
@@ -135,24 +135,53 @@ deliberately opposed.
 
 ## Characters
 
-Blocky, like the world — chunky limbs, cubic torsos, readable from behind at
-third-person distance.
+**Rounded creatures, not humanoid warriors.** Short, wide, and built on an egg
+profile — widest low through the middle, domed on top — with oversized eyes,
+tiny stubby limbs, and one bright saturated colour each. Roughly **2.5 blocks
+tall (1.25 m)**, so they read as small, chunky and appealing rather than as
+soldiers.
 
-The four classes must be identifiable **by silhouette alone**, because in a fight
-that is all a player gets:
+They are still made of blocks like everything else, so they belong to the world.
+The roundness comes from overlapping slabs on a tapered profile rather than from
+leaving the voxel grid.
+
+**Why this and not armoured humanoids.** The game is for ages 10 and up, and the
+brief asks for an epic adventure rather than a war simulation. Appealing
+characters do more for that than realistic ones, and they push the fantasy
+combat further from anything uncomfortable. A knockdown between two round
+wide-eyed creatures is unmistakably adventure. It also makes the game
+screenshot-friendly, which serves the shareability goal directly.
+
+**The face carries the likability.** Eyes are large, slightly proud of the body
+surface, and faintly emissive so they still read in Act II's darkness. They
+blink on a loose timer. A small mouth sits below. Characters bob and squash
+slightly as they walk. None of this is expensive, and all of it is the difference
+between a character and a shape.
+
+The four classes must still be identifiable **by silhouette alone**, because in a
+fight that is all a player gets. Class reads through proportion and one
+accessory, never through colour — colour belongs to the team:
 
 | Class | Silhouette |
 |---|---|
-| **Guardian** | Widest and tallest. Huge slab shield, heavy square pauldrons. Reads as a wall. |
-| **Swiftblade** | Narrow, light, cape or trailing cloth. Reads as fast even standing still. |
-| **Element Warrior** | Tall and ornate, floating voxel motes orbiting them in their current element's colour. Reads as dangerous at range. |
-| **Shadow Runner** | Small, hooded, hunched. Blocks slightly darkened. Reads as *hard to see*, which is the point. |
+| **Guardian** | The biggest and widest blob, low to the ground, heavy brow over the eyes, carrying a slab shield nearly as large as itself. Reads as a wall. |
+| **Swiftblade** | The smallest and narrowest, leaning forward, with a trailing scarf. Reads as fast even standing still. |
+| **Element Warrior** | Taller and rounder, with voxel motes orbiting it in the current element's colour and eyes tinted to match. Reads as dangerous at range. |
+| **Shadow Runner** | Small and hooded, body blocks darkened, its eyes the only bright thing about it. Reads as *hard to see*, which is the point. |
 
-**Team identity:** team colour is applied as a strong emissive trim on armour
-plus a floating team-coloured marker above allies. Emissive is essential — a flat
-colour that reads in Act I daylight will vanish against Act II lava and Act III
-cloud. Every team colour must be tested in all three acts, and the pair must be
-colour-blind-safe.
+**Team identity:** every character gets its own colour, but one team's palette is
+entirely **cool** and the other entirely **warm** — personality without costing
+team readability. On top of that, a strong emissive trim and a floating
+team-coloured marker above allies.
+
+Emissive is essential: a flat colour that reads in Act I daylight will vanish
+against Act II lava and Act III cloud. Every team colour must be tested in all
+three acts, and the two palettes must stay distinguishable for colour-blind
+players — which is why the split is warm-versus-cool rather than red-versus-green.
+
+**The player's own character** carries a distinct floating marker so a player can
+always find themselves in a crowd. In the prototype this is a spinning gold
+diamond overhead.
 
 ## Cinematic moments
 

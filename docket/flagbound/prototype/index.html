@@ -45,6 +45,16 @@
   @keyframes pulse{50%{opacity:.25}}
   @media (prefers-reduced-motion:reduce){#phase.warn{animation:none;opacity:.85}}
 
+  /* ---- objective tracker: follows the flag, pins to the screen edge when off-view ---- */
+  #objMk{position:fixed;left:0;top:0;transform:translate(-50%,-50%);display:none;
+    align-items:center;gap:7px;padding:5px 9px;white-space:nowrap;pointer-events:none;
+    font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;
+    background:rgba(11,14,18,.84);border:1px solid currentColor;z-index:5}
+  #objMk.on{display:flex}
+  #objIcon{font-size:12px;line-height:1}
+  #objLabel{color:var(--parchment)}
+  #objDist{font-variant-numeric:tabular-nums;opacity:.75}
+
   /* ---- F.C.S. terminal ---- */
   #fcs{position:fixed;left:16px;bottom:16px;max-width:min(460px,calc(100% - 32px));
     display:flex;gap:11px;padding:11px 14px 11px 12px;
@@ -121,6 +131,8 @@
   </div>
 </div>
 
+<div id="objMk"><span id="objIcon">◆</span><span id="objLabel"></span><span id="objDist"></span></div>
+
 <div id="fcs"><span id="fcsTag">F.C.S.</span><span id="fcsMsg"></span></div>
 
 <div id="legend">
@@ -136,6 +148,7 @@
     <p class="sub">The Shifting Battlefield</p>
     <div class="brief">
       <p>Steal the <strong style="color:var(--crimson)">crimson flag</strong> from the far base and carry it back to your own. Your flag must be home for a capture to count.</p>
+      <p><strong>Finding it:</strong> a tall red beam of light marks the crimson flag from anywhere on the map — just walk toward it. A red tag on screen always shows the direction and how far you have left to go. You are the character wearing the gold ring.</p>
       <p>Sixty seconds in, the ground breaks apart. Everything you are standing on shatters into falling blocks and drops you into the kingdom underneath, where the battle continues. Your flag comes with you if you are carrying it.</p>
     </div>
     <div class="keys">
@@ -462,7 +475,8 @@ function mul(a,b){
 }
 
 /* -------------------------------- entities -------------------------------- */
-const HW=0.55, HH=3.2;                  // half-width, height (blocks are 0.5m — docket 10)
+/* Short, wide and round — roughly 1.25 m tall. Deliberately not humanoid. */
+const HW=0.62, HH=2.5;                  // half-width, height (blocks are 0.5m — docket 10)
 function boxHits(x,y,z){
   const x0=Math.floor(x-HW), x1=Math.floor(x+HW);
   const z0=Math.floor(z-HW), z1=Math.floor(z+HW);
@@ -472,7 +486,7 @@ function boxHits(x,y,z){
   return false;
 }
 
-let ents=[], flags={}, phase='surface', clock=MATCH_TIME, score={A:0,B:0}, running=false;
+let ents=[], flags={}, phase='surface', clock=MATCH_TIME, score={A:0,B:0}, running=false, gameT=0;
 const dead = e => e.respawn > 0;
 
 function spawnPoint(team){
@@ -482,17 +496,24 @@ function spawnPoint(team){
   const y = (phase==='surface' ? GROUND_Y : UNDER_Y) + 2.5;
   return {x:b.x + Math.cos(a)*r, y, z:b.z + Math.sin(a)*r};
 }
+/* Each character gets its own colour, but every Azure hue is cool and every
+   Crimson hue is warm — personality without costing team readability. */
+const PAL_A=[[0.31,0.66,0.91],[0.27,0.84,0.76],[0.45,0.56,0.94],[0.24,0.79,0.94],[0.52,0.45,0.93]];
+const PAL_B=[[0.94,0.33,0.31],[1.00,0.54,0.24],[1.00,0.45,0.62],[0.87,0.27,0.24],[0.97,0.66,0.26]];
+
 function makeEnt(team,isPlayer,i){
   const s=spawnPoint(team);
   return {team,isPlayer,id:(team+i),x:s.x,y:s.y,z:s.z,vy:0,yaw:team==='A'?0:Math.PI,
-    grounded:false,respawn:0,carrying:null,cool:0,stray:0,strayDir:0,swing:0,invuln:1.5};
+    col:(team==='A'?PAL_A:PAL_B)[i%5],
+    grounded:false,respawn:0,carrying:null,cool:0,stray:0,strayDir:0,swing:0,invuln:1.5,
+    bob:0, blink:0, blinkT:1+rnd()*4};
 }
 function resetMatch(){
   ents=[makeEnt('A',true,0)];
   for(let i=1;i<5;i++) ents.push(makeEnt('A',false,i));
   for(let i=0;i<5;i++) ents.push(makeEnt('B',false,i));
   flags={ A:mkFlag('A'), B:mkFlag('B') };
-  phase='surface'; clock=MATCH_TIME; score={A:0,B:0};
+  phase='surface'; clock=MATCH_TIME; score={A:0,B:0}; gameT=0;
   camYaw=0; camPitch=-0.22; shake=0; debris.length=0;
   fcs('Objective: take the crimson flag and bring it home. The battlefield will not stay still.',6);
 }
@@ -690,9 +711,14 @@ addEventListener('keydown',e=>{
 addEventListener('keyup',e=>{ keys[e.code]=false; });
 cvs.addEventListener('mousedown',e=>{
   if(!running) return;
-  if(locked){ strike(ents[0]); return; }
-  dragging=true; lastMX=e.clientX; lastMY=e.clientY;
-  if(cvs.requestPointerLock){ try{ cvs.requestPointerLock(); }catch(_){} }
+  // Always attack. Pointer lock is unavailable in some embeds, so attacking must
+  // never depend on it — dragging to look still works alongside (the swing has a
+  // cooldown, so a drag cannot spam it).
+  strike(ents[0]);
+  if(!locked){
+    dragging=true; lastMX=e.clientX; lastMY=e.clientY;
+    if(cvs.requestPointerLock){ try{ cvs.requestPointerLock(); }catch(_){} }
+  }
 });
 addEventListener('mouseup',()=>{ dragging=false; });
 addEventListener('mousemove',e=>{
@@ -729,23 +755,109 @@ function syncHUD(){
 }
 
 /* --------------------------------- render -------------------------------- */
+const WHITE=[0.97,0.97,0.94], PUPIL=[0.07,0.08,0.11];
+
+/* Rounded blob characters — a wide middle tapering top and bottom, oversized
+   eyes, stubby limbs. Built from cubes like everything else, so they still read
+   as part of the voxel world. Each part is placed in the character's local space
+   and rotated into world space by its yaw. */
 function drawEnt(b,e){
-  const col = e.team==='A'?COL[7]:COL[8];
-  const hl = e.isPlayer ? COL[12] : col;
-  const a = e.swing>0 ? 0.5 : 0;
-  push(b, e.x, e.y+0.8, e.z, 1.0,1.6,1.0, 0,e.yaw,0, col, 0);           // legs
-  push(b, e.x, e.y+2.1, e.z, 1.5,1.1,1.0, 0,e.yaw,0, hl, e.isPlayer?0.12:0); // torso
-  push(b, e.x, e.y+3.0, e.z, 0.95,0.9,0.95, 0,e.yaw,0, col, 0);          // head
-  if(a) push(b, e.x+Math.sin(e.yaw)*1.4, e.y+2.2, e.z+Math.cos(e.yaw)*1.4,
-             0.35,0.35,1.6, 0,e.yaw,0, COL[12], 0.4);                    // swing
+  const c=Math.cos(e.yaw), s=Math.sin(e.yaw);
+  const P=(lx,ly,lz,sx,sy,sz,col,em)=>
+    push(b, e.x + lx*c + lz*s, e.y+ly, e.z - lx*s + lz*c, sx,sy,sz, 0,e.yaw,0, col, em||0);
+
+  const bob = e.bob||0;
+  const sq   = 1 + Math.sin(bob)*0.06;         // squash / stretch while walking
+  const lift = Math.abs(Math.sin(bob))*0.18;   // little hop
+  const col  = e.col;
+  const dark = [col[0]*0.70, col[1]*0.70, col[2]*0.70];
+
+  // Body: eight overlapping slabs on an egg profile — wide low middle, domed top.
+  // They overlap so the silhouette reads as one rounded mass rather than a stack.
+  const PROF=[[0.20,1.14],[0.52,1.40],[0.84,1.53],[1.14,1.55],
+              [1.44,1.48],[1.72,1.32],[1.98,1.05],[2.20,0.68]];
+  for(const [ly,w] of PROF) P(0, ly*sq+lift, 0, w, 0.46, w*0.90, col);
+
+  // stubby feet, little arms
+  P(-0.34, 0.03+lift*0.35, 0.08, 0.38,0.24,0.48, dark);
+  P( 0.34, 0.03+lift*0.35, 0.08, 0.38,0.24,0.48, dark);
+  P(-0.80, 1.02*sq+lift, 0.05, 0.28,0.50,0.34, dark);
+  P( 0.80, 1.02*sq+lift, 0.05, 0.28,0.50,0.34, dark);
+
+  // oversized eyes, faintly emissive so they still read in the dark underground
+  const ey = 1.46*sq+lift, open = e.blink>0 ? 0.13 : 1;
+  P(-0.33, ey, 0.70, 0.50, 0.58*open, 0.22, WHITE, 0.32);
+  P( 0.33, ey, 0.70, 0.50, 0.58*open, 0.22, WHITE, 0.32);
+  if(open===1){
+    P(-0.31, ey-0.03, 0.82, 0.25,0.29,0.07, PUPIL);
+    P( 0.31, ey-0.03, 0.82, 0.25,0.29,0.07, PUPIL);
+  }
+  P(0, 1.06*sq+lift, 0.72, 0.32,0.14,0.10, PUPIL);            // small mouth
+
+  // tuft on top
+  P(0, 2.38*sq+lift, 0, 0.24,0.36,0.24, dark);
+  // the player floats a spinning gold diamond, so you always know which one is you
+  if(e.isPlayer){
+    const t=gameT*1.6;
+    push(b, e.x, e.y+3.05+Math.sin(t*2)*0.07, e.z, 0.42,0.42,0.42,
+         0.6, t, 0.0, COL[12], 0.8);
+  }
+  if(e.swing>0) P(0, 1.15*sq+lift, 1.35, 1.2,0.38,0.75, COL[12], 0.5);
+}
+
+function drawBeacon(b,team,x,y,z){
+  const col = team==='A'?COL[7]:COL[8];
+  for(let i=0;i<14;i++) push(b, x, y+i*2.3, z, 0.34,0.95,0.34, 0,0,0, col, 0.85);
 }
 function drawFlag(b,f){
   const col = f.team==='A'?COL[7]:COL[8];
-  push(b, f.x, f.y, f.z, 0.22,3.0,0.22, 0,0,0, COL[13], 0);
-  push(b, f.x+0.7, f.y+1.0, f.z, 1.4,0.9,0.14, 0,0,0, col, 0.42);
+  push(b, f.x, f.y+1.8, f.z, 0.28,4.8,0.28, 0,0,0, COL[13], 0);   // pole
+  push(b, f.x+1.2, f.y+3.3, f.z, 2.4,1.6,0.18, 0,0,0, col, 0.6);  // banner
+  drawBeacon(b, f.team, f.x, f.y+5.2, f.z);
 }
 
-let vpArr=new Float32Array(16);
+let vpArr=new Float32Array(16), camPos=[0,0,0];
+
+/* world point -> screen. vpArr is column-major, so clip_j = sum_i m[i*4+j]*v_i */
+function project(x,y,z){
+  const m=vpArr;
+  return { x:m[0]*x+m[4]*y+m[8]*z+m[12],
+           y:m[1]*x+m[5]*y+m[9]*z+m[13],
+           w:m[3]*x+m[7]*y+m[11]*z+m[15] };
+}
+function updateMarker(){
+  const p=ents[0], mk=el('objMk');
+  if(!p || !running || dead(p)){ mk.classList.remove('on'); return; }
+  let tx,ty,tz,label,colour;
+  if(p.carrying){
+    const b=baseOf(p.team); tx=b.x; ty=b.y+5; tz=b.z;
+    label='Carry it home'; colour='#e8b23a';
+  } else {
+    const f=flags.B;
+    const at = f.carrier || f;
+    tx=at.x; ty=(f.carrier? at.y+6 : f.y+5); tz=at.z;
+    label = f.carrier ? (f.carrier.team==='A'?'Teammate has it':'Crimson flag') : 'Crimson flag';
+    colour='#ff7a6b';
+  }
+  const W=innerWidth, H=innerHeight, pad=58;
+  const pr=project(tx,ty,tz);
+  let sx, sy, pinned=false;
+  if(pr.w>0.001){
+    sx=(pr.x/pr.w*0.5+0.5)*W; sy=(0.5-pr.y/pr.w*0.5)*H;
+    if(sx<pad||sx>W-pad||sy<pad||sy>H-pad) pinned=true;
+  } else {
+    // behind the camera: pin by bearing. lookAt makes screen-right = (-cos,0,sin)
+    const rc = -(tx-p.x)*Math.cos(camYaw) + (tz-p.z)*Math.sin(camYaw);
+    sx = rc>0 ? W-pad : pad; sy = H*0.5; pinned=true;
+  }
+  sx=Math.min(Math.max(sx,pad),W-pad); sy=Math.min(Math.max(sy,pad),H-pad);
+  mk.style.left=sx+'px'; mk.style.top=sy+'px'; mk.style.color=colour;
+  el('objIcon').textContent = pinned ? '➤' : '◆';
+  el('objLabel').textContent = label;
+  el('objDist').textContent = Math.round(Math.hypot(tx-p.x, tz-p.z)*0.5)+'m';
+  mk.classList.add('on');
+}
+
 function render(){
   const p=ents[0];
   if(!p){                                  // pre-match: nothing to frame yet
@@ -753,7 +865,7 @@ function render(){
     gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);
     return;
   }
-  const dist=9.5, hy=p.y+2.6;
+  const dist=9.0, hy=p.y+2.0;
   let cx=p.x - Math.sin(camYaw)*Math.cos(camPitch)*dist;
   let cy=hy   - Math.sin(camPitch)*dist;
   let cz=p.z - Math.cos(camYaw)*Math.cos(camPitch)*dist;
@@ -786,10 +898,17 @@ function render(){
 
   dyn.n=0;
   for(const e of ents) if(!dead(e)) drawEnt(dyn,e);
-  for(const k of ['A','B']) if(!flags[k].carrier) drawFlag(dyn,flags[k]);
+  for(const k of ['A','B']){
+    const f=flags[k];
+    // a carried flag still gets its beacon, so the carrier is always findable
+    if(f.carrier) drawBeacon(dyn, k, f.carrier.x, f.carrier.y+3.4, f.carrier.z);
+    else drawFlag(dyn,f);
+  }
   for(const d of debris)
     push(dyn,d.x,d.y,d.z,d.s,d.s,d.s,d.rx,d.ry,d.rz,COL[d.t],EMIS[d.t]||0);
   upload(dyn); draw(dyn);
+  camPos[0]=cx; camPos[1]=cy; camPos[2]=cz;
+  updateMarker();
 }
 
 /* ---------------------------------- loop --------------------------------- */
@@ -806,7 +925,7 @@ function frame(now){
   requestAnimationFrame(frame);
   const dt=Math.min(0.05,(now-prev)/1000||0); prev=now;
   if(running){
-    clock-=dt;
+    clock-=dt; gameT+=dt;
     const elapsed=MATCH_TIME-clock;
     if(phase==='surface'){
       if(elapsed>=TREMOR_AT && elapsed<COLLAPSE_AT){
@@ -822,6 +941,9 @@ function frame(now){
       if(e.cool>0) e.cool-=dt;
       if(e.swing>0) e.swing-=dt;
       if(e.invuln>0) e.invuln-=dt;
+      if(e.blink>0) e.blink-=dt;
+      else if((e.blinkT-=dt)<=0){ e.blink=0.14; e.blinkT=2+rnd()*4; }
+      const ox=e.x, oz=e.z;
       if(dead(e)){
         e.respawn-=dt;
         if(e.respawn<=0){ const s=spawnPoint(e.team); e.x=s.x; e.y=s.y; e.z=s.z; e.vy=0; e.invuln=1.5; }
@@ -844,6 +966,7 @@ function frame(now){
         if((keys.Space) && e.grounded) e.vy=11.5;
         moveEnt(e, fx*sp*dt, fz*sp*dt, dt);
       } else botThink(e,dt);
+      e.bob += Math.hypot(e.x-ox, e.z-oz) * 3.2;      // drives the walk hop
     }
     updateFlags(dt);
     updateDebris(dt);

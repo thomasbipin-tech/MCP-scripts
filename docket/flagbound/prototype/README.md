@@ -14,6 +14,8 @@ works straight off the filesystem (`file://`), no server required.
 | From the docket | Here |
 |---|---|
 | Voxel world ([10](../10-art-direction-and-cinematics.md)) | Hand-written WebGL2 instanced-cube renderer, per-block edge outlines |
+| Rounded blob characters ([10](../10-art-direction-and-cinematics.md#characters)) | Egg-profile bodies from overlapping slabs, oversized emissive eyes, blinking, walk bob and squash, stubby limbs |
+| Warm-vs-cool team palettes ([03](../03-combat-and-classes.md)) | Every character has its own hue; Azure hues all cool, Crimson all warm |
 | Two teams, two flags, capture rules ([01](../01-game-overview.md)) | Azure vs Crimson, own flag must be home to score |
 | **The Collapse** ([02](../02-match-flow-and-world-phases.md)) | Surface shatters into its constituent blocks at 60s; players fall into the underground kingdom |
 | Carrier keeps the flag through a transition ([02](../02-match-flow-and-world-phases.md)) | Implemented — uncarried flags re-anchor to the new bases |
@@ -36,6 +38,20 @@ Named here so the prototype is not mistaken for the game:
 
 Match length is compressed to 3 minutes with the collapse at 60s, so the
 transition is reachable quickly. The docket specifies 15 minutes.
+
+## Finding things
+
+Two aids exist because the flag was genuinely hard to locate in testing:
+
+- **Beacon** — a tall emissive column rises from each flag, visible over walls
+  from anywhere on the map. A carried flag keeps its beacon, so the carrier is
+  always findable.
+- **Objective tracker** — an on-screen tag naming the current objective and its
+  distance in metres. It follows the flag while visible and pins to the screen
+  edge with an arrow when it is not.
+
+The player's own character floats a spinning gold diamond, so you can tell which
+one is you.
 
 ## Verification
 

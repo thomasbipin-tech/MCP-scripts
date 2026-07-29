@@ -136,12 +136,14 @@ three radically different worlds would fight the adaptation pillar.
 ## Combat readability (age 10+)
 
 - Attacks telegraph with a visible wind-up.
-- **Every class is identifiable by blocky silhouette alone** — in a fight at
+- **Every class is identifiable by silhouette alone** — proportion and one
+  accessory, never colour, since colour belongs to the team. In a fight at
   third-person distance, silhouette is all a player gets. See
   [10 — Characters](10-art-direction-and-cinematics.md#characters).
-- Team colour is applied as **emissive** armour trim so it stays readable in Act
-  I daylight, against Act II lava, and against Act III cloud. Flat colour fails
-  at least one of those three.
+- Team colour is applied as **emissive** trim so it stays readable in Act I
+  daylight, against Act II lava, and against Act III cloud. Flat colour fails at
+  least one of those three. The two team palettes are warm versus cool rather
+  than red versus green, so they survive colour-blindness.
 - Ability effects are stylised and bright — magic, not injury.
 - Defeats are a knockdown followed by a burst of voxel particles. No gore.
 - Screen-space damage indicators always show the direction of the attacker.
