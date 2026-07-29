@@ -1,68 +1,85 @@
 # Netforge.ai demo video — production notes
 
-**Current deliverable:** `netforge-demo-v3.mp4` — 1920×1080, 30 fps, H.264 high profile,
-**2:46**, AAC stereo 48 kHz, `+faststart`.
+**Current deliverable:** `netforge-demo-v4.mp4` — 1920×1080, 30 fps, H.264 high profile,
+**2:40**, AAC stereo 48 kHz, `+faststart`.
 
 | | | |
 |---|---|---|
 | v1 | 2:15 | silent, kinetic captions |
 | v2 | 2:31 | Piper VO + score; invented logo fixed |
-| **v3** | **2:46** | **Kokoro VO (warmer), verified pronunciation** |
+| v3 | 2:46 | Kokoro VO; pronunciation by respelling |
+| **v4** | **2:40** | **phoneme-level pronunciation, no subtitles, diff shot replaces the rift** |
 
-## v3 — the voice
+## v4 — the voice
 
-**Engine changed from Piper to [Kokoro-82M](https://huggingface.co/hexgrad/Kokoro-82M)
-(ONNX), voice `am_michael` at speed 1.06.** Piper's `en_US-ryan-high` read as obviously
-synthetic. Kokoro is a materially better model — warmer tone, more natural prosody.
-Still local, still no API key.
+Voice is **`am_onyx`** (Kokoro-82M, ONNX) at speed 1.0 — the deepest and most measured of
+the available voices, which is the closest legitimate answer to "documentary baritone".
+Local, no API key.
 
-Kokoro reads more deliberately, which is why runtime went 2:31 → 2:46. That was a
-deliberate trade: rushing the read to hit the old length is what makes TTS sound like
-TTS. `VO_SPEED=1.12 python3 vo.py` tightens it to about 2:37 if you want the time back.
+**On matching a named narrator.** The ask was for a Peter Coyote–style voice. He is a
+real, working narrator whose voice is his livelihood, and imitating or cloning a specific
+identifiable performer for another company's marketing isn't something to do regardless
+of the tool — same reason the NetBrain narrator is off the table. What *is* on the table
+is choosing for the qualities: older, deeper, unhurried. That's what `am_onyx` was picked
+for. For a real documentary read, hire a voice actor — the pipeline re-times itself
+around a human take in three commands (see below).
 
-**Pick a different voice by ear:** `voice-options.m4a` (committed here) is the same two
-sentences in six candidate voices, each announced by name — `am_michael`, `am_onyx`,
-`am_eric`, `am_fenrir`, `bm_george`, `bm_lewis` (`am_*` American, `bm_*` British). To
-switch: `VO_VOICE=am_onyx python3 vo.py && python3 music.py && node capture.js all`.
+`voice-options.m4a` has the same two sentences in six voices, each announcing itself, so
+the choice can be made by ear rather than from my description: `am_michael`, `am_onyx`,
+`am_eric`, `am_fenrir` (American), `bm_george`, `bm_lewis` (British). Swap with
+`VO_VOICE=bm_george python3 vo.py && python3 music.py && node capture.js all`.
 
-**What this still is not.** It is not the narrator from the NetBrain reference video —
-that is a specific real person, and cloning an identifiable voice for another company's
-marketing isn't something to do. If you want that register properly, a human read is
-the answer, and the pipeline is built to take one (below).
+### Letter pacing — the real cause
 
-### Pronunciation — one table, verified not guessed
+The staccato acronyms were a **stress** problem, not a speed one. Spoken acronyms take
+secondary stress on every letter but the last, and primary on the last: `BGP` is
+`bˌiːdʒˌiːpˈiː`. v3 respelled them orthographically as `C. L. I`, which did two harmful
+things — forced *primary* stress onto every letter, and put a sentence-ending period
+between each one, so a prosodic break landed at every letter. That was the weird pacing.
 
-v2 respelled acronyms by hand in a second copy of each line, and got some wrong. v3 has
-a single `PRONOUNCE` table applied automatically to the scripted text, so there is no
-duplicate string to drift. `python3 vo.py audit` prints each term's phonemes next to
-what the synthesiser would do untreated:
+v4 drops respellings and pins **phonemes** directly (`is_phonemes=True`), bypassing
+espeak's guessing. That guessing was never dependable: `CLI` phonemises to `klˈaɪ`
+("cly") in isolation but to letters mid-sentence, depending on surrounding text.
 
-| On screen | Untreated | Wrong how | Spoken as |
+| Term | Native (bypassed) | Wrong how | Shipped phonemes |
 |---|---|---|---|
-| `VLAN` | `vlˈæn` | one syllable, "vlan" | `vee-lan` → `vˈiːlˈæn` |
-| `VLANs` | `vlˈæn` | plural silently dropped | `vee-lans` → `vˈiːlˈænz` |
-| `CLI` | `klˈaɪ` | reads as "cly" | `C. L. I` → `sˈiːˈɛlˈaɪ` |
-| `EVPN` | `ˈɛvpən` | reads as "evpen" | `E. V. P. N` → `ˈiːvˈiːpˈiːˈɛn` |
-| `AVD` | `ˈævd` | reads as "avd" | `A. V. D` → `ˈeɪvˈiːdˈiː` |
-| `Arista` | `ˈæɹɪstə` | "ARR-ista" | `uh-rista` → `ʌɹˈɪstə` |
-| `Visio` | `vˈɪsɪˌoʊ` | "VIS-ee-oh" | `vizzy-oh` → `vˈɪziˈoʊ` |
-| `BOM` | `bˈɑːm` | reads as "bahm" | `bill of materials` |
+| `VLAN` | `vlˈæn` | one syllable, "vlan" | `vˈiːlæn` |
+| `VLANs` | `vlˈæn` | plural silently dropped | `vˈiːlænz` |
+| `CLI` | `klˈaɪ` | "cly" | `sˌiːˌɛlˈaɪ` |
+| `EVPN` | `ˈɛvpən` | "evpen" | `ˌiːvˌiːpˌiːˈɛn` |
+| `AVD` | `ˈævd` | "avd" | `ˌeɪvˌiːdˈiː` |
+| `VXLAN` | `vˌiːˈɛkslˈæn` | stress on the wrong letter | `vˌiːˌɛkslˈæn` |
+| `Arista` | `ˈæɹɪstə` | "ARR-ista" | `əɹˈɪstə` |
+| `Visio` | `vˈɪsɪˌoʊ` | "VIS-ee-oh" | `vˈɪzioʊ` |
+| `BOM` | `bˈɑːm` | "bahm" | `bˈɪl ʌv mətˈɪɹiəlz` |
 
-`BGP`, `IP`, `CVD`, `STP`, `PDF`, `VXLAN`, `AI` and `YAML` phonemise correctly untreated
-and are pinned in the table anyway so a model change can't silently regress them.
+`BGP`, `CVD`, `STP`, `IP`, `PDF`, `AI` and `YAML` are correct natively, and are pinned to
+their native strings anyway so a model or voice change can't silently regress them.
 
-Two bugs this caught, both now fixed:
-- Respellings ending in `.` collided with the sentence's own period, merging
-  "Production-ready CLI. AVD Ansible YAML" into one run-on. Trailing periods dropped —
-  phonemes are identical without them.
-- `A. V. D` style spellings must not use `ay`: `ay` phonemises to `ˈaɪ` ("eye"), so
-  "ay vee dee" said *eye*-vee-dee. Period-separated letters give the correct `ˈeɪ`.
+**A trap worth recording:** espeak puts the stress mark immediately before the *vowel*
+(`ˌeɪvˌiːdˈiː`), not before the syllable as IPA convention suggests (`ˌeɪvˌiːˈdiː`).
+Kokoro is trained on espeak's convention, so the textbook-correct form is wrong here — my
+first pass rendered `AVD` as "Avi the" and stuttered `VXLAN` into a loop. `vo.py audit`
+now flags stress marks sitting before consonants.
 
-**Verified by read-back, not by assumption.** The synthesised audio is transcribed with
-Whisper (`faster-whisper`, `small.en`) and checked for the real terms — the ASR hears
-"VLAN", "VLANs", "BGP", "IP", "CLI", "AVD", "CVD", "YAML", "PDF", "Arista", "Azure",
-"Terraform". ("Visio" comes back spelled "Vizio", which is the ASR spelling the correct
-sound.) Re-run that check any time you change a voice or a line.
+All of it verified by read-back rather than assumption: the synthesised lines and the
+final encoded mix are transcribed with Whisper and checked for the real terms.
+
+## v4 — picture changes
+
+**Subtitles removed.** Every lower-third caption box is gone; the voiceover carries the
+narration. What remains on screen is title cards (hook, reframe, `From Sketch to Spine`,
+outcome, end card), the vendor chip rail, and the product UI's own labels — none of it
+transcription. The hook card also went from two lines to one so it reads as a title
+rather than a subtitle. The cue track is still generated and `caption()` is a no-op, so
+captions can be switched back on for a muted-social variant without redoing the work.
+
+**The red crack is gone.** It was decorative and said nothing. That shot is now a
+concrete diff between the drawing and the running config, in the app's own row styling —
+`vlan 20` vs `vlan 30`, `native vlan 1` vs `99`, `bgp as 65001` vs `65002`, `mtu 1500`
+vs `9216` — footed with "4 differences · 11 months since the diagram was touched". It
+makes the narration's point instead of gesturing at it. The act-1 vignette was eased
+(`#000000d9` → `#000000ad`) so those rows read cleanly.
 
 **The picture cuts to the audio.** The original 2:15 timings were written for a
 face-led cut. Measured against real narration they overran by 4s and left the read
@@ -74,13 +91,10 @@ scene duration = max(visual floor, intro pad + Σ(line duration + gap) + tail pa
 
 `vo.py` measures each rendered line, lays the lines out inside their scene, sizes the
 scene to fit, and emits `timeline.json` (scene in/out points + caption cues) which
-`scenes.html`, `music.py` and `capture.js` all consume. At v3's pace that lands at 2:46
-with speech density 74% — 13 of 16 scenes are sized by their narration, 3 are still held
-open by their visual floor. `vo.py` prints which is which, so a copy edit shows up as a
-timing change rather than a rushed line.
-
-Captions are now **one global track keyed to VO line starts**, not per-scene text, so a
-caption cannot drift out of sync with what's being said.
+`scenes.html`, `music.py` and `capture.js` all consume. At v4's pace that lands at 2:40
+with speech density 74%. `vo.py` prints which scenes are sized by their narration and
+which by their visual floor, so a copy edit surfaces as a timing change rather than a
+rushed line.
 
 The scenes the VO lengthened got extra motion rather than a longer freeze: the
 fabric shot's zoom-to-fit and summary rows build progressively, the conflict ring
@@ -88,7 +102,7 @@ breathes, the AI Architect write-out is stretched, and the export fan's stagger 
 
 **Music.** Original score, synthesised from scratch in `music.py` — **no third-party
 track, so nothing to license.** A minor, 100 BPM, structured to the cut: sparse low
-drone under the problem, a drop at the turn (0:49) then a rising swell, a steady pulse
+drone under the problem, a drop at the turn (0:45) then a rising swell, a steady pulse
 under the product act, a lift on the "0 conflicts" payoff, and a resolve under the end
 card. It sidechain-ducks against the VO envelope (up to about −8 dB) so narration always
 sits on top. Final mix is loudness-normalised to −16 LUFS, true peak −1.5 dBTP.
@@ -103,27 +117,27 @@ sidebar metrics and vendor colours all come from the site's stylesheet.
 
 | | |
 |---|---|
-| 0:00–0:49 | The gap — hook, stale `.vsdx` vs live CLI, the rift opens |
-| 0:49–1:02 | The turn — reframe, `From Sketch to Spine. Instantly Connected.` |
-| 1:02–1:29 | **Design** — drag device, link ports, scale to leaf-spine fabric |
-| 1:29–2:06 | **Validate** — checks stream, IP conflict caught, AI Architect, then green |
-| 2:06–2:26 | **Ship** — export package, CLI, artefact fan, Cloud on Canvas → Terraform |
-| 2:26–2:46 | Outcome + end card |
+| 0:00–0:47 | The gap — hook, stale `.vsdx` vs live CLI, the rift opens |
+| 0:47–0:59 | The turn — reframe, `From Sketch to Spine. Instantly Connected.` |
+| 0:59–1:25 | **Design** — drag device, link ports, scale to leaf-spine fabric |
+| 1:25–1:59 | **Validate** — checks stream, IP conflict caught, AI Architect, then green |
+| 1:59–2:19 | **Ship** — export package, CLI, artefact fan, Cloud on Canvas → Terraform |
+| 2:19–2:40 | Outcome + end card |
 
 ## Still outstanding
 
 - **No faces** — left aside per your call. Insert points below; they still work.
 - **The UI is a faithful re-creation, not a screen recording.** The build environment
   can't reach netforge.ai (egress policy) and the designer is behind sign-in. Swapping in
-  real recordings for 1:02–2:26 remains the biggest available upgrade.
+  real recordings for 0:59–2:19 remains the biggest available upgrade.
 
 ### Face insert points (~26s), if you revisit them
 
 | Slot | TC | Replaces |
 |---|---|---|
-| 1 | 0:00–0:11 | Hook text card |
-| 2 | 0:51–1:02 | Reframe text card |
-| 3 | 2:26–2:36 | Outcome text card |
+| 1 | 0:00–0:10 | Hook title card |
+| 2 | 0:49–0:59 | Reframe title card |
+| 3 | 2:19–2:30 | Outcome title card |
 
 Each is a self-contained kinetic-text beat, so footage drops in without re-timing
 anything around it. The VO lines for these slots already exist and can be re-cut to a
@@ -161,7 +175,7 @@ python3 vo.py          # narration + timeline.json
 python3 vo.py audit     # pronunciation table -> phonemes
 python3 vo.py voices    # voice-options.wav for picking by ear
 python3 music.py       # score, keyed to timeline.json
-node capture.js all    # 4982 frames -> frames/       (~12 min)
+node capture.js all    # 4816 frames -> frames/       (~11 min)
 
 ffmpeg -i vo.wav -i music.wav -filter_complex \
  "[0:a]aresample=48000,pan=stereo|c0=c0|c1=c0,volume=0.92[v];[1:a]aresample=48000[m];\
@@ -170,7 +184,7 @@ ffmpeg -i vo.wav -i music.wav -filter_complex \
 
 ffmpeg -framerate 30 -i frames/%05d.png -i audio.wav \
   -c:v libx264 -preset slow -crf 17 -pix_fmt yuv420p -profile:v high -level 4.2 \
-  -c:a aac -b:a 192k -movflags +faststart -shortest netforge-demo-v3.mp4
+  -c:a aac -b:a 192k -movflags +faststart -shortest netforge-demo-v4.mp4
 ```
 
 **Order matters:** `vo.py` writes `timeline.json`, which `music.py`, `scenes.html` and

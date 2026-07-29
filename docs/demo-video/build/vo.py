@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Build the VO track and derive the video timeline from it.
 
-Engine: Kokoro-82M (ONNX) — noticeably warmer and less synthetic than Piper.
+Engine: Kokoro-82M (ONNX). Pronunciation is pinned at the phoneme level, not by\nrespelling the text -- see PHON below.
 
 Pronunciation is handled by ONE table (PRONOUNCE) applied automatically to the
 scripted line, so there is no second copy of the text to drift out of sync. Every
@@ -21,40 +21,72 @@ import json, os, re, subprocess, sys, wave
 import numpy as np
 
 SR = 24000                       # Kokoro's native rate
-VOICE = os.environ.get('VO_VOICE', 'am_michael')
-SPEED = float(os.environ.get('VO_SPEED', '1.06'))   # <1 = a more measured read
+VOICE = os.environ.get('VO_VOICE', 'am_onyx')
+SPEED = float(os.environ.get('VO_SPEED', '1.0'))   # <1 = a more measured read
 MODEL = 'kokoro/kokoro-v1.0.onnx'
 VOICES = 'kokoro/voices-v1.0.bin'
 os.makedirs('vo', exist_ok=True)
 
 # ---------------------------------------------------------------- pronunciation
-# Left: what appears on screen. Right: spelling that espeak-ng phonemises correctly.
-# Order matters — longer/plural forms first.
-PRONOUNCE = [
-    (r'\bNetforge\.ai\b',  'Netforge dot A. I'),
-    (r'\bVLANs\b',         'vee-lans'),        # natural "VLANs" -> "vlan", loses the plural
-    (r'\bVLAN\b',          'vee-lan'),         # natural -> "vlan" (one syllable). Wrong.
-    (r'\bVXLAN\b',         'V. X. lan'),
-    (r'\bEVPN\b',          'E. V. P. N'),     # natural -> "evpen". Wrong.
-    (r'\bCLI\b',           'C. L. I'),        # natural -> "cly". Very wrong.
-    (r'\bAVD\b',           'A. V. D'),        # natural -> "avd". Wrong.
-    (r'\bCVD\b',           'C. V. D'),
-    (r'\bBGP\b',           'B. G. P'),
-    (r'\bSTP\b',           'S. T. P'),
-    (r'\bIP\b',            'I. P'),
-    (r'\bPDF\b',           'P. D. F'),
-    (r'\bBOM\b',           'bill of materials'),   # "BOM" alone reads as "bahm"
-    (r'\bAI\b',            'A. I'),
-    (r'\bYAML\b',          'YAML'),            # already correct: "yammel"
-    (r'\bArista\b',        'uh-rista'),        # natural -> "ARR-ista"
-    (r'\bVisio\b',         'vizzy-oh'),        # natural -> "VIS-ee-oh", should be VIZ-ee-oh
-    (r'\b42\b',            'forty-two'),
-]
+# Phoneme-level overrides, not respellings. Orthographic hacks ("C. L. I") force
+# PRIMARY stress onto every letter and add a prosodic break at each period, which is
+# what made acronyms read as staccato. Spoken acronyms take secondary stress on every
+# letter but the last, and primary on the last: B-G-P is bˌiːdʒˌiːˈpiː, not bˈiː dʒˈiː pˈiː.
+#
+# These are injected straight into the phoneme stream (is_phonemes=True), so espeak's
+# context-dependent guessing is bypassed entirely -- it renders CLI as "cly" in
+# isolation and as letters mid-sentence, which is not something to build on.
+PHON = {
+    'VLAN':        'vˈiːlæn',            # native: vlˈæn -- one syllable. Wrong.
+    'VLANs':       'vˈiːlænz',           # native: vlˈæn -- plural silently dropped.
+    'VXLAN':       'vˌiːˌɛkslˈæn',
+    'EVPN':        'ˌiːvˌiːpˌiːˈɛn',     # native: ˈɛvpən ("evpen"). Wrong.
+    'CLI':         'sˌiːˌɛlˈaɪ',         # native: klˈaɪ ("cly"). Wrong.
+    'AVD':         'ˌeɪvˌiːdˈiː',        # native: ˈævd. Wrong.
+    'CVD':         'sˌiːvˌiːdˈiː',       # native already correct; pinned
+    'BGP':         'bˌiːdʒˌiːpˈiː',      # native already correct; pinned
+    'STP':         'ˌɛstˌiːpˈiː',        # native already correct; pinned
+    'IP':          'ˌaɪpˈiː',            # native already correct; pinned
+    'PDF':         'pˌiːdˌiːˈɛf',
+    'AI':          'ˌeɪˈaɪ',
+    'YAML':        'jˈæməl',
+    'BOM':         'bˈɪl ʌv mətˈɪɹiəlz',  # native: bˈɑːm ("bahm")
+    'Arista':      'əɹˈɪstə',            # native: ˈæɹɪstə ("ARR-ista")
+    'Visio':       'vˈɪzioʊ',            # native: vˈɪsɪˌoʊ ("VIS-ee-oh")
+    'Netforge.ai': 'nˈɛtfɔːɹdʒ dˌɑːt ˌeɪˈaɪ',
+    'Netforge':    'nˈɛtfɔːɹdʒ',
+}
+# longest first so "VLANs" wins over "VLAN" and "Netforge.ai" over "Netforge"
+_TERMS = sorted(PHON, key=len, reverse=True)
+_SPLIT = re.compile('(' + '|'.join(re.escape(t) for t in _TERMS) + ')')
 
-def spoken(text):
-    for pat, rep in PRONOUNCE:
-        text = re.sub(pat, rep, text)
-    return re.sub(r'\s{2,}', ' ', text).strip()
+_tok = None
+def tokenizer():
+    global _tok
+    if _tok is None:
+        from kokoro_onnx.tokenizer import Tokenizer
+        _tok = Tokenizer()
+    return _tok
+
+def phonemes_for(text):
+    """Phonemise the line, splicing in the overrides.
+
+    Text either side of an override is phonemised normally, so ordinary prosody is
+    untouched; only the overridden terms are pinned.
+    """
+    out = []
+    for part in _SPLIT.split(text):
+        if not part:
+            continue
+        if part in PHON:
+            out.append(PHON[part])
+        else:
+            ph = tokenizer().phonemize(part).strip()
+            if ph:
+                out.append(ph)
+    joined = ' '.join(out)
+    joined = re.sub(r'\s+([.,;:!?])', r'\1', joined)     # punctuation hugs the phoneme
+    return re.sub(r'\s{2,}', ' ', joined).strip()
 
 # ---------------------------------------------------------------- script
 # (id, scene, text, caption)  — caption None = let the visuals carry it
@@ -118,12 +150,18 @@ def ipa(s):
                           capture_output=True, text=True).stdout.strip().replace('\n',' ')
 
 def audit():
-    print(f"{'on screen':16} {'spoken as':22} {'phonemes':28} natural (wrong?)")
-    for pat, rep in PRONOUNCE:
-        term = pat.replace(r'\b','').replace('\\.','.')
-        got, nat = ipa(rep), ipa(term)
-        flag = '' if got != nat else '   (unchanged)'
-        print(f"{term:16} {rep:22} {got:28} {nat}{flag}")
+    """Compare each override against what the pipeline's own phonemiser would do."""
+    t = tokenizer()
+    print(f"{'term':13} {'override (shipped)':24} native (what we bypass)")
+    for term in _TERMS:
+        print(f"  {term:13} {PHON[term]:24} {t.phonemize(term).strip()}")
+    print("\nstress check -- one primary, rest secondary, mark before the vowel:")
+    for term in ('BGP', 'CLI', 'AVD', 'EVPN', 'IP', 'VXLAN'):
+        v = PHON[term]
+        pri, sec = v.count('\u02c8'), v.count('\u02cc')
+        bad = [c for c in ('\u02c8','\u02cc') if c+'d' in v or c+'p' in v or c+'l' in v]
+        print(f"  {term:6} primary={pri} secondary={sec}  "
+              f"{'OK' if pri == 1 and not bad else 'CHECK: mark sits before a consonant'}")
 
 def write_wav(path, samples, sr=SR):
     with wave.open(path,'w') as w:
@@ -139,7 +177,8 @@ def kokoro():
     return _kok
 
 def synth_line(text, path, voice=VOICE, speed=SPEED):
-    a, sr = kokoro().create(spoken(text), voice=voice, speed=speed, lang='en-us')
+    a, sr = kokoro().create(phonemes_for(text), voice=voice, speed=speed,
+                            lang='en-us', is_phonemes=True)
     a = np.asarray(a, dtype=np.float32)
     p = np.abs(a).max()
     if p > 0: a = a / p * 0.85
@@ -149,7 +188,7 @@ def synth_line(text, path, voice=VOICE, speed=SPEED):
 def synth_all():
     for lid, _s, text, _c in LINES:
         d = synth_line(text, f'vo/{lid}.wav')
-        print(f'  {lid} {d:5.2f}s  {spoken(text)[:64]}')
+        print(f'  {lid} {d:5.2f}s  {phonemes_for(text)[:70]}')
 
 def voice_demo():
     """Same two lines in several voices, labelled, for picking by ear."""
@@ -159,7 +198,7 @@ def voice_demo():
     out = []
     for v in cands:
         lab, sr = kokoro().create(f'Voice option. {v.replace("_"," ")}.', voice=v, speed=1.0, lang='en-us')
-        body, _ = kokoro().create(spoken(sample), voice=v, speed=SPEED, lang='en-us')
+        body, _ = kokoro().create(phonemes_for(sample), voice=v, speed=SPEED, lang='en-us', is_phonemes=True)
         out += [np.asarray(lab,dtype=np.float32), np.zeros(int(0.35*SR)),
                 np.asarray(body,dtype=np.float32), np.zeros(int(0.9*SR))]
         print(f'  {v}: {len(body)/SR:.2f}s')
