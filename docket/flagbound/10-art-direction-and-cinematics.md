@@ -1,28 +1,28 @@
 # 10 — Art Direction & Cinematics
 
-## Direction: a surreal world of soft rounded forms
+## Direction: a rounded block world
 
 From the brief: prioritise **creativity, scale and exciting environments** over
 photorealism. Players should feel like they are inside an epic adventure.
 
-**Style target:** a **dreamlike, surreal world built from soft rounded forms.**
-Nothing is a sharp cube. Terrain is made of rounded, pebble-like masses that
-interlock into rolling ground; structures are arches and rings rather than
-crenellated walls; the sky is a deep violet-to-coral gradient; glowing orbs drift
-above the battlefield. Characters are smooth, round, big-eyed creatures.
+**Style target:** a **grid-built world drawn in soft rounded forms.** Green rolling
+ground, grey stone walls and towers, trees with rounded canopies, a clear daylight
+sky. Recognisable and readable — a classic battlefield — but every mass is a
+softened, spherified form rather than a hard cube, and the characters are round
+big-eyed creatures rather than armoured soldiers.
 
-This is deliberately **not** a blocky Minecraft-style look, and not realism
-either. It is closer to an illustrated dream than to either.
+The result reads as familiar and welcoming rather than either harsh or abstract.
 
 ## The important distinction: grid underneath, rounded on top
 
-The world is still **simulated** as a grid of half-metre cells. That is what makes
-the transitions work — see [11](11-technical-architecture.md#the-voxel-data-model)
-and the reasoning below. What changed is how those cells are **drawn**: each one
-renders as a spherified, soft-shaded mass rather than a hard cube.
+The world is **simulated** as a grid of half-metre cells. That is what makes the
+transitions work — see [11](11-technical-architecture.md#the-voxel-data-model).
+What differs from a conventional block game is how those cells are **drawn**: each
+renders as a spherified, smooth-shaded mass, oversized slightly so neighbours
+interlock into one continuous surface.
 
-So the technical argument for a grid world survives intact while the aesthetic is
-free to be anything:
+So the technical argument for a grid world survives intact while the surface
+treatment stays soft:
 
 | Transition | Still works because |
 |---|---|
@@ -30,7 +30,7 @@ free to be anything:
 | **The Underground** | Just more cells below. Same world, same grid, deeper down — no second map to load, no handoff. |
 | **The Ascent** | Cells detach and re-stack upward into towers. The world rebuilds itself in place. |
 
-**This is the whole technical argument, and it is unchanged by the style.** In a
+**This is the whole technical argument, and no styling choice changes it.** In a
 conventional art pipeline the collapse is three authored destruction set-pieces
 that must look identical on 16 clients. On a grid it is one system that produces
 spectacle almost for free, and the acts stop being separate maps that need
@@ -38,55 +38,79 @@ swapping — they are one continuous world you travel through vertically. The
 brief's *"it should feel like a continuation of the same battle"* becomes
 literally true rather than an illusion to maintain.
 
-## Why surreal and rounded
+## Why rounded, and why a familiar setting
 
-### 1. It is the strongest available answer to "epic adventure"
+### 1. Readable at a glance
 
-The brief does not ask for a war. It asks for an adventure with cinematic moments
-worth sharing. A violet sky, floating islands and drifting lanterns deliver that
-in the first second of the first screenshot. A grass-and-grey-stone battlefield
-does not; it reads as generic.
+Two teams, a flag, hazards, and a world that keeps changing. Soft masses in
+naturalistic colours — green ground, grey stone, blue sky — give players an
+instantly legible space, and saturated team colours pop cleanly against it.
 
-### 2. Readability without harshness
+### 2. Rounded is the differentiator
 
-Two teams, a flag, hazards, and a world that keeps changing. Soft forms with
-strong rim lighting and saturated colour separate cleanly against every
-background, and the palette per act is so distinct that a player always knows
-where they are.
+A grid world in cubes invites exactly one comparison, and it is not a flattering
+one. Rounding every form breaks the resemblance immediately while keeping all the
+benefits of a grid. See the rules below.
 
 ### 3. Age-appropriate by construction
 
-Round, wide-eyed creatures in a dreamscape read as adventure. There is no uncanny
-valley, no injury detail, no realism to push it anywhere uncomfortable. The style
-does the age-rating work.
+Round, wide-eyed creatures in a bright landscape read as adventure. No uncanny
+valley, no injury detail, no realism to push it anywhere uncomfortable.
 
 ### 4. Scale is cheap
 
 Enormous environments come from a small vocabulary — a rounded mass, a sphere, a
 palette per act. A small team can build a huge world.
 
-### 5. It is nobody else's look
+## Restraint is part of the style
 
-The most common failure mode for a grid-based game is looking like a Minecraft
-mod. Rounded surreal forms sidestep that entirely: there is no resemblance to
-defend, no textures anyone could mistake for copied, and no legal exposure worth
-worrying about. The style is the differentiator, not a liability.
+**Learned from playtesting, and worth stating as a rule:** an earlier pass filled
+the surface with floating islands, drifting motes, glowing orbs and dozens of
+spires. It was immediately judged *too crowded* — the objectives were lost in the
+noise and the space stopped reading as a battlefield.
+
+The correction, which the prototype now follows:
+
+- **Open sightlines first.** A player must be able to see the enemy base
+  direction, their own flag, and the approaching enemy from most of the map.
+- **Few object types, well spread.** One wall, two towers, eighteen trees. Not a
+  forest, not a sculpture garden.
+- **Emissive is rationed.** Only things that *matter* glow — flags, beacons, the
+  player's own marker, hazards. Decoration never glows.
+- **Empty ground is a feature.** It is where fights happen and where a carrier
+  gets caught. Filling it removes the game.
+
+Density is a gameplay decision disguised as an art decision. Every prop added to
+the middle of the map removes a sightline from a defender.
+
+## Keeping clear of the obvious comparison
+
+A rounded grid world is not a cube world, but the family resemblance is worth
+managing deliberately:
+
+- **Rounded geometry, never cubes.** This is the primary differentiator and it is
+  visible in every frame.
+- **No copied textures.** Every surface is originally authored. Nothing traced,
+  recoloured, or ripped.
+- **No signature content of any other game.** No borrowed creatures, items, or
+  crafting metaphors.
+- **Different lighting identity.** Smooth normals, a warm key with a cool sky
+  fill, and a subtle rim on every silhouette — soft and lit, not flat and ambient.
+- **Different subject.** This is a 15-minute team match on a world that comes
+  apart twice, not a calm solitary sandbox.
 
 ## The rendering signature
 
 Three choices do most of the work, and all three are cheap:
 
 - **Spherified geometry.** Every world cell is a subdivided cube pulled ~45%
-  toward a sphere, with smooth normals. Soft silhouettes, no hard edges.
-  Cells render slightly oversized so they interlock into one continuous mass
-  rather than reading as separate pebbles.
-- **Rim light.** A coloured rim term — warm rose on the surface, violet in the
-  deep — traces every silhouette. This is what makes the world look lit by the
-  sky rather than by a lamp, and it is the single largest contributor to the
-  dreamlike quality.
-- **Two-tone lighting.** A warm key with a cool coloured fill from the opposite
-  side, so shadowed faces read as tinted rather than grey. Nothing in the world
-  is ever neutral-dark.
+  toward a sphere, with smooth normals, rendered slightly oversized so cells
+  interlock into a continuous mass.
+- **Two-tone lighting.** A warm key with a cool sky-coloured fill from the
+  opposite side, so shadowed faces read as daylight-tinted rather than grey.
+- **A subtle rim.** A restrained rim term traces silhouettes so characters and
+  structures separate from the background. Kept low — pushed hard it turns
+  dreamlike, which is not the target.
 
 The sky is a gradient behind the scene, not geometry — cheaper and smoother than
 any dome, and it cross-fades when the phase changes.
@@ -104,36 +128,33 @@ any dome, and it cross-fades when the phase changes.
 ## The three worlds
 
 Each act must be recognisable from a single frame. The palettes are deliberately
-opposed, and each is dominated by colours the others do not use at all.
+opposed.
 
-### Act I — The Dreamfield
+### Act I — The Surface
 
-- **Ground:** rolling, never flat — pale lilac at the crests, deeper violet in the
-  hollows
-- **Palette:** lilac, violet, indigo, with iridescent teal and coral accents
-- **Sky:** deep violet at the zenith falling to coral and warm peach at the
-  horizon
-- **Forms:** two great arches spanning midfield instead of a castle wall; tall
-  slender spires topped with glowing bulbs; floating islands with lanterns slung
-  beneath them; drifting motes of light
-- **Bases:** circular platforms ringed with pillars, open toward midfield, a
-  glowing orb hanging above each flag
-- **Light:** warm key, violet fill, rose rim
-- **Sound:** open air, soft chimes, a distant low drone
+- **Ground:** gently rolling green, never billiard-flat, never mountainous
+- **Palette:** grass green, earth brown, grey stone, timber
+- **Sky:** clear daylight — pale at the horizon deepening to blue overhead
+- **Forms:** a low stone wall across midfield with two gaps as chokepoints; two
+  towers flanking them for height and as grapple anchors; trees with rounded
+  canopies, spread thin
+- **Bases:** circular timber platforms ringed by a low team-coloured wall, open
+  toward midfield, a gold pedestal holding the flag
+- **Light:** warm key, cool sky fill, subtle rim
+- **Sound:** open air, wind, distant battle
 
-### Act II — The Glowing Deep
+### Act II — The Caverns
 
-- **Ground:** near-black indigo, rolling
-- **Palette:** the darkest act and the most colourful, because every light source
-  is an object — magenta and cyan bioluminescence, glowing violet pools
-- **Forms:** enormous glowing caps on slender stalks; pools of light in the
-  hollows; spires hanging out of the dark above
-- **Light:** emissive forms doing the work; violet fill; violet rim
+- **Palette:** cool grey and near-black rock, lit by orange lava and pale cyan
+  crystal — the darkest act, and the only one where light sources are objects
+- **Forms:** rock columns, some crystal-tipped, for cover and grapple anchors;
+  lava pools in the hollows; sparse stalactites out of the dark above
+- **Light:** low ambient, emissive forms doing the work
 - **Sound:** close and echoing, dripping, a deep hollow pulse
 
 ### Act III — The Sky Towers
 
-- **Palette:** blinding pale gold and white against deep blue, iridescent edges
+- **Palette:** pale stone and gold against deep blue, bright cloud below
 - **Forms:** colossal smooth towers, floating platforms, long thin bridges with
   nothing beneath them
 - **Light:** full unfiltered sun above the cloud layer — the visual reward for ten
@@ -195,21 +216,18 @@ Staging:
 1. **Tremors.** Loose masses rattle in place. Motes scatter. Dust lifts.
 2. **Fracture.** Glowing seams trace across the ground, so the world telegraphs
    exactly what is about to give way.
-3. **The break.** The ground comes apart into its constituent masses. Arches
-   collapse. Spires topple. The floating islands lose their anchors and the
-   lanterns fall with them — thousands of rounded forms and glowing orbs tumbling
-   together into the dark.
+3. **The break.** The ground comes apart into its constituent masses. The wall comes down,
+   towers topple, and thousands of rounded masses tumble into the dark together.
 4. **The fall.** The player falls *with* the wreckage of the field they were
-   defending, the dreamfield receding into a bright hole above them.
+   defending, the surface receding into a bright hole above them.
 
-The prototype confirms this reads beautifully: soft tumbling masses and drifting
-lights against a violet void, rather than rubble.
+The prototype confirms this reads well: soft tumbling masses rather than rubble.
 
-### 2. The arrival in the deep
+### 2. The arrival underground
 
-Landing: the cavern opens out and the scale of the glowing deep becomes visible.
-Bioluminescent caps and pools placed to draw the eye across the space so the
-player reads its size in one second. Debris from the surface lies scattered where
+Landing: the cavern opens out and its scale becomes visible. Lava and crystal
+placed to draw the eye across the space so the player reads its size in one
+second. Debris from the surface lies scattered where
 it fell, which quietly says *this is the same world, you just fell through it.*
 
 ### 3. The towers rise
@@ -245,7 +263,7 @@ mode would cost little and generate much of the sharing the brief asks for.
 - **A beacon** rising from each flag, visible over structures from anywhere on the
   map, retained while the flag is carried so the carrier stays findable
 - F.C.S. callouts as unobtrusive lower-third text with subtitles
-- Crisp, modern, softly-rounded UI against the dreamlike world — do **not** make
+- Crisp, modern, softly-rounded UI against the world — do **not** make
   the interface pixel-art or blocky. Keeping small text legible matters more for
   younger players than stylistic consistency in the chrome.
 

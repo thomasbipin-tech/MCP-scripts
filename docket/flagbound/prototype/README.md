@@ -13,18 +13,20 @@ works straight off the filesystem (`file://`), no server required.
 
 | From the docket | Here |
 |---|---|
-| Surreal rounded world ([10](../10-art-direction-and-cinematics.md)) | Hand-written WebGL2 instanced renderer, two generated meshes: a spherified cube for the world and a smooth sphere for creatures. Rolling non-flat ground, arches, spires, floating islands, drifting orbs, CSS-gradient sky per phase |
+| Rounded block world ([10](../10-art-direction-and-cinematics.md)) | Hand-written WebGL2 instanced renderer, two generated meshes: a spherified cube for the world and a smooth sphere for creatures. Rolling green ground, a stone wall with two gaps, two towers, trees with rounded canopies, CSS-gradient sky per phase |
+| Restraint in density ([10](../10-art-direction-and-cinematics.md#restraint-is-part-of-the-style)) | One wall, two towers, eighteen trees. An earlier pass added floating islands, drifting motes and dozens of spires and was judged too crowded — objectives disappeared into the noise |
 | Round creatures ([10](../10-art-direction-and-cinematics.md#characters)) | Smooth sphere bodies, oversized emissive eyes proud of the surface, pupils, mouth, antenna, blinking, walk bob with squash and stretch |
-| Rim-light rendering ([10](../10-art-direction-and-cinematics.md#the-rendering-signature)) | Warm key plus cool coloured fill plus a coloured rim term — the dreamlike quality comes from here |
-| Warm-vs-cool team palettes ([03](../03-combat-and-classes.md)) | Every character has its own hue; Azure hues all cool, Rose all warm |
+| Soft lighting ([10](../10-art-direction-and-cinematics.md#the-rendering-signature)) | Warm key, cool sky-coloured fill, and a restrained rim term that separates silhouettes without turning dreamlike |
+| Warm-vs-cool team palettes ([03](../03-combat-and-classes.md)) | Every character has its own hue; Azure hues all cool, Crimson all warm |
 | Two teams, two flags, capture rules ([01](../01-game-overview.md)) | Azure vs Crimson, own flag must be home to score |
-| **The Collapse** ([02](../02-match-flow-and-world-phases.md)) | Surface shatters into its constituent blocks at 60s; players fall into the underground kingdom |
+| **The Collapse** ([02](../02-match-flow-and-world-phases.md)) | Surface comes apart into its constituent cells at 60s; players fall into the caverns below |
 | Carrier keeps the flag through a transition ([02](../02-match-flow-and-world-phases.md)) | Implemented — uncarried flags re-anchor to the new bases |
 | Debris budget ([12](../12-open-questions.md), Q9) | Capped at 4,200 blocks, nearest-to-player prioritised |
 | Debris is cosmetic, not authoritative ([11](../11-technical-architecture.md)) | Debris has no collision — it cannot be landed on |
+| Third-person camera | Pulls in when a wall is behind, but never closer than half distance — collapsing fully put the camera inside the character |
 | Objective-aware bots ([06](../06-ai-bots.md)) | 4 per side: attack, escort the carrier, chase the enemy carrier, recover a dropped flag |
 | F.C.S. callouts ([05](../05-fcs-ai-assistant.md)) | Text-only, priority-free, reacting to flag events and the collapse |
-| Blocks are 0.5 m ([10](../10-art-direction-and-cinematics.md)) | Player stands ~3.2 blocks tall |
+| Cells are 0.5 m ([10](../10-art-direction-and-cinematics.md)) | Player stands ~2.5 cells tall — short, wide and round |
 
 ## What it does not implement
 
@@ -35,7 +37,7 @@ Named here so the prototype is not mistaken for the game:
 - **Act III, the sky towers** — the prototype ends after the underground
 - F.C.S. voice, and player questions to F.C.S.
 - Chat, moderation, progression, matchmaking
-- Block breaking / placing (unresolved — [12](../12-open-questions.md), Q1)
+- Cell breaking / placing (unresolved — [12](../12-open-questions.md), Q1)
 
 Match length is compressed to 3 minutes with the collapse at 60s, so the
 transition is reachable quickly. The docket specifies 15 minutes.
@@ -63,7 +65,7 @@ knowing when judging how the abilities feel.
 
 Two aids exist because the flag was genuinely hard to locate in testing:
 
-- **Beacon** — a tall emissive column rises from each flag, visible over walls
+- **Beacon** — a slim emissive column rises from each flag, visible over the wall
   from anywhere on the map. A carried flag keeps its beacon, so the carrier is
   always findable.
 - **Objective tracker** — an on-screen tag naming the current objective and its

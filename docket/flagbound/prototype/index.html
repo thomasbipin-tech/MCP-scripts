@@ -7,7 +7,7 @@
 <style>
   :root{
     --void:#0b0718; --stone:#a99cc4; --muted:#8d81ad;
-    --gold:#ffd98a; --azure:#6fc0ff; --rose:#ff7d96;
+    --gold:#ffd98a; --azure:#6fc0ff; --crimson:#e05a6a;
     --parchment:#f0eaf8;
     --mono: ui-monospace, "SF Mono", "Cascadia Mono", Menlo, Consolas, "Liberation Mono", monospace;
     --sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
@@ -19,10 +19,10 @@
   /* The sky is a CSS gradient behind a transparent canvas — cheaper and smoother
      than any geometry, and it swaps with the phase. */
   #stage{position:fixed;inset:0;transition:background 2.5s ease}
-  #stage.surface{background:radial-gradient(ellipse 130% 90% at 50% 82%,
-      #ffc4a8 0%, #f59fc8 22%, #b072d8 48%, #6845b8 72%, #2a1550 100%)}
+  #stage.surface{background:radial-gradient(ellipse 130% 95% at 50% 80%,
+      #dceefa 0%, #a8d3ee 24%, #6fa9dc 54%, #4478b0 100%)}
   #stage.underground{background:radial-gradient(ellipse 120% 85% at 50% 62%,
-      #5b2a86 0%, #33174f 42%, #170b2c 74%, #08040f 100%)}
+      #34333d 0%, #1d1c23 46%, #0b0b0f 100%)}
   @media (prefers-reduced-motion:reduce){#stage{transition:none}}
   canvas{display:block;width:100%;height:100%;cursor:crosshair;position:relative}
 
@@ -35,7 +35,7 @@
   .team{display:flex;flex-direction:column;justify-content:center;gap:3px;padding:9px 17px;min-width:114px}
   .team.b{align-items:flex-end;text-align:right}
   .teamName{font-family:var(--mono);font-size:10px;letter-spacing:.18em;text-transform:uppercase}
-  .azure .teamName{color:var(--azure)} .rose .teamName{color:var(--rose)}
+  .azure .teamName{color:var(--azure)} .crimson .teamName{color:var(--crimson)}
   .score{font-family:var(--mono);font-size:30px;line-height:1;font-weight:700;
     font-variant-numeric:tabular-nums}
   .flagState{font-family:var(--mono);font-size:9.5px;letter-spacing:.1em;color:var(--muted);
@@ -138,9 +138,9 @@
       <span class="score" id="scoreA">0</span>
       <span class="flagState" id="flagA">flag secure</span>
     </div>
-    <div id="clockCol"><span id="clock">3:00</span><span id="phase">dreamfield</span></div>
-    <div class="team rose b">
-      <span class="teamName">Rose</span>
+    <div id="clockCol"><span id="clock">3:00</span><span id="phase">surface</span></div>
+    <div class="team crimson b">
+      <span class="teamName">Crimson</span>
       <span class="score" id="scoreB">0</span>
       <span class="flagState" id="flagB">flag secure</span>
     </div>
@@ -158,9 +158,8 @@
 <div id="fcs"><span id="fcsTag">F.C.S.</span><span id="fcsMsg"></span></div>
 
 <div id="legend">
-  <div><b>WASD</b> move &nbsp; <b>Space</b> jump</div>
-  <div><b>Mouse</b> look &nbsp; <b>← →</b> turn</div>
-  <div><b>Click</b> / <b>F</b> attack &nbsp; <b>Shift</b> sprint</div>
+  <div><b>WASD</b> move &nbsp; <b>Mouse</b> look &nbsp; <b>Space</b> jump</div>
+  <div><b>Click</b> attack &nbsp; <b>Shift</b> sprint</div>
 </div>
 
 <div class="veil" id="startVeil">
@@ -169,10 +168,10 @@
     <h1>Flagbound</h1>
     <p class="sub">The Shifting Battlefield</p>
     <div class="brief">
-      <p>Steal the <strong style="color:var(--rose)">rose flag</strong> from the far base and carry it back to your own. Your flag must be home for a capture to count.</p>
-      <p><strong>Finding it:</strong> a tall pink beam marks the rose flag from anywhere — just walk toward it. The tag on screen always shows the direction and distance. You are the round one with the gold gem spinning overhead.</p>
+      <p>Steal the <strong style="color:var(--crimson)">red flag</strong> from the far base and carry it back to your own. Your flag must be home for a capture to count.</p>
+      <p><strong>Finding it:</strong> a tall pink beam marks the red flag from anywhere — just walk toward it. The tag on screen always shows the direction and distance. You are the round one with the gold gem spinning overhead.</p>
       <p><strong>Skills:</strong> <b>Q</b> dashes you forward, <b>E</b> fires a grapple at whatever you are looking at and reels you in, and <b>R</b> in mid-air slams down with a shockwave that flattens everyone nearby. Hold <b>Space</b> while falling to glide — worth remembering when the ground disappears.</p>
-      <p>Sixty seconds in, the dreamfield breaks apart. Everything you are standing on comes loose and falls, dropping you into the glowing deep below. Your flag comes with you if you are carrying it.</p>
+      <p>Sixty seconds in, the battlefield breaks apart. Everything you are standing on comes loose and falls, dropping you into the glowing deep below. Your flag comes with you if you are carrying it.</p>
     </div>
     <div class="keys">
       <div><span>Move</span><b>W A S D</b></div>
@@ -225,17 +224,17 @@ const COLLAPSE_CUT = -16;
 const MATCH_TIME = 180, TREMOR_AT = 50, COLLAPSE_AT = 60;
 const DEBRIS_CAP = 2400;
 
-const T = { AIR:0, LILAC:1, VIOLET:2, INDIGO:3, PERI:4, TEAL:5, MINT:6, CORAL:7,
-            GOLD:8, CYAN:9, TEAMA:10, TEAMB:11, SAND:12, DEEP:13, DEEP2:14,
-            MAGENTA:15, POOL:16, ROSE:17 };
+const T = { AIR:0, GRASS:1, GRASS2:2, DIRT:3, STONE:4, WOOD:5, LEAF:6, LEAF2:7,
+            GOLD:8, GLOW:9, TEAMA:10, TEAMB:11, PLANK:12, CAVE:13, CAVE2:14,
+            CRYSTAL:15, LAVA:16, COBBLE:17 };
 const COL = {
-  1:[0.80,0.70,0.92], 2:[0.62,0.48,0.82], 3:[0.33,0.26,0.52], 4:[0.56,0.52,0.80],
-  5:[0.31,0.82,0.74], 6:[0.62,0.96,0.85], 7:[1.00,0.56,0.66], 8:[1.00,0.85,0.54],
-  9:[0.48,0.92,1.00], 10:[0.34,0.70,0.96], 11:[1.00,0.42,0.55], 12:[0.94,0.88,0.76],
-  13:[0.13,0.09,0.24], 14:[0.20,0.15,0.36], 15:[0.85,0.42,1.00], 16:[0.60,0.32,1.00],
-  17:[1.00,0.55,0.74]
+  1:[0.44,0.68,0.32], 2:[0.36,0.57,0.27], 3:[0.46,0.34,0.22], 4:[0.60,0.60,0.62],
+  5:[0.45,0.32,0.20], 6:[0.30,0.54,0.26], 7:[0.37,0.63,0.31], 8:[0.96,0.79,0.36],
+  9:[0.72,0.90,0.98], 10:[0.31,0.58,0.90], 11:[0.87,0.33,0.31], 12:[0.78,0.64,0.42],
+  13:[0.20,0.20,0.23], 14:[0.30,0.30,0.34], 15:[0.50,0.86,0.92], 16:[0.92,0.44,0.17],
+  17:[0.50,0.50,0.53]
 };
-const EMIS = {6:0.35, 7:0.20, 8:0.30, 9:0.45, 15:0.60, 16:0.70};
+const EMIS = {8:0.12, 9:0.30, 15:0.42, 16:0.55};
 
 const grid = new Uint8Array(SX*SY*SZ);
 const gi = (x,y,z)=> x + SX*((y+YOFF) + SY*z);
@@ -249,9 +248,9 @@ const rnd = ()=>{ _s=(_s*1664525+1013904223)>>>0; return _s/4294967296; };
 const ri = (a,b)=> a + Math.floor(rnd()*(b-a+1));
 
 /* rolling, non-flat ground — the fastest way to stop reading as a block game */
-const hSurf = (x,z)=> 1.7*Math.sin(x*0.13) + 1.3*Math.cos(z*0.11)
-                    + 0.9*Math.sin((x+z)*0.07) + 0.7*Math.cos((x-z)*0.09);
-const hUnder = (x,z)=> 1.5*Math.cos(x*0.10) + 1.2*Math.sin(z*0.14) + 0.8*Math.sin((x*0.6+z)*0.08);
+const hSurf = (x,z)=> 0.55*(1.7*Math.sin(x*0.11) + 1.2*Math.cos(z*0.09)
+                    + 0.7*Math.sin((x+z)*0.06));
+const hUnder = (x,z)=> 0.7*(1.4*Math.cos(x*0.09) + 1.1*Math.sin(z*0.12));
 
 /* static smooth props (orbs, caps) live outside the grid */
 let orbs=[];   // {x,y,z,r,t,phase}
@@ -266,42 +265,33 @@ function buildSurface(){
     const inBaseB = Math.hypot(x-BASE.B.x, z-BASE.B.z) < 8.5;
     const top = (inBaseA||inBaseB) ? 1 : Math.round(hSurf(x,z));
     for(let y=top-3;y<=top;y++)
-      setB(x,y,z, y===top ? (top>1?T.LILAC:T.VIOLET) : T.INDIGO);
+      setB(x,y,z, y===top ? (top>0?T.GRASS:T.GRASS2) : (y>top-3?T.DIRT:T.STONE));
   }
-  // two great arches over midfield instead of a castle wall
+  // one low stone wall across midfield with two gaps — the chokepoints
   const mz=SZ>>1;
-  for(const [cx,R,mat] of [[16,9,T.PERI],[42,11,T.CORAL]]){
-    for(let a=0;a<=44;a++){
-      const th=(a/44)*Math.PI;
-      const px=Math.round(cx+Math.cos(th)*R), py=Math.round(Math.sin(th)*R)+1;
-      for(let d=-1;d<=1;d++) for(let t=0;t<2;t++) setB(px,py+t,mz+d,mat);
+  for(let x=2;x<SX-2;x++){
+    if((x>=12&&x<=18)||(x>=38&&x<=44)) continue;
+    const g=Math.round(hSurf(x,mz));
+    for(let y=g+1;y<=g+4;y++){ setB(x,y,mz,T.STONE); setB(x,y,mz+1,T.STONE); }
+  }
+  // two towers flanking the gaps: verticality, and something to grapple onto
+  for(const [tx,tz] of [[15,mz-7],[41,mz+7]]){
+    const g=Math.round(hSurf(tx,tz));
+    for(let y=g;y<=g+9;y++) for(let dx=-2;dx<=2;dx++) for(let dz=-2;dz<=2;dz++){
+      if(Math.abs(dx)===2||Math.abs(dz)===2||y===g) setB(tx+dx,y,tz+dz, y>g+7?T.COBBLE:T.STONE);
     }
   }
-  // spire stalks topped with glowing orbs
-  for(let i=0;i<44;i++){
-    const x=ri(4,SX-5), z=ri(4,SZ-5);
-    if(Math.hypot(x-BASE.A.x,z-BASE.A.z)<12) continue;
-    if(Math.hypot(x-BASE.B.x,z-BASE.B.z)<12) continue;
-    if(Math.abs(z-mz)<3) continue;
-    const g=Math.round(hSurf(x,z)), h=ri(5,10);
-    for(let y=g;y<=g+h;y++) setB(x,y,z,T.TEAL);
-    orbs.push({x:x+0.5,y:g+h+1.4,z:z+0.5,r:1.3+rnd()*1.1,
-               t:rnd()<0.5?T.MINT:T.CYAN,phase:'surface'});
+  // trees: a trunk with a rounded canopy. Eighteen, spread out — not a forest.
+  for(let i=0;i<18;i++){
+    const x=ri(5,SX-6), z=ri(5,SZ-6);
+    if(Math.hypot(x-BASE.A.x,z-BASE.A.z)<13) continue;
+    if(Math.hypot(x-BASE.B.x,z-BASE.B.z)<13) continue;
+    if(Math.abs(z-mz)<4) continue;
+    const g=Math.round(hSurf(x,z)), h=ri(4,6);
+    for(let y=g;y<=g+h;y++) setB(x,y,z,T.WOOD);
+    orbs.push({x:x+0.5,y:g+h+1.1,z:z+0.5,r:1.9,t:T.LEAF, phase:'surface'});
+    orbs.push({x:x+0.5,y:g+h+2.3,z:z+0.5,r:1.25,t:T.LEAF2,phase:'surface'});
   }
-  // floating islands with a lantern slung beneath
-  for(let i=0;i<11;i++){
-    const cx=ri(6,SX-7), cz=ri(6,SZ-7), cy=ri(12,21), rad=2+rnd()*2.4;
-    for(let dx=-4;dx<=4;dx++) for(let dz=-4;dz<=4;dz++){
-      const d=Math.hypot(dx,dz); if(d>rad) continue;
-      const th=Math.round(1.6*(1-d/rad));
-      for(let dy=-th;dy<=0;dy++) setB(cx+dx,cy+dy,cz+dz, dy===0?T.LILAC:T.VIOLET);
-    }
-    orbs.push({x:cx+0.5,y:cy-2.6,z:cz+0.5,r:0.7+rnd()*0.6,t:T.GOLD,phase:'surface'});
-  }
-  // free-floating motes
-  for(let i=0;i<34;i++)
-    orbs.push({x:rnd()*SX, y:5+rnd()*20, z:rnd()*SZ, r:0.35+rnd()*0.8,
-               t:[T.CORAL,T.CYAN,T.GOLD,T.MINT][ri(0,3)], phase:'surface'});
   buildBase('A','surface'); buildBase('B','surface');
 }
 
@@ -310,52 +300,48 @@ function buildBase(key,ph){
   const gy = ph==='surface' ? 1 : UNDER_Y+1;
   for(let dx=-8;dx<=8;dx++) for(let dz=-8;dz<=8;dz++){
     const d=Math.hypot(dx,dz); if(d>8) continue;
-    setB(b.x+dx, gy, b.z+dz, d>6.6 ? mat : T.SAND);
+    setB(b.x+dx, gy, b.z+dz, d>6.6 ? mat : T.PLANK);
   }
-  // ring of pillars, gapped toward midfield
-  for(let a=0;a<12;a++){
-    const th=(a/12)*Math.PI*2;
-    const px=Math.round(b.x+Math.cos(th)*7), pz=Math.round(b.z+Math.sin(th)*7);
-    const facing = key==='A' ? Math.sin(th)>0.55 : Math.sin(th)<-0.55;
+  // a low wall ring, open toward midfield
+  for(let a=0;a<20;a++){
+    const th=(a/20)*Math.PI*2;
+    const px=Math.round(b.x+Math.cos(th)*7.4), pz=Math.round(b.z+Math.sin(th)*7.4);
+    const facing = key==='A' ? Math.sin(th)>0.45 : Math.sin(th)<-0.45;
     if(facing) continue;
-    for(let y=gy+1;y<=gy+5;y++) setB(px,y,pz, y>gy+4?mat:T.INDIGO);
+    for(let y=gy+1;y<=gy+3;y++) setB(px,y,pz, y===gy+3?mat:T.STONE);
   }
   for(let dx=-1;dx<=1;dx++) for(let dz=-1;dz<=1;dz++) setB(b.x+dx,gy+1,b.z+dz,T.GOLD);
-  orbs.push({x:b.x+0.5,y:gy+7.5,z:b.z+0.5,r:1.5,t:mat,phase:ph});
 }
 
 function buildUnderground(){
   for(let z=0;z<SZ;z++) for(let x=0;x<SX;x++){
     const inBase = Math.hypot(x-BASE.A.x,z-BASE.A.z)<9 || Math.hypot(x-BASE.B.x,z-BASE.B.z)<9;
     const top = inBase ? UNDER_Y : UNDER_Y + Math.round(hUnder(x,z));
-    for(let y=top-3;y<=top;y++) setB(x,y,z, y===top?T.DEEP2:T.DEEP);
+    for(let y=top-3;y<=top;y++) setB(x,y,z, y===top?T.CAVE2:T.CAVE);
   }
-  // glowing pools
-  for(let i=0;i<7;i++){
-    const cx=ri(6,SX-7), cz=ri(6,SZ-7), rad=2.5+rnd()*3.5;
-    for(let dx=-6;dx<=6;dx++) for(let dz=-6;dz<=6;dz++){
+  // a few lava pools in the hollows
+  for(let i=0;i<4;i++){
+    const cx=ri(8,SX-9), cz=ri(8,SZ-9), rad=2.5+rnd()*2.5;
+    if(Math.hypot(cx-BASE.A.x,cz-BASE.A.z)<12||Math.hypot(cx-BASE.B.x,cz-BASE.B.z)<12) continue;
+    for(let dx=-5;dx<=5;dx++) for(let dz=-5;dz<=5;dz++){
       if(Math.hypot(dx,dz)>rad) continue;
-      const top=UNDER_Y+Math.round(hUnder(cx+dx,cz+dz));
-      setB(cx+dx,top,cz+dz,T.POOL);
+      setB(cx+dx, UNDER_Y+Math.round(hUnder(cx+dx,cz+dz)), cz+dz, T.LAVA);
     }
   }
-  // giant glowing caps on stalks
-  for(let i=0;i<26;i++){
+  // rock columns, some crystal-tipped, for cover and grapple points
+  for(let i=0;i<16;i++){
     const x=ri(5,SX-6), z=ri(5,SZ-6);
     if(Math.hypot(x-BASE.A.x,z-BASE.A.z)<11||Math.hypot(x-BASE.B.x,z-BASE.B.z)<11) continue;
-    const g=UNDER_Y+Math.round(hUnder(x,z)), h=ri(3,8);
-    for(let y=g;y<=g+h;y++) setB(x,y,z,T.DEEP2);
-    orbs.push({x:x+0.5,y:g+h+1.8,z:z+0.5,r:1.8+rnd()*2.0,
-               t:rnd()<0.5?T.MAGENTA:T.CYAN,phase:'under'});
+    const g=UNDER_Y+Math.round(hUnder(x,z)), h=ri(3,7);
+    for(let y=g;y<=g+h;y++) for(let dx=0;dx<=1;dx++) for(let dz=0;dz<=1;dz++)
+      setB(x+dx,y,z+dz,T.COBBLE);
+    if(rnd()<0.55) orbs.push({x:x+1.0,y:g+h+1.3,z:z+1.0,r:1.1,t:T.CRYSTAL,phase:'under'});
   }
-  // stalactites hanging out of the dark
-  for(let i=0;i<30;i++){
-    const x=ri(3,SX-4), z=ri(3,SZ-4), len=ri(3,9);
-    for(let k=0;k<len;k++) setB(x,-18-k,z,T.DEEP);
+  // stalactites, sparse
+  for(let i=0;i<12;i++){
+    const x=ri(4,SX-5), z=ri(4,SZ-5), len=ri(3,7);
+    for(let k=0;k<len;k++) setB(x,-18-k,z,T.CAVE);
   }
-  for(let i=0;i<26;i++)
-    orbs.push({x:rnd()*SX, y:UNDER_Y+3+rnd()*12, z:rnd()*SZ, r:0.3+rnd()*0.6,
-               t:rnd()<0.5?T.MAGENTA:T.CYAN, phase:'under'});
   buildBase('A','under'); buildBase('B','under');
 }
 
@@ -403,7 +389,7 @@ void main(){
   c += v_col * v_emis;
   // rim light — does most of the dreamlike work
   float rim = pow(1.0 - max(dot(n, normalize(v_view)), 0.0), 2.6);
-  c += u_rim * rim * 0.42;
+  c += u_rim * rim * 0.20;
   float f = clamp((v_dist-u_fogRange.x)/(u_fogRange.y-u_fogRange.x), 0.0, 1.0);
   outColor = vec4(mix(c, u_fog, f), 1.0);
 }`;
@@ -575,7 +561,7 @@ function resetMatch(){
   for(let i=0;i<5;i++) ents.push(makeEnt('B',false,i));
   flags={A:mkFlag('A'),B:mkFlag('B')};
   camYaw=0; camPitch=-0.20; shake=0; debrisRB.length=0; debrisSP.length=0;
-  fcs('Objective: take the rose flag and bring it home. The dreamfield will not hold still.',6);
+  fcs('Objective: take the red flag and bring it home. The battlefield will not hold still.',6);
 }
 
 /* ------------------------------ movement --------------------------------- */
@@ -730,7 +716,7 @@ function updateFlags(dt){
       score[e.team]++;
       const f=flags[e.carrying]; e.carrying=null; homeFlag(f);
       fcs(e.team==='A'?(e.isPlayer?'Capture. That is yours.':'Capture — Azure scores.')
-                      :'Rose captured. Even it up.',4);
+                      :'Crimson captured. Even it up.',4);
     }
   }
 }
@@ -787,7 +773,7 @@ function doCollapse(){
   rebuildWorld();
   for(const key of ['A','B']) if(!flags[key].carrier) homeFlag(flags[key]);
   for(const e of ents) e.invuln=Math.max(e.invuln,2.5);
-  fcs('The glowing deep. Flags re-anchored to the new bases. Find the routes.',6);
+  fcs('Underground caverns. Flags re-anchored to the new bases. Find the routes.',6);
 }
 function stepDebris(list,dt,isOrb){
   for(let i=list.length-1;i>=0;i--){
@@ -858,10 +844,10 @@ function syncHUD(){
   el('clock').textContent=m+':'+String(s).padStart(2,'0');
   const ph=el('phase');
   if(phase==='surface'&&clock<=MATCH_TIME-TREMOR_AT){ ph.textContent='collapse imminent'; ph.classList.add('warn'); }
-  else { ph.textContent=phase==='surface'?'dreamfield':'the deep'; ph.classList.remove('warn'); }
+  else { ph.textContent=phase==='surface'?'surface':'caverns'; ph.classList.remove('warn'); }
   for(const [k,id] of [['A','flagA'],['B','flagB']]){
     const f=flags[k], n=el(id);
-    n.textContent = f.carrier?(f.carrier.team==='A'?'taken by azure':'taken by rose'):f.home?'flag secure':'dropped';
+    n.textContent = f.carrier?(f.carrier.team==='A'?'taken by azure':'taken by crimson'):f.home?'flag secure':'dropped';
     n.classList.toggle('alert',!f.home);
   }
 }
@@ -895,9 +881,8 @@ function drawEnt(e){
   P(0, 2.58*sq+lift, 0, 0.30,0.30,0.30, col, 0.45);             // antenna bulb
 
   if(e.isPlayer){    // spinning gem so you can find yourself
-    const gy=e.y+3.20+Math.sin(gameT*2)*0.10;
-    push(dRB, e.x, gy, e.z, 0.58,0.86,0.58, 0.5, gameT*1.7, 0.2, COL[8], 1.0);
-    push(dSP, e.x, gy, e.z, 1.15,1.15,1.15, 0,0,0, COL[8], 0.30);   // soft halo
+    const gy=e.y+3.25+Math.sin(gameT*2)*0.10;
+    push(dRB, e.x, gy, e.z, 0.46,0.70,0.46, 0.5, gameT*1.7, 0.2, COL[8], 0.95);
   }
   if(e.swing>0) P(0, 1.20*sq+lift, 1.45, 1.1,0.5,0.9, COL[8], 0.5);
 
@@ -916,9 +901,9 @@ function drawEnt(e){
 }
 function drawBeacon(team,x,y,z){
   const col = team==='A'?COL[10]:COL[11];
-  for(let i=0;i<13;i++){
-    const t=i/12;
-    push(dSP, x, y+i*2.4, z, 0.55-0.3*t,0.55-0.3*t,0.55-0.3*t, 0,0,0, col, 0.95);
+  for(let i=0;i<10;i++){
+    const t=i/9, r=0.40-0.22*t;
+    push(dSP, x, y+i*2.6, z, r,r,r, 0,0,0, col, 0.9);
   }
 }
 function drawFlag(f){
@@ -937,7 +922,7 @@ function updateMarker(){
   let tx,ty,tz,label,colour;
   if(p.carrying){ const b=baseOf(p.team); tx=b.x; ty=b.y+5; tz=b.z; label='Carry it home'; colour='#ffd98a'; }
   else { const f=flags.B, at=f.carrier||f; tx=at.x; ty=(f.carrier?at.y+6:f.y+5); tz=at.z;
-         label=f.carrier&&f.carrier.team==='A'?'Teammate has it':'Rose flag'; colour='#ff8fa8'; }
+         label=f.carrier&&f.carrier.team==='A'?'Teammate has it':'Red flag'; colour='#ff8fa8'; }
   const W=innerWidth,H=innerHeight,pad=58, pr=project(tx,ty,tz);
   let sx,sy,pinned=false;
   if(pr.w>0.001){ sx=(pr.x/pr.w*0.5+0.5)*W; sy=(0.5-pr.y/pr.w*0.5)*H;
@@ -955,14 +940,15 @@ function updateMarker(){
 function render(){
   const p=ents[0];
   if(!p){ gl.clearColor(0,0,0,0); gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT); return; }
-  const dist=9.0, hy=p.y+2.0;
+  const dist=10.5, hy=p.y+2.3;
   let cx=p.x-Math.sin(camYaw)*Math.cos(camPitch)*dist;
   let cy=hy  -Math.sin(camPitch)*dist;
   let cz=p.z-Math.cos(camYaw)*Math.cos(camPitch)*dist;
-  for(let s=1;s<=10;s++){
-    const t=s/10, tx=p.x+(cx-p.x)*t, ty=hy+(cy-hy)*t, tz=p.z+(cz-p.z)*t;
+  for(let s=1;s<=12;s++){
+    const t=s/12, tx=p.x+(cx-p.x)*t, ty=hy+(cy-hy)*t, tz=p.z+(cz-p.z)*t;
     if(solid(Math.floor(tx),Math.floor(ty),Math.floor(tz))){
-      const u=(s-1)/10; cx=p.x+(cx-p.x)*u; cy=hy+(cy-hy)*u; cz=p.z+(cz-p.z)*u; break;
+      const u=Math.max(0.5,(s-1)/12);          // floor, so the view never jams onto the player
+      cx=p.x+(cx-p.x)*u; cy=hy+(cy-hy)*u; cz=p.z+(cz-p.z)*u; break;
     }
   }
   if(shake>0 && !REDUCED_MOTION){
@@ -974,13 +960,13 @@ function render(){
   gl.uniform3f(U.cam,cx,cy,cz);
 
   if(phase==='underground'){
-    gl.uniform3f(U.light,0.30,0.80,0.25); gl.uniform3f(U.fill,0.55,0.30,0.95);
-    gl.uniform3f(U.rim,0.62,0.34,0.95);   gl.uniform3f(U.fog,0.10,0.06,0.19);
-    gl.uniform2f(U.fogRange,20,92);       gl.uniform1f(U.amb,0.30);
+    gl.uniform3f(U.light,0.30,0.80,0.25); gl.uniform3f(U.fill,0.34,0.40,0.55);
+    gl.uniform3f(U.rim,0.30,0.40,0.52);   gl.uniform3f(U.fog,0.09,0.09,0.11);
+    gl.uniform2f(U.fogRange,22,90);       gl.uniform1f(U.amb,0.30);
   } else {
-    gl.uniform3f(U.light,0.42,0.78,0.34); gl.uniform3f(U.fill,0.62,0.42,0.95);
-    gl.uniform3f(U.rim,1.00,0.66,0.78);   gl.uniform3f(U.fog,0.82,0.60,0.84);
-    gl.uniform2f(U.fogRange,46,160);      gl.uniform1f(U.amb,0.46);
+    gl.uniform3f(U.light,0.45,0.82,0.36); gl.uniform3f(U.fill,0.45,0.56,0.74);
+    gl.uniform3f(U.rim,0.52,0.62,0.72);   gl.uniform3f(U.fog,0.66,0.80,0.90);
+    gl.uniform2f(U.fogRange,55,175);      gl.uniform1f(U.amb,0.52);
   }
   gl.clearColor(0,0,0,0);
   gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);
@@ -1074,8 +1060,8 @@ requestAnimationFrame(frame);
 function endMatch(){
   running=false;
   if(document.pointerLockElement===cvs&&document.exitPointerLock) document.exitPointerLock();
-  el('resultTitle').textContent = score.A>score.B?'Azure wins':score.B>score.A?'Rose wins':'Draw';
-  el('resultLine').textContent='Azure '+score.A+' — '+score.B+' Rose';
+  el('resultTitle').textContent = score.A>score.B?'Azure wins':score.B>score.A?'Crimson wins':'Draw';
+  el('resultLine').textContent='Azure '+score.A+' — '+score.B+' Crimson';
   el('endVeil').classList.remove('hidden');
 }
 function start(){

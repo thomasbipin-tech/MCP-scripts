@@ -15,7 +15,7 @@
 | **Match length** | ~15 minutes |
 | **Players** | Real players, backfilled by intelligent AI bots |
 | **Target audience** | Ages 10+ |
-| **Art style** | Surreal, soft rounded forms — a dreamlike world that comes apart and rebuilds |
+| **Art style** | A rounded block world — soft natural forms that come apart and rebuild |
 | **Main goal** | Steal the enemy flag and return it to your base while the battlefield transforms underneath you |
 
 ## The one-line pitch
@@ -26,9 +26,8 @@ so no strategy survives the whole match.
 
 ## Core features
 
-- **Surreal world of soft rounded forms** — grid-simulated so it genuinely comes
-  apart and re-stacks when it transforms, but drawn as rounded masses under a
-  violet sky, never as blocks
+- **Rounded block world** — grid-simulated so it genuinely comes apart and
+  re-stacks when it transforms, but drawn as soft rounded masses, never as cubes
 - Dynamic transforming world (surface → underground → sky), three acts per match
 - Skill-based action combat: attack, block, dodge, sprint, jump
 - **Skills worth pressing** — dash, glide, grapple, ground slam, barriers, stealth,

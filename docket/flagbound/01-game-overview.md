@@ -49,16 +49,16 @@ respectful one.
 
 ## Visual identity
 
-Flagbound is a **surreal world of soft rounded forms** — rolling lilac ground
-under a violet sky, great arches instead of castle walls, floating islands with
-lanterns slung beneath them, and round big-eyed creatures rather than armoured
-soldiers. Deliberately neither blocky nor realistic.
+Flagbound is a **rounded block world** — rolling green ground under a clear sky,
+stone walls and towers, trees with rounded canopies, and round big-eyed creatures
+rather than armoured soldiers. Familiar and readable, but every mass is a softened
+form rather than a hard cube.
 
 Underneath, the world is simulated as a **grid of half-metre cells**, and that is
 the load-bearing decision: it is what lets the battlefield genuinely come apart
 and re-stack, making the collapse and the ascent *natural* instead of the hardest
-thing in the project to build. The grid is the simulation; the rounded surreal
-look is how it is drawn.
+thing in the project to build. The grid is the simulation; the rounded look is how
+it is drawn.
 
 Full treatment in [10 — Art Direction](10-art-direction-and-cinematics.md).
 
@@ -111,10 +111,9 @@ rather than an anticlimax.
 - **Minute 1.** F.C.S. briefs the objective. Teams split — some rush, some hold.
 - **Minute 4.** First capture attempt. A carrier gets escorted halfway home and
   is dropped at the bridge.
-- **Minute 6.** The ground shakes. F.C.S. calls the collapse. The dreamfield
-  comes apart into thousands of tumbling masses and falling lanterns, and
-  everyone falls with it.
-- **Minute 8.** In the glowing deep, standing in the wreckage of their own base. A
+- **Minute 6.** The ground shakes. F.C.S. calls the collapse. The battlefield
+  comes apart into thousands of tumbling masses and everyone falls with it.
+- **Minute 8.** Underground, standing in the wreckage of their own base. A
   Shadow Runner finds a route straight into the enemy base and the whole
   defensive plan is wrong.
 - **Minute 11.** Ancient machinery activates. The ruins start re-stacking upward.

@@ -89,9 +89,8 @@ underground.
    players can see exactly what is about to give way. Structures start shedding
    pieces.
 3. **The break (0s).** The battlefield **comes apart into its constituent
-   masses**. Arches collapse, spires topple, the floating islands lose their
-   anchors, and thousands of rounded forms tumble into the dark with the lanterns
-   falling among them. Players fall with the wreckage.
+   masses**. The wall comes down, the towers topple, and thousands of rounded
+   forms tumble into the dark. Players fall with the wreckage.
 4. **Landing.** Players land on stable ground below with a brief invulnerability
    window so the transition cannot be spawn-camped.
 

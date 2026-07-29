@@ -106,8 +106,8 @@ pillar alive across a match:
 
 | Act | Skills that shine | Skills that struggle |
 |---|---|---|
-| **Dreamfield** (open ground) | Dash, Grapple, Firewall | Bulwark — too much open space to wall off |
-| **The Deep** (tight routes) | Bulwark, Ice Wall, Vanish, Decoy | Glide, Updraft — low ceilings |
+| **Surface** (open ground) | Dash, Grapple, Firewall | Bulwark — too much open space to wall off |
+| **Caverns** (tight routes) | Bulwark, Ice Wall, Vanish, Decoy | Glide, Updraft — low ceilings |
 | **Sky Towers** (vertical) | Glide, Updraft, Grapple, Chain Hook | Vanish — nowhere to hide in open sky |
 
 A player who never changes class still has a match that shifts under them,
