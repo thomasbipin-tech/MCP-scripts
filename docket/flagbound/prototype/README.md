@@ -79,6 +79,12 @@ Smoke-tested headless in Chromium via Playwright: WebGL2 context creation, no
 runtime errors across the phase transition, and `surface → collapse imminent →
 underground` confirmed firing.
 
+Camera shake is decayed unconditionally every frame, and anything that wants
+shake raises a floor rather than owning the value. An earlier build decayed it
+only after the collapse, so a ground slam on the surface left the screen shaking
+until the world broke apart. Shake also respects `prefers-reduced-motion`, and
+uses its own random source so visual jitter cannot perturb gameplay randomness.
+
 One measurement worth recording, because it bears directly on
 [12](../12-open-questions.md) Q9: under SwiftShader **software** rendering the
 prototype runs at ~4 fps, and the frame-time budget is dominated by debris. On

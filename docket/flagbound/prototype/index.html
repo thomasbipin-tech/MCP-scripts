@@ -641,7 +641,7 @@ function useSlam(e){
   else { e.slamming=true; e.vy=-36; }
 }
 function slamImpact(e){
-  e.slamming=false; shake=Math.max(shake,0.55);
+  e.slamming=false; shake=Math.max(shake,0.30);
   let caught=0;
   for(const o of ents){
     if(o.team===e.team||dead(o)||o.invuln>0) continue;
@@ -806,6 +806,7 @@ function stepDebris(list,dt,isOrb){
 /* --------------------------------- input --------------------------------- */
 const keys={};
 let camYaw=0, camPitch=-0.20, shake=0, locked=false, dragging=false, lastMX=0, lastMY=0;
+const REDUCED_MOTION = matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
 addEventListener('keydown',e=>{ keys[e.code]=true;
   if(['ArrowLeft','ArrowRight','ArrowUp','ArrowDown','Space'].includes(e.code)) e.preventDefault();
   if(!running) return;
@@ -964,7 +965,9 @@ function render(){
       const u=(s-1)/10; cx=p.x+(cx-p.x)*u; cy=hy+(cy-hy)*u; cz=p.z+(cz-p.z)*u; break;
     }
   }
-  if(shake>0){ cx+=(rnd()-0.5)*shake; cy+=(rnd()-0.5)*shake; cz+=(rnd()-0.5)*shake; }
+  if(shake>0 && !REDUCED_MOTION){
+    cx+=(Math.random()-0.5)*shake; cy+=(Math.random()-0.5)*shake; cz+=(Math.random()-0.5)*shake;
+  }
 
   vpArr.set(mul(perspective(1.15, cvs.width/cvs.height||1, 0.1, 320), lookAt([cx,cy,cz],[p.x,hy,p.z],[0,1,0])));
   gl.uniformMatrix4fv(U.vp,false,vpArr);
@@ -1015,14 +1018,17 @@ function frame(now){
   if(running){
     clock-=dt; gameT+=dt;
     const el2=MATCH_TIME-clock;
+    // Decay first, unconditionally. Anything that wants shake raises it below;
+    // nothing gets to leave it switched on. (A slam used to do exactly that.)
+    if(shake>0) shake=Math.max(0, shake-dt*2.6);
     if(phase==='surface'){
       if(el2>=TREMOR_AT&&el2<COLLAPSE_AT){
-        shake=0.10+0.5*((el2-TREMOR_AT)/(COLLAPSE_AT-TREMOR_AT));
+        shake=Math.max(shake, 0.10+0.5*((el2-TREMOR_AT)/(COLLAPSE_AT-TREMOR_AT)));
         if(!doCollapse.warned){ doCollapse.warned=true;
           fcs('It is coming apart. Ten seconds — get off the high ground.',7); }
       }
       if(el2>=COLLAPSE_AT){ shake=1.5; doCollapse(); }
-    } else if(shake>0) shake=Math.max(0,shake-dt*1.6);
+    }
 
     for(const e of ents){
       if(e.cool>0) e.cool-=dt;
