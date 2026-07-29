@@ -1,0 +1,767 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Netforge.ai demo — frame renderer</title>
+<style>
+@font-face{font-family:Inter;src:url(fonts/inter-400.woff2)format('woff2');font-weight:400;font-display:block}
+@font-face{font-family:Inter;src:url(fonts/inter-500.woff2)format('woff2');font-weight:500;font-display:block}
+@font-face{font-family:Inter;src:url(fonts/inter-600.woff2)format('woff2');font-weight:600;font-display:block}
+@font-face{font-family:Inter;src:url(fonts/inter-700.woff2)format('woff2');font-weight:700;font-display:block}
+@font-face{font-family:JBMono;src:url(fonts/jbmono-400.woff2)format('woff2');font-weight:400;font-display:block}
+@font-face{font-family:JBMono;src:url(fonts/jbmono-500.woff2)format('woff2');font-weight:500;font-display:block}
+
+:root{
+  --bg:#000; --bg2:#0a0a0c; --elev:#1c1c1e;
+  --bd:#ffffff1a; --bd2:#ffffff29; --bd3:#ffffff3d; --edge:#ffffff0f;
+  --tp:#f5f5f7; --ts:#98989f; --tt:#aeaeb2; --tph:#48484a;
+  --ac:#38bdf8; --ac2:#0ea5e9; --acs:#38bdf824; --acb:#38bdf840; --acg:#38bdf857;
+  --ok:#34c759; --okb:#34c7591a; --err:#ff3b30; --errb:#ff3b301a;
+  --warn:#ff9f0a; --warnb:#ff9f0a1a; --info:#007aff; --infob:#007aff1a;
+  --cisco:#1ba0d7; --arista:#ed1c24; --aruba:#ff8300; --sp:#00adef; --gen:#8e8e93;
+  --fiber:#007aff; --copper:#8e8e93; --down:#ff3b30;
+  --dot:#ffffff29; --r-xs:6px; --r-sm:10px; --r-md:14px; --r-lg:20px; --r-xl:26px;
+  --shadow-node:0 2px 12px #000000b3, 0 0 0 1px #ffffff12;
+  --topbar:50px; --sbl:272px; --sbr:600px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:1920px;height:1080px;overflow:hidden;background:#000}
+body{font-family:Inter,sans-serif;color:var(--tp);-webkit-font-smoothing:antialiased}
+#stage{position:relative;width:1920px;height:1080px;overflow:hidden;background:#000}
+.layer{position:absolute;inset:0}
+.hide{display:none!important}
+.mono{font-family:JBMono,monospace}
+
+/* ---------- kinetic type ---------- */
+.kin{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;padding:0 200px;text-align:center}
+.kin .l{font-size:60px;line-height:1.22;font-weight:600;letter-spacing:-1.4px}
+.kin .l.sm{font-size:44px;font-weight:500;color:var(--ts);letter-spacing:-.6px}
+.kin .l.em{color:var(--ac)}
+.vig{position:absolute;inset:0;background:radial-gradient(ellipse 70% 55% at 50% 50%,#0000 0%,#000000d9 100%);pointer-events:none}
+
+/* ---------- act 1 split ---------- */
+.pane{position:absolute;top:196px;height:672px;width:760px;border-radius:var(--r-lg);background:var(--bg2);border:1px solid var(--bd);overflow:hidden}
+.pane .ph{height:44px;border-bottom:1px solid var(--bd);display:flex;align-items:center;gap:10px;padding:0 18px;font-size:15px;color:var(--ts);font-weight:500}
+.dotrow{display:flex;gap:6px}.dotrow i{width:10px;height:10px;border-radius:99px;display:block}
+.stamp{position:absolute;right:22px;top:64px;font-size:13px;letter-spacing:1.6px;text-transform:uppercase;color:var(--warn);border:1px solid var(--warn);border-radius:var(--r-xs);padding:5px 10px;font-weight:600;transform:rotate(-3deg);background:var(--warnb)}
+.cli{padding:20px 22px;font-family:JBMono,monospace;font-size:16.5px;line-height:1.85;color:#c9d4de;white-space:pre-wrap}
+.cli b{color:var(--ac);font-weight:500}.cli u{color:var(--ok);text-decoration:none}.cli s{color:#5f6b76;text-decoration:none}
+.gaplabel{position:absolute;top:60px;font-size:17px;letter-spacing:2.6px;text-transform:uppercase;color:var(--tt);font-weight:600}
+
+/* ---------- app chrome ---------- */
+#app{position:absolute;inset:0;background:var(--bg);display:flex;flex-direction:column}
+.topbar{height:var(--topbar);flex:0 0 var(--topbar);background:var(--bg2);border-bottom:1px solid var(--bd);display:flex;align-items:center;padding:0 18px;gap:16px;z-index:5}
+.logo{display:flex;align-items:center;gap:9px;font-weight:700;font-size:16px;letter-spacing:-.3px}
+.logo .m{width:22px;height:22px;border-radius:var(--r-xs);background:linear-gradient(135deg,var(--ac),#0369a1);display:flex;align-items:center;justify-content:center}
+.logo .m svg{width:13px;height:13px}
+.crumb{font-size:13.5px;color:var(--ts)}.crumb b{color:var(--tp);font-weight:500}
+.tbtns{margin-left:auto;display:flex;align-items:center;gap:9px}
+.btn{height:32px;padding:0 15px;border-radius:99px;border:1px solid var(--bd2);background:#ffffff0a;color:var(--tp);font-size:13.5px;font-weight:500;display:flex;align-items:center;gap:7px}
+.btn.pri{background:var(--ac);border-color:var(--ac);color:#00121c;font-weight:600}
+.btn.on{background:var(--acs);border-color:var(--acb);color:var(--ac)}
+.av{width:28px;height:28px;border-radius:99px;background:linear-gradient(135deg,#38bdf8,#0369a1);font-size:12px;font-weight:600;display:flex;align-items:center;justify-content:center;color:#00121c}
+.body{flex:1;display:flex;min-height:0}
+
+/* left palette */
+.sbl{width:var(--sbl);flex:0 0 var(--sbl);background:var(--bg2);border-right:1px solid var(--bd);padding:16px 12px;overflow:hidden}
+.sbtitle{font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--tt);font-weight:600;padding:0 8px;margin:14px 0 9px}
+.sbtitle:first-child{margin-top:0}
+.chip{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:var(--r-sm);font-size:13.5px;color:var(--tp);border:1px solid transparent}
+.chip .sw{width:26px;height:26px;border-radius:var(--r-xs);display:flex;align-items:center;justify-content:center;border:1px solid var(--bd2)}
+.chip .sw svg{width:15px;height:15px}
+.chip small{margin-left:auto;font-size:11px;color:var(--tph);font-family:JBMono,monospace}
+.chip.act{background:var(--acs);border-color:var(--acb)}
+
+/* canvas */
+.cv{flex:1;position:relative;overflow:hidden;background:
+  radial-gradient(circle,var(--dot) 1px,#0000 1.2px) 0 0/26px 26px,
+  var(--bg)}
+.cvinner{position:absolute;inset:0;transform-origin:50% 50%}
+.node{position:absolute;width:186px;border-radius:var(--r-md);background:var(--elev);box-shadow:var(--shadow-node);border:1px solid var(--edge);overflow:hidden}
+.node .nh{display:flex;align-items:center;gap:9px;padding:10px 12px 8px}
+.node .ic{width:28px;height:28px;border-radius:var(--r-xs);display:flex;align-items:center;justify-content:center;flex:0 0 28px}
+.node .ic svg{width:16px;height:16px}
+.node .nm{font-size:13px;font-weight:600;letter-spacing:-.2px;line-height:1.25}
+.node .vd{font-size:10.5px;color:var(--ts);font-family:JBMono,monospace;margin-top:1px}
+.node .ports{display:flex;gap:3px;padding:0 12px 11px;flex-wrap:wrap}
+.node .ports i{width:13px;height:7px;border-radius:2px;background:#ffffff0f;display:block}
+.node .ports i.up{background:var(--ok)}
+.node .ports i.fib{background:var(--fiber)}
+.node.sel{box-shadow:0 0 0 2px var(--ac),0 6px 20px #38bdf866}
+.node.bad{box-shadow:0 0 0 2px var(--err),0 6px 20px #ff3b3066}
+.node.sm{width:126px}.node.sm .nm{font-size:11.5px}.node.sm .vd{font-size:9.5px}
+.node.sm .ic{width:22px;height:22px;flex:0 0 22px}.node.sm .ic svg{width:13px;height:13px}
+.node.sm .nh{padding:8px 10px 6px;gap:7px}.node.sm .ports{padding:0 10px 8px}
+.node.sm .ports i{width:9px;height:5px}
+#links{position:absolute;inset:0;overflow:visible;pointer-events:none}
+
+/* right panel */
+.sbr{width:var(--sbr);flex:0 0 var(--sbr);background:var(--bg2);border-left:1px solid var(--bd);display:flex;flex-direction:column;overflow:hidden}
+.prh{padding:15px 20px 0}
+.prh .t{font-size:17px;font-weight:600;letter-spacing:-.3px;display:flex;align-items:center;gap:10px}
+.prh .s{font-size:12.5px;color:var(--ts);margin-top:3px;font-family:JBMono,monospace}
+.tabs{display:flex;gap:22px;padding:0 20px;border-bottom:1px solid var(--bd);margin-top:14px}
+.tabs div{font-size:13.5px;color:var(--ts);padding:0 0 10px;font-weight:500;border-bottom:2px solid transparent;margin-bottom:-1px}
+.tabs div.on{color:var(--ac);border-bottom-color:var(--ac)}
+.pbody{padding:16px 20px;overflow:hidden;flex:1}
+.fld{margin-bottom:13px}
+.fld label{display:block;font-size:11px;letter-spacing:1.2px;text-transform:uppercase;color:var(--tt);font-weight:600;margin-bottom:6px}
+.fld .inp{height:38px;border-radius:var(--r-sm);border:1px solid var(--bd2);background:#ffffff08;display:flex;align-items:center;padding:0 13px;font-size:14px;font-family:JBMono,monospace;color:var(--tp)}
+.fld .inp.foc{border-color:var(--ac);box-shadow:0 0 0 3px var(--acs)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.caret{display:inline-block;width:1.5px;height:17px;background:var(--ac);vertical-align:-3px;margin-left:1px}
+
+/* validation rows */
+.vrow{display:flex;align-items:center;gap:11px;padding:9px 0;border-bottom:1px solid #ffffff0d;font-size:14px}
+.vrow .b{width:19px;height:19px;border-radius:99px;display:flex;align-items:center;justify-content:center;flex:0 0 19px}
+.vrow .b svg{width:11px;height:11px}
+.vrow .nmx{color:var(--tp)}.vrow .mt{margin-left:auto;font-family:JBMono,monospace;font-size:12px;color:var(--tph)}
+.vsum{display:flex;align-items:center;gap:12px;padding:14px 16px;border-radius:var(--r-md);border:1px solid;margin-bottom:14px;font-size:15.5px;font-weight:600}
+.vsum.ok{background:var(--okb);border-color:#34c75955;color:var(--ok)}
+.vsum.bad{background:var(--errb);border-color:#ff3b3055;color:var(--err)}
+.vsum .big{margin-left:auto;font-family:JBMono,monospace;font-size:13px;font-weight:500;color:var(--ts)}
+.aicard{border:1px solid var(--acb);background:var(--acs);border-radius:var(--r-md);padding:14px 16px;margin-bottom:12px}
+.aicard .h{display:flex;align-items:center;gap:9px;font-size:13.5px;font-weight:600;color:var(--ac);margin-bottom:8px}
+.aicard p{font-size:14px;line-height:1.55;color:var(--tp)}
+.aicard .fix{margin-top:9px;font-size:13px;color:var(--ok);display:flex;gap:7px;align-items:flex-start}
+
+/* callout ring + magnifier */
+.ring{position:absolute;border:2px solid var(--err);border-radius:var(--r-md);box-shadow:0 0 0 6px #ff3b3021;pointer-events:none}
+.mag{position:absolute;border-radius:var(--r-md);border:1px solid var(--bd3);background:var(--elev);box-shadow:0 32px 64px #000000cc;overflow:hidden;padding:13px 16px}
+.mag .mt{font-size:11px;letter-spacing:1.3px;text-transform:uppercase;color:var(--err);font-weight:700;margin-bottom:7px}
+.mag .mv{font-family:JBMono,monospace;font-size:19px;color:var(--tp);line-height:1.5}
+
+/* export */
+.expcard{position:absolute;border-radius:var(--r-md);border:1px solid var(--bd2);background:var(--elev);box-shadow:0 20px 48px #000000b3;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;width:182px;height:226px}
+.expcard .x{font-family:JBMono,monospace;font-size:17px;font-weight:500;letter-spacing:1px}
+.expcard .y{font-size:12.5px;color:var(--ts);text-align:center;padding:0 10px;line-height:1.35}
+.expcard .ix{width:52px;height:52px;border-radius:var(--r-sm);display:flex;align-items:center;justify-content:center;border:1px solid var(--bd2)}
+
+/* cursor */
+#cur{position:absolute;width:22px;height:22px;pointer-events:none;z-index:60;filter:drop-shadow(0 2px 4px #000c)}
+
+/* captions + chips */
+#cap{position:absolute;left:0;right:0;bottom:74px;display:flex;justify-content:center;z-index:50}
+#cap .box{max-width:1360px;text-align:center;font-size:33px;font-weight:500;line-height:1.42;letter-spacing:-.4px;
+  background:#000000b8;border:1px solid var(--bd);border-radius:var(--r-md);padding:15px 30px;backdrop-filter:blur(8px)}
+#cap .box em{font-style:normal;color:var(--ac)}
+#chips{position:absolute;left:0;right:0;bottom:24px;display:flex;justify-content:center;gap:9px;z-index:50}
+#chips span{font-family:JBMono,monospace;font-size:15px;padding:7px 14px;border-radius:99px;border:1px solid var(--bd2);background:#000000b8;color:var(--tt)}
+#badge{position:absolute;z-index:55;font-family:JBMono,monospace;font-weight:500}
+
+/* end card */
+.endwrap{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:26px;background:radial-gradient(ellipse 60% 50% at 50% 45%,#38bdf814 0%,#0000 70%),#000}
+.endlogo{display:flex;align-items:center;gap:16px}
+.endlogo .m{width:64px;height:64px;border-radius:var(--r-md);background:linear-gradient(135deg,var(--ac),#0369a1);display:flex;align-items:center;justify-content:center}
+.endlogo .m svg{width:36px;height:36px}
+.endlogo .n{font-size:52px;font-weight:700;letter-spacing:-1.4px}
+.endcta{height:60px;padding:0 34px;border-radius:99px;background:var(--ac);color:#00121c;font-size:21px;font-weight:600;display:flex;align-items:center;gap:11px;white-space:nowrap}
+.endcta svg{width:24px;height:24px;flex:0 0 24px}
+.endsub{font-size:19px;color:var(--ts)}
+</style>
+
+<div id="stage">
+  <!-- ACT 1/2/4 graphic layer -->
+  <div class="layer" id="gfx"></div>
+  <!-- app layer -->
+  <div class="layer hide" id="app">
+    <div class="topbar">
+      <div class="logo"><span class="m">${ICON_LOGO}</span>Netforge.ai</div>
+      <div class="crumb">netforge.ai / projects / <b>remote-site</b></div>
+      <div class="tbtns">
+        <div class="btn" id="btnVal">Validate</div>
+        <div class="btn" id="btnExp">Export</div>
+        <div class="btn pri">Publish</div>
+        <div class="av">TB</div>
+      </div>
+    </div>
+    <div class="body">
+      <div class="sbl" id="sbl"></div>
+      <div class="cv" id="cv">
+        <div class="cvinner" id="cvi">
+          <svg id="links"></svg>
+        </div>
+      </div>
+      <div class="sbr" id="sbr"></div>
+    </div>
+    <svg id="cur" viewBox="0 0 24 24"><path d="M5 2l14 9-6.5 1.2L9.6 19z" fill="#fff" stroke="#000" stroke-width="1.3" stroke-linejoin="round"/></svg>
+  </div>
+  <div class="layer hide" id="overlay"></div>
+  <div id="cap" class="hide"><div class="box"></div></div>
+  <div id="chips" class="hide"></div>
+  <div id="badge" class="hide"></div>
+  <div class="vig" id="vig"></div>
+</div>
+
+<script>
+/* ============================ helpers ============================ */
+const $=s=>document.querySelector(s), el=(t,c,h)=>{const n=document.createElement(t);if(c)n.className=c;if(h!=null)n.innerHTML=h;return n};
+const clamp=(v,a=0,b=1)=>v<a?a:v>b?b:v;
+const lerp=(a,b,t)=>a+(b-a)*t;
+// progress of t across [a,b]
+const seg=(t,a,b)=>clamp((t-a)/(b-a));
+const easeOut=t=>1-Math.pow(1-t,3);
+const easeInOut=t=>t<.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2;
+const easeOutBack=t=>{const c1=1.70158,c3=c1+1;return 1+c3*Math.pow(t-1,3)+c1*Math.pow(t-1,2)};
+// fade in/out envelope for a scene of length d
+const env=(lt,d,fi=.45,fo=.45)=>Math.min(seg(lt,0,fi),1-seg(lt,d-fo,d));
+const typed=(s,p)=>s.slice(0,Math.round(clamp(p)*s.length));
+
+const I={
+  logo:'<svg viewBox="0 0 24 24" fill="none" stroke="#00121c" stroke-width="2.4" stroke-linecap="round"><path d="M4 20V6l16 12V4"/></svg>',
+  router:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h18M12 3v18M7 7l10 10M17 7L7 17"/></svg>',
+  switch:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="7" width="19" height="10" rx="2"/><path d="M6.5 11.5h2M11 11.5h2M15.5 11.5h2"/></svg>',
+  fw:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"><path d="M12 3l8 3.5v5c0 5-3.4 8.6-8 9.5-4.6-.9-8-4.5-8-9.5v-5z"/></svg>',
+  wan:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.6 2.7 2.6 15.3 0 18M12 3c-2.6 2.7-2.6 15.3 0 18"/></svg>',
+  ap:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M5 12a7 7 0 0114 0M8.5 15a3.5 3.5 0 017 0"/><circle cx="12" cy="19" r="1.4" fill="currentColor"/></svg>',
+  cloud:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"><path d="M6.5 18h11a3.5 3.5 0 000-7 5.5 5.5 0 00-10.6-1.6A3.8 3.8 0 006.5 18z"/></svg>',
+  chk:'<svg viewBox="0 0 24 24" fill="none" stroke="#00120a" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 12.5l5 5 10-11"/></svg>',
+  x:'<svg viewBox="0 0 24 24" fill="none" stroke="#1a0000" stroke-width="3.4" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>',
+  spark:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.1 6.3L20.5 10l-6.4 1.7L12 18l-2.1-6.3L3.5 10l6.4-1.7z"/></svg>',
+  doc:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"><path d="M6 2.5h8l4.5 4.5v14.5H6z"/><path d="M14 2.5V7h4.5"/></svg>',
+  arrow:'<svg viewBox="0 0 24 24" fill="none" stroke="#00121c" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h15M13 6l6 6-6 6"/></svg>'
+};
+document.body.innerHTML=document.body.innerHTML.replace('${ICON_LOGO}',I.logo);
+
+const V={cisco:'#1ba0d7',arista:'#ed1c24',aruba:'#ff8300',sp:'#00adef',palo:'#ff9f0a',gen:'#8e8e93',az:'#007aff'};
+
+/* ============================ static build: palette ============================ */
+const PALETTE=[
+  ['Routing',[['Router','IOS-XE',V.cisco,I.router],['WAN Edge','EdgeConnect',V.sp,I.wan]]],
+  ['Switching',[['Core Switch','NX-OS',V.cisco,I.switch],['Leaf Switch','EOS',V.arista,I.switch],['Access Switch','ArubaOS-CX',V.aruba,I.switch]]],
+  ['Security',[['Firewall','PAN-OS',V.palo,I.fw]]],
+  ['Wireless',[['Access Point','ArubaOS',V.aruba,I.ap]]],
+  ['Cloud',[['Azure VNet','Terraform',V.az,I.cloud]]]
+];
+(function(){const s=$('#sbl');
+  PALETTE.forEach(([g,items])=>{ s.appendChild(el('div','sbtitle',g));
+    items.forEach(([n,v,c,ic])=>{ const ch=el('div','chip');
+      ch.innerHTML=`<span class="sw" style="background:${c}1a;color:${c}">${ic}</span><span>${n}</span><small>${v}</small>`;
+      ch.dataset.n=n; s.appendChild(ch); }); });
+})();
+
+/* ============================ nodes ============================ */
+// canonical branch topology (shots 13-19), coords in canvas space (canvas is 1048x1030)
+const BRANCH=[
+  {id:'fw', n:'RSITE-FW-01', v:'PAN-OS', c:V.palo, ic:I.fw, x:430, y:60, ports:[1,1,0,0,0,0]},
+  {id:'wan',n:'RSITE-WAN-01',v:'EdgeConnect',c:V.sp, ic:I.wan, x:180, y:250, ports:[1,1,0,0]},
+  {id:'c1', n:'RSITE-CORE-01',v:'NX-OS', c:V.cisco,ic:I.switch,x:430, y:250, ports:[2,2,1,1,0,0]},
+  {id:'a1', n:'RSITE-ACC-01', v:'ArubaOS-CX',c:V.aruba,ic:I.switch,x:255,y:470, ports:[1,1,1,0]},
+  {id:'a2', n:'RSITE-ACC-02', v:'ArubaOS-CX',c:V.aruba,ic:I.switch,x:610,y:470, ports:[1,1,0,0]},
+  {id:'ap', n:'RSITE-AP-04',  v:'ArubaOS', c:V.aruba,ic:I.ap,    x:430, y:660, ports:[1,0]}
+];
+const BRANCH_LINKS=[['fw','c1','fiber'],['wan','c1','fiber'],['c1','a1','fiber'],['c1','a2','fiber'],['a1','ap','copper'],['a2','ap','copper']];
+// leaf-spine fabric (shot 15) — 4 spine, 8 leaf, small nodes
+const FABRIC=(()=>{const a=[];
+  for(let i=0;i<4;i++)a.push({id:'sp'+i,n:'SPINE-0'+(i+1),v:'EOS / AVD',c:V.arista,ic:I.router,x:120+i*230,y:150,sm:1,ports:[1,1,1,1]});
+  for(let i=0;i<8;i++)a.push({id:'lf'+i,n:'LEAF-0'+(i+1),v:'EOS / AVD',c:V.arista,ic:I.switch,x:10+i*130,y:520,sm:1,ports:[1,1]});
+  return a})();
+const FABRIC_LINKS=(()=>{const l=[];for(let s=0;s<4;s++)for(let f=0;f<8;f++)l.push(['sp'+s,'lf'+f,'fiber']);return l})();
+const CLOUDN=[
+  {id:'az', n:'AZ-HUB-VNET', v:'10.50.0.0/16', c:V.az, ic:I.cloud, x:420, y:70, ports:[1,1,1]},
+  {id:'gw', n:'AZ-VPN-GW',   v:'Terraform',    c:V.az, ic:I.wan,   x:180, y:270, ports:[1,1]},
+  {id:'nsg',n:'AZ-NSG-CORE', v:'Terraform',    c:V.az, ic:I.fw,    x:660, y:270, ports:[1,1]},
+  {id:'c1', n:'RSITE-CORE-01',v:'NX-OS',       c:V.cisco,ic:I.switch,x:420,y:490, ports:[2,2,1,1]}
+];
+const CLOUD_LINKS=[['az','gw','fiber'],['az','nsg','fiber'],['gw','c1','fiber']];
+
+let curSet=[], curLinks=[];
+function nodeHTML(d){
+  const ports=d.ports.map(p=>`<i class="${p===2?'fib':p===1?'up':''}"></i>`).join('');
+  return `<div class="nh"><span class="ic" style="background:${d.c}1a;color:${d.c}">${d.ic}</span>
+    <div><div class="nm">${d.n}</div><div class="vd">${d.v}</div></div></div><div class="ports">${ports}</div>`;
+}
+function buildNodes(set,links){
+  curSet=set;curLinks=links;
+  const cvi=$('#cvi');
+  [...cvi.querySelectorAll('.node')].forEach(n=>n.remove());
+  set.forEach(d=>{const n=el('div','node'+(d.sm?' sm':''),nodeHTML(d));
+    n.id='n-'+d.id; n.style.left=d.x+'px'; n.style.top=d.y+'px'; cvi.appendChild(n);});
+  drawLinks(1);
+}
+const NW=186, NWS=126, NH=78, NHS=62;
+function nctr(d){const w=d.sm?NWS:NW,h=d.sm?NHS:NH;return[d.x+w/2,d.y+h/2]}
+function drawLinks(p){
+  const svg=$('#links'); svg.innerHTML='';
+  const by=Object.fromEntries(curSet.map(d=>[d.id,d]));
+  const n=curLinks.length, show=clamp(p)*n;
+  curLinks.forEach(([a,b,kind],i)=>{
+    const amt=clamp(show-i); if(amt<=0)return;
+    const A=by[a],B=by[b]; if(!A||!B)return;
+    const [x1,y1]=nctr(A),[x2,y2]=nctr(B);
+    const X=lerp(x1,x2,amt),Y=lerp(y1,y2,amt);
+    const col=kind==='fiber'?'var(--fiber)':kind==='down'?'var(--down)':'var(--copper)';
+    const ln=document.createElementNS('http://www.w3.org/2000/svg','line');
+    ln.setAttribute('x1',x1);ln.setAttribute('y1',y1);ln.setAttribute('x2',X);ln.setAttribute('y2',Y);
+    ln.setAttribute('stroke',col);ln.setAttribute('stroke-width',kind==='fiber'?2.2:1.8);
+    ln.setAttribute('stroke-linecap','round');ln.setAttribute('opacity',kind==='copper'?.62:.82);
+    if(kind==='copper')ln.setAttribute('stroke-dasharray','7 5');
+    svg.appendChild(ln);
+  });
+}
+function setCanvasView(scale,tx,ty){$('#cvi').style.transform=`translate(${tx}px,${ty}px) scale(${scale})`;}
+
+/* ============================ right panel renderers ============================ */
+function panelProps(o={}){
+  const f=o.focus||'', ip=o.ip||'', vl=o.vlan||'';
+  return `<div class="prh"><div class="t"><span class="ic" style="width:26px;height:26px;border-radius:6px;background:${V.cisco}1a;color:${V.cisco};display:flex;align-items:center;justify-content:center">${I.switch}</span>RSITE-CORE-01</div>
+    <div class="s">Cisco NX-OS · 10.50.10.2 · rack A / U22</div></div>
+  <div class="tabs"><div class="${o.tab==='int'?'on':''}">Interfaces</div><div class="${o.tab==='rt'?'on':''}">Routing</div><div class="${o.tab==='vl'?'on':''}">VLANs</div><div>Management</div></div>
+  <div class="pbody">
+    <div class="grid2">
+      <div class="fld"><label>Interface</label><div class="inp ${f==='if'?'foc':''}">Vlan10${f==='if'?'<span class="caret"></span>':''}</div></div>
+      <div class="fld"><label>Mode</label><div class="inp">routed</div></div>
+    </div>
+    <div class="fld"><label>IP address</label><div class="inp ${f==='ip'?'foc':''}">${ip}${f==='ip'?'<span class="caret"></span>':''}</div></div>
+    <div class="grid2">
+      <div class="fld"><label>VLAN</label><div class="inp ${f==='vl'?'foc':''}">${vl}${f==='vl'?'<span class="caret"></span>':''}</div></div>
+      <div class="fld"><label>MTU</label><div class="inp">9216</div></div>
+    </div>
+    <div class="fld"><label>BGP neighbour</label><div class="inp">10.0.0.2 · remote-as 65001</div></div>
+    <div class="fld"><label>Spanning tree</label><div class="inp">rapid-pvst · root primary</div></div>
+    <div class="sbtitle" style="padding:0;margin:20px 0 10px">Generated config preview</div>
+    <div class="cli" style="padding:14px 16px;border:1px solid var(--bd);border-radius:var(--r-sm);background:#ffffff05;font-size:14.5px;line-height:1.75">${o.cli||''}</div>
+  </div>`;
+}
+const CHECKS=[
+  ['IP overlap · site prefixes','10.50.0.0/16','ok'],['Duplicate IPv4 assignment','216 interfaces','ok'],
+  ['VLAN ID consistency','across 4 switches','ok'],['Trunk allowed-VLAN match','12 trunks','ok'],
+  ['Native VLAN mismatch','12 trunks','ok'],['BGP peer reciprocity','6 sessions','ok'],
+  ['BGP AS consistency','as 65001','ok'],['STP root placement','per VLAN','ok'],
+  ['MTU consistency · fabric','9216','ok'],['Port-channel member match','4 bundles','ok'],
+  ['Gateway redundancy · HSRP','8 SVIs','ok'],['Management reachability','6 devices','ok']
+];
+function panelValidate(o={}){
+  const n=o.n||0, bad=o.bad, rows=CHECKS.slice(0,n).map(([a,b,s],i)=>{
+    const isBad=bad&&i===1;
+    return `<div class="vrow"><span class="b" style="background:${isBad?'var(--err)':'var(--ok)'}">${isBad?I.x:I.chk}</span>
+      <span class="nmx">${isBad?'Duplicate IPv4 assignment':a}</span><span class="mt">${isBad?'2 interfaces':b}</span></div>`}).join('');
+  const sum=o.sum==='ok'?`<div class="vsum ok"><span class="b" style="width:22px;height:22px;border-radius:99px;background:var(--ok);display:flex;align-items:center;justify-content:center">${I.chk}</span>0 conflicts · 42 checks passed<span class="big">1.8s</span></div>`
+    :o.sum==='bad'?`<div class="vsum bad"><span class="b" style="width:22px;height:22px;border-radius:99px;background:var(--err);display:flex;align-items:center;justify-content:center">${I.x}</span>1 conflict · 41 checks passed<span class="big">1.8s</span></div>`:'';
+  return `<div class="prh"><div class="t">Pre-publish validation</div><div class="s">remote-site · 6 devices · 12 links</div></div>
+    <div class="tabs"><div class="on">Validation</div><div>AI Architect</div><div>Diff</div><div>History</div></div>
+    <div class="pbody">${sum}${rows}</div>`;
+}
+function panelAI(o={}){
+  const body=o.text||'';
+  return `<div class="prh"><div class="t"><span style="color:var(--ac);width:20px;height:20px;display:block">${I.spark}</span>AI Network Architect</div>
+    <div class="s">Claude-powered design review · remote-site</div></div>
+    <div class="tabs"><div>Validation</div><div class="on">AI Architect</div><div>Diff</div><div>History</div></div>
+    <div class="pbody">
+      <div class="aicard"><div class="h"><span style="width:15px;height:15px;display:block">${I.spark}</span>Single point of failure</div>
+        <p>${body}${o.caret?'<span class="caret"></span>':''}</p>
+        ${o.fix?`<div class="fix"><span style="width:15px;height:15px;flex:0 0 15px;color:var(--ok)">${I.spark}</span><span>Suggested fix — dual-home RSITE-ACC-02 to a second core uplink and bundle both into Po1.</span></div>`:''}
+      </div>
+      ${o.second?`<div class="aicard" style="border-color:var(--bd2);background:#ffffff08"><div class="h" style="color:var(--tt)"><span style="width:15px;height:15px;display:block">${I.doc}</span>CVD / AVD alignment</div>
+        <p style="color:var(--ts)">Leaf-spine underlay matches Arista AVD reference. Overlay EVPN RT scheme is consistent across all 8 leaves.</p></div>`:''}
+    </div>`;
+}
+const CFG=`<s>! generated · RSITE-CORE-01 · NX-OS</s>
+<b>interface</b> Vlan10
+  <b>ip address</b> 10.50.10.2 255.255.255.0
+  <b>no shutdown</b>
+!
+<b>router bgp</b> 65001
+  <b>bgp router-id</b> 10.0.0.1
+  <b>neighbor</b> 10.0.0.2 <b>remote-as</b> 65001
+    <b>address-family</b> ipv4 unicast
+      <b>network</b> 10.50.10.0 <b>mask</b> 255.255.255.0
+!
+<b>vlan</b> 20
+  <b>name</b> VOICE
+<b>spanning-tree mode</b> rapid-pvst
+!
+<b>interface</b> Ethernet1/1
+  <b>switchport mode</b> trunk
+  <b>channel-group</b> 1 <b>mode active</b>
+!
+<b>vrf definition</b> CORE
+  <b>rd</b> 65001:1
+  <b>route-target export</b> 65001:1
+<u>! 0 conflicts · 42 checks passed</u>`;
+function panelExport(o={}){
+  const items=[['PDF','Design package · 34 pp'],['VSDX','Visio topology'],['XLSX','Bill of materials'],['CSV','Cable schedule'],['CLI','Per-device configs'],['YAML','AVD Ansible package']];
+  const n=o.n||0;
+  return `<div class="prh"><div class="t">Export package</div><div class="s">remote-site · rev 12 · in sync with canvas</div></div>
+  <div class="tabs"><div>Validation</div><div>AI Architect</div><div class="on">Export</div><div>History</div></div>
+  <div class="pbody">
+    ${items.map(([a,b],i)=>`<div class="vrow" style="opacity:${i<n?1:.25}"><span class="b" style="background:${i<n?'var(--ok)':'#ffffff1a'}">${i<n?I.chk:''}</span>
+      <span class="nmx" style="font-family:JBMono,monospace">${a}</span><span class="mt">${b}</span></div>`).join('')}
+    <div class="sbtitle" style="padding:0;margin:20px 0 10px">RSITE-CORE-01.cfg</div>
+    <div class="cli" style="padding:14px 16px;border:1px solid var(--bd);border-radius:var(--r-sm);background:#ffffff05;font-size:14.5px;line-height:1.75">${o.cli||''}</div>
+  </div>`;
+}
+function panelCloud(o={}){
+  const rows=[['azurerm_virtual_network','AZ-HUB-VNET'],['azurerm_subnet','core / dmz / mgmt'],['azurerm_network_security_group','AZ-NSG-CORE'],['azurerm_virtual_network_gateway','AZ-VPN-GW'],['azurerm_local_network_gateway','RSITE-WAN-01']];
+  const n=o.n||0;
+  return `<div class="prh"><div class="t">Cloud on Canvas</div><div class="s">Azure subscription · prod-hub-eu-west</div></div>
+  <div class="tabs"><div class="on">Imported</div><div>Terraform</div><div>Drift</div><div>History</div></div>
+  <div class="pbody">
+    ${rows.map(([a,b],i)=>`<div class="vrow" style="opacity:${i<n?1:.25}"><span class="b" style="background:${i<n?'var(--info)':'#ffffff1a'}">${i<n?I.chk:''}</span>
+      <span class="nmx mono" style="font-size:13px">${a}</span><span class="mt">${b}</span></div>`).join('')}
+    <div class="sbtitle" style="padding:0;margin:20px 0 10px">main.tf</div>
+    <div class="cli" style="padding:14px 16px;border:1px solid var(--bd);border-radius:var(--r-sm);background:#ffffff05;font-size:14.5px;line-height:1.75">${o.cli||''}</div>
+  </div>`;
+}
+const TF=`<s># generated by netforge.ai</s>
+<b>resource</b> "azurerm_virtual_network" "hub" {
+  name                = "AZ-HUB-VNET"
+  address_space       = ["10.50.0.0/16"]
+  location            = "westeurope"
+}
+
+<b>resource</b> "azurerm_subnet" "core" {
+  name             = "core"
+  address_prefixes = ["10.50.10.0/24"]
+}
+<u># 12 resources · plan clean</u>`;
+
+/* ============================ overlay helpers ============================ */
+function caption(html,op){const c=$('#cap');if(!html||op<=.01){c.classList.add('hide');return}
+  c.classList.remove('hide');c.querySelector('.box').innerHTML=html;c.style.opacity=op;
+  c.querySelector('.box').style.transform=`translateY(${lerp(14,0,clamp(op*1.6))}px)`;}
+function chips(list,p){const c=$('#chips');
+  // captions ride above the chip rail so the two never collide
+  $('#cap').style.bottom=list?'132px':'74px';
+  if(!list){c.classList.add('hide');return}
+  c.classList.remove('hide');const n=clamp(p)*list.length;
+  c.innerHTML=list.map((s,i)=>{const a=clamp(n-i);return `<span style="opacity:${a};transform:translateY(${lerp(10,0,a)}px)">${s}</span>`}).join('');}
+function badge(html,style,op){const b=$('#badge');if(!html||op<=.01){b.classList.add('hide');return}
+  b.classList.remove('hide');b.innerHTML=html;b.style.cssText='position:absolute;z-index:55;font-family:JBMono,monospace;font-weight:500;opacity:'+op+';'+style;}
+function cursorAt(x,y,vis){const c=$('#cur');c.style.opacity=vis?1:0;c.style.left=x+'px';c.style.top=y+'px';}
+// canvas vertical offset used to centre topologies in the canvas viewport
+const CY=118;
+// vignette: graphic scenes only. Over the app it dims the sidebars, which is
+// exactly the "can't see the whole screen" problem we're fixing.
+function vignette(on){$('#vig').style.opacity=on?1:0;}
+
+/* ============================ SCENES ============================ */
+// Each: {a,b,go(lt,d,t)}   lt = local time, d = duration
+const SCENES=[
+
+/* ---------- 1. hook (0:00–0:11) ---------- */
+{a:0,b:11,go(lt,d){
+  const g=$('#gfx'); g.innerHTML=`<div class="kin">
+    <div class="l" id="k1">Every network change starts as a drawing.</div>
+    <div class="l sm" id="k2">And every outage starts with the gap between that drawing —<br>and what's actually on the box.</div></div>`;
+  const p1=easeOut(seg(lt,.5,2.4)), p2=easeOut(seg(lt,3.4,5.4)), out=1-seg(lt,d-.9,d);
+  const k1=g.querySelector('#k1'),k2=g.querySelector('#k2');
+  k1.style.opacity=p1*out; k1.style.transform=`translateY(${lerp(26,0,p1)}px)`;
+  k2.style.opacity=p2*out; k2.style.transform=`translateY(${lerp(22,0,p2)}px)`;
+}},
+
+/* ---------- 2. stale diagram vs live CLI (0:11–0:28) ---------- */
+{a:11,b:28,go(lt,d,t){
+  const g=$('#gfx');
+  if(!g.dataset.s2){g.dataset.s2='1'; g.innerHTML=`
+    <div class="pane" id="pL" style="left:120px">
+      <div class="ph"><span class="dotrow"><i style="background:#ff5f57"></i><i style="background:#febc2e"></i><i style="background:#28c840"></i></span>site-topology-FINAL-v4.vsdx</div>
+      <div class="stamp" id="stamp">rev 4 — 11 months ago</div>
+      <svg id="oldmap" viewBox="0 0 760 700" style="position:absolute;top:60px;left:0;width:760px;height:700px;opacity:.5"></svg>
+    </div>
+    <div class="pane" id="pR" style="left:1040px">
+      <div class="ph"><span class="dotrow"><i style="background:#ff5f57"></i><i style="background:#febc2e"></i><i style="background:#28c840"></i></span>CORE-SW-01 — console</div>
+      <div class="cli" id="term"></div>
+    </div>`;
+    const sv=g.querySelector('#oldmap');
+    const boxes=[[300,60],[150,220],[450,220],[80,380],[300,380],[520,380]];
+    let h='';
+    boxes.forEach(([x,y],i)=>{h+=`<rect x="${x}" y="${y}" width="130" height="52" rx="6" fill="none" stroke="#8e8e93" stroke-width="1.6"/>
+      <text x="${x+65}" y="${y+31}" fill="#8e8e93" font-size="15" font-family="Inter" text-anchor="middle">DEVICE-0${i+1}</text>`;});
+    h+=`<path d="M365 112 V220 M365 112 H215 V220 M365 112 H515 V220" stroke="#8e8e93" stroke-width="1.4" fill="none"/>
+        <path d="M215 272 V380 H145 M215 272 H365 V380 M515 272 V380 H585" stroke="#8e8e93" stroke-width="1.4" fill="none"/>`;
+    sv.innerHTML=h;}
+  const L=g.querySelector('#pL'),R=g.querySelector('#pR'),st=g.querySelector('#stamp'),term=g.querySelector('#term');
+  const pl=easeOut(seg(lt,.2,1.4)), pr=easeOut(seg(lt,3.4,4.6));
+  L.style.opacity=pl; L.style.transform=`translateX(${lerp(-40,0,pl)}px)`;
+  R.style.opacity=pr; R.style.transform=`translateX(${lerp(40,0,pr)}px)`;
+  st.style.opacity=easeOut(seg(lt,2.0,2.8));
+  const script=`CORE-SW-01# <b>show running-config | section bgp</b>
+<b>router bgp</b> 65001
+  <b>bgp router-id</b> 10.0.0.1
+  <b>neighbor</b> 10.0.0.2 <b>remote-as</b> 65001
+  <b>neighbor</b> 10.0.0.2 <b>update-source</b> Loopback0
+    <b>address-family</b> ipv4 unicast
+      <b>network</b> 10.10.0.0 <b>mask</b> 255.255.0.0
+CORE-SW-01# <b>show interface trunk</b>
+<s>Po1   native 1    allowed 10,20,30</s>
+<s>Eth1/7 native 1   allowed <u>ALL</u></s>`;
+  // type by visible characters, keeping tags intact
+  const plain=script.replace(/<[^>]+>/g,''); const want=Math.round(clamp(seg(lt,4.6,12.5))*plain.length);
+  let out='',seen=0,i=0;
+  while(i<script.length&&seen<want){ if(script[i]==='<'){const j=script.indexOf('>',i);out+=script.slice(i,j+1);i=j+1;} else {out+=script[i];i++;seen++;} }
+  term.innerHTML=out+(seen<plain.length&&Math.floor(lt*2.2)%2?'<span class="caret"></span>':'');
+  caption(lt>13.0?'A VLAN gets transposed. A BGP neighbour never comes up.':'',easeOut(seg(lt,13.0,14.0))*(1-seg(lt,d-.6,d)));
+}},
+
+/* ---------- 3. the gap (0:28–0:44) ---------- */
+{a:28,b:44,go(lt,d){
+  const g=$('#gfx');
+  if(!g.dataset.s3){g.dataset.s3='1';g.dataset.s2='';g.innerHTML=`
+    <div class="pane" id="gL" style="left:120px;top:170px;height:700px"><div class="ph">the drawing</div>
+      <svg viewBox="0 0 760 640" style="position:absolute;top:60px;left:0;width:760px;height:640px;opacity:.42" id="gm"></svg></div>
+    <div class="pane" id="gR" style="left:1040px;top:170px;height:700px"><div class="ph">the network</div>
+      <div class="cli" style="font-size:15px;line-height:1.8"><b>interface</b> Vlan10
+  <b>ip address</b> 10.10.0.1 255.255.255.0
+!
+<b>vlan</b> 20
+  <b>name</b> VOICE
+!
+<b>interface</b> Ethernet1/1
+  <b>switchport mode</b> trunk
+  <b>channel-group</b> 1 <b>mode active</b>
+!
+<b>vrf definition</b> CORE
+  <b>rd</b> 65001:1
+  <b>route-target export</b> 65001:1
+<s>! last touched by  — unknown</s></div></div>
+    <svg id="rift" style="position:absolute;inset:0;width:1920px;height:1080px;pointer-events:none"></svg>`;
+    const sv=g.querySelector('#gm');let h='';
+    [[300,40],[150,200],[450,200],[80,360],[300,360],[520,360]].forEach(([x,y],i)=>{
+      h+=`<rect x="${x}" y="${y}" width="130" height="52" rx="6" fill="none" stroke="#8e8e93" stroke-width="1.6"/>
+      <text x="${x+65}" y="${y+31}" fill="#8e8e93" font-size="15" font-family="Inter" text-anchor="middle">DEVICE-0${i+1}</text>`;});
+    sv.innerHTML=h;}
+  const L=g.querySelector('#gL'),R=g.querySelector('#gR'),rift=g.querySelector('#rift');
+  const p=easeInOut(seg(lt,.6,4.5));
+  L.style.transform=`translateX(${lerp(0,-104,p)}px)`; R.style.transform=`translateX(${lerp(0,104,p)}px)`;
+  const zig=[];let y=170;const cx=960;
+  while(y<880){const dx=(Math.sin(y*.055)*20+Math.cos(y*.021)*13)*p;zig.push(`${cx+dx},${y}`);y+=26;}
+  rift.innerHTML=`<polyline points="${zig.join(' ')}" fill="none" stroke="var(--err)" stroke-width="${lerp(0,3.2,p)}" opacity="${p*.92}"/>`;
+  const c=easeOut(seg(lt,6.0,7.2))*(1-seg(lt,d-.8,d));
+  caption('The drawing was never wrong.<br>It was just never <em>connected to anything</em>.',c);
+}},
+
+/* ---------- 4. black + reframe (0:44–0:56) ---------- */
+{a:44,b:56,go(lt,d){
+  const g=$('#gfx');
+  if(!g.dataset.s4){g.dataset.s4='1';g.dataset.s3='';g.innerHTML=`<div class="kin">
+    <div class="l" id="r1">So what if the drawing <em style="font-style:normal;color:var(--ac)">was</em> the source of truth?</div>
+    <div class="l sm" id="r2">Not a picture of the network. The network itself.</div>
+    <div class="l" id="r3" style="font-size:76px;font-weight:700;letter-spacing:-2.4px;line-height:1.1">From Sketch to Spine.<br><span style="color:var(--ac)">Instantly Connected.</span></div></div>`;}
+  const r1=g.querySelector('#r1'),r2=g.querySelector('#r2'),r3=g.querySelector('#r3');
+  const p1=easeOut(seg(lt,2.0,3.6)),p2=easeOut(seg(lt,4.6,6.0)),p3=easeOut(seg(lt,8.2,9.8));
+  const f1=1-seg(lt,7.4,8.2);
+  r1.style.opacity=p1*f1;r1.style.transform=`translateY(${lerp(24,0,p1)}px) scale(${lerp(.985,1,p1)})`;
+  r2.style.opacity=p2*f1;r2.style.transform=`translateY(${lerp(20,0,p2)}px)`;
+  r3.style.opacity=p3*(1-seg(lt,d-.7,d));r3.style.transform=`translateY(${lerp(28,0,p3)}px) scale(${lerp(.97,1,p3)})`;
+  r3.style.position=p3>0?'static':'absolute';r3.style.display=p3>0?'block':'none';
+  r1.style.display=f1>0?'block':'none';r2.style.display=f1>0?'block':'none';
+}},
+
+/* ---------- 5. designer: drag a device in (0:56–1:03) ---------- */
+{a:56,b:63,go(lt,d,t){
+  showApp(); $('#sbr').innerHTML=panelProps({tab:'int',ip:'',vlan:'',cli:''});
+  setCanvasView(1,0,CY);
+  const set=BRANCH.slice(0,3), links=[];
+  buildNodes(set,links);
+  // node 3 (core) flies in under the cursor
+  const core=$('#n-c1');
+  const p=easeOut(seg(lt,1.6,3.6));
+  core.style.opacity=p>0?1:0;
+  const sx=-260,sy=120;
+  core.style.transform=`translate(${lerp(sx,0,p)}px,${lerp(sy,0,p)}px) scale(${lerp(.86,1,easeOutBack(p))})`;
+  if(p>=1)core.classList.add('sel');
+  // cursor from palette chip → drop point
+  const c0=[196,470],c1=[272+430+93,50+250+39+CY];
+  const cp=easeInOut(seg(lt,1.3,3.6));
+  cursorAt(lerp(c0[0],c1[0],cp),lerp(c0[1],c1[1],cp),lt>.7&&lt<5.4);
+  [...document.querySelectorAll('.chip')].forEach(ch=>ch.classList.toggle('act',ch.dataset.n==='Core Switch'&&lt>.9&&lt<3.7));
+  // grid snap flash
+  caption(lt>4.0?'Drag a device onto the canvas.':'',easeOut(seg(lt,4.0,4.8))*(1-seg(lt,d-.5,d)));
+  chips(null);
+}},
+
+/* ---------- 6. link ports + properties (1:03–1:10) ---------- */
+{a:63,b:70,go(lt,d){
+  showApp(); setCanvasView(1,0,CY);
+  buildNodes(BRANCH,BRANCH_LINKS);
+  drawLinks(seg(lt,.4,3.4));
+  $('#n-c1').classList.add('sel');
+  const ipS='10.50.10.2 255.255.255.0', vlS='10 · CORE';
+  const fp=seg(lt,3.4,5.2);
+  $('#sbr').innerHTML=panelProps({tab:'int',focus:fp>0&&fp<1?'ip':'',ip:typed(ipS,fp),vlan:fp>=1?vlS:'',
+    cli:fp>.55?CFG.split('\n').slice(0,Math.round(seg(lt,4.2,6.4)*8)).join('\n'):''});
+  const cs=[[272+180+93,50+250+39+CY],[272+430+93,50+250+39+CY],[272+255+63,50+470+39+CY],[1920-600+300,300]];
+  const k=clamp(seg(lt,.4,3.4)*3,0,2.999); const i=Math.floor(k),f=easeInOut(k-i);
+  const A=cs[i],B=cs[Math.min(i+1,3)];
+  cursorAt(lerp(A[0],B[0],f),lerp(A[1],B[1],f),lt<5.6);
+  caption(lt>4.6?'Connect the ports. Set your VLANs, your routing, your management.':'',easeOut(seg(lt,4.6,5.4))*(1-seg(lt,d-.5,d)));
+}},
+
+/* ---------- 7. scale to fabric (1:10–1:16) ---------- */
+{a:70,b:76,go(lt,d){
+  showApp();
+  buildNodes(FABRIC,FABRIC_LINKS);
+  // app's own zoom-to-fit: canvas content scales, frame never crops
+  const p=easeInOut(seg(lt,.3,3.0));
+  setCanvasView(lerp(1.5,.94,p),0,lerp(120,60,p));
+  drawLinks(seg(lt,.5,2.8));
+  $('#sbr').innerHTML=panelValidate({n:0});
+  $('#sbr').querySelector('.pbody').innerHTML=`<div class="sbtitle" style="padding:0;margin:0 0 12px">Fabric summary</div>
+    ${[['Topology','leaf-spine · L3LS'],['Spines','4 · Arista 7280R3'],['Leaves','8 · Arista 7050X3'],['Underlay','eBGP · AS 65100-65108'],['Overlay','EVPN · VXLAN'],['Output','EOS CLI + AVD YAML']]
+      .map(([a,b])=>`<div class="vrow"><span class="nmx">${a}</span><span class="mt">${b}</span></div>`).join('')}`;
+  cursorAt(0,0,false);
+  caption('Scale the same canvas to a full <em>leaf-spine VXLAN EVPN fabric</em> — without leaving the designer.',easeOut(seg(lt,1.6,2.6))*(1-seg(lt,d-.5,d)));
+  chips(['IOS-XE','NX-OS','EOS / AVD','ArubaOS-CX','PAN-OS','EdgeConnect'],seg(lt,2.4,4.6));
+}},
+
+/* ---------- 8. validation runs (1:16–1:22) ---------- */
+{a:76,b:82,go(lt,d){
+  showApp(); buildNodes(BRANCH,BRANCH_LINKS); setCanvasView(1,0,CY); drawLinks(1);
+  $('#btnVal').className='btn on';
+  const n=Math.round(clamp(seg(lt,.5,4.6))*CHECKS.length);
+  $('#sbr').innerHTML=panelValidate({n});
+  cursorAt(1920-600+40,64,lt<1.0);
+  caption('Before anything ships — it gets checked.',easeOut(seg(lt,.6,1.5))*(1-seg(lt,d-.5,d)));
+  chips(null);
+}},
+
+/* ---------- 9. IP conflict caught (1:22–1:27) ---------- */
+{a:82,b:87,go(lt,d){
+  showApp(); buildNodes(BRANCH,BRANCH_LINKS); setCanvasView(1,0,CY); drawLinks(1);
+  $('#btnVal').className='btn on';
+  $('#sbr').innerHTML=panelValidate({n:CHECKS.length,bad:true,sum:'bad'});
+  const bad=$('#n-a2'); bad.classList.add('bad');
+  // callout ring on the offending node — no crop, ring + magnifier instead
+  const ov=$('#overlay'); ov.classList.remove('hide');
+  const p=easeOut(seg(lt,.3,1.1)), rx=272+610-9, ry=50+470-9+CY;
+  ov.innerHTML=`<div class="ring" style="left:${rx}px;top:${ry}px;width:${NW+18}px;height:${NH+18}px;opacity:${p};transform:scale(${lerp(1.09,1,p)})"></div>
+    <div class="mag" style="left:300px;top:702px;width:392px;opacity:${easeOut(seg(lt,1.0,1.8))};transform:translateY(${lerp(12,0,easeOut(seg(lt,1.0,1.8)))}px)">
+      <div class="mt">Duplicate IPv4 assignment</div>
+      <div class="mv">RSITE-ACC-02 · Vlan30<br>10.50.30.1/24<br><span style="color:var(--err)">↑ also on RSITE-ACC-01 · Vlan30</span></div></div>`;
+  cursorAt(0,0,false);
+  caption('IP conflicts. VLAN mismatches. BGP peer gaps. Spanning-tree errors.<br>Caught <em>here</em> — not in the maintenance window.',easeOut(seg(lt,1.4,2.4))*(1-seg(lt,d-.5,d)));
+}},
+
+/* ---------- 10. AI architect (1:27–1:32) ---------- */
+{a:87,b:92,go(lt,d){
+  showApp(); buildNodes(BRANCH,BRANCH_LINKS); setCanvasView(1,0,CY); drawLinks(1);
+  $('#overlay').classList.add('hide'); $('#btnVal').className='btn on';
+  const txt='RSITE-ACC-02 is single-homed to RSITE-CORE-01. Loss of that uplink isolates 48 access ports and the voice VLAN.';
+  const p=seg(lt,.4,3.0);
+  $('#sbr').innerHTML=panelAI({text:typed(txt,p),caret:p<1,fix:p>=1,second:lt>3.4});
+  cursorAt(0,0,false);
+  caption('Then the AI Network Architect reviews the design — and tells you what to fix.',easeOut(seg(lt,1.2,2.2))*(1-seg(lt,d-.5,d)));
+}},
+
+/* ---------- 11. green — the payoff frame (1:32–1:38) ---------- */
+{a:92,b:98,go(lt,d){
+  showApp(); buildNodes(BRANCH,BRANCH_LINKS); setCanvasView(1,0,CY); drawLinks(1);
+  $('#btnVal').className='btn on'; $('#overlay').classList.add('hide');
+  $('#sbr').innerHTML=panelValidate({n:CHECKS.length,sum:'ok'});
+  // green sweep across the topology
+  const p=easeOut(seg(lt,.2,1.4));
+  [...document.querySelectorAll('.node')].forEach((n,i)=>{
+    const a=clamp(p*6-i*.55); n.style.boxShadow=a>0?`0 0 0 ${lerp(0,2,a)}px #34c759${a>.5?'':'80'},0 2px 12px #000000b3`:'var(--shadow-node)';});
+  badge(`<div style="display:flex;align-items:center;gap:14px;background:#0a0a0ce8;border:1px solid #34c75966;border-radius:20px;padding:20px 30px;box-shadow:0 24px 60px #000c">
+      <span style="width:34px;height:34px;border-radius:99px;background:var(--ok);display:flex;align-items:center;justify-content:center">${I.chk}</span>
+      <span style="font-size:34px;color:var(--ok);font-weight:600">0 conflicts · 42 checks passed</span></div>`,
+    `left:50%;top:${lerp(150,132,easeOut(seg(lt,1.0,2.0)))}px;transform:translateX(-50%)`,easeOut(seg(lt,1.0,2.0))*(1-seg(lt,d-.6,d)));
+  cursorAt(0,0,false); caption('',0);
+}},
+
+/* ---------- 12. export → real CLI (1:38–1:45) ---------- */
+{a:98,b:105,go(lt,d){
+  showApp(); buildNodes(BRANCH,BRANCH_LINKS); setCanvasView(1,0,CY); drawLinks(1);
+  $('#btnVal').className='btn'; $('#btnExp').className='btn on'; badge(null,'',0);
+  [...document.querySelectorAll('.node')].forEach(n=>n.style.boxShadow='');
+  const n=Math.round(clamp(seg(lt,.4,2.8))*6);
+  const lines=CFG.split('\n'); const shown=lines.slice(0,Math.round(clamp(seg(lt,1.4,5.6))*lines.length)).join('\n');
+  $('#sbr').innerHTML=panelExport({n,cli:shown});
+  cursorAt(1920-600-88,64,lt<.9);
+  caption('Production-ready CLI. AVD Ansible YAML. Generated from the same canvas.',easeOut(seg(lt,1.0,2.0))*(1-seg(lt,d-.5,d)));
+}},
+
+/* ---------- 13. export artefacts fan (1:45–1:51) ---------- */
+{a:105,b:111,go(lt,d){
+  hideApp(); const g=$('#gfx');
+  const items=[['PDF','Design package',V.arista],['VSDX','Visio topology',V.az],['XLSX','Bill of materials',V.sp],['CSV','Cable schedule',V.aruba],['CLI','Device configs',V.cisco],['YAML','AVD Ansible',V.palo]];
+  if(!g.dataset.s13){g.dataset.s13='1';g.dataset.s4='';
+    g.innerHTML=items.map(([x,y,c],i)=>`<div class="expcard" id="e${i}"><div class="ix" style="background:${c}1a;color:${c}">${I.doc}</div>
+      <div class="x" style="color:${c}">${x}</div><div class="y">${y}</div></div>`).join('');}
+  items.forEach((_,i)=>{const c=g.querySelector('#e'+i);
+    const p=easeOutBack(clamp(seg(lt,.5+i*.22,1.5+i*.22)));
+    const X=960+(i-(items.length-1)/2)*210-91, Y=418;
+    c.style.left=X+'px'; c.style.top=Y+'px';
+    c.style.opacity=clamp(p*1.4)*(1-seg(lt,d-.6,d));
+    c.style.transform=`translateY(${lerp(56,0,p)}px) rotate(${lerp(0,((i-2.5)*2.4),p)}deg) scale(${lerp(.9,1,p)})`;});
+  caption('PDF packages, Visio diagrams, Excel BOM, cable schedules —<br>documentation that <em>can\'t drift</em> from the design.',easeOut(seg(lt,2.2,3.2))*(1-seg(lt,d-.6,d)));
+  chips(null);
+}},
+
+/* ---------- 14. cloud on canvas (1:51–1:58) ---------- */
+{a:111,b:118,go(lt,d){
+  showApp(); $('#btnExp').className='btn';
+  buildNodes(CLOUDN,CLOUD_LINKS); setCanvasView(1,0,150);
+  drawLinks(seg(lt,1.4,3.0));
+  const p=easeOut(seg(lt,.3,1.8));
+  ['az','gw','nsg'].forEach((id,i)=>{const n=$('#n-'+id);const a=clamp(p*3-i*.5);
+    n.style.opacity=a;n.style.transform=`translateY(${lerp(-22,0,a)}px) scale(${lerp(.94,1,a)})`;});
+  const n=Math.round(clamp(seg(lt,.6,3.4))*5);
+  const tl=TF.split('\n');
+  $('#sbr').innerHTML=panelCloud({n,cli:tl.slice(0,Math.round(clamp(seg(lt,2.6,5.6))*tl.length)).join('\n')});
+  cursorAt(0,0,false);
+  caption('Reverse-engineer a live Azure subscription onto the canvas —<br>and push it back as <em>Terraform</em>.',easeOut(seg(lt,1.6,2.6))*(1-seg(lt,d-.5,d)));
+}},
+
+/* ---------- 15. outcome (1:58–2:07) ---------- */
+{a:118,b:127,go(lt,d){
+  hideApp(); const g=$('#gfx');
+  if(!g.dataset.s15){g.dataset.s15='1';g.dataset.s13='';g.innerHTML=`<div class="kin">
+    <div class="l" id="o1" style="font-size:52px">Design. Configure. Validate. Deploy.</div>
+    <div class="l" id="o2" style="font-size:52px;color:var(--ac)">One canvas. One source of truth.</div>
+    <div class="l sm" id="o3">The drawing and the network — finally the same thing.</div></div>`;}
+  const o1=g.querySelector('#o1'),o2=g.querySelector('#o2'),o3=g.querySelector('#o3');
+  const p1=easeOut(seg(lt,.4,1.9)),p2=easeOut(seg(lt,2.1,3.6)),p3=easeOut(seg(lt,4.2,5.7)),out=1-seg(lt,d-.9,d);
+  o1.style.opacity=p1*out;o1.style.transform=`translateY(${lerp(22,0,p1)}px)`;
+  o2.style.opacity=p2*out;o2.style.transform=`translateY(${lerp(22,0,p2)}px)`;
+  o3.style.opacity=p3*out;o3.style.transform=`translateY(${lerp(18,0,p3)}px)`;
+  caption('',0);chips(null);badge(null,'',0);
+}},
+
+/* ---------- 16. end card (2:07–2:15) ---------- */
+{a:127,b:135,go(lt,d){
+  hideApp(); const g=$('#gfx');
+  if(!g.dataset.s16){g.dataset.s16='1';g.dataset.s15='';g.innerHTML=`<div class="endwrap">
+    <div class="endlogo" id="el"><span class="m">${I.logo}</span><span class="n">Netforge.ai</span></div>
+    <div class="endsub" id="es">Design, configure, validate, and deploy production-ready networks.</div>
+    <div class="endcta" id="ec">Open Designer ${I.arrow}</div>
+    <div class="endsub" id="ef" style="font-size:16px;color:var(--tt)">Free to start — no card required.</div></div>`;}
+  const p1=easeOut(seg(lt,.2,1.6)),p2=easeOut(seg(lt,1.1,2.4)),p3=easeOutBack(clamp(seg(lt,1.8,3.0))),p4=easeOut(seg(lt,2.8,4.0));
+  const L=g.querySelector('#el'),S=g.querySelector('#es'),C=g.querySelector('#ec'),F=g.querySelector('#ef');
+  L.style.opacity=p1;L.style.transform=`translateY(${lerp(20,0,p1)}px) scale(${lerp(.96,1,p1)})`;
+  S.style.opacity=p2*.95;S.style.transform=`translateY(${lerp(16,0,p2)}px)`;
+  const pulse=1+.028*Math.max(0,Math.sin((lt-4.4)*3.0))*(lt>4.4?1:0);
+  C.style.opacity=clamp(p3*1.3);C.style.transform=`translateY(${lerp(18,0,clamp(p3))}px) scale(${clamp(p3)*0+pulse})`;
+  F.style.opacity=p4*.9;
+  const fade=1-seg(lt,d-.8,d);
+  g.querySelector('.endwrap').style.opacity=fade;
+  caption('',0);chips(null);badge(null,'',0);
+}},
+];
+
+function showApp(){$('#app').classList.remove('hide');$('#gfx').classList.add('hide');vignette(false);
+  ['s2','s3','s4','s13','s15','s16'].forEach(k=>$('#gfx').dataset[k]='');}
+function hideApp(){$('#app').classList.add('hide');$('#gfx').classList.remove('hide');$('#overlay').classList.add('hide');vignette(true);}
+
+/* ============================ seek ============================ */
+const DURATION=135;
+window.seek=function(t){
+  t=Math.max(0,Math.min(DURATION-.001,t));
+  // reset per-frame transient state
+  $('#overlay').classList.add('hide'); badge(null,'',0);
+  $('#btnVal').className='btn'; $('#btnExp').className='btn';
+  const sc=SCENES.find(s=>t>=s.a&&t<s.b)||SCENES[SCENES.length-1];
+  if(window.__scene!==sc){ // scene entry: clear graphic caches so each scene rebuilds cleanly
+    if(sc.a<56||sc.a>=105)hideApp(); window.__scene=sc;
+    ['s2','s3','s4','s13','s15','s16'].forEach(k=>$('#gfx').dataset[k]='');
+  }
+  caption('',0); chips(null); cursorAt(0,0,false);
+  sc.go(t-sc.a, sc.b-sc.a, t);
+  // global fade from/to black at the very top and tail
+  $('#vig').style.background=`radial-gradient(ellipse 70% 55% at 50% 50%,#0000 0%,#000000d9 100%)`;
+  document.documentElement.style.setProperty('--gfade',1);
+  const g=Math.min(seg(t,0,.7),1-seg(t,DURATION-.7,DURATION));
+  $('#stage').style.opacity=g;
+};
+window.__ready=true;
+seek(0);
+</script>
