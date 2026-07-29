@@ -26,9 +26,9 @@ enough that it is pure adrenaline.
 ## One world, three altitudes
 
 The three acts are **not three maps**. They are three regions of a single
-continuous vertical block world — surface at the top, the underground kingdom
-several hundred metres below it, the sky towers built high above. The Collapse
-drops players down through it; the Ascent lifts them up through it.
+continuous vertical world — surface at the top, the underground kingdom several
+hundred metres below it, the sky towers built high above. The Collapse drops
+players down through it; the Ascent lifts them up through it.
 
 This is a structural fact, not just a visual one, and it is what makes the
 brief's requirement that the underground *"feel like a continuation of the same
@@ -36,7 +36,7 @@ battle"* literally true. See
 [11 — The voxel data model](11-technical-architecture.md#the-voxel-data-model).
 
 Consequence worth designing around: **debris from Act I stays visible in Act II.**
-Players land amid the shattered blocks of the castle they were just defending.
+Players land amid the wreckage of the base they were just defending.
 
 ## Rules that carry across phases
 
@@ -82,22 +82,22 @@ underground.
 
 **Staging:**
 
-1. **Tremors (60s out).** Loose blocks rattle in place, dust lifts off surfaces,
-   distant rumbling. F.C.S. warns. Combat continues normally — this is a
-   countdown players can play around.
-2. **Fracture lines (30s out).** Glowing seams trace the ground *along block
-   boundaries*, so players can see exactly which blocks are about to go.
-   Structures start shedding pieces.
-3. **The break (0s).** The battlefield **shatters into its constituent blocks**.
-   Castle walls come apart course by course, towers topple as stacks, and
-   thousands of cubes tumble into the dark. Players fall with the wreckage.
-4. **Landing.** Players land on stable underground blocks with a brief
-   invulnerability window so the transition cannot be spawn-camped.
+1. **Tremors (60s out).** Loose masses rattle in place, motes scatter, distant
+   rumbling. F.C.S. warns. Combat continues normally — this is a countdown
+   players can play around.
+2. **Fracture lines (30s out).** Glowing seams trace across the ground, so
+   players can see exactly what is about to give way. Structures start shedding
+   pieces.
+3. **The break (0s).** The battlefield **comes apart into its constituent
+   masses**. Arches collapse, spires topple, the floating islands lose their
+   anchors, and thousands of rounded forms tumble into the dark with the lanterns
+   falling among them. Players fall with the wreckage.
+4. **Landing.** Players land on stable ground below with a brief invulnerability
+   window so the transition cannot be spawn-camped.
 
-The voxel world does most of this work natively — see
-[10](10-art-direction-and-cinematics.md) for why the block-based art direction
-makes the collapse the cheapest spectacle in the game rather than the most
-expensive.
+The grid-simulated world does most of this work natively — see
+[10](10-art-direction-and-cinematics.md) for why that makes the collapse the
+cheapest spectacle in the game rather than the most expensive.
 
 **Playable falling:** players keep camera and limited air control during the
 drop. It is a moment, not a cutscene. Nobody wants their best flag run
@@ -138,10 +138,9 @@ battlefield transforms again.
 
 **Staging:**
 
-1. **Awakening.** Dormant machinery in the ruins lights up. Gold glyph-blocks
-   ignite in sequence along the tunnel walls. Deep mechanical sound builds.
-   F.C.S. calls it.
-2. **Lift.** Blocks tear free of the cavern floor and **re-stack upward** into
+1. **Awakening.** Dormant machinery in the ruins lights up. Light runs through
+   the walls in sequence. Deep mechanical sound builds. F.C.S. calls it.
+2. **Lift.** Masses tear free of the cavern floor and **re-stack upward** into
    towers, the world assembling itself as it climbs. Players ride the rising
    structures — again, playable, not a cutscene.
 3. **Arrival.** The structures lock into a floating configuration above the

@@ -31,10 +31,14 @@
 *Proposed:* an off-the-shelf engine with mature networking and large-world
 streaming — Unreal or Unity — with a **custom voxel layer** on top.
 
-The voxel art direction ([10](10-art-direction-and-cinematics.md)) changes this
-calculation. Off-the-shelf engines do not ship a production-grade voxel terrain
-system, so this is the one place a custom subsystem is unavoidable. Options, in
-order of preference:
+Note that "voxel" here describes the *simulation*, not the look: the world is a
+grid of cells drawn as soft rounded masses
+([10](10-art-direction-and-cinematics.md)). The grid is what the engine work has
+to support; the styling sits on top of it and costs nothing extra.
+
+The grid world changes this calculation. Off-the-shelf engines do not ship a
+production-grade voxel terrain system, so this is the one place a custom
+subsystem is unavoidable. Options, in order of preference:
 
 1. **Existing voxel plugin/middleware** on Unreal or Unity, extended. Fastest
    path; the risk is hitting the plugin's ceiling on the transitions and having
@@ -122,10 +126,10 @@ valid positions on solid blocks).
 
 ## Technical risks
 
-Going voxel **retired the project's original defining risk** — two full world
-swaps mid-match with no loading screen. There is now one continuous block world
-and nothing to swap. That was the risk most likely to kill the concept, and the
-art direction dissolved it.
+Modelling the world as one grid **retired the project's original defining risk** —
+two full world swaps mid-match with no loading screen. There is now one
+continuous vertical world and nothing to swap. That was the risk most likely to
+kill the concept, and this decision dissolved it.
 
 Three real risks remain. None of them threatens the concept the way the original
 one did, but all three need answers in phase 1.

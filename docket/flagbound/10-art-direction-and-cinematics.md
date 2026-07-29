@@ -1,162 +1,164 @@
 # 10 — Art Direction & Cinematics
 
-## Direction: a voxel world
+## Direction: a surreal world of soft rounded forms
 
 From the brief: prioritise **creativity, scale and exciting environments** over
 photorealism. Players should feel like they are inside an epic adventure.
 
-**Style target:** a **voxel world** — everything is built from blocks. Castles,
-forests, caves, lava, the sky towers, the characters, the flags. Blocky
-silhouettes, bold flat colour, chunky readable shapes, lit with modern lighting.
+**Style target:** a **dreamlike, surreal world built from soft rounded forms.**
+Nothing is a sharp cube. Terrain is made of rounded, pebble-like masses that
+interlock into rolling ground; structures are arches and rings rather than
+crenellated walls; the sky is a deep violet-to-coral gradient; glowing orbs drift
+above the battlefield. Characters are smooth, round, big-eyed creatures.
 
-Voxel does **not** mean 2011 rendering. The blocks are the *form language*, not
-the fidelity ceiling. Dynamic light, volumetric dust, real shadows, glow and
-depth-of-field all still apply — they just fall on cubes.
+This is deliberately **not** a blocky Minecraft-style look, and not realism
+either. It is closer to an illustrated dream than to either.
 
-## Why voxel is the right choice, not just the cheap one
+## The important distinction: grid underneath, rounded on top
 
-### 1. It solves the hardest problem in the project
+The world is still **simulated** as a grid of half-metre cells. That is what makes
+the transitions work — see [11](11-technical-architecture.md#the-voxel-data-model)
+and the reasoning below. What changed is how those cells are **drawn**: each one
+renders as a spherified, soft-shaded mass rather than a hard cube.
 
-[11 — Technical Architecture](11-technical-architecture.md) names the project's
-defining risk: two full world transformations mid-match with no loading screen.
+So the technical argument for a grid world survives intact while the aesthetic is
+free to be anything:
 
-A voxel world makes that risk mostly **evaporate**:
-
-| Transition | In a voxel world |
+| Transition | Still works because |
 |---|---|
-| **The Collapse** | The terrain genuinely shatters into thousands of falling blocks. The break is *the data structure doing what it naturally does.* |
-| **The Underground** | Just more voxels below. Same world, same grid, deeper down — no second map to load, no handoff. |
-| **The Ascent** | Blocks detach and re-stack upward into towers. The world rebuilds itself in place. |
+| **The Collapse** | The terrain genuinely comes apart into its constituent cells. They tumble as rounded masses instead of cubes — the same system, softer forms. |
+| **The Underground** | Just more cells below. Same world, same grid, deeper down — no second map to load, no handoff. |
+| **The Ascent** | Cells detach and re-stack upward into towers. The world rebuilds itself in place. |
 
-This is the whole argument. In a conventional art pipeline the collapse is three
-authored destruction set-pieces that must look identical on 16 clients. In a
-voxel world it is one system that produces spectacle for free, and the acts stop
-being separate maps that need swapping — **they are one continuous block world
-you travel through vertically.** The brief's "it should feel like a continuation
-of the same battle" becomes literally true rather than an illusion to maintain.
+**This is the whole technical argument, and it is unchanged by the style.** In a
+conventional art pipeline the collapse is three authored destruction set-pieces
+that must look identical on 16 clients. On a grid it is one system that produces
+spectacle almost for free, and the acts stop being separate maps that need
+swapping — they are one continuous world you travel through vertically. The
+brief's *"it should feel like a continuation of the same battle"* becomes
+literally true rather than an illusion to maintain.
 
-### 2. Readability at speed
+## Why surreal and rounded
 
-Three worlds, four classes, two teams, constant transformation. Flat-coloured
-cubes with hard edges are the most readable thing you can put on screen. A
-10-year-old can tell friend from enemy from flag from hazard at a glance, in
-daylight, in a dark cave, and against bright cloud.
+### 1. It is the strongest available answer to "epic adventure"
+
+The brief does not ask for a war. It asks for an adventure with cinematic moments
+worth sharing. A violet sky, floating islands and drifting lanterns deliver that
+in the first second of the first screenshot. A grass-and-grey-stone battlefield
+does not; it reads as generic.
+
+### 2. Readability without harshness
+
+Two teams, a flag, hazards, and a world that keeps changing. Soft forms with
+strong rim lighting and saturated colour separate cleanly against every
+background, and the palette per act is so distinct that a player always knows
+where they are.
 
 ### 3. Age-appropriate by construction
 
-Blocky fantasy combat reads as adventure. There is no uncanny valley, no injury
-detail, no realism to push it anywhere uncomfortable. The style does the
-age-rating work for you.
+Round, wide-eyed creatures in a dreamscape read as adventure. There is no uncanny
+valley, no injury detail, no realism to push it anywhere uncomfortable. The style
+does the age-rating work.
 
 ### 4. Scale is cheap
 
-The brief wants *massive*. Blocks let a small team build an enormous castle, an
-underground city and a sky tower complex, because the vocabulary is a few hundred
-block types instead of thousands of bespoke assets.
+Enormous environments come from a small vocabulary — a rounded mass, a sphere, a
+palette per act. A small team can build a huge world.
 
-### 5. It ages out of the hardware race
+### 5. It is nobody else's look
 
-Minecraft looks the same now as it did a decade ago and nobody minds. A stylised
-voxel game shipped today still looks correct in 2035. Realism shipped today looks
-dated in three years.
+The most common failure mode for a grid-based game is looking like a Minecraft
+mod. Rounded surreal forms sidestep that entirely: there is no resemblance to
+defend, no textures anyone could mistake for copied, and no legal exposure worth
+worrying about. The style is the differentiator, not a liability.
 
-## The one hard rule: this is not a Minecraft skin
+## The rendering signature
 
-Voxel is a *form language*, like pixel art or cel shading — not Minecraft's
-property. But the resemblance risk is real, and both for identity and for basic
-legal hygiene:
+Three choices do most of the work, and all three are cheap:
 
-- **No copied textures.** Every block texture is originally authored. Nothing
-  traced, recoloured, or ripped.
-- **No signature Minecraft content.** No creepers, no Steve, no crafting table,
-  no distinctive mob designs.
-- **Different grid feel.** Proposed below: a finer grid than Minecraft's, which
-  changes the silhouette of everything immediately.
-- **Different lighting identity.** Minecraft's look is flat and ambient.
-  Flagbound's is dramatic and directional — hard shadows, strong coloured light,
-  volumetric dust. Same cubes, unmistakably different game.
-- **Different subject.** Minecraft is calm, solitary, creative. Flagbound is a
-  loud 15-minute team war on a world that is falling apart. That contrast should
-  be visible in the first screenshot.
+- **Spherified geometry.** Every world cell is a subdivided cube pulled ~45%
+  toward a sphere, with smooth normals. Soft silhouettes, no hard edges.
+  Cells render slightly oversized so they interlock into one continuous mass
+  rather than reading as separate pebbles.
+- **Rim light.** A coloured rim term — warm rose on the surface, violet in the
+  deep — traces every silhouette. This is what makes the world look lit by the
+  sky rather than by a lamp, and it is the single largest contributor to the
+  dreamlike quality.
+- **Two-tone lighting.** A warm key with a cool coloured fill from the opposite
+  side, so shadowed faces read as tinted rather than grey. Nothing in the world
+  is ever neutral-dark.
 
-**The test:** a player seeing one frame should think *"that's Flagbound"*, not
-*"that's a Minecraft mod."*
+The sky is a gradient behind the scene, not geometry — cheaper and smoother than
+any dome, and it cross-fades when the phase changes.
 
 ## Grid and scale (proposed)
 
 | Element | Size |
 |---|---|
-| **Structural block** | 0.5 m — walls, terrain, towers |
-| **Detail voxel** | 0.125 m — props, weapons, armour trim, characters |
-| **Player height** | ~2.5 structural blocks (1.25 m) — short and wide, see Characters |
-| **Castle wall height** | 24–40 blocks (12–20 m) — must feel like a siege |
-| **Sky tower height** | 200+ blocks |
+| **World cell** | 0.5 m — terrain, structures, towers (drawn rounded, not cubic) |
+| **Detail element** | 0.125 m — props, trim |
+| **Player height** | ~1.25 m — short, wide and round; deliberately not humanoid |
+| **Arch / structure height** | 10–20 m — must still feel monumental |
+| **Sky tower height** | 100 m+ |
 
-Half-metre blocks are the key decision. They are chunky enough to read as
-unmistakably voxel, fine enough to build a convincing castle arch and a
-recognisable character face, and immediately distinct from Minecraft's 1 m cubes.
+## The three worlds
 
-## The three worlds in blocks
+Each act must be recognisable from a single frame. The palettes are deliberately
+opposed, and each is dominated by colours the others do not use at all.
 
-Each act must be recognisable from a single frame. The block palettes are
-deliberately opposed.
+### Act I — The Dreamfield
 
-### Act I — Surface
+- **Ground:** rolling, never flat — pale lilac at the crests, deeper violet in the
+  hollows
+- **Palette:** lilac, violet, indigo, with iridescent teal and coral accents
+- **Sky:** deep violet at the zenith falling to coral and warm peach at the
+  horizon
+- **Forms:** two great arches spanning midfield instead of a castle wall; tall
+  slender spires topped with glowing bulbs; floating islands with lanterns slung
+  beneath them; drifting motes of light
+- **Bases:** circular platforms ringed with pillars, open toward midfield, a
+  glowing orb hanging above each flag
+- **Light:** warm key, violet fill, rose rim
+- **Sound:** open air, soft chimes, a distant low drone
 
-- **Blocks:** grass, dirt, cut stone, mossy stone, oak, thatch, banner cloth
-- **Palette:** bright daylight — saturated greens, warm sandstone, hard blue sky
-- **Silhouette:** two great block castles with crenellated walls, cubic
-  watchtowers, a long plank bridge, forests of chunky cube-canopy trees
-- **Light:** hard directional sun, long sharp-edged shadows, high visibility
-- **Sound:** open air, wind through leaves, distant battle
+### Act II — The Glowing Deep
 
-### Act II — Underground
+- **Ground:** near-black indigo, rolling
+- **Palette:** the darkest act and the most colourful, because every light source
+  is an object — magenta and cyan bioluminescence, glowing violet pools
+- **Forms:** enormous glowing caps on slender stalks; pools of light in the
+  hollows; spires hanging out of the dark above
+- **Light:** emissive forms doing the work; violet fill; violet rim
+- **Sound:** close and echoing, dripping, a deep hollow pulse
 
-- **Blocks:** dark basalt, ancient carved brick, glowing crystal, obsidian,
-  lava, wet cobble
-- **Palette:** near-black rock cut by emissive orange and cyan — the darkest act,
-  and the most colourful, because every light source is a glowing block
-- **Silhouette:** a ruined block city in a vast cavern, lava channels, a river
-  cavern, crystal clusters that light the routes
-- **Light:** emissive blocks doing the work — glowing crystal, lava glow,
-  torchlight. Darkness that genuinely hides a Shadow Runner
-- **Sound:** close and echoing, dripping water, deep hollow ambience
+### Act III — The Sky Towers
 
-### Act III — Sky
-
-- **Blocks:** pale polished stone, gold-veined machinery, white cloud volumes,
-  glass
-- **Palette:** blinding brightness — white, pale gold, deep sky blue
-- **Silhouette:** colossal block towers, thin floating platforms, long narrow
-  bridges with nothing under them
-- **Light:** full unfiltered sun above the cloud layer — the visual reward for
-  ten minutes underground
+- **Palette:** blinding pale gold and white against deep blue, iridescent edges
+- **Forms:** colossal smooth towers, floating platforms, long thin bridges with
+  nothing beneath them
+- **Light:** full unfiltered sun above the cloud layer — the visual reward for ten
+  minutes in the dark
 - **Sound:** thin air, howling wind, the hum of ancient machinery
 
 ## Characters
 
-**Rounded creatures, not humanoid warriors.** Short, wide, and built on an egg
-profile — widest low through the middle, domed on top — with oversized eyes,
-tiny stubby limbs, and one bright saturated colour each. Roughly **2.5 blocks
-tall (1.25 m)**, so they read as small, chunky and appealing rather than as
-soldiers.
-
-They are still made of blocks like everything else, so they belong to the world.
-The roundness comes from overlapping slabs on a tapered profile rather than from
-leaving the voxel grid.
+**Round creatures, not humanoid warriors.** A large egg-shaped body over a fuller
+lower blob, oversized eyes standing proud of the surface, a small mouth, stubby
+limbs, and a little antenna. Roughly **1.25 m tall** — short, wide and appealing
+rather than soldierly. Built from smooth spheres, so they are the softest thing
+on screen.
 
 **Why this and not armoured humanoids.** The game is for ages 10 and up, and the
 brief asks for an epic adventure rather than a war simulation. Appealing
-characters do more for that than realistic ones, and they push the fantasy
+characters serve that better than realistic ones, and they push the fantasy
 combat further from anything uncomfortable. A knockdown between two round
 wide-eyed creatures is unmistakably adventure. It also makes the game
 screenshot-friendly, which serves the shareability goal directly.
 
-**The face carries the likability.** Eyes are large, slightly proud of the body
-surface, and faintly emissive so they still read in Act II's darkness. They
-blink on a loose timer. A small mouth sits below. Characters bob and squash
-slightly as they walk. None of this is expensive, and all of it is the difference
-between a character and a shape.
+**The face carries the likability.** Eyes are large, faintly emissive so they
+still read in Act II's darkness, and they blink on a loose timer. Characters bob,
+squash and stretch as they walk. None of this is expensive, and all of it is the
+difference between a character and a shape.
 
 The four classes must still be identifiable **by silhouette alone**, because in a
 fight that is all a player gets. Class reads through proportion and one
@@ -164,75 +166,64 @@ accessory, never through colour — colour belongs to the team:
 
 | Class | Silhouette |
 |---|---|
-| **Guardian** | The biggest and widest blob, low to the ground, heavy brow over the eyes, carrying a slab shield nearly as large as itself. Reads as a wall. |
-| **Swiftblade** | The smallest and narrowest, leaning forward, with a trailing scarf. Reads as fast even standing still. |
-| **Element Warrior** | Taller and rounder, with voxel motes orbiting it in the current element's colour and eyes tinted to match. Reads as dangerous at range. |
-| **Shadow Runner** | Small and hooded, body blocks darkened, its eyes the only bright thing about it. Reads as *hard to see*, which is the point. |
+| **Guardian** | The largest and widest, low and heavy, a broad shield nearly as big as itself. Reads as a wall. |
+| **Swiftblade** | The smallest and narrowest, leaning forward, trailing a scarf. Reads as fast even standing still. |
+| **Element Warrior** | Taller and rounder, motes orbiting it in the current element's colour, eyes tinted to match. Reads as dangerous at range. |
+| **Shadow Runner** | Small and hooded, body darkened, its eyes the only bright thing about it. Reads as *hard to see*, which is the point. |
 
-**Team identity:** every character gets its own colour, but one team's palette is
+**Team identity:** every character has its own colour, but one team's palette is
 entirely **cool** and the other entirely **warm** — personality without costing
-team readability. On top of that, a strong emissive trim and a floating
-team-coloured marker above allies.
+team readability. Warm-versus-cool also survives colour-blindness, where
+red-versus-green would not. On top of that, a floating team-coloured marker above
+allies.
 
-Emissive is essential: a flat colour that reads in Act I daylight will vanish
-against Act II lava and Act III cloud. Every team colour must be tested in all
-three acts, and the two palettes must stay distinguishable for colour-blind
-players — which is why the split is warm-versus-cool rather than red-versus-green.
-
-**The player's own character** carries a distinct floating marker so a player can
-always find themselves in a crowd. In the prototype this is a spinning gold
-diamond overhead.
+**The player's own character** floats a spinning gold gem with a soft halo, so a
+player can always find themselves in a crowd.
 
 ## Cinematic moments
 
-The four moments the brief asks for, staged in blocks. This is where voxel stops
-being a style choice and starts being the best decision in the docket.
+The four moments the brief asks for.
 
-### 1. The ground breaks apart
+### 1. The world breaks apart
 
 The most important visual in the game — it happens in every player's **first
 match**, six minutes in, and it is the moment they realise Flagbound is not a
-normal CTF game.
+normal capture-the-flag game.
 
-Voxel staging:
+Staging:
 
-1. **Tremors.** Loose blocks rattle in place. Dust voxels lift off surfaces.
-2. **Fracture.** Glowing seams trace *along block boundaries* across the
-   battlefield — the crack is grid-aligned, so the world telegraphs exactly which
-   blocks are about to go.
-3. **The break.** The terrain **shatters into its constituent blocks.** Castle
-   walls come apart course by course. Towers topple as stacks. Thousands of cubes
-   tumble into the dark, tumbling individually, catching the light.
-4. **The fall.** The player falls *with the blocks*, surrounded by the wreckage
-   of the castle they were defending, the surface receding into a bright square
-   hole above them.
+1. **Tremors.** Loose masses rattle in place. Motes scatter. Dust lifts.
+2. **Fracture.** Glowing seams trace across the ground, so the world telegraphs
+   exactly what is about to give way.
+3. **The break.** The ground comes apart into its constituent masses. Arches
+   collapse. Spires topple. The floating islands lose their anchors and the
+   lanterns fall with them — thousands of rounded forms and glowing orbs tumbling
+   together into the dark.
+4. **The fall.** The player falls *with* the wreckage of the field they were
+   defending, the dreamfield receding into a bright hole above them.
 
-No other art style gives you that shot this easily. The blocks are already
-separate objects — you are not authoring a destruction sequence so much as
-switching gravity on.
+The prototype confirms this reads beautifully: soft tumbling masses and drifting
+lights against a violet void, rather than rubble.
 
-### 2. The underground reveal
+### 2. The arrival in the deep
 
-Landing: the cavern opens out and the scale of the block city becomes visible for
-the first time. Emissive crystal and lava placed to draw the eye across the space
-so the player reads the size of it in one second. Surface blocks — grass, castle
-stone — lie scattered in the ruins where they landed, which quietly says *this is
-the same world, you just fell through it.*
+Landing: the cavern opens out and the scale of the glowing deep becomes visible.
+Bioluminescent caps and pools placed to draw the eye across the space so the
+player reads its size in one second. Debris from the surface lies scattered where
+it fell, which quietly says *this is the same world, you just fell through it.*
 
-### 3. The towers launch
+### 3. The towers rise
 
-Ancient machinery ignites. Gold glyph-blocks light up in sequence along the
-ruins. Then the structures **re-stack upward** — blocks detaching from the cavern
-floor and assembling into towers as they climb, the world rebuilding itself
-around the player while they ride it. Breaking through the cloud layer into full
-sunlight is the peak of the match's visual arc.
+Ancient machinery ignites. Light runs through the ruins in sequence. Then the
+structures **re-stack upward**, assembling into towers as they climb, the world
+rebuilding itself around the player as they ride it. Breaking through the cloud
+layer into full sun is the peak of the match's visual arc.
 
 ### 4. The final-second capture
 
 Not authored geometry — an authored *response*. When a capture lands in the last
 few seconds: time dilation, camera push, sound drop-out and swell, a burst of
-team-coloured voxel particles from the flag, and an automatically saved highlight
-clip.
+team-coloured light from the flag, and an automatically saved highlight clip.
 
 ## Shareability
 
@@ -240,42 +231,46 @@ clip.
 captures, captures during a transition, successful long escort runs, and
 first-discovery route runs. Clips short, auto-trimmed, exportable.
 
-The collapse is inherently screenshot-bait. Lean into it: a free-camera photo
-mode would cost little and generate a lot of the sharing the brief asks for.
+The collapse is inherently screenshot-bait in this style. A free-camera photo
+mode would cost little and generate much of the sharing the brief asks for.
 
 ## Interface
 
 - Minimal HUD — health, stamina, ability cooldowns, flag status, timer, score
 - Flag status always visible; it is the only thing that decides the match
 - **A prominent phase timer** so transitions are anticipated, not ambushing
+- **An objective tracker** naming the current objective and its distance, pinning
+  to the screen edge with an arrow when off-view. Playtesting the prototype
+  showed the flag is genuinely hard to find in a large open world without this.
+- **A beacon** rising from each flag, visible over structures from anywhere on the
+  map, retained while the flag is carried so the carrier stays findable
 - F.C.S. callouts as unobtrusive lower-third text with subtitles
-- Clean modern UI as a deliberate contrast to the blocky world — do **not** make
-  the interface pixel-art too. Blocky world, crisp interface: that pairing is
-  part of the visual identity, and it keeps small text legible for younger
-  players.
+- Crisp, modern, softly-rounded UI against the dreamlike world — do **not** make
+  the interface pixel-art or blocky. Keeping small text legible matters more for
+  younger players than stylistic consistency in the chrome.
 
 ## Audio
 
 - **Music per act**, with the two transitions scored as the crescendos they are
 - Layered adaptive score — intensity follows flag state and time remaining
-- Three completely distinct sound beds; a player should know which act they are
-  in with their eyes closed
-- **Block audio is a signature.** Thousands of individual cubes striking stone
-  during the collapse is a sound no other game has. Build the collapse mix around
-  it rather than burying it under orchestral score.
+- Three completely distinct sound beds; a player should know which act they are in
+  with their eyes closed
+- **The collapse has its own signature:** thousands of soft masses coming apart at
+  once. Build the mix around it rather than burying it under orchestral score.
 - **F.C.S. always wins the mix.** If a collapse warning cannot be heard over the
   collapse, the warning is useless.
-- Distinct loud identity for every hazard — lava, wind, unstable platforms,
-  falling debris
+- Distinct loud identity for every hazard
 
-## What voxel does *not* excuse
+## What the style does not excuse
 
-Being blocky is not permission to be ugly or cheap. The bar:
+Soft and colourful is not permission to be vague:
 
-- Lighting is where the money goes. Bad lighting on good voxels looks like a
-  student project; good lighting on simple voxels looks like a style.
-- Silhouettes must be composed. A block castle can be majestic or it can be a box
-  with holes, and the difference is entirely layout craft.
-- Animation must have weight. Blocky characters need snappy, exaggerated,
-  well-timed motion — stiff animation is the fastest way to look amateur.
-- Particle and dust work carries every transition. Budget for it.
+- **Lighting is where the money goes.** The rim and fill terms are the look; get
+  them wrong and it turns to mush.
+- **Silhouettes must be composed.** A rounded arch can be monumental or it can be
+  a lump, and the difference is entirely layout craft.
+- **Animation must have weight.** Round characters need snappy, exaggerated,
+  well-timed motion; floaty animation is the fastest way to look amateur.
+- **Contrast must be maintained.** A world this saturated can lose its objectives
+  in the noise. Flags, players and hazards need values that separate from the
+  environment in all three acts, and this must be tested per act.
