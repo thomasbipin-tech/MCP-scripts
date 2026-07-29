@@ -62,8 +62,23 @@
   #objLabel{color:var(--parchment)}
   #objDist{font-variant-numeric:tabular-nums;opacity:.75}
 
+  /* ---- ability bar ---- */
+  #abil{position:fixed;left:50%;bottom:16px;transform:translateX(-50%);display:none;
+    gap:9px;pointer-events:none;z-index:6}
+  #abil.on{display:flex}
+  .ab{position:relative;width:74px;padding:7px 6px 6px;text-align:center;overflow:hidden;
+    background:rgba(14,8,30,.82);border:1px solid rgba(169,156,196,.28);border-radius:12px;
+    backdrop-filter:blur(6px)}
+  .ab .k{font-family:var(--mono);font-size:12px;font-weight:700;color:var(--gold);line-height:1}
+  .ab .n{font-family:var(--mono);font-size:8.5px;letter-spacing:.09em;text-transform:uppercase;
+    color:#b3a8cd;margin-top:3px;line-height:1.25}
+  .ab .cd{position:absolute;left:0;right:0;bottom:0;background:rgba(120,90,200,.42);height:0%}
+  .ab.ready{border-color:rgba(255,217,138,.55)}
+  .ab.ready .k{color:#fff2cf}
+  @media (max-width:560px){.ab{width:60px}}
+
   /* ---- F.C.S. ---- */
-  #fcs{position:fixed;left:16px;bottom:16px;max-width:min(460px,calc(100% - 32px));
+  #fcs{position:fixed;left:16px;bottom:78px;max-width:min(460px,calc(100% - 32px));
     display:flex;gap:11px;padding:11px 15px;background:rgba(14,8,30,.84);
     border:1px solid rgba(255,217,138,.26);border-left:3px solid var(--gold);
     border-radius:4px 14px 14px 4px;backdrop-filter:blur(8px);
@@ -75,7 +90,7 @@
   @media (prefers-reduced-motion:reduce){#fcs{transition:none}}
 
   /* ---- controls legend ---- */
-  #legend{position:fixed;right:16px;bottom:16px;text-align:right;font-family:var(--mono);
+  #legend{position:fixed;right:16px;bottom:78px;text-align:right;font-family:var(--mono);
     font-size:10.5px;line-height:1.85;color:#b3a8cd;pointer-events:none;
     background:rgba(14,8,30,.7);border:1px solid rgba(169,156,196,.18);
     border-radius:12px;padding:8px 13px;backdrop-filter:blur(5px)}
@@ -132,6 +147,13 @@
   </div>
 </div>
 
+<div id="abil">
+  <div class="ab" id="abQ"><div class="k">Q</div><div class="n">Dash</div><div class="cd"></div></div>
+  <div class="ab" id="abE"><div class="k">E</div><div class="n">Grapple</div><div class="cd"></div></div>
+  <div class="ab" id="abR"><div class="k">R</div><div class="n">Slam</div><div class="cd"></div></div>
+  <div class="ab" id="abG"><div class="k">Space</div><div class="n">Glide</div><div class="cd"></div></div>
+</div>
+
 <div id="objMk"><span id="objIcon">◆</span><span id="objLabel"></span><span id="objDist"></span></div>
 <div id="fcs"><span id="fcsTag">F.C.S.</span><span id="fcsMsg"></span></div>
 
@@ -149,6 +171,7 @@
     <div class="brief">
       <p>Steal the <strong style="color:var(--rose)">rose flag</strong> from the far base and carry it back to your own. Your flag must be home for a capture to count.</p>
       <p><strong>Finding it:</strong> a tall pink beam marks the rose flag from anywhere — just walk toward it. The tag on screen always shows the direction and distance. You are the round one with the gold gem spinning overhead.</p>
+      <p><strong>Skills:</strong> <b>Q</b> dashes you forward, <b>E</b> fires a grapple at whatever you are looking at and reels you in, and <b>R</b> in mid-air slams down with a shockwave that flattens everyone nearby. Hold <b>Space</b> while falling to glide — worth remembering when the ground disappears.</p>
       <p>Sixty seconds in, the dreamfield breaks apart. Everything you are standing on comes loose and falls, dropping you into the glowing deep below. Your flag comes with you if you are carrying it.</p>
     </div>
     <div class="keys">
@@ -157,7 +180,10 @@
       <div><span>Look</span><b>Mouse / ← →</b></div>
       <div><span>Attack</span><b>Click / F</b></div>
       <div><span>Sprint</span><b>Shift</b></div>
-      <div><span>Free the mouse</span><b>Esc</b></div>
+      <div><span>Dash</span><b>Q</b></div>
+      <div><span>Grapple</span><b>E</b></div>
+      <div><span>Ground slam</span><b>R</b></div>
+      <div><span>Glide</span><b>Hold Space falling</b></div>
     </div>
     <button id="playBtn" type="button">Deploy</button>
     <p class="note"><b>Scope.</b> This demonstrates one idea from the design docket — a battlefield that transforms mid-match — with 5v5 bots. Not in this build: online multiplayer, the four character classes, the sky-tower act, and voice F.C.S.</p>
@@ -532,7 +558,9 @@ function makeEnt(team,isPlayer,i){
   return {team,isPlayer,x:s.x,y:s.y,z:s.z,vy:0,yaw:team==='A'?0:Math.PI,
     col:(team==='A'?PAL_A:PAL_B)[i%5],
     grounded:false,respawn:0,carrying:null,cool:0,stray:0,strayDir:0,swing:0,invuln:1.5,
-    bob:0,blink:0,blinkT:1+rnd()*4};
+    bob:0,blink:0,blinkT:1+rnd()*4,
+    dash:0,dx:0,dz:0,grap:null,slamming:false,slamQ:0,gliding:false,
+    cdDash:0,cdGrap:0,cdSlam:0};
 }
 function baseOf(team){
   const b=BASE[team];
@@ -552,6 +580,8 @@ function resetMatch(){
 
 /* ------------------------------ movement --------------------------------- */
 function moveEnt(e,dx,dz,dt){
+  if(e.grap) return;                       // the grapple owns motion while it reels
+  if(e.dash>0){ dx += e.dx*26*dt; dz += e.dz*26*dt; }
   let nx=e.x+dx;
   if(!boxHits(nx,e.y,e.z)) e.x=nx;
   else if(e.grounded && !boxHits(nx,e.y+1,e.z)){ e.x=nx; e.y+=1; }
@@ -559,15 +589,93 @@ function moveEnt(e,dx,dz,dt){
   if(!boxHits(e.x,e.y,nz)) e.z=nz;
   else if(e.grounded && !boxHits(e.x,e.y+1,nz)){ e.z=nz; e.y+=1; }
   e.vy-=26*dt; if(e.vy<-50) e.vy=-50;
+  if(e.gliding && e.vy<-3.2) e.vy=-3.2;    // glide: a soft descent, not flight
   const ny=e.y+e.vy*dt; e.grounded=false;
   if(boxHits(e.x,ny,e.z)){
     const st=e.vy>0?0.02:-0.02;
     while(!boxHits(e.x,e.y+st,e.z) && Math.abs(e.y-ny)>0.02) e.y+=st;
-    if(e.vy<0) e.grounded=true;
+    if(e.vy<0){ e.grounded=true; if(e.slamming) slamImpact(e); }
     e.vy=0;
   } else e.y=ny;
   e.x=Math.max(2.0,Math.min(SX-2.0,e.x)); e.z=Math.max(2.0,Math.min(SZ-2.0,e.z));
   if(e.y<-YOFF+2){ e.y=-YOFF+2; e.vy=0; e.grounded=true; }
+}
+
+/* ------------------------------- abilities -------------------------------- */
+const CD = {dash:4.0, grap:6.5, slam:9.0};
+
+/* Dash — a short burst along the facing direction. Cheap, and the single most
+   universally loved movement ability in any game. */
+function useDash(e){
+  if(e.cdDash>0 || e.dash>0) return;
+  e.cdDash=CD.dash; e.dash=0.20;
+  e.dx=Math.sin(e.yaw); e.dz=Math.cos(e.yaw);
+  e.invuln=Math.max(e.invuln,0.22);           // brief i-frames, so it is an escape too
+}
+
+/* Grapple — raycast along the view direction, then reel the player in. */
+function useGrapple(e){
+  if(e.cdGrap>0 || e.grap) return;
+  const cp=Math.cos(camPitch);
+  const fx=Math.sin(camYaw)*cp, fy=Math.sin(camPitch), fz=Math.cos(camYaw)*cp;
+  let ox=e.x, oy=e.y+2.0, oz=e.z, hit=null;
+  for(let d=1.2; d<46; d+=0.35){
+    const px=ox+fx*d, py=oy+fy*d, pz=oz+fz*d;
+    if(py<-YOFF+1) break;
+    if(solid(Math.floor(px),Math.floor(py),Math.floor(pz))){
+      // stop just short of the surface we struck
+      hit={x:ox+fx*(d-1.1), y:oy+fy*(d-1.1), z:oz+fz*(d-1.1)};
+      break;
+    }
+  }
+  if(!hit){ fcs('Grapple found nothing — aim at a surface.',2.2); return; }
+  e.cdGrap=CD.grap; e.grap={x:hit.x,y:hit.y,z:hit.z,t:1.1};
+}
+
+/* Ground slam — a shockwave on impact. Pressing it while standing leaps first,
+   so the button always does something instead of silently failing. */
+function useSlam(e){
+  if(e.cdSlam>0 || e.slamming || e.slamQ>0) return;
+  e.cdSlam=CD.slam; e.grap=null;
+  if(e.grounded){ e.vy=11.0; e.slamQ=0.34; }   // hop, then come down hard
+  else { e.slamming=true; e.vy=-36; }
+}
+function slamImpact(e){
+  e.slamming=false; shake=Math.max(shake,0.55);
+  let caught=0;
+  for(const o of ents){
+    if(o.team===e.team||dead(o)||o.invuln>0) continue;
+    const dx=o.x-e.x, dz=o.z-e.z, d=Math.hypot(dx,dz);
+    if(d>7.5||Math.abs(o.y-e.y)>5) continue;
+    // knock outward, then take them out
+    const nx=dx/(d||1), nz=dz/(d||1);
+    if(!boxHits(o.x+nx*1.6,o.y,o.z+nz*1.6)){ o.x+=nx*1.6; o.z+=nz*1.6; }
+    o.vy=8; eliminate(o,e); caught++;
+  }
+  if(e.isPlayer && caught) fcs(caught>1?('Shockwave — '+caught+' down.'):'Shockwave connected.',3);
+}
+
+function stepAbilities(e,dt){
+  if(e.slamQ>0 && (e.slamQ-=dt)<=0){ e.slamming=true; e.vy=-36; }
+  if(e.cdDash>0) e.cdDash-=dt;
+  if(e.cdGrap>0) e.cdGrap-=dt;
+  if(e.cdSlam>0) e.cdSlam-=dt;
+  if(e.dash>0) e.dash-=dt;
+  if(e.grap){
+    e.grap.t-=dt;
+    const gx=e.grap.x-e.x, gy=e.grap.y-e.y, gz=e.grap.z-e.z;
+    const len=Math.hypot(gx,gy,gz);
+    if(len<1.7 || e.grap.t<=0){ e.grap=null; e.vy=Math.max(e.vy,1.5); }
+    else {
+      const sp=34*dt, ux=gx/len*sp, uy=gy/len*sp, uz=gz/len*sp;
+      let moved=false;
+      if(!boxHits(e.x+ux,e.y,e.z)){ e.x+=ux; moved=true; }
+      if(!boxHits(e.x,e.y+uy,e.z)){ e.y+=uy; moved=true; }
+      if(!boxHits(e.x,e.y,e.z+uz)){ e.z+=uz; moved=true; }
+      e.vy=0;
+      if(!moved){ e.grap=null; }                 // wedged — let go rather than stick
+    }
+  }
 }
 
 /* -------------------------------- combat --------------------------------- */
@@ -700,7 +808,13 @@ const keys={};
 let camYaw=0, camPitch=-0.20, shake=0, locked=false, dragging=false, lastMX=0, lastMY=0;
 addEventListener('keydown',e=>{ keys[e.code]=true;
   if(['ArrowLeft','ArrowRight','ArrowUp','ArrowDown','Space'].includes(e.code)) e.preventDefault();
-  if(e.code==='KeyF'&&running) strike(ents[0]); });
+  if(!running) return;
+  const p=ents[0]; if(!p||dead(p)) return;
+  if(e.code==='KeyF') strike(p);
+  if(e.code==='KeyQ') useDash(p);
+  if(e.code==='KeyE') useGrapple(p);
+  if(e.code==='KeyR') useSlam(p);
+});
 addEventListener('keyup',e=>{ keys[e.code]=false; });
 cvs.addEventListener('mousedown',e=>{
   if(!running) return;
@@ -723,6 +837,20 @@ cvs.addEventListener('contextmenu',e=>e.preventDefault());
 const el=id=>document.getElementById(id);
 let fcsTimer=0;
 function fcs(m,d){ el('fcsMsg').textContent=m; el('fcs').classList.add('on'); fcsTimer=d||4; }
+function syncAbilities(){
+  const p=ents[0], bar=el('abil');
+  if(!p||!running){ bar.classList.remove('on'); return; }
+  bar.classList.add('on');
+  const set=(id,cd,max,ready)=>{
+    const n=el(id), frac=Math.max(0,Math.min(1,cd/max));
+    n.querySelector('.cd').style.height=(frac*100)+'%';
+    n.classList.toggle('ready', ready);
+  };
+  set('abQ',p.cdDash,CD.dash,p.cdDash<=0);
+  set('abE',p.cdGrap,CD.grap,p.cdGrap<=0);
+  set('abR',p.cdSlam,CD.slam,p.cdSlam<=0);
+  set('abG',0,1,!p.grounded);
+}
 function syncHUD(){
   el('scoreA').textContent=score.A; el('scoreB').textContent=score.B;
   const m=Math.max(0,Math.floor(clock/60)), s=Math.max(0,Math.floor(clock%60));
@@ -771,6 +899,19 @@ function drawEnt(e){
     push(dSP, e.x, gy, e.z, 1.15,1.15,1.15, 0,0,0, COL[8], 0.30);   // soft halo
   }
   if(e.swing>0) P(0, 1.20*sq+lift, 1.45, 1.1,0.5,0.9, COL[8], 0.5);
+
+  // dash leaves a short streak of fading motes behind it
+  if(e.dash>0) for(let i=1;i<=4;i++)
+    push(dSP, e.x-e.dx*i*0.85, e.y+1.2, e.z-e.dz*i*0.85,
+         0.5-i*0.09,0.5-i*0.09,0.5-i*0.09, 0,0,0, col, 0.7-i*0.12);
+  // grapple tether, drawn as a line of small beads
+  if(e.grap){
+    for(let i=1;i<10;i++){ const t=i/10;
+      push(dSP, e.x+(e.grap.x-e.x)*t, e.y+2.0+(e.grap.y-(e.y+2.0))*t, e.z+(e.grap.z-e.z)*t,
+           0.22,0.22,0.22, 0,0,0, COL[8], 0.8); }
+  }
+  // slamming reads as a compressed glow under the feet
+  if(e.slamming) push(dSP, e.x, e.y+0.2, e.z, 2.2,0.5,2.2, 0,0,0, COL[9], 0.9);
 }
 function drawBeacon(team,x,y,z){
   const col = team==='A'?COL[10]:COL[11];
@@ -888,6 +1029,7 @@ function frame(now){
       if(e.swing>0) e.swing-=dt;
       if(e.invuln>0) e.invuln-=dt;
       if(e.blink>0) e.blink-=dt; else if((e.blinkT-=dt)<=0){ e.blink=0.14; e.blinkT=2+rnd()*4; }
+      stepAbilities(e,dt);
       if(dead(e)){ e.respawn-=dt;
         if(e.respawn<=0){ const s=spawnPoint(e.team); e.x=s.x; e.y=s.y; e.z=s.z; e.vy=0; e.invuln=1.5; }
         continue; }
@@ -906,7 +1048,9 @@ function frame(now){
         let sp=(keys.ShiftLeft||keys.ShiftRight)?13:9;
         if(e.carrying) sp*=0.82;
         if(m>0){ fx/=m; fz/=m; e.yaw=Math.atan2(fx,fz); }
-        if(keys.Space&&e.grounded) e.vy=11.5;
+        if(keys.Space&&e.grounded){ e.vy=11.5; e.gliding=false; }
+        // holding Space while already falling glides instead
+        e.gliding = !!keys.Space && !e.grounded && e.vy<0 && !e.slamming && !e.grap && e.slamQ<=0;
         moveEnt(e,fx*sp*dt,fz*sp*dt,dt);
       } else botThink(e,dt);
       e.bob += Math.hypot(e.x-ox,e.z-oz)*3.2;
@@ -914,7 +1058,7 @@ function frame(now){
     updateFlags(dt);
     stepDebris(debrisRB,dt,false); stepDebris(debrisSP,dt,true);
     if(fcsTimer>0&&(fcsTimer-=dt)<=0) el('fcs').classList.remove('on');
-    syncHUD();
+    syncHUD(); syncAbilities();
     if(clock<=0) endMatch();
   }
   render();

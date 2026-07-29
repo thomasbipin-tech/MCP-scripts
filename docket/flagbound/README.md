@@ -30,7 +30,9 @@ so no strategy survives the whole match.
   apart and re-stacks when it transforms, but drawn as rounded masses under a
   violet sky, never as blocks
 - Dynamic transforming world (surface → underground → sky), three acts per match
-- Skill-based action combat: attack, block, dodge, sprint, jump, class abilities
+- Skill-based action combat: attack, block, dodge, sprint, jump
+- **Skills worth pressing** — dash, glide, grapple, ground slam, barriers, stealth,
+  decoys, and ultimates that charge from *support* play as fast as from fighting
 - Four classes — Guardian, Swiftblade, Element Warrior, Shadow Runner
 - Teamwork-first scoring: support play is worth as much as eliminations
 - **F.C.S.** — a talking AI companion that briefs, warns, and advises every player
@@ -55,11 +57,12 @@ so no strategy survives the whole match.
 | 10 | [Art Direction & Cinematics](10-art-direction-and-cinematics.md) | Visual style, the shareable moments |
 | 11 | [Technical Architecture](11-technical-architecture.md) | Proposed systems to build this — *inferred, not from brief* |
 | 12 | [Open Questions](12-open-questions.md) | Decisions still owed before production |
+| 13 | [Abilities & Skills](13-abilities-and-skills.md) | The full skill roster, ultimates, and what was rejected |
 
 ## How to read this docket
 
-Documents **01–10** are a direct expansion of the source brief; every design
-statement in them traces back to something the brief asked for. **Numbers are
+Documents **01–10** and **13** are a direct expansion of the source brief; every
+design statement in them traces back to something the brief asked for. **Numbers are
 proposals** where the brief did not give one — phase timings, cooldowns,
 scoring values and suspension lengths are all marked as *proposed* and are meant
 to be tuned in playtesting.

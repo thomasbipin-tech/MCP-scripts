@@ -27,7 +27,7 @@ Available to every class, regardless of build:
 | **Dodge** | Short i-frame roll or dash; the primary skill expression |
 | **Sprint** | Sustained speed at the cost of stamina; disabled while carrying a flag at full speed (*proposed:* carriers sprint at reduced speed) |
 | **Jump** | Traversal and vertical mixups; essential in Act III |
-| **Ability** | Class-defining, cooldown-gated (see below) |
+| **Ability** | Class-defining, cooldown-gated — full roster in [13](13-abilities-and-skills.md) |
 | **Ping / Callout** | Non-verbal team communication; always available, never moderated away |
 
 ## Health, defeat and respawn
@@ -141,9 +141,9 @@ three radically different worlds would fight the adaptation pillar.
   third-person distance, silhouette is all a player gets. See
   [10 — Characters](10-art-direction-and-cinematics.md#characters).
 - Team colour is applied as **emissive** trim so it stays readable in Act I
-  daylight, against Act II lava, and against Act III cloud. Flat colour fails at
+  daylight, against Act II's glowing dark, and against Act III's bright cloud. Flat colour fails at
   least one of those three. The two team palettes are warm versus cool rather
   than red versus green, so they survive colour-blindness.
 - Ability effects are stylised and bright — magic, not injury.
-- Defeats are a knockdown followed by a burst of voxel particles. No gore.
+- Defeats are a knockdown followed by a burst of light. No gore.
 - Screen-space damage indicators always show the direction of the attacker.

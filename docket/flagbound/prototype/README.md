@@ -40,6 +40,25 @@ Named here so the prototype is not mistaken for the game:
 Match length is compressed to 3 minutes with the collapse at 60s, so the
 transition is reachable quickly. The docket specifies 15 minutes.
 
+## Skills
+
+Four are playable, bound to keys. The full roster — class signatures, ultimates,
+and the ideas that were rejected — is in [13](../13-abilities-and-skills.md).
+
+| Key | Skill | Behaviour | Cooldown |
+|---|---|---|---|
+| **Q** | Dash | Burst along your facing direction with brief invulnerability | 4s |
+| **E** | Grapple | Raycasts along the view direction and reels you to whatever it strikes | 6.5s |
+| **R** | Ground Slam | Comes down hard; shockwave knocks back and eliminates nearby enemies. Pressing it while standing leaps first, so the button never silently fails | 9s |
+| **Space** (held, falling) | Glide | Clamps descent to a drift | — |
+
+In the prototype all four are available to everyone. In the docket, dash and
+glide are universal while grapple and slam are class signatures — the prototype
+has no classes, so it hands out the whole kit.
+
+Bots do not use skills. They fight and pursue objectives only, which is worth
+knowing when judging how the abilities feel.
+
 ## Finding things
 
 Two aids exist because the flag was genuinely hard to locate in testing:
