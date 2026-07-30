@@ -518,7 +518,7 @@ if(!gl){
 }
 
 /* ------------------------------- constants ------------------------------- */
-const SX=164, SY=88, SZ=164, YOFF=48;
+const SX=164, SY=120, SZ=164, YOFF=48;   // y -48..71: headroom for the towers
 const UNDER_Y  = -34;
 const COLLAPSE_CUT = -16;
 const MATCH_TIME = 180, TREMOR_AT = 50, COLLAPSE_AT = 60;
@@ -592,30 +592,112 @@ function house(bx,bz,w,d,h,wall,roof){
     }
   }
 }
-/* Multi-storey towers: floor slabs every four cells, window bands, a parapet and
-   a roof block. Tall enough to matter for sniping and grappling. */
+/* Multi-storey towers with a staircase that actually reaches the roof.
+   Storeys are six cells apart, not four — a figure is 3.7 cells tall, so four
+   left too little headroom to stand up inside. */
+const STOREY = 6;
+/* The skyline, and the reason to carry a sniper. Declared up here rather than
+   inline at the call site because scenery scattered later has to know where the
+   towers are — a tree seeded inside one grows straight up through the stairwell. */
+const TOWERS = [
+  [54,64,9,6,7,T.PLASTER,T.COBBLE],  [112,98,9,6,9,T.COBBLE,T.ROOF],
+  [58,116,9,6,6,T.PLANK,T.COBBLE],   [122,58,9,6,8,T.PLASTER,T.ROOF],
+  [104,124,9,6,7,T.COBBLE,T.PLASTER],[34,34,9,6,6,T.PLANK,T.ROOF],
+  [140,32,9,6,9,T.PLASTER,T.COBBLE], [24,128,9,6,7,T.COBBLE,T.ROOF]];
+/* margin covers the doorway you have to be able to walk up to */
+const inTower = (x,z,m=6) =>
+  TOWERS.some(([tx,tz,w,d]) => Math.abs(x-tx)<=w+m && Math.abs(z-tz)<=d+m);
 function tallBuilding(bx,bz,w,d,storeys,wall,trim){
-  for(const b of [BASE.A,BASE.B]) if(Math.hypot(bx-b.x,bz-b.z) < 16) return;
+  for(const b of [BASE.A,BASE.B])     if(Math.hypot(bx-b.x,bz-b.z) < 16) return;
   for(const b of [REBOOT.A,REBOOT.B]) if(Math.hypot(bx-b.x,bz-b.z) < 14) return;
-  const g=groundY(bx,bz), h=storeys*4;
+  const g=groundY(bx,bz), h=storeys*STOREY;
+
   for(let dx=-w;dx<=w;dx++) for(let dz=-d;dz<=d;dz++)
-    for(let y=g-2;y<=g;y++) setB(bx+dx,y,bz+dz,T.COBBLE);
+    for(let y=g-8;y<=g;y++) setB(bx+dx,y,bz+dz,T.COBBLE);          // foundation
+
   for(let y=g+1;y<=g+h;y++){
-    const floorSlab = (y-g)%4===0;
+    const slab=(y-g)%STOREY===0;
     for(let dx=-w;dx<=w;dx++) for(let dz=-d;dz<=d;dz++){
       const rim=Math.abs(dx)===w||Math.abs(dz)===d;
-      if(floorSlab){ setB(bx+dx,y,bz+dz, rim?trim:T.PLANK); continue; }
-      if(!rim) continue;
-      const band=(y-g)%4===2;                       // window band
-      const door=(y-g)<=3 && dz===d && Math.abs(dx)<=1;
-      if(door) continue;
-      if(band && ((Math.abs(dx)%3===1)||(Math.abs(dz)%3===1))) continue;
+      if(slab){ setB(bx+dx,y,bz+dz, rim?trim:T.PLANK); continue; }  // floor deck
+      // hollow the storey out: on sloped ground the hillside otherwise stays
+      // standing inside the tower and buries the foot of the stairs
+      if(!rim){ setB(bx+dx,y,bz+dz,0); continue; }
+      const band=(y-g)%STOREY===3;                                   // window band
+      const door=(y-g)<=5 && dz===d && Math.abs(dx)<=1;   // 5 tall for a 3.7 figure
+      // openings have to be CUT, not merely skipped: skipping leaves whatever
+      // terrain was already standing there, and a doorway half-full of hillside
+      // is a doorway you cannot walk through
+      if(door){ setB(bx+dx,y,bz+dz,0); continue; }
+      if(band && ((Math.abs(dx)%3===1)||(Math.abs(dz)%3===1))){ setB(bx+dx,y,bz+dz,0); continue; }
       setB(bx+dx,y,bz+dz,wall);
     }
   }
-  for(let dx=-w-1;dx<=w+1;dx++) for(let dz=-d-1;dz<=d+1;dz++){
-    setB(bx+dx,g+h+1,bz+dz,trim);                   // parapet lip
-    if(Math.abs(dx)<=w&&Math.abs(dz)<=d) setB(bx+dx,g+h+2,bz+dz,T.PLANK);
+
+  /* Stairs, sized from the collision box rather than guessed at. The box is
+     1.16 cells wide, which is wider than a cell — so a figure standing in the
+     middle of a column still overlaps the column on either side. Everything
+     below follows from that one number:
+
+       - Treads are TWO cells deep. With one-cell treads the box reaches the
+         step two ahead, which is two cells up, and the one-cell auto step-up
+         cannot clear it.
+       - Runs are FOUR cells wide, so there are two lanes a figure can walk in
+         without clipping the wall beside the stair.
+       - Six treads at two cells deep is twelve cells of run for a six-cell
+         rise, which is why the interior is seventeen columns: twelve of run,
+         two to approach from, three to land on.
+       - The two halves of the switchback sit in SEPARATE z-bands, one against
+         each side wall. Stacking them in the same band — the obvious way to
+         build a switchback — puts the upper flight directly over the lower one
+         with three cells of air between, and a figure is 3.7 tall. Splitting
+         them means nothing is ever overhead except the next deck, five cells up.
+       - The shaft is opened one column past each end of the run below deck
+         level, but only over the run itself AT deck level, so the landing you
+         step out onto is not carved away with it. */
+  const bandA = bz-d+2, bandB = bz+d-5;                // four-wide, one off each wall
+  for(let k=0;k<storeys;k++){
+    const yB=g+k*STOREY, yT=yB+STOREY;
+    const dir = (k%2===0) ? 1 : -1;
+    const zLo = (k%2===0) ? bandA : bandB, zHi = zLo+3;
+    const x0 = (dir>0) ? bx-w+3 : bx+w-3;              // two columns to approach from
+    const x1 = x0 + dir*11;                            // twelve cells of run
+    const rLo = Math.min(x0,x1), rHi = Math.max(x0,x1);
+    for(let cz=zLo; cz<=zHi; cz++){
+      for(let cx=Math.max(bx-w+1,rLo-1); cx<=Math.min(bx+w-1,rHi+1); cx++)
+        for(let cy=yB+1; cy<yT; cy++) setB(cx,cy,cz,0);
+      for(let cx=rLo; cx<=rHi; cx++) setB(cx,yT,cz,0);  // stairwell through the deck
+    }
+    for(let t=0;t<STOREY;t++) for(let j=0;j<2;j++){
+      const cx = x0 + dir*(t*2+j);
+      if(cx < bx-w+1 || cx > bx+w-1) continue;
+      for(let cz=zLo; cz<=zHi; cz++)                    // last tread is level with the deck
+        setB(cx, yB+1+t, cz, t===STOREY-1 ? T.PLANK : T.COBBLE);
+    }
+  }
+
+  /* An approach path out from the door, terraced one cell at a time until it
+     meets the natural ground. The tower floor sits at the height of its centre,
+     so on any slope the ground outside the door is a metre or three above the
+     threshold — and a doorway you meet at head height is not a doorway. Stops
+     as soon as it is level, so it stays a few cells long and never cuts through
+     the midfield wall. */
+  let cur=g;
+  for(let i=1;i<=12;i++){
+    const pz=bz+d+i, nat=groundY(bx,pz);
+    if(i>1){ if(cur===nat) break; cur += Math.sign(nat-cur); }  // first cell stays level
+                                                                // with the threshold
+    for(let dx=-2;dx<=2;dx++){
+      for(let y=cur-6;y<=cur;y++) setB(bx+dx,y,pz, y===cur?T.COBBLE:T.DIRT);
+      for(let y=cur+1;y<=cur+6;y++) setB(bx+dx,y,pz,0);
+    }
+  }
+
+  // the top deck is the roof; ring it with a parapet you can crouch behind
+  for(let dx=-w;dx<=w;dx++) for(let dz=-d;dz<=d;dz++){
+    if(Math.abs(dx)===w||Math.abs(dz)===d){
+      setB(bx+dx,g+h+1,bz+dz,trim); setB(bx+dx,g+h+2,bz+dz,trim);
+    }
   }
 }
 
@@ -623,6 +705,7 @@ function rockCluster(cx,cz,rad){
   // never inside a base or a reboot pad — both are spawn areas
   for(const b of [BASE.A,BASE.B]) if(Math.hypot(cx-b.x,cz-b.z) < 12+rad) return;
   for(const b of [REBOOT.A,REBOOT.B]) if(Math.hypot(cx-b.x,cz-b.z) < 10+rad) return;
+  if(inTower(cx,cz,rad+4)) return;                  // and never through a tower
   const g=groundY(cx,cz);
   for(let dx=-rad;dx<=rad;dx++) for(let dy=0;dy<=rad;dy++) for(let dz=-rad;dz<=rad;dz++){
     if(Math.hypot(dx,dy*1.5,dz)<=rad*(0.75+rnd()*0.3)) setB(cx+dx,g+dy,cz+dz,T.ROCK);
@@ -680,12 +763,7 @@ function buildSurface(){
       [110,132,4,4,5,T.PLANK],[48,140,3,3,4,T.PLASTER],[144,120,3,3,4,T.PLANK]])
     house(hx,hz,w,d,h,wall,T.ROOF);
   // tall buildings — the skyline, and the reason to carry a sniper
-  for(const [tx,tz,w,d,st,wall,trim] of [
-      [54,64,5,5,7,T.PLASTER,T.COBBLE], [112,98,5,4,9,T.COBBLE,T.ROOF],
-      [58,116,4,5,6,T.PLANK,T.COBBLE],  [122,58,4,4,8,T.PLASTER,T.ROOF],
-      [96,140,5,5,7,T.COBBLE,T.PLASTER],[34,34,4,4,6,T.PLANK,T.ROOF],
-      [140,32,4,5,9,T.PLASTER,T.COBBLE],[24,128,5,4,7,T.COBBLE,T.ROOF]])
-    tallBuilding(tx,tz,w,d,st,wall,trim);
+  for(const [tx,tz,w,d,st,wall,trim] of TOWERS) tallBuilding(tx,tz,w,d,st,wall,trim);
   // plank bridge over the pond
   for(let x=POND.x-20;x<=POND.x+20;x++){
     const y=Math.round(hSurf(x,POND.z))+1;
@@ -704,6 +782,7 @@ function buildSurface(){
     if(Math.hypot(x-REBOOT.A.x,z-REBOOT.A.z)<9) continue;
     if(Math.hypot(x-REBOOT.B.x,z-REBOOT.B.z)<9) continue;
     if(Math.abs(z-mz)<4 || pondDepth(x,z)>0.5) continue;
+    if(inTower(x,z)) continue;                      // a tree inside a tower blocks the stairs
     const g=groundY(x,z), h=ri(4,7);
     for(let y=g;y<=g+h;y++) setB(x,y,z,T.WOOD);
     orbs.push({x:x+0.5,y:g+h+1.2,z:z+0.5,r:2.1,t:T.LEAF, phase:'surface'});

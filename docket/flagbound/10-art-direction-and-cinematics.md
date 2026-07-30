@@ -112,6 +112,38 @@ the middle of the map removes a sightline from a defender.
 | **Arch / structure height** | 10–20 m — must still feel monumental |
 | **Sky tower height** | 100 m+ |
 
+## Stairs a body can actually climb
+
+Interior architecture is the one place where the art has to answer to the
+collision box rather than the eye, and it took several wrong builds to learn how
+strictly. The figure's box is **1.16 cells wide and 3.7 cells tall**, and the
+movement code steps up **one cell** automatically. Every number below is derived
+from those three, not chosen:
+
+| Rule | Because |
+|---|---|
+| Storeys are **6 cells** apart | 3.7 tall needs 4 cells of air; a 4-cell storey leaves 3, and the climber's head is inside the deck |
+| Treads are **2 cells deep** | The box is wider than a cell, so it always overlaps its neighbours. On 1-cell treads it reaches the step *two* ahead, which is two cells up, and the 1-cell step-up cannot clear it |
+| Runs are **4 cells wide** | Gives two lanes a figure can walk without clipping the wall beside the stair |
+| The two halves of the switchback sit in **separate z-bands** | Stacking them — the obvious way to build a switchback — puts the upper flight three cells over the lower one. A 3.7-tall figure does not fit under it. Split into two bands, nothing is overhead except the next deck |
+| The last tread is **level with the deck** | A tread one below the deck can never be stood on: the deck in the next column is already at foot height |
+| Openings are **cut, not skipped** | A doorway that merely declines to place a wall block leaves whatever terrain was standing there. Half the towers had a hillside in the doorway |
+| Towers are **hollowed out** and get a **terraced approach path** | A tower's floor sits at the height of its centre, so on a slope the ground outside meets the door at head height, and the hillside stands inside the ground floor |
+| Scenery knows where the towers are | Trees and rock formations are scattered *after* the buildings. Without an exclusion test a tree grows up through the stairwell — this was the actual cause of most "unclimbable" towers, not the stair geometry at all |
+
+**How this is verified, and why it has to be.** Six of these rules were found by
+building the stairs wrong. Reading the code proves nothing here; what proves it
+is a test that walks. The prototype's check does two independent things:
+
+1. A grid search using the real collision box, asking whether a route from open
+   ground outside the tower to the roof exists at all.
+2. A body driven along that route by **the real movement function**, with real
+   gravity and the real step-up, asking whether the route can actually be
+   walked.
+
+Both must pass on **every** tower. A route that exists but cannot be walked is
+still a broken staircase, and only the second check catches it.
+
 ## The three worlds
 
 Each act must be recognisable from a single frame. The palettes are deliberately
@@ -135,6 +167,10 @@ opposed.
   - **Rock formations** for cover and elevation.
   - **A ruined stone wall** across midfield with two gaps, flanked by **towers**
     for height and as grapple anchors.
+  - **Tall buildings** — the skyline, six to nine storeys, and the reason to
+    carry a sniper. Every one is **climbable on foot**: a doorway at ground
+    level, a switchback staircase inside, and a parapet roof you can shoot from
+    and be shot at on. See *Stairs a body can actually climb* below.
   - **Trees** with rounded canopies and bushes at their feet.
 - **Horizon:** distant hills beyond the playable area, fogged for atmospheric
   perspective. Cheap, and it stops the world feeling like it ends at a boundary.
