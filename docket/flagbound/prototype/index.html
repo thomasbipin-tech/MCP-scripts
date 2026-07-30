@@ -488,7 +488,7 @@ function flush(b){
 }
 
 const wRB=makeBatch(MESH_RB,26000), wSP=makeBatch(MESH_SP,300);
-const dRB=makeBatch(MESH_RB,DEBRIS_CAP+200), dSP=makeBatch(MESH_SP,400);
+const dRB=makeBatch(MESH_RB,DEBRIS_CAP+600), dSP=makeBatch(MESH_SP,400);
 
 function rebuildWorld(){
   wRB.n=0;
@@ -520,7 +520,8 @@ function mul(a,b){ const o=new Array(16);
     for(let k=0;k<4;k++) s+=a[k*4+j]*b[i*4+k]; o[i*4+j]=s; } return o; }
 
 /* ------------------------------ entities --------------------------------- */
-const HW=0.62, HH=2.5;
+/* Humanoid, roughly 1.75 m — head, torso, arms, legs, all softened. */
+const HW=0.62, HH=3.5;
 function boxHits(x,y,z){
   const x0=Math.floor(x-HW),x1=Math.floor(x+HW),z0=Math.floor(z-HW),z1=Math.floor(z+HW);
   const y0=Math.floor(y),y1=Math.floor(y+HH-0.001);
@@ -604,7 +605,7 @@ function useGrapple(e){
   if(e.cdGrap>0 || e.grap) return;
   const cp=Math.cos(camPitch);
   const fx=Math.sin(camYaw)*cp, fy=Math.sin(camPitch), fz=Math.cos(camYaw)*cp;
-  let ox=e.x, oy=e.y+2.0, oz=e.z, hit=null;
+  let ox=e.x, oy=e.y+2.8, oz=e.z, hit=null;
   for(let d=1.2; d<46; d+=0.35){
     const px=ox+fx*d, py=oy+fy*d, pz=oz+fz*d;
     if(py<-YOFF+1) break;
@@ -812,9 +813,9 @@ cvs.addEventListener('mousedown',e=>{
 addEventListener('mouseup',()=>{ dragging=false; });
 addEventListener('mousemove',e=>{
   if(!running) return;
-  if(locked){ camYaw-=e.movementX*0.0026; camPitch=Math.max(-1.2,Math.min(0.75,camPitch-e.movementY*0.0022)); }
+  if(locked){ camYaw-=e.movementX*0.0026; camPitch=Math.max(-1.1,Math.min(0.35,camPitch-e.movementY*0.0022)); }
   else if(dragging){ camYaw-=(e.clientX-lastMX)*0.006;
-    camPitch=Math.max(-1.2,Math.min(0.75,camPitch-(e.clientY-lastMY)*0.005));
+    camPitch=Math.max(-1.1,Math.min(0.35,camPitch-(e.clientY-lastMY)*0.005));
     lastMX=e.clientX; lastMY=e.clientY; }
 });
 document.addEventListener('pointerlockchange',()=>{ locked=document.pointerLockElement===cvs; });
@@ -853,52 +854,64 @@ function syncHUD(){
 }
 
 /* --------------------------------- draw ---------------------------------- */
-/* Creatures: smooth spheres only. A big egg body, a fuller lower blob, oversized
-   eyes proud of the surface, stubby limbs, a little antenna. */
+/* Rounded humanoid figures: head, torso, two arms, two legs — the familiar
+   blocky silhouette, but every part is a spherified box like the rest of the
+   world, so nothing has a hard edge. Limbs swing from their joints as they walk. */
+const WHITE=[0.97,0.97,0.95], PUPIL=[0.07,0.08,0.11];
 function drawEnt(e){
   const c=Math.cos(e.yaw), s=Math.sin(e.yaw);
-  const P=(lx,ly,lz,sx,sy,sz,col,em)=>
-    push(dSP, e.x+lx*c+lz*s, e.y+ly, e.z-lx*s+lz*c, sx,sy,sz, 0,e.yaw,0, col, em||0);
-  const bob=e.bob||0, sq=1+Math.sin(bob)*0.07, lift=Math.abs(Math.sin(bob))*0.18;
-  const col=e.col, dark=[col[0]*0.72,col[1]*0.72,col[2]*0.72];
+  const bob=e.bob||0;
+  const lift=Math.abs(Math.sin(bob*0.5))*0.10;
+  const col=e.col;
+  const trouser=[col[0]*0.55,col[1]*0.55,col[2]*0.55];
+  const head=[Math.min(1,col[0]*1.12),Math.min(1,col[1]*1.12),Math.min(1,col[2]*1.12)];
 
-  P(0, 0.62*sq+lift, 0, 1.44, 1.32, 1.34, col);           // lower blob
-  P(0, 1.36*sq+lift, 0, 1.56, 1.74, 1.46, col);           // main egg
-  P(-0.40, 0.16+lift*0.4, 0.14, 0.50,0.34,0.62, dark);    // feet
-  P( 0.40, 0.16+lift*0.4, 0.14, 0.50,0.34,0.62, dark);
-  P(-0.80, 1.16*sq+lift, 0.02, 0.40,0.62,0.42, dark);     // arms
-  P( 0.80, 1.16*sq+lift, 0.02, 0.40,0.62,0.42, dark);
+  // a part in the figure's local space, with an optional pitch about its own X
+  const P=(lx,ly,lz,sx,sy,sz,cl,em,rx)=>
+    push(dRB, e.x+lx*c+lz*s, e.y+ly, e.z-lx*s+lz*c, sx,sy,sz, rx||0, e.yaw, 0, cl, em||0);
 
-  const ey=1.58*sq+lift, open=e.blink>0?0.14:1;
-  P(-0.33, ey, 0.60, 0.60, 0.64*open, 0.52, [0.99,0.98,1.0], 0.22);
-  P( 0.33, ey, 0.60, 0.60, 0.64*open, 0.52, [0.99,0.98,1.0], 0.22);
+  /* A limb hanging from a joint: the centre swings along the arc and the limb
+     pitches with it, so it reads as pivoting rather than sliding. */
+  const limb=(lx,jointY,lz,w,len,d,cl,ang)=>{
+    const dy=-Math.cos(ang)*len/2, dz=Math.sin(ang)*len/2;
+    P(lx, jointY+dy, lz+dz, w, len, d, cl, 0, ang);
+  };
+
+  const sw = Math.sin(bob) * 0.55;              // stride
+  limb(-0.27, 1.42+lift, 0, 0.47, 1.42, 0.50, trouser,  sw);
+  limb( 0.27, 1.42+lift, 0, 0.47, 1.42, 0.50, trouser, -sw);
+  limb(-0.74, 2.58+lift, 0, 0.38, 1.18, 0.42, col,     -sw*0.75);
+  limb( 0.74, 2.58+lift, 0, 0.38, 1.18, 0.42, col,      sw*0.75);
+
+  P(0, 1.98+lift, 0, 1.06, 1.20, 0.58, col);    // torso
+  P(0, 3.10+lift, 0, 0.98, 0.98, 0.94, head);   // head
+
+  const ey=3.18+lift, open=e.blink>0?0.16:1;    // face, proud of the head front
+  P(-0.24, ey, 0.47, 0.30, 0.32*open, 0.10, WHITE, 0.18);
+  P( 0.24, ey, 0.47, 0.30, 0.32*open, 0.10, WHITE, 0.18);
   if(open===1){
-    P(-0.34, ey-0.02, 0.80, 0.28,0.30,0.20, [0.08,0.06,0.16]);
-    P( 0.34, ey-0.02, 0.80, 0.28,0.30,0.20, [0.08,0.06,0.16]);
+    P(-0.235, ey-0.01, 0.53, 0.15,0.18,0.06, PUPIL);
+    P( 0.235, ey-0.01, 0.53, 0.15,0.18,0.06, PUPIL);
   }
-  P(0, 1.06*sq+lift, 0.68, 0.30,0.17,0.16, [0.10,0.07,0.18]);   // mouth
-  P(0, 2.34*sq+lift, 0, 0.12,0.34,0.12, dark);                  // antenna
-  P(0, 2.58*sq+lift, 0, 0.30,0.30,0.30, col, 0.45);             // antenna bulb
+  P(0, 2.90+lift, 0.47, 0.26,0.09,0.09, PUPIL); // mouth
 
-  if(e.isPlayer){    // spinning gem so you can find yourself
-    const gy=e.y+3.25+Math.sin(gameT*2)*0.10;
+  if(e.isPlayer){                               // spinning gem, so you find yourself
+    const gy=e.y+4.25+Math.sin(gameT*2)*0.10;
     push(dRB, e.x, gy, e.z, 0.46,0.70,0.46, 0.5, gameT*1.7, 0.2, COL[8], 0.95);
   }
-  if(e.swing>0) P(0, 1.20*sq+lift, 1.45, 1.1,0.5,0.9, COL[8], 0.5);
+  if(e.swing>0) P(0, 2.20+lift, 1.30, 1.1,0.42,0.8, COL[8], 0.5);
 
-  // dash leaves a short streak of fading motes behind it
   if(e.dash>0) for(let i=1;i<=4;i++)
-    push(dSP, e.x-e.dx*i*0.85, e.y+1.2, e.z-e.dz*i*0.85,
+    push(dSP, e.x-e.dx*i*0.85, e.y+1.7, e.z-e.dz*i*0.85,
          0.5-i*0.09,0.5-i*0.09,0.5-i*0.09, 0,0,0, col, 0.7-i*0.12);
-  // grapple tether, drawn as a line of small beads
   if(e.grap){
     for(let i=1;i<10;i++){ const t=i/10;
-      push(dSP, e.x+(e.grap.x-e.x)*t, e.y+2.0+(e.grap.y-(e.y+2.0))*t, e.z+(e.grap.z-e.z)*t,
+      push(dSP, e.x+(e.grap.x-e.x)*t, e.y+2.6+(e.grap.y-(e.y+2.6))*t, e.z+(e.grap.z-e.z)*t,
            0.22,0.22,0.22, 0,0,0, COL[8], 0.8); }
   }
-  // slamming reads as a compressed glow under the feet
   if(e.slamming) push(dSP, e.x, e.y+0.2, e.z, 2.2,0.5,2.2, 0,0,0, COL[9], 0.9);
 }
+
 function drawBeacon(team,x,y,z){
   const col = team==='A'?COL[10]:COL[11];
   for(let i=0;i<10;i++){
@@ -940,17 +953,19 @@ function updateMarker(){
 function render(){
   const p=ents[0];
   if(!p){ gl.clearColor(0,0,0,0); gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT); return; }
-  const dist=10.5, hy=p.y+2.3;
+  const dist=11.0, hy=p.y+2.8;
   let cx=p.x-Math.sin(camYaw)*Math.cos(camPitch)*dist;
   let cy=hy  -Math.sin(camPitch)*dist;
   let cz=p.z-Math.cos(camYaw)*Math.cos(camPitch)*dist;
   for(let s=1;s<=12;s++){
     const t=s/12, tx=p.x+(cx-p.x)*t, ty=hy+(cy-hy)*t, tz=p.z+(cz-p.z)*t;
     if(solid(Math.floor(tx),Math.floor(ty),Math.floor(tz))){
-      const u=Math.max(0.5,(s-1)/12);          // floor, so the view never jams onto the player
+      const u=Math.max(0.28,(s-1)/12);         // small floor: close is better than inside a wall
       cx=p.x+(cx-p.x)*u; cy=hy+(cy-hy)*u; cz=p.z+(cz-p.z)*u; break;
     }
   }
+  // never let the camera sit inside terrain — lift it out
+  for(let k=0;k<10 && solid(Math.floor(cx),Math.floor(cy),Math.floor(cz)); k++) cy+=0.4;
   if(shake>0 && !REDUCED_MOTION){
     cx+=(Math.random()-0.5)*shake; cy+=(Math.random()-0.5)*shake; cz+=(Math.random()-0.5)*shake;
   }
@@ -977,7 +992,7 @@ function render(){
   for(const e of ents) if(!dead(e)) drawEnt(e);
   for(const k of ['A','B']){
     const f=flags[k];
-    if(f.carrier) drawBeacon(k, f.carrier.x, f.carrier.y+3.4, f.carrier.z);
+    if(f.carrier) drawBeacon(k, f.carrier.x, f.carrier.y+4.4, f.carrier.z);
     else drawFlag(f);
   }
   for(const d of debrisRB) push(dRB,d.x,d.y,d.z,d.s,d.s,d.s,d.rx,d.ry,d.rz,COL[d.t],EMIS[d.t]||0);
@@ -1029,8 +1044,8 @@ function frame(now){
       if(e.isPlayer){
         if(keys.ArrowLeft) camYaw+=1.9*dt;
         if(keys.ArrowRight) camYaw-=1.9*dt;
-        if(keys.ArrowUp) camPitch=Math.min(0.75,camPitch+1.3*dt);
-        if(keys.ArrowDown) camPitch=Math.max(-1.2,camPitch-1.3*dt);
+        if(keys.ArrowUp) camPitch=Math.min(0.35,camPitch+1.3*dt);
+        if(keys.ArrowDown) camPitch=Math.max(-1.1,camPitch-1.3*dt);
         let fx=0,fz=0;
         if(keys.KeyW){fx+=Math.sin(camYaw);fz+=Math.cos(camYaw);}
         if(keys.KeyS){fx-=Math.sin(camYaw);fz-=Math.cos(camYaw);}

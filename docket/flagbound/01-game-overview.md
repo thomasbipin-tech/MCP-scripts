@@ -50,9 +50,9 @@ respectful one.
 ## Visual identity
 
 Flagbound is a **rounded block world** — rolling green ground under a clear sky,
-stone walls and towers, trees with rounded canopies, and round big-eyed creatures
-rather than armoured soldiers. Familiar and readable, but every mass is a softened
-form rather than a hard cube.
+stone walls and towers, trees with rounded canopies, and rounded humanoid figures
+with big friendly eyes. Familiar and readable, but every mass is a softened form
+rather than a hard cube.
 
 Underneath, the world is simulated as a **grid of half-metre cells**, and that is
 the load-bearing decision: it is what lets the battlefield genuinely come apart

@@ -13,9 +13,9 @@ works straight off the filesystem (`file://`), no server required.
 
 | From the docket | Here |
 |---|---|
-| Rounded block world ([10](../10-art-direction-and-cinematics.md)) | Hand-written WebGL2 instanced renderer, two generated meshes: a spherified cube for the world and a smooth sphere for creatures. Rolling green ground, a stone wall with two gaps, two towers, trees with rounded canopies, CSS-gradient sky per phase |
+| Rounded block world ([10](../10-art-direction-and-cinematics.md)) | Hand-written WebGL2 instanced renderer, two generated meshes: a spherified cube for the world and figures, and a smooth sphere for effects. Rolling green ground, a stone wall with two gaps, two towers, trees with rounded canopies, CSS-gradient sky per phase |
 | Restraint in density ([10](../10-art-direction-and-cinematics.md#restraint-is-part-of-the-style)) | One wall, two towers, eighteen trees. An earlier pass added floating islands, drifting motes and dozens of spires and was judged too crowded — objectives disappeared into the noise |
-| Round creatures ([10](../10-art-direction-and-cinematics.md#characters)) | Smooth sphere bodies, oversized emissive eyes proud of the surface, pupils, mouth, antenna, blinking, walk bob with squash and stretch |
+| Rounded humanoid figures ([10](../10-art-direction-and-cinematics.md#characters)) | Head, torso, two arms, two legs from spherified boxes; limbs pivot at hip and shoulder with the arms counter-swinging; emissive eyes proud of the head front, pupils, mouth, blinking |
 | Soft lighting ([10](../10-art-direction-and-cinematics.md#the-rendering-signature)) | Warm key, cool sky-coloured fill, and a restrained rim term that separates silhouettes without turning dreamlike |
 | Warm-vs-cool team palettes ([03](../03-combat-and-classes.md)) | Every character has its own hue; Azure hues all cool, Crimson all warm |
 | Two teams, two flags, capture rules ([01](../01-game-overview.md)) | Azure vs Crimson, own flag must be home to score |
@@ -23,10 +23,10 @@ works straight off the filesystem (`file://`), no server required.
 | Carrier keeps the flag through a transition ([02](../02-match-flow-and-world-phases.md)) | Implemented — uncarried flags re-anchor to the new bases |
 | Debris budget ([12](../12-open-questions.md), Q9) | Capped at 4,200 blocks, nearest-to-player prioritised |
 | Debris is cosmetic, not authoritative ([11](../11-technical-architecture.md)) | Debris has no collision — it cannot be landed on |
-| Third-person camera | Pulls in when a wall is behind, but never closer than half distance — collapsing fully put the camera inside the character |
+| Third-person camera | Pulls in when something is behind it, keeps a small floor rather than collapsing onto the player, and lifts itself out of terrain when the view angle would bury it |
 | Objective-aware bots ([06](../06-ai-bots.md)) | 4 per side: attack, escort the carrier, chase the enemy carrier, recover a dropped flag |
 | F.C.S. callouts ([05](../05-fcs-ai-assistant.md)) | Text-only, priority-free, reacting to flag events and the collapse |
-| Cells are 0.5 m ([10](../10-art-direction-and-cinematics.md)) | Player stands ~2.5 cells tall — short, wide and round |
+| Cells are 0.5 m ([10](../10-art-direction-and-cinematics.md)) | Player stands 3.5 cells tall (~1.75 m) |
 
 ## What it does not implement
 

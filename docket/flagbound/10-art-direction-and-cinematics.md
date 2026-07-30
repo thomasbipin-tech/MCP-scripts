@@ -8,8 +8,8 @@ photorealism. Players should feel like they are inside an epic adventure.
 **Style target:** a **grid-built world drawn in soft rounded forms.** Green rolling
 ground, grey stone walls and towers, trees with rounded canopies, a clear daylight
 sky. Recognisable and readable — a classic battlefield — but every mass is a
-softened, spherified form rather than a hard cube, and the characters are round
-big-eyed creatures rather than armoured soldiers.
+softened, spherified form rather than a hard cube, and the figures are rounded
+humanoids with big friendly eyes rather than armoured soldiers.
 
 The result reads as familiar and welcoming rather than either harsh or abstract.
 
@@ -54,7 +54,7 @@ benefits of a grid. See the rules below.
 
 ### 3. Age-appropriate by construction
 
-Round, wide-eyed creatures in a bright landscape read as adventure. No uncanny
+Softened, wide-eyed figures in a bright landscape read as adventure. No uncanny
 valley, no injury detail, no realism to push it anywhere uncomfortable.
 
 ### 4. Scale is cheap
@@ -121,7 +121,7 @@ any dome, and it cross-fades when the phase changes.
 |---|---|
 | **World cell** | 0.5 m — terrain, structures, towers (drawn rounded, not cubic) |
 | **Detail element** | 0.125 m — props, trim |
-| **Player height** | ~1.25 m — short, wide and round; deliberately not humanoid |
+| **Player height** | ~1.75 m (3.5 cells) — rounded humanoid |
 | **Arch / structure height** | 10–20 m — must still feel monumental |
 | **Sky tower height** | 100 m+ |
 
@@ -163,43 +163,51 @@ opposed.
 
 ## Characters
 
-**Round creatures, not humanoid warriors.** A large egg-shaped body over a fuller
-lower blob, oversized eyes standing proud of the surface, a small mouth, stubby
-limbs, and a little antenna. Roughly **1.25 m tall** — short, wide and appealing
-rather than soldierly. Built from smooth spheres, so they are the softest thing
-on screen.
+**Rounded humanoid figures.** Head, torso, two arms, two legs — the familiar,
+instantly readable blocky silhouette — but every part is a softened spherified
+form like the rest of the world, so nothing has a hard edge. Roughly **1.75 m**
+(3.5 cells), with a head about as wide as the torso.
 
-**Why this and not armoured humanoids.** The game is for ages 10 and up, and the
-brief asks for an epic adventure rather than a war simulation. Appealing
-characters serve that better than realistic ones, and they push the fantasy
-combat further from anything uncomfortable. A knockdown between two round
-wide-eyed creatures is unmistakably adventure. It also makes the game
-screenshot-friendly, which serves the shareability goal directly.
+**Why humanoid rather than an abstract shape.** A humanoid reads its facing,
+stance and motion at a glance, which matters in a game where knowing whether an
+opponent is coming toward you or running away decides a fight. It also gives the
+four classes far more silhouette range to work with than a single body shape can.
 
-**The face carries the likability.** Eyes are large, faintly emissive so they
-still read in Act II's darkness, and they blink on a loose timer. Characters bob,
-squash and stretch as they walk. None of this is expensive, and all of it is the
-difference between a character and a shape.
+**Limbs swing from their joints.** Legs and arms pivot on a hip and shoulder as
+the figure walks, with the arms counter-swinging. It costs almost nothing and it
+is most of what makes a figure look alive rather than dragged along the ground.
 
-The four classes must still be identifiable **by silhouette alone**, because in a
-fight that is all a player gets. Class reads through proportion and one
-accessory, never through colour — colour belongs to the team:
+**The face carries the likability.** Large eyes set proud of the head's front so
+they read at third-person distance, faintly emissive so they stay visible in the
+caverns, blinking on a loose timer, with a small mouth below. Friendlier than a
+realistic figure without being childish.
+
+The four classes must be identifiable **by silhouette alone**, because in a fight
+that is all a player gets. Class reads through proportion and one accessory,
+never through colour — colour belongs to the team:
 
 | Class | Silhouette |
 |---|---|
-| **Guardian** | The largest and widest, low and heavy, a broad shield nearly as big as itself. Reads as a wall. |
-| **Swiftblade** | The smallest and narrowest, leaning forward, trailing a scarf. Reads as fast even standing still. |
-| **Element Warrior** | Taller and rounder, motes orbiting it in the current element's colour, eyes tinted to match. Reads as dangerous at range. |
-| **Shadow Runner** | Small and hooded, body darkened, its eyes the only bright thing about it. Reads as *hard to see*, which is the point. |
+| **Guardian** | Broadest and heaviest, thick limbs, low stance, a shield slab on one arm. Reads as a wall. |
+| **Swiftblade** | Slight and narrow, leaning forward, a trailing scarf. Reads as fast even standing still. |
+| **Element Warrior** | Tall and upright, robed lower half, motes orbiting in the current element's colour, eyes tinted to match. Reads as dangerous at range. |
+| **Shadow Runner** | Small and hooded, body darkened, eyes the only bright thing about it. Reads as *hard to see*, which is the point. |
 
 **Team identity:** every character has its own colour, but one team's palette is
 entirely **cool** and the other entirely **warm** — personality without costing
-team readability. Warm-versus-cool also survives colour-blindness, where
+team readability. Warm-versus-cool also survives colour-blindness where
 red-versus-green would not. On top of that, a floating team-coloured marker above
 allies.
 
-**The player's own character** floats a spinning gold gem with a soft halo, so a
-player can always find themselves in a crowd.
+**On heads and skin:** the prototype tints heads with a lightened version of the
+character's own colour, which sidesteps skin tone entirely and reads as a
+costumed figure. A shipping game should instead offer proper character
+customisation, including skin tone, as part of the cosmetic unlocks in
+[09](09-progression-and-rewards.md) — a game for this audience needs players to
+be able to make a character that looks like them.
+
+**The player's own character** floats a spinning gold gem, so a player can always
+find themselves in a crowd.
 
 ## Cinematic moments
 
