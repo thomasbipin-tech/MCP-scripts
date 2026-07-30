@@ -29,311 +29,344 @@ ADDRESSING, WATCHTOWER, TOOLS, PREFLIGHT, LOOKINGGLASS, RACKBOM = 18, 19, 20, 21
 ACCOUNT, ROLES, DEVPROPS, CABLESCHED = 24, 25, 26, 27
 EXPORTFMT, DESIGNDOC, DRIFTDASH, DEPLOYRUN = 28, 29, 30, 31
 SITEAREAS, CONSOLEOOB, VAULT, MGMTPLANE = 32, 33, 34, 35
+# dedicated topic screens (batch 3) -- one per episode subject, so no episode has to
+# borrow another's picture. Appended after the end card, so BRAND/ENDCARD keep their
+# indices and the already-rendered timelines stay valid.
+CATALOG, INTERFACES, FHRP, SUBNETPROF, BPGEN = 38, 39, 40, 41, 42
+PROJECTHOME, XSITE, JOINEDVAL, SITEFILTER = 43, 44, 45, 46
+POOLS, ALLOC, SUPERNET, OVERLAP = 47, 48, 49, 50
+EVPNCFG, TERRAFORM, SUBIMPORT, ASBUILT = 51, 52, 53, 54
 
 TAG = "Netforge.ai. From sketch to spine."
 
+# Every episode owns its screens. No scene appears in two episodes, and none appears
+# twice inside one -- the previous cut re-used VALIDATE, CLIOUT and EXPORTS across four
+# episodes each, which is what read as "the same screens over and over".
 EPISODES = [
  dict(slug='ep01-canvas', title='Episode 1 — The Canvas',
-      slots=[(BRAND,3.0),(TEMPLATES,None),(DRAG,None),(PORTS,None),(FABRIC,None),(BRIDGE,None),(ENDCARD,5.0)],
+      slots=[(BRAND,3.0),(REFRAME,None),(CATALOG,None),(DRAG,None),(PORTS,None),(DEVPROPS,None),(ENDCARD,5.0)],
       lines=[
-       (1,"This is the first of ten. Each one takes a single part of Netforge.ai and shows "
-          "you how it actually works."),
-       (1,"Start here. Every project begins on a canvas — or from a template, so you never "
-          "face a blank one."),
-       (1,"The gallery carries featured reference designs and community templates. Open one, "
-          "and it becomes your starting point."),
-       (2,"On the canvas, the device catalog sits in the left sidebar, grouped by vendor and "
-          "family. Click a device to drop it at the next free spot, or drag it exactly where "
-          "you want it."),
-       (2,"The sidebar auto-minimizes to a thin rail. Hover to expand it, or pin it open. "
-          "Search filters across every vendor at once."),
-       (3,"To cable two devices, drag from one connection point to another. The points zoom "
-          "on hover, so they're easy to hit even on a dense drawing."),
-       (3,"When the link is made, the Link Editor assigns real interfaces on both ends — "
-          "picked from each device's actual port inventory, derived from its model."),
-       (3,"Choose the media — copper, SFP+, QSFP, DAC — and the speed. One, ten, twenty-five, "
-          "forty, a hundred, or four hundred gigabit."),
-       (3,"That speed renders on the drawing, and it drives optic selection in the bill of "
-          "materials. Media and port-cage mismatches are flagged as you draw."),
-       (4,"The same canvas scales. A branch closet, or a full Arista leaf-spine VXLAN EVPN "
-          "fabric — without leaving the designer."),
-       (5,"And because the canvas is the source of truth, everything downstream — config, "
-          "validation, documentation — comes from this one drawing."),
-       (5,"Nothing is retyped. That's the whole idea."),
-       (1,'Templates matter more than they sound. The Enterprise WAN family alone carries a thirty-office overview with seventy devices, a data centre, and a branch office — as parameterized blueprints you set a company code and an office count on.'),
-       (2,'Not everything on a canvas is a device. Internet, MPLS and VPN clouds draw as actual cloud outlines — pure connection points for terminating WAN links, with no port inventory and no configuration of their own.'),
-       (4,'Auto-layout tidies a drawing that grew organically, and multi-layer views let you look at physical cabling or logical topology without redrawing either.'),
-       (5,"Existing drawings come across too. The Import wizard reads a Visio topology and flags the generic elements it couldn't map, so you fix them deliberately rather than inheriting silent gaps."),
-       (5,'And the interface stays out of the way. Feedback arrives as calm colour-coded toasts, destructive actions confirm in-app and name exactly what they take with them, and errors say what happened and what to do next.'),
+       (1,"This is the first of ten short episodes. Each one takes a single part of "
+          "Netforge.ai and shows you how it actually works. This one is the canvas — where "
+          "every design starts."),
+       (1,"The idea underneath the whole product is that the drawing is the source of truth. "
+          "Not a picture of the network: the thing the network is generated from, validated "
+          "against, documented from, and continuously compared to."),
+       (1,"So the canvas is not a diagramming tool that happens to look like your network. "
+          "Everything you place on it is a real device with a real model, real ports and real "
+          "configuration behind it."),
+       (2,"The device catalog is the left sidebar, grouped by vendor and family. Click a "
+          "device to drop it at the next free spot, or drag it exactly where you want it."),
+       (2,"Search filters across every vendor at once, which matters when the catalog spans "
+          "Cisco, Arista, Aruba, Palo Alto, Silver Peak and Lantronix. The sidebar minimizes "
+          "to a thin rail — hover to expand it, or pin it open."),
+       (2,"Not everything on the canvas is a device. Internet, MPLS and VPN clouds draw as "
+          "actual cloud outlines: pure connection points for terminating WAN links, with no "
+          "port inventory and no configuration of their own."),
+       (3,"Placing a device is the whole gesture. Drag it out of the catalog, drop it on the "
+          "canvas, and it arrives as that model — not a generic box you have to describe "
+          "afterwards."),
+       (3,"That matters because the port inventory comes with it. The platform already knows "
+          "what interfaces this device has, what they are called in its own dialect, and what "
+          "optics they will take."),
+       (4,"To cable, drag from one connection point to another. The points zoom on hover so "
+          "they are easy to hit on a dense drawing."),
+       (4,"The Link Editor then assigns real interfaces on both ends, chosen from each "
+          "device's actual port inventory. You pick the media — copper, SFP, QSFP or DAC — and "
+          "the speed, from one gigabit to four hundred."),
+       (4,"That speed renders on the drawing and drives optic selection in the bill of "
+          "materials. Media and port-cage mismatches are flagged while you draw, not after."),
+       (5,"Select a device and the properties panel opens. This is where the canvas stops "
+          "being a diagram: interfaces, layer two and three, features, and the management "
+          "plane, in that platform's own dialect."),
+       (5,"Settings inherited from the site are marked as inherited, and anything you change "
+          "on this one box is marked as an override — so you can always see which values are "
+          "local decisions and which came from the site."),
        (6,TAG),
       ]),
 
- dict(slug='ep02-device-config', title='Episode 2 — Device configuration',
-      slots=[(BRAND,3.0),(PORTS,None),(VALIDATE,None),(CLIOUT,None),(CONFLICT,None),(ENDCARD,5.0)],
+ dict(slug='ep02-device-config', title='Episode 2 — Configuring a device',
+      slots=[(BRAND,3.0),(INTERFACES,None),(FHRP,None),(MGMTPLANE,None),(CONSOLEOOB,None),(VAULT,None),(ENDCARD,5.0)],
       lines=[
-       (1,"Episode two. Once devices are on the canvas, each one gets a real configuration — "
-          "not a label on a drawing."),
-       (1,"Select a device and the properties panel opens with the same tabs the platform "
-          "uses everywhere: interfaces, layer two and layer three, features, and the "
-          "management plane."),
-       (1,"Interfaces take descriptions, addressing, MTU, and admin state. Routed parents on "
-          "routers and layer-three switches take dot1q sub-interfaces — tag, address, VRF — "
-          "with tag range and uniqueness validation."),
-       (1,"Loopbacks are fully configurable on every layer-three device: identifier, address, "
-          "secondaries, VRF, OSPF area. Duplicate addresses are checked design-wide."),
-       (2,"First-hop redundancy goes deep. HSRP and VRRP on SVIs take preempt with delays, "
-          "interface and object tracking with decrement, hello and hold timers, version "
-          "selection, virtual MAC, and secondary virtual addresses."),
-       (2,"Port-channels take MTU, speed, negotiation, load interval, bandwidth, admin state, "
-          "inbound and outbound access lists, and spanning-tree edge — with a device-wide "
-          "load-balance method mapped per vendor."),
-       (3,"Every one of those settings renders as real syntax for the platform it's on. Not a "
-          "generic approximation — the dialect that device actually speaks."),
-       (3,"And where a platform genuinely can't do something, Netforge.ai omits it and flags "
-          "it. It never invents a command that doesn't exist."),
-       (4,"That capability-aware validation is the difference between a config that looks "
-          "right and one that loads."),
-       (1,'Site Areas carry a shared management plane that every device in the site inherits — with per-device override where one box genuinely differs. The site panel uses the same tabs the devices do.'),
-       (2,'The management plane goes deep: AAA servers with timeout, retransmit, VRF and source interface — and a Test AAA action. Common Criteria password policy. NTP with authentication, prefer, source and access groups.'),
-       (2,'Console and VTY line hardening. Global CDP and LLDP. NetFlow exporter detail. Static routes with IP SLA tracking, so a route withdraws when the thing it depends on stops answering.'),
-       (2,"NTP authentication picks MD5, HMAC-SHA1 or HMAC-SHA2-256 and inherits from the site. On NX-OS it falls back to MD5 with a note rather than silently emitting something the platform won't take."),
-       (3,'SSH host keys are configurable on every Cisco template — key label and modulus, two thousand forty-eight, three thousand seventy-two or four thousand ninety-six, with a NIST and CIS two-thousand-forty-eight-bit floor.'),
-       (3,"Port mirroring is there too. Monitor sessions on every standalone switch and router: session id, source interface with direction, destination, enable toggle — rendered in each vendor's own dialect, with duplicate and destination-reuse validation."),
-       (4,'Every secret in all of that — local user passwords, enable secret, TACACS and RADIUS keys, SNMP communities, NTP keys — references the encrypted vault rather than sitting in the design.'),
-       (5,TAG),
+       (1,"Episode two: what you can actually configure. The usual objection to design tools "
+          "is that they generate something shallow — a hostname, an address, and then you "
+          "finish the job by hand. So here is the depth."),
+       (1,"Interfaces take descriptions, addressing, MTU and admin state. Routed parents take "
+          "dot1q sub-interfaces with tag, address and VRF."),
+       (1,"Loopbacks are configurable on every layer-three device, with duplicate checking "
+          "across the whole design — because a duplicated router-id is exactly the kind of "
+          "mistake that passes every syntax check and then breaks the overlay."),
+       (2,"First-hop redundancy is thorough. HSRP and VRRP, with preempt and delays, "
+          "interface and object tracking with decrement, timers, version, virtual MAC, and "
+          "secondary virtual addresses."),
+       (2,"Tracking is the part people hand-write and get wrong. Track an interface or a "
+          "tracked object, set the decrement, and the platform keeps the peer's priority "
+          "consistent so the pair cannot end up in a tie."),
+       (2,"Port-channels are equally complete: MTU, speed, negotiation, access lists and "
+          "spanning-tree edge."),
+       (3,"Then the management plane, which is usually the least glamorous and most "
+          "security-relevant part of a build. AAA servers with timeout, retransmit, VRF and "
+          "source interface — and a Test AAA action, so you find out now rather than at "
+          "cutover."),
+       (3,"NTP with authentication, prefer, source and access groups. Console and VTY "
+          "hardening. CDP and LLDP. NetFlow. Static routes with IP SLA tracking."),
+       (4,"Console and out-of-band management is first class rather than an afterthought. "
+          "Every device gets a console port and its real dedicated management interface."),
+       (4,"Drag a device onto a Lantronix terminal server and the console run cables itself — "
+          "so the out-of-band path is part of the design, and it turns up in the cable "
+          "schedule like every other run."),
+       (5,"And every secret — local users, enable, TACACS, RADIUS, SNMP and NTP keys — "
+          "references an encrypted per-organization vault."),
+       (5,"The design carries the reference, not the value. The generated configuration "
+          "renders the real secret and marks it, and a design you share carries no "
+          "credentials at all."),
+       (6,TAG),
       ]),
 
- dict(slug='ep03-blueprint', title='Episode 3 — The Blueprint wizard',
-      slots=[(BRAND,3.0),(BLUEPRINT,None),(ADDRESSING,None),(MULTISITE,None),(ENDCARD,5.0)],
+ dict(slug='ep03-blueprint', title='Episode 3 — Blueprints and templates',
+      slots=[(BRAND,3.0),(TEMPLATES,None),(BLUEPRINT,None),(SUBNETPROF,None),(BPGEN,None),(SITEAREAS,None),(ENDCARD,5.0)],
       lines=[
-       (1,"Episode three. Most designs don't start with one switch. They start with an "
-          "estate — and that's what the Blueprint wizard builds."),
-       (1,"Tell it the scope: how many data centres, how many campuses, how many branches. "
-          "It generates every site, wired through a WAN overview."),
-       (1,"Addressing is flexible. Supernets run from a slash eight to a slash sixteen, with "
-          "right-sized blocks per site — around a slash twenty for a data centre or campus, "
-          "a slash twenty-one for a branch — packed automatically, and overridable per site."),
-       (1,"Generated blocks pin themselves. So an additive re-run adds new sites without "
-          "renumbering the ones you already have."),
-       (2,"Each kind of site gets an editable subnet profile: data, voice, servers, guest, "
-          "management, transit, loopbacks."),
-       (2,"That profile drives the VLANs, the HSRP gateway SVIs, DHCP relay, and voice VLANs "
-          "on access ports — consistently, across every site it applies to."),
-       (3,"Routing design and out-of-band management are part of the same wizard, so the "
-          "estate arrives complete rather than half-built."),
-       (3,"Seventeen sites, one blueprint. Then you open any of them and keep working."),
-       (1,'Before the wizard existed, the alternative was a blank canvas and a long evening. This is the difference between designing a network and typing one.'),
-       (2,'Out-of-band management is generated with the estate, not bolted on afterwards. Every network device gets a console port and its real dedicated management interface — mgmt-zero, Management-one, GigabitEthernet-zero, whichever that platform uses.'),
-       (2,'Drag a device onto a Lantronix terminal server and the console run cables itself, sequentially, overridable, and an occupied port silently bumps to the next free one. Two runs on one port is flagged as a conflict.'),
-       (2,'Management addressing auto-assigns from IPAM with manual-override protection, and a configurable management VRF keeps the per-platform defaults intact.'),
-       (3,'The three frozen Enterprise WAN designs stay available as featured templates, so you can start from a known-good reference instead of the wizard when that suits better.'),
-       (3,'Every office in that reference runs two Silver Peak EdgeConnect spokes across dual transports — one on the MPLS underlay, one on the Internet underlay.'),
-       (3,"Both data centres pair EdgeConnect hubs with a Cisco core and a Palo Alto pair that centralizes Internet breakout. That's a real design, not a diagram."),
-       (4,'You can re-run the wizard as the estate grows. New sites are added; the ones already deployed keep their addressing.'),
-       (4,TAG),
+       (1,"Episode three: not starting from nothing. The Templates page carries featured "
+          "reference designs and community-shared ones — leaf-spine fabrics, branch SD-WAN, "
+          "campus three-tier, collapsed core, hybrid Azure."),
+       (1,"There is also an Enterprise WAN family: a thirty-office overview with seventy "
+          "devices, a data centre, and a branch office, as parameterized blueprints where you "
+          "set a company code and an office count."),
+       (1,"Open any card to preview it, or use it as your starting point. And if you already "
+          "have drawings, the Import wizard reads a Visio topology and flags the generic "
+          "elements it could not map, so the gaps are explicit rather than silent."),
+       (2,"For anything bigger than one site, start with the Blueprint wizard. Tell it how "
+          "many data centres, campuses and branches you have, and it builds the estate."),
+       (2,"Addressing is flexible: supernets from a slash eight to a slash sixteen, with "
+          "right-sized per-site blocks — roughly a slash twenty for a data centre or campus, "
+          "a slash twenty-one for a branch — packed automatically and overridable per site."),
+       (3,"Each site kind gets its own editable subnet profile: data, voice, servers, guest, "
+          "management, transit and loopbacks."),
+       (3,"That profile is not decoration. It drives the VLANs, the gateway SVIs, the DHCP "
+          "relay, and the voice VLAN on access ports — so editing one profile changes every "
+          "branch the wizard generates."),
+       (4,"Then it builds. One tab per site, wired through a WAN overview, with every subnet "
+          "allocated from the one supernet you chose."),
+       (4,"The important detail is that generated blocks pin themselves. Re-running the "
+          "wizard to add three more branches next quarter never renumbers the sites you have "
+          "already deployed."),
+       (5,"Inside a site, Site Areas hold a shared management plane that every device in that "
+          "site inherits — with per-device override where one box genuinely differs."),
+       (5,"That is what keeps a seventeen-site estate consistent without seventeen copies of "
+          "the same settings drifting apart."),
+       (6,TAG),
       ]),
 
- dict(slug='ep04-multicanvas', title='Episode 4 — Multi-canvas and site tabs',
-      slots=[(BRAND,3.0),(MULTISITE,None),(VALIDATE,None),(CONFLICT,None),(EXPORTS,None),(ENDCARD,5.0)],
+ dict(slug='ep04-multicanvas', title='Episode 4 — Multi-site projects',
+      slots=[(BRAND,3.0),(PROJECTHOME,None),(MULTISITE,None),(XSITE,None),(JOINEDVAL,None),(SITEFILTER,None),(ENDCARD,5.0)],
       lines=[
-       (1,"Episode four. A multi-site project isn't one drawing. It's many — and they have to "
-          "stay consistent with each other."),
-       (1,"Netforge.ai spans them as tabs. One per site, plus a pinned WAN Overview. Site "
-          "blocks on the Overview jump straight to their tab."),
-       (1,"Inter-site connectivity is declared once, on the Overview. Each site tab mirrors it "
-          "as a WAN stub cloud, so a link exists in exactly one place."),
-       (2,"Validation then runs over the joined graph, not each canvas in isolation."),
-       (2,"That catches the things single-canvas checking cannot: island sites with no path "
-          "back, unmatched WAN identifiers, mismatches between the Overview and the "
-          "configuration, and address-pool overlaps between sites."),
-       (3,"Click a finding and it switches you to the tab that owns it. You don't go hunting."),
-       (4,"Exports understand sites too. The bill of materials, cabling schedule, rack "
-          "elevations and firewall handover all take site filters and per-site sections."),
-       (4,"Comments scope to their tab, so a note on the branch design doesn't surface on the "
-          "data centre."),
-       (1,"The old model was one canvas per project, and a separate file per site. Which is how two sites end up claiming the same address range and nobody notices until they're cabled together."),
-       (2,"Tabs behave like a browser's. The Overview stays pinned on the left, the sites sit beside it, and the whole project is one document rather than a folder of them."),
-       (2,'Declaring connectivity on the Overview rather than on each site is what makes the joined graph possible. A WAN link has exactly one definition, and both ends mirror it.'),
-       (3,'Island sites are the finding worth having. A site that looks perfectly correct on its own tab, with no actual path back to anything — invisible on a single canvas, obvious on a joined graph.'),
-       (3,'Per-site pool overlaps are the other one. Two sites, two clean designs, one address range claimed twice.'),
-       (4,'Simulation and Looking Glass run over the joined graph too, so a path trace crosses site boundaries the way real traffic does.'),
-       (5,'The result is that a thirty-site estate stays as reviewable as a single closet. Which is the only way multi-site design is actually maintainable.'),
-       (5,TAG),
+       (1,"Episode four: what happens when one canvas is not enough. A project in "
+          "Netforge.ai is many canvases — one per site, plus a pinned WAN Overview."),
+       (1,"They behave like browser tabs. Site blocks on the Overview jump straight to their "
+          "tab, and every canvas keeps its own address block and its own validation state."),
+       (2,"The Overview is where the estate is a single picture. Seventeen sites, the "
+          "carriers between them, and which of them are currently clean."),
+       (2,"This is not seventeen separate designs that happen to live in one project. It is "
+          "one graph, drawn across several canvases."),
+       (3,"Inter-site connectivity is declared once, on the Overview, and mirrored onto each "
+          "site tab as a WAN stub cloud."),
+       (3,"That is the whole trick. A WAN link has exactly one definition, so it cannot exist "
+          "twice with two different sets of values — which is the classic way a multi-site "
+          "design quietly becomes wrong."),
+       (4,"Because the graph is joined, validation runs across it. That catches island sites "
+          "with no path back, unmatched WAN identifiers, disagreements between the Overview "
+          "and a site's own configuration, and address pool overlaps between sites."),
+       (4,"None of those are visible if you validate each site on its own. Click a finding "
+          "and it switches you to the tab that owns it."),
+       (5,"And when it comes time to hand work over, every deliverable takes a site filter."),
+       (5,"The branch team gets the branch pack — nine devices, fourteen cable runs, its own "
+          "bill of materials — rather than a two-hundred-device document with their site "
+          "somewhere inside it."),
+       (6,TAG),
       ]),
 
- dict(slug='ep05-generate', title='Episode 5 — Config generation and validation',
+ dict(slug='ep05-generate', title='Episode 5 — Validation and generation',
       slots=[(BRAND,3.0),(VALIDATE,None),(CONFLICT,None),(AIARCH,None),(GREEN,4.5),(CLIOUT,None),(ENDCARD,5.0)],
       lines=[
-       (1,"Episode five. This is the part that replaces the typing."),
-       (1,"Validation runs continuously against the whole design. Address conflicts, VLAN "
-          "mismatches, BGP peer gaps, spanning-tree problems, MTU inconsistencies, gateway "
-          "redundancy, management reachability."),
-       (2,"When something is wrong, it's specific. Not a warning — the two interfaces that "
-          "collide, and where they are."),
+       (1,"Episode five: the part that earns the trust. Validation in Netforge.ai is "
+          "continuous — not a button you have to remember to press before you ship."),
+       (1,"It checks address conflicts, VLAN consistency, trunk and native VLAN matching, BGP "
+          "reciprocity and AS consistency, spanning-tree root placement, MTU, gateway "
+          "redundancy, and management reachability."),
+       (2,"When something is wrong, it is specific: the two interfaces that collide, on which "
+          "devices, and what it will break."),
        (2,"Address conflicts are the most expensive simple mistake in networking. They pass "
-          "every syntax check, then take down two segments at once."),
-       (3,"The AI Network Architect reviews the design as a whole. Single points of failure, "
-          "and alignment with Cisco validated designs and Arista's AVD."),
-       (3,"It tells you what to fix, and why it matters — before the design leaves the canvas."),
-       (4,"Then the whole design goes green. Every check, on every device, in under two "
-          "seconds."),
-       (5,"And the output is production-ready per-vendor CLI. Named feature objects — access "
-          "lists, prefix lists, route maps, QoS policies, flow monitors — carry "
-          "reference-integrity validation and bind into BGP policy."),
-       (5,"Every secret in that config references an encrypted vault. The design itself, and "
-          "anything you share publicly, carries only the reference."),
-       (1,'Generation is per-vendor and per-platform. IOS-XE, NX-OS, Arista EOS, ArubaOS-CX, PAN-OS, Silver Peak EdgeConnect — each one gets the syntax it actually speaks.'),
-       (2,'Validation is continuous rather than a step you remember to run. The design is checked as you build it, and the findings point at devices, not line numbers.'),
-       (3,"Capability-aware validation is worth dwelling on. If a platform can't render an interface option or a management setting, Netforge.ai omits it and flags it. It never invents a command to fill the gap."),
-       (3,'That single rule is why the output loads. Most generators fail by being optimistic about what a platform supports.'),
-       (4,"Structural findings come with it: single points of failure, and alignment with Cisco's validated designs and Arista's AVD reference."),
-       (5,"Configured-but-uncabled switchports still generate config, so a branch design can seed user ports without pretending there's a laptop drawn on every one."),
-       (5,'And what comes out is a complete per-device configuration — not a fragment you finish by hand.'),
+          "every syntax check, deploy cleanly, and then take down two segments at once."),
+       (3,"On top of the mechanical checks, the AI Network Architect reviews the design as a "
+          "whole — single points of failure, and alignment with Cisco validated designs and "
+          "Arista's AVD — and tells you what to fix and why it matters."),
+       (3,"There is a rule underneath all of this that matters more than any single check: "
+          "capability-aware validation. If a platform cannot render a setting, Netforge.ai "
+          "omits it and flags it. It never invents a command to fill a gap."),
+       (4,"When it is clean, the whole design goes green. Every check, every device, in under "
+          "two seconds."),
+       (5,"And then it generates: complete per-device, per-vendor CLI for the entire design, "
+          "in each platform's own syntax."),
+       (5,"Not a starting point you finish by hand. The configuration that the validation you "
+          "just watched was run against."),
        (6,TAG),
       ]),
 
- dict(slug='ep06-ipam', title='Episode 6 — IPAM and addressing',
-      slots=[(BRAND,3.0),(ADDRESSING,None),(CONFLICT,None),(VALIDATE,None),(ENDCARD,5.0)],
+ dict(slug='ep06-ipam', title='Episode 6 — Addressing and IPAM',
+      slots=[(BRAND,3.0),(POOLS,None),(ADDRESSING,None),(ALLOC,None),(SUPERNET,None),(OVERLAP,None),(ENDCARD,5.0)],
       lines=[
-       (1,"Episode six. Addressing is where designs quietly go wrong, so it gets its own "
-          "console — on the canvas toolbar, under IPAM."),
-       (1,"Define pools: supernets for loopbacks, for point-to-point links, for user VLANs. "
-          "Then let the platform allocate from them."),
-       (1,"SVIs, routed links and first-hop redundancy addresses are auto-assigned "
-          "consistently, and every allocation is tracked back to the pool it came from."),
-       (2,"Conflict detection runs across the entire design — including addresses somebody "
-          "typed by hand, outside any pool."),
-       (2,"Pool-based allocation makes conflicts structurally impossible for managed ranges. "
-          "The overlap checker catches the hand-typed stragglers."),
-       (3,"The practical advice from the guide: size per-site pools for growth. A slash "
-          "twenty per site for user VLANs, a slash twenty-four of slash thirty-ones for "
-          "point-to-point links."),
-       (3,"The auto-assign helpers number redundancy groups and pair addresses consistently "
-          "across a distribution pair — so the second switch matches the first."),
-       (1,"Where to find it: the canvas toolbar, under IPAM. It's a console, not a field on a form."),
-       (2,'Pools are the unit. A supernet for loopbacks, one for point-to-point links, one per site for user VLANs — sized deliberately, and allocated from automatically.'),
-       (2,'Blueprint-generated blocks pin themselves, so re-running the wizard to add a site never renumbers a site that already exists. That property is what makes the addressing plan survive contact with a growing estate.'),
-       (3,"Duplicate address detection runs design-wide, and it does not care whether the address came from a pool or from somebody's memory."),
-       (3,'Management addressing is allocated the same way, with manual-override protection, so the out-of-band plan is as consistent as the production one.'),
-       (4,'Subnet profiles per site kind — data, voice, servers, guest, management, transit, loopbacks — mean the same VLAN means the same thing at every site.'),
-       (4,'And when you need to check something by hand, the free subnet calculator and CIDR aggregator are in the tools suite, no sign-in required.'),
-       (4,TAG),
+       (1,"Episode six: addressing, which is where most designs quietly go wrong. It has its "
+          "own console on the canvas toolbar — IPAM."),
+       (1,"You define the pools once: loopbacks, point-to-point transits, user VLANs, "
+          "management. Each pool gets a range, a prefix size and an allocation strategy."),
+       (1,"From then on you stop typing addresses. You allocate from a pool."),
+       (2,"The addressing plan is the readable form of that: every subnet, its VLAN, its "
+          "gateway, its usable count, and what it is for — across the whole design."),
+       (3,"Behind it, every address traces back to a pool. SVIs, routed links and first-hop "
+          "redundancy addresses are assigned consistently, and each allocation keeps its "
+          "origin, its device and its interface."),
+       (3,"You can still type an address by hand where you need to. It is simply marked as "
+          "manual, and it is still checked."),
+       (4,"At estate scale, one supernet is split into right-sized per-site blocks — roughly "
+          "a slash twenty for a data centre or campus, a slash twenty-one for a branch — "
+          "packed automatically, and overridable per site."),
+       (4,"Blocks pin when they are generated, and there is reserve left over, so adding a "
+          "site later takes from the reserve rather than from a neighbour."),
+       (5,"And then the overlap checker. Pool-based allocation makes conflicts structurally "
+          "impossible for managed ranges; the checker exists for everything else."),
+       (5,"Duplicate host addresses, pool overlaps between canvases, and addresses sitting "
+          "outside every defined range — caught across the whole design rather than one site "
+          "at a time."),
+       (6,TAG),
       ]),
 
- dict(slug='ep07-publish', title='Episode 7 — The publish workflow',
-      slots=[(BRAND,3.0),(PREFLIGHT,None),(CLIOUT,None),(RACKBOM,None),(EXPORTS,None),(ENDCARD,5.0)],
+ dict(slug='ep07-publish', title='Episode 7 — Publish and handover',
+      slots=[(BRAND,3.0),(PREFLIGHT,None),(EXPORTFMT,None),(RACKBOM,None),(CABLESCHED,None),(DESIGNDOC,None),(ENDCARD,5.0)],
       lines=[
-       (1,"Episode seven. Publish is the finishing workflow. One action on the canvas toolbar "
-          "walks the design through validation and produces every deliverable."),
-       (1,"No hunting for separate buttons. Validation first, then the outputs."),
-       (2,"Static configuration: complete per-device, per-vendor CLI for the whole design."),
-       (3,"A cabling schedule — every link, with A-end and B-end device, port, media and "
-          "speed, ready for the rack team."),
-       (3,"A bill of materials: chassis, line cards, optics and cables, aggregated with "
-          "quantities. The link speeds you chose on the canvas are what selected those optics."),
-       (4,"And a design document — the drawing plus per-device summaries, for the hand-off "
-          "package."),
-       (4,"Or push toward deployment. Ansible-based, with credentials taken from the shared "
-          "credential store — never embedded in the design."),
-       (4,"Publishing defaults to private. Choose public and it becomes a community template — "
-          "but the scrubber runs first, stripping secrets before anything leaves your "
-          "organization."),
-       (1,"Publish is deliberately one action. The failure mode it's designed against is a half-published design — configs generated on Tuesday, cabling schedule exported on Thursday, and the two no longer describing the same network."),
-       (2,'Everything below comes from the same validated design, at the same moment.'),
-       (2,'The dry run is not a formality. It orders operations — core, then distribution, then access — and creates the rollback point before anything is pushed.'),
-       (3,'The configuration is per-device and per-vendor, complete, with vault-backed secrets rendered in place and marked.'),
-       (4,'Rack elevations show what goes where, and the bill of materials aggregates chassis, line cards, optics and cables with quantities — sized from the link speeds you chose when you drew the cabling.'),
-       (5,'On a multi-site project every one of these takes a site filter, so the branch team gets the branch pack and not the whole estate.'),
-       (5,'Deploy is Ansible-based, and credentials come from the shared store at deploy time. They are never part of the design, and never part of a share.'),
-       (5,TAG),
+       (1,"Episode seven: getting the design out of the tool. Publish is deliberately one "
+          "action on the canvas toolbar."),
+       (1,"The failure it is designed against is a half-published design — configs generated "
+          "on Tuesday, cabling exported on Thursday, describing two different networks."),
+       (1,"Publish walks the design through validation first, then produces everything at "
+          "once. The dry run orders operations — core, then distribution, then access — and "
+          "creates the rollback point before anything is pushed."),
+       (2,"What you get is six deliverables, all generated from the same validated canvas at "
+          "the same moment."),
+       (2,"A design package, an editable Visio topology, a bill of materials, a cable "
+          "schedule, per-device configs, and an AVD Ansible package. So the documentation "
+          "cannot drift away from the design — it has no opportunity to."),
+       (3,"Rack elevations show what goes where, and the bill of materials aggregates "
+          "chassis, line cards, optics and cables with quantities."),
+       (3,"Those optics are not guesswork. They are sized from the link speeds you chose when "
+          "you drew the cabling, back in episode one."),
+       (4,"The cable schedule is every link, with A-end and B-end device, port, media, speed "
+          "and length. One row per run, ready for the rack team."),
+       (4,"Including the console runs, because out-of-band cabling was part of the design "
+          "rather than something added on site."),
+       (5,"And the design document: the drawing plus per-device summaries, firewall handover "
+          "sections and rack elevations, as the hand-off pack."),
+       (5,"Publishing defaults to private. Choosing public shares the design as a community "
+          "template, and the scrubber runs first, stripping secrets before anything leaves "
+          "your organization."),
+       (6,TAG),
       ]),
 
- dict(slug='ep08-drift', title='Episode 8 — Drift and as-built',
-      slots=[(BRAND,3.0),(CONFIGCMP,None),(WATCHTOWER,None),(BRIDGE,None),(ENDCARD,5.0)],
+ dict(slug='ep08-drift', title='Episode 8 — Deploy, verify and drift',
+      slots=[(BRAND,3.0),(DEPLOYRUN,None),(LOOKINGGLASS,None),(PANES,None),(DRIFTDASH,None),(CONFIGCMP,None),(ASBUILT,None),(ENDCARD,5.0)],
       lines=[
-       (1,"Episode eight. Deploying the design is not the end. The network starts drifting "
-          "the moment someone logs into a device."),
-       (1,"So Netforge.ai closes the loop. The Drift action compares each device's live "
-          "running-config against the config it last deployed — the intended baseline."),
-       (1,"Every device comes back in one of four states: in sync, drifted, unreachable, or "
-          "no baseline. Drifted gives you both a line diff and a structural one, and badges "
-          "the affected node on the canvas."),
-       (2,"Running-configs are secret-scrubbed before any diff is stored. Nothing sensitive "
-          "is retained to make the comparison."),
-       (2,"Admins can schedule recurring checks, with alerts to the owner contact through the "
-          "same channels Watchtower uses."),
-       (3,"And when reality has already moved on, the Import wizard has an as-built mode: it "
-          "pulls a live device and its LLDP neighbours through the credential vault, then "
-          "reconciles what it found — matched, new, and missing — against your design."),
-       (3,"The apply is additive and undoable. You review before anything changes."),
-       (1,'Drift is the problem nobody schedules for. The design is correct on the day it ships and slowly stops being true afterwards.'),
-       (2,"Config Compare is the manual version, and it's free in the tools suite. Paste, upload or drop two configs and the panes become a live comparison — no compare button, and nothing leaves the browser."),
-       (2,'Green is identical. Yellow is the same line with minor edits, changed words highlighted inside the row. Red is a line whose opening has no counterpart at all.'),
-       (2,"Block-aware sorting cancels out reordering while keeping interface, BGP, IP SLA and policy-map groups intact — so a config that was merely rearranged doesn't read as rewritten."),
-       (2,'Changes are classified major or minor, fail-closed: only known-cosmetic lines are minor. Ignore rules cover whitespace, case, comments and volatile lines, and replacement rules let a renamed hostname compare as equal.'),
-       (3,'The automated version is the Drift action, and the difference is the baseline: it compares against what Netforge.ai actually deployed, not against another file somebody kept.'),
-       (3,'Scheduled checks run recurring comparisons and alert the owner contact, so drift surfaces on its own rather than during the next incident.'),
-       (4,'That is the closed loop. Design, deploy, verify, and keep verifying.'),
-       (4,TAG),
+       (1,"Episode eight: after the design is right. Deployment is Ansible-based, and it runs "
+          "in the order the dry run established — core, then distribution, then access."),
+       (1,"Credentials come from the shared store at deploy time. They are never embedded in "
+          "the design and never part of a share."),
+       (2,"Once it is on, Looking Glass traces the path hop by hop and confirms it matches "
+          "the design."),
+       (2,"On a multi-site project it runs over the joined graph, so a trace crosses site "
+          "boundaries the way real traffic does."),
+       (3,"But the real problem is not the first day. It is month eleven, when someone has "
+          "logged into a device at two in the morning, fixed something, and not updated the "
+          "drawing."),
+       (3,"That is the gap this whole product exists to close, and closing it means checking "
+          "it continuously rather than believing the diagram."),
+       (4,"So the Drift action compares each device's live running-config against the config "
+          "Netforge.ai last deployed for it — the intended baseline, not another file "
+          "somebody kept."),
+       (4,"Every device reports in sync, drifted, unreachable, or no baseline. Drifted gives "
+          "you a line diff and a structural one, and badges the node on the canvas. "
+          "Running-configs are secret-scrubbed before any diff is stored."),
+       (5,"The manual equivalent is Config Compare, free in the tools suite. Drop in two "
+          "configs and the panes become a live comparison — no compare button, and nothing "
+          "leaves your browser."),
+       (5,"Green is identical, yellow is the same line with minor edits, red is a line with "
+          "no counterpart. Block-aware sorting cancels out reordering, changes are classified "
+          "major or minor fail-closed, and it exports as a unified diff or an HTML report."),
+       (6,"And when reality has already moved on further than a diff can express, the Import "
+          "wizard's as-built mode pulls a live device and its LLDP neighbours through the "
+          "credential vault."),
+       (6,"It reconciles matched, new and missing against your design. The apply is additive "
+          "and undoable, so nothing on the canvas is silently deleted."),
+       (7,TAG),
       ]),
 
- dict(slug='ep09-fabric-cloud', title='Episode 9 — Fabric, AVD and Azure',
-      slots=[(BRAND,3.0),(FABRIC,None),(CLIOUT,None),(CLOUD,None),(EXPORTS,None),(ENDCARD,5.0)],
+ dict(slug='ep09-fabric-cloud', title='Episode 9 — Fabrics and cloud',
+      slots=[(BRAND,3.0),(FABRIC,None),(EVPNCFG,None),(CLOUD,None),(SUBIMPORT,None),(TERRAFORM,None),(ENDCARD,5.0)],
       lines=[
-       (1,"Episode nine. Two specialities that would otherwise be separate tools."),
-       (1,"First, fabrics. The AVD wizard builds Arista EVPN-VXLAN spine-leaf: architect, "
-          "validate, deploy — with full validation parity and bill-of-materials integration."),
-       (2,"The output is Arista's own AVD Ansible package, not a generic approximation. It "
-          "drops into the workflow your fabric team already runs."),
-       (3,"Second, cloud. Azure resources are real nodes on the canvas — virtual networks, "
-          "subnets, security groups, gateways — with synchronized Terraform."),
-       (3,"You can design them from scratch, or run the subscription import wizard and "
-          "reverse-engineer an environment that already exists onto the canvas."),
-       (3,"Then push it back as Terraform, and schedule drift checks against it — the same "
-          "closed loop as the physical estate."),
-       (4,"One canvas covers the fabric, the campus, the branch and the cloud. Which means "
-          "one bill of materials, one set of documentation, and one place the truth lives."),
-       (1,"Fabrics and cloud both tend to live outside the diagram — in a wizard somewhere, or in somebody's Terraform repository. Both belong on the same canvas as everything else."),
-       (2,"The fabric wizard follows Arista's own model: architect, validate, deploy. Spines, leaves, the underlay, the overlay — with the same validation the rest of the design gets, and the devices counted in the same bill of materials."),
-       (2,'Scale it on the canvas and the addressing, the BGP numbering and the port assignments follow. You are not maintaining a spreadsheet beside the drawing.'),
-       (3,'On the cloud side, the import wizard walks a live Azure subscription and lays it out as real nodes — virtual networks, subnets, security groups, gateways.'),
-       (3,"From there it's an ordinary design. Change it on the canvas, and the Terraform stays synchronized with what you drew."),
-       (4,"Scheduled drift checks run against the cloud estate as well, so an environment changed in the portal doesn't quietly diverge from the code."),
-       (4,'Ansible-based device management ties the two halves together — the physical estate and the cloud one, managed from the same design.'),
-       (5,TAG),
+       (1,"Episode nine: the two ends of the range. The same canvas that held a branch closet "
+          "scales to a full Arista leaf-spine VXLAN EVPN fabric."),
+       (1,"Same drawing surface, same validation, same bill of materials — the difference is "
+          "the number of boxes, not the tool."),
+       (2,"The AVD wizard follows Arista's own model: architect, validate, deploy. You set "
+          "the fabric parameters — underlay and overlay AS numbering, VTEP and router-id "
+          "sources, anycast gateway, underlay MTU, spine and leaf counts."),
+       (2,"There is full validation parity with single devices, and the fabric's optics land "
+          "in the bill of materials like any other link."),
+       (3,"Cloud is the same story. Azure resources are real nodes on the canvas — virtual "
+          "networks, subnets, security groups, gateways — not a picture of your subscription."),
+       (3,"You can design them from scratch alongside the physical estate, in one drawing and "
+          "one bill of materials."),
+       (4,"Or run the subscription import and reverse-engineer what already exists. It reads "
+          "the subscription and draws it, and from there it behaves like anything else on the "
+          "canvas — validated, documented, and comparable against reality."),
+       (5,"The Terraform stays synchronized with the drawing, so the canvas and the "
+          "infrastructure code are the same artefact rather than two that have to be kept in "
+          "step by hand."),
+       (5,"Push it back as Terraform, and schedule drift checks against it. The same closed "
+          "loop as the physical estate."),
+       (6,TAG),
       ]),
 
- dict(slug='ep10-tools-access', title='Episode 10 — Tools, monitoring and access',
-      slots=[(BRAND,3.0),(TOOLS,None),(CONFIGCMP,None),(LOOKINGGLASS,None),(WATCHTOWER,None),(ENDCARD,5.0)],
+ dict(slug='ep10-tools-access', title='Episode 10 — Access, tools and monitoring',
+      slots=[(BRAND,3.0),(ACCOUNT,None),(ROLES,None),(TOOLS,None),(WATCHTOWER,None),(OUTCOME,None),(ENDCARD,5.0)],
       lines=[
-       (1,"Episode ten, and the parts that surround the designer."),
-       (1,"Nineteen free network tools, no sign-in: diagnostics, addressing, DNS, security and "
-          "monitoring — the bookmark folder every engineer keeps, in one place."),
-       (2,"Config Compare is the one to know. Drop in two configs, route tables, or any text "
-          "dumps, and the panes become a live side-by-side comparison. There's no compare "
-          "button, and nothing leaves your browser."),
-       (2,"Green is identical. Yellow is the same line with minor edits, with the changed "
-          "words highlighted inside the row. Red is a line with no counterpart at all."),
-       (2,"Block-aware sorting cancels out reordering while keeping interface, BGP, IP SLA and "
-          "policy-map groups intact. Ignore rules cover whitespace, case, comments and "
-          "volatile lines — and your own regular expressions."),
-       (3,"Looking Glass traces a path hop by hop and confirms it matches the design."),
+       (1,"Episode ten, the last one: everything around the design work. Register with a "
+          "valid email — that address is your username — and a verification link arrives "
+          "immediately. The account activates when you click it."),
+       (1,"Passwords follow a compliance policy: at least twelve characters, upper and lower "
+          "case, a number and a special character, and you cannot reuse recent ones."),
+       (1,"Two-factor authentication is available to everyone from your profile, and required "
+          "for owner, admin and lab-editor accounts. Enrolment is enforced on every request, "
+          "so a promotion into a privileged role takes effect immediately rather than at next "
+          "sign-in."),
+       (2,"Roles run owner, admin, editor, viewer and observer. New sign-ups start as editor, "
+          "so a teammate can build straight away."),
+       (2,"Only the owner changes anyone's role, and viewers get a genuinely read-only canvas "
+          "rather than one that lets them make changes they cannot save."),
+       (3,"Alongside the platform there is a suite of free network tools — diagnostics, "
+          "subnet and address calculators, config comparison, and reference lookups."),
+       (3,"They need no account and nothing leaves your browser, which is the point: they are "
+          "the things you reach for mid-incident, not mid-project."),
        (4,"Watchtower monitors uptime with multi-channel alerting, and watches the platform "
           "itself from outside."),
-       (4,"Around all of it: roles enforced end to end — owner, admin, editor, viewer, "
-          "observer — with two-factor authentication required for privileged accounts, and "
-          "every device secret held in an encrypted per-organization vault."),
-       (1,'These are the parts you meet before you ever draw anything, and the ones you rely on long after.'),
-       (2,'The tools cover diagnostics — DNS lookup, ping, traceroute, port check, speed test, Config Compare. Addressing — subnet calculator, IPv6 tools, CIDR aggregator, IP geolocation, MAC lookup. DNS and domains. Security and web checks.'),
-       (3,'Config Compare exports as a unified diff or a standalone HTML report, so a change review can be attached to a ticket rather than screenshotted.'),
-       (4,"Watchtower's channels are reused by the drift scheduler, so operational alerting is one system rather than two."),
-       (5,"On access: new sign-ups now start as editor rather than read-only, so a teammate can build immediately. Changing anyone's role is reserved for the owner."),
-       (5,"There's a lab editor role that carries everything an editor has plus permission to create live labs, and the grant travels in the session token."),
-       (5,'Role changes apply on the next page load or tab focus — no re-login. Two-factor enrolment is enforced on every request, so a promotion into a privileged role takes effect immediately, not at the next sign-in.'),
-       (5,'Collaboration runs on co-edit share links with live multi-user editing, and anything published publicly goes through the scrubber first.'),
-       (5,TAG),
+       (4,"The drift scheduler reuses those same channels, so operational alerting is one "
+          "system rather than two that have to be configured separately."),
+       (5,"That is the whole product, across ten episodes: design on a canvas, configure with "
+          "real per-vendor depth, validate continuously, publish once, deploy safely, and "
+          "keep verifying afterwards."),
+       (5,"Less retyping, more verification, and a shorter distance between the drawing and "
+          "the running network."),
+       (6,TAG),
       ]),
 ]
+
 
 def build(ep, do_synth=True):
     slug = ep['slug']; outdir = f'vo_{slug}'

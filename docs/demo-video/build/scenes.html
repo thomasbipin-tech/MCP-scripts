@@ -193,6 +193,44 @@ body{font-family:Inter,sans-serif;color:var(--tp);-webkit-font-smoothing:antiali
 .docpg .dl{height:5px;background:#d8d8dd;border-radius:2px;margin-top:7px}
 .docpg .dbox{height:96px;border:1px solid #c9c9ce;border-radius:4px;margin:10px 0}
 
+/* ---------- batch 3 screens: one dedicated screen per episode topic ---------- */
+.cat{display:flex;gap:0;border-radius:var(--r-md);border:1px solid var(--bd);overflow:hidden;height:692px}
+.catrail{width:340px;flex:0 0 340px;background:#ffffff05;border-right:1px solid var(--bd);padding:14px}
+.catsearch{height:38px;border-radius:99px;border:1px solid var(--bd2);background:#ffffff08;display:flex;
+  align-items:center;padding:0 15px;font-size:14px;color:var(--ts);margin-bottom:14px}
+.catgrp{font-size:11px;letter-spacing:1.3px;text-transform:uppercase;color:var(--ac);font-weight:700;margin:10px 0 6px}
+.catit{display:flex;align-items:center;gap:11px;padding:7px 11px;border-radius:var(--r-sm);border:1px solid var(--bd);
+  background:#ffffff05;margin-bottom:5px;font-size:14px}
+.catit .ci{width:26px;height:26px;flex:0 0 26px;border-radius:6px;display:flex;align-items:center;justify-content:center}
+.catit .ci svg{width:15px;height:15px}
+.catit small{display:block;font-family:JBMono,monospace;font-size:11.5px;color:var(--ts)}
+.catcv{flex:1;position:relative;background:
+  linear-gradient(#ffffff08 1px,transparent 1px) 0 0/34px 34px,
+  linear-gradient(90deg,#ffffff08 1px,transparent 1px) 0 0/34px 34px}
+
+.mtr{display:flex;gap:12px;align-items:center;margin-bottom:9px}
+.mtr .ml{width:210px;font-size:14px;color:var(--ts)}
+.mtr .mb{flex:1;height:9px;border-radius:99px;background:#ffffff10;overflow:hidden}
+.mtr .mb i{display:block;height:100%;border-radius:99px;background:var(--ac)}
+.mtr .mv{width:120px;text-align:right;font-family:JBMono,monospace;font-size:14px;color:var(--tp)}
+
+.split{display:flex;gap:20px}
+.split>*{flex:1;min-width:0}
+.panel{border-radius:var(--r-md);border:1px solid var(--bd);background:#ffffff05;padding:18px 20px}
+.panel .pt{font-size:12px;letter-spacing:1.2px;text-transform:uppercase;color:var(--tt);font-weight:700;margin-bottom:12px}
+
+.find{display:flex;gap:14px;align-items:flex-start;padding:13px 16px;border-radius:var(--r-md);
+  border:1px solid var(--bd);background:#ffffff05;margin-bottom:9px}
+.find .fx{width:24px;height:24px;flex:0 0 24px;border-radius:99px;display:flex;align-items:center;justify-content:center}
+.find .fx svg{width:12px;height:12px}
+.find .ft{font-size:15px} .find .fs{font-size:13px;color:var(--ts);margin-top:3px}
+.find .fw{margin-left:auto;font-family:JBMono,monospace;font-size:12.5px;color:var(--ac);white-space:nowrap;align-self:center}
+
+.bar{display:flex;height:34px;border-radius:7px;overflow:hidden;border:1px solid var(--bd2)}
+.bar i{display:flex;align-items:center;justify-content:center;font-family:JBMono,monospace;font-size:12px;color:#00121c}
+.tfline{font-family:JBMono,monospace;font-size:15.5px;line-height:1.85;white-space:pre}
+.tfline .a{color:var(--ok)} .tfline .c{color:var(--warn)} .tfline .k{color:var(--ac)} .tfline .s{color:var(--ts)}
+
 /* ---------- opening brand card: bookends the end card ---------- */
 .openbrand{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;
   justify-content:center;gap:26px;transform-origin:50% 50%;
@@ -1821,10 +1859,518 @@ const SCENES=[
   g.querySelector('.endwrap').style.opacity=1-seg(lt,d-.8,d);
   caption('',0);chips(null);badge(null,'',0);
 }},
+
+/* ================= batch 3: a dedicated screen per episode topic =================
+   Appended after the end card so the BRAND (36) and ENDCARD (37) indices that the
+   existing timelines already reference stay where they are. */
+
+/* ---------- 39. device catalog (ep1) ---------- */
+{a:0,b:9,go(lt,d){
+  hideApp(); const g=$('#gfx');
+  const GR=[['Routing',[['Router','IOS-XE',V.cisco,I.router],['WAN Edge','EdgeConnect',V.sp,I.wan]]],
+            ['Switching',[['Core Switch','NX-OS',V.cisco,I.switch],['Leaf Switch','EOS',V.arista,I.switch],
+                          ['Access Switch','ArubaOS-CX',V.aruba,I.switch]]],
+            ['Security',[['Firewall','PAN-OS',V.palo,I.fw]]],
+            ['Console',[['Terminal server','Lantronix',V.gen,I.switch]]],
+            ['Clouds',[['Internet','no ports',V.gen,I.cloud],['MPLS','no ports',V.gen,I.cloud]]]];
+  if(!g.dataset.n23){g.dataset.n23='1';
+    pageShell(g,{crumb:'netforge.ai / remote-site / <b>canvas</b>',btns:['Pin sidebar','Validate','Publish'],body:`
+      <div class="h1">The catalog is the left sidebar</div>
+      <div class="h2">Grouped by vendor and family. Click to drop a device at the next free spot, or drag it exactly where you want it.</div>
+      <div class="cat">
+        <div class="catrail">
+          <div class="catsearch">Search all vendors…</div>
+          ${GR.map(([grp,items])=>`<div class="catgrp">${grp}</div>`+
+            items.map(([n,m,c,ic])=>`<div class="catit"><span class="ci" style="background:${c}1a;color:${c}">${ic}</span>
+              <div><div>${n}</div><small>${m}</small></div></div>`).join('')).join('')}
+        </div>
+        <div class="catcv">
+          <svg viewBox="0 0 1100 520" style="position:absolute;inset:0;width:100%;height:100%">
+            <path d="M550 150 V236 M550 150 H330 V236 M550 150 H770 V236" stroke="#38bdf866" stroke-width="2" fill="none"/>
+            <path d="M330 288 V372 H210 M330 288 H450 V372 M770 288 V372 H890" stroke="#38bdf866" stroke-width="2" fill="none"/>
+            ${[[550,120,'RSITE-WAN-01',V.sp],[330,262,'RSITE-CORE-01',V.cisco],[770,262,'RSITE-FW-01',V.palo],
+               [210,398,'RSITE-ACC-01',V.aruba],[450,398,'RSITE-ACC-02',V.aruba],[890,398,'RSITE-AP-04',V.aruba]]
+              .map(([x,y,n,c])=>`<g><rect x="${x-84}" y="${y-26}" width="168" height="52" rx="9"
+                 fill="${c}1a" stroke="${c}" stroke-width="1.6"/>
+                 <text x="${x}" y="${y+5}" fill="#f5f5f7" font-size="15" font-family="JBMono, monospace"
+                 text-anchor="middle">${n}</text></g>`).join('')}
+          </svg>
+        </div>
+      </div>
+      <div style="display:flex;gap:10px;margin-top:18px" id="qsum">
+        <span class="pill info">6 vendors, one search</span>
+        <span class="pill info">rail collapses to a thin strip</span>
+        <span class="pill warn">Internet, MPLS and VPN clouds carry no ports and no config</span></div>`});}
+  stagger([...g.querySelectorAll('.catit,.catgrp')], lt, .25, .07, .45);
+  g.querySelector('#qsum').style.opacity=easeOut(seg(lt,3.2,4.2));
+  g.querySelector('.pg').style.opacity=1-seg(lt,d-.6,d);
+  chips(null);
+}},
+
+/* ---------- 40. interfaces and sub-interfaces (ep2) ---------- */
+{a:0,b:9,go(lt,d){
+  hideApp(); const g=$('#gfx');
+  const R=[['Ethernet1/1','routed','uplink to CORE','10.255.0.1/31','9216','up',''],
+           ['Ethernet1/2','routed','uplink to CORE-02','10.255.0.3/31','9216','up',''],
+           ['Ethernet1/3.10','dot1q 10','DATA','10.50.10.1/24','9216','up','VRF CORP'],
+           ['Ethernet1/3.30','dot1q 30','VOICE','10.50.30.1/24','9216','up','VRF CORP'],
+           ['Ethernet1/3.99','dot1q 99','MGMT','10.50.99.1/24','1500','up','VRF MGMT'],
+           ['Loopback0','loopback','router-id','10.255.255.11/32','—','up','duplicate-checked'],
+           ['Loopback1','loopback','VTEP source','10.255.254.11/32','—','up','duplicate-checked'],
+           ['Ethernet1/48','access','out of service','—','—','shutdown','']];
+  if(!g.dataset.n24){g.dataset.n24='1';
+    pageShell(g,{crumb:'netforge.ai / remote-site / RSITE-CORE-01 / <b>interfaces</b>',btns:['Add sub-interface','Validate','Apply'],
+      tabs:['Interfaces','Layer 2','Layer 3','Routing','Features','Management'],tabOn:0,body:`
+      <div class="h1">Interfaces, sub-interfaces and loopbacks</div>
+      <div class="h2">Description, addressing, MTU and admin state. Routed parents take dot1q sub-interfaces with tag, address and VRF.</div>
+      <table class="tbl"><thead><tr><th>Interface</th><th>Mode</th><th>Description</th><th>Address</th>
+        <th>MTU</th><th>Admin</th><th>Notes</th></tr></thead>
+      <tbody>${R.map((r,i)=>`<tr id="if${i}">${r.map((c,j)=>
+        `<td class="${j===2||j===6?'t':''} ${j>=4?'dim':''}">${j===5&&c==='shutdown'?`<span class="pill warn">${c}</span>`:c}</td>`).join('')}</tr>`).join('')}</tbody></table>
+      <div style="display:flex;gap:10px;margin-top:22px" id="isum">
+        <span class="pill ok">loopbacks duplicate-checked design-wide</span>
+        <span class="pill info">2 VRFs in use</span></div>`});}
+  stagger([...g.querySelectorAll('tbody tr')], lt, .3, .19, .5);
+  g.querySelector('#isum').style.opacity=easeOut(seg(lt,3.0,4.0));
+  g.querySelector('.pg').style.opacity=1-seg(lt,d-.6,d);
+  chips(null);
+}},
+
+/* ---------- 41. first-hop redundancy (ep2) ---------- */
+{a:0,b:9,go(lt,d){
+  hideApp(); const g=$('#gfx');
+  const L=[['Protocol','HSRP version 2'],['Group','30'],['Virtual address','10.50.30.254'],
+           ['Secondary virtual','10.50.30.253'],['Priority','110'],['Preempt','on · delay 30s'],
+           ['Hello / hold','1s / 3s'],['Virtual MAC','0000.0c9f.f01e'],['Authentication','MD5 · vault reference']];
+  const T=[['Interface Po1','decrement 20','tracked'],['Interface Eth1/1','decrement 10','tracked'],
+           ['Object 5 — IP SLA 5','decrement 30','tracked'],['Object 6 — route 0.0.0.0/0','decrement 40','tracked']];
+  if(!g.dataset.n25){g.dataset.n25='1';
+    pageShell(g,{crumb:'netforge.ai / remote-site / RSITE-CORE-01 / <b>first-hop redundancy</b>',btns:['Switch to VRRP','Validate','Apply'],
+      tabs:['Interfaces','Layer 2','Layer 3','Routing','Features','Management'],tabOn:3,body:`
+      <div class="h1">Gateway redundancy, in full</div>
+      <div class="h2">HSRP and VRRP with preempt and delays, interface and object tracking with decrement, timers, version, virtual MAC and secondary virtual addresses.</div>
+      <div class="split">
+        <div class="panel"><div class="pt">Group configuration</div>
+          ${L.map((k,i)=>`<div class="kv" id="fh${i}"><span class="k">${k[0]}</span><span class="v">${k[1]}</span></div>`).join('')}</div>
+        <div class="panel"><div class="pt">Tracking</div>
+          ${T.map((t,i)=>`<div class="find" id="tk${i}"><span class="fx" style="background:var(--okb);color:var(--ok)">${I.chk}</span>
+            <div><div class="ft">${t[0]}</div><div class="fs">${t[1]}</div></div>
+            <span class="fw">${t[2]}</span></div>`).join('')}
+          <div style="margin-top:16px;display:flex;gap:10px">
+            <span class="pill ok">peer priority 100 — no tie</span>
+            <span class="pill info">mirrored on RSITE-CORE-02</span></div>
+        </div>
+      </div>`});}
+  stagger([...g.querySelectorAll('.kv')], lt, .3, .13, .45);
+  stagger([...g.querySelectorAll('.find')], lt, 1.6, .22, .5);
+  g.querySelector('.pg').style.opacity=1-seg(lt,d-.6,d);
+  chips(null);
+}},
+
+/* ---------- 42. subnet profile per site kind (ep3) ---------- */
+{a:0,b:9,go(lt,d){
+  hideApp(); const g=$('#gfx');
+  const R=[['DATA','10','/24','user access','yes','—'],
+           ['VOICE','30','/24','voice VLAN on access ports','yes','auto'],
+           ['SERVERS','40','/24','server access','yes','—'],
+           ['GUEST','50','/24','isolated','yes','—'],
+           ['MGMT','99','/24','management plane','yes','—'],
+           ['TRANSIT','—','/31','routed point-to-points','no','—'],
+           ['LOOPBACKS','—','/32','router-id and VTEP source','no','—']];
+  if(!g.dataset.n26){g.dataset.n26='1';
+    pageShell(g,{crumb:'netforge.ai / blueprint / <b>subnet profile — branch</b>',btns:['Copy to campus','Reset','Save profile'],
+      tabs:['Data centre','Campus','Branch'],tabOn:2,body:`
+      <div class="h1">Each site kind gets its own subnet profile</div>
+      <div class="h2">Editable per kind. The profile drives the VLANs, the gateway SVIs, DHCP relay, and the voice VLAN on access ports.</div>
+      <table class="tbl"><thead><tr><th>Segment</th><th>VLAN</th><th>Prefix</th><th>Purpose</th>
+        <th>Gateway SVI</th><th>DHCP relay</th></tr></thead>
+      <tbody>${R.map((r,i)=>`<tr id="sp${i}">${r.map((c,j)=>`<td class="${j===3?'t':''} ${j>3?'dim':''}">${c}</td>`).join('')}</tr>`).join('')}</tbody></table>
+      <div style="display:flex;gap:10px;margin-top:22px" id="ssum">
+        <span class="pill info">7 segments · branch</span>
+        <span class="pill ok">edits apply to every branch generated</span></div>`});}
+  stagger([...g.querySelectorAll('tbody tr')], lt, .3, .2, .5);
+  g.querySelector('#ssum').style.opacity=easeOut(seg(lt,3.0,4.0));
+  g.querySelector('.pg').style.opacity=1-seg(lt,d-.6,d);
+  chips(null);
+}},
+
+/* ---------- 43. blueprint generation result (ep3) ---------- */
+{a:0,b:9,go(lt,d){
+  hideApp(); const g=$('#gfx');
+  const M=[['Sites generated',1.0,'17 tabs + WAN Overview'],['Devices placed',1.0,'214'],
+           ['Links cabled',1.0,'386'],['Subnets allocated',1.0,'214 from one /12'],
+           ['Blocks pinned',1.0,'17 — safe to re-run']];
+  if(!g.dataset.n27){g.dataset.n27='1';
+    pageShell(g,{crumb:'netforge.ai / blueprint / <b>generated</b>',btns:['Undo generation','Open WAN Overview','Validate estate'],body:`
+      <div class="h1">The estate, built</div>
+      <div class="h2">One tab per site, wired through a WAN overview. Generated blocks pin themselves, so re-running the wizard to add sites never renumbers what you already deployed.</div>
+      ${M.map((m,i)=>`<div class="mtr" id="mt${i}"><span class="ml">${m[0]}</span>
+        <span class="mb"><i id="mb${i}" style="width:0%"></i></span><span class="mv">${m[2]}</span></div>`).join('')}
+      <div style="display:flex;gap:10px;margin-top:24px" id="gsum">
+        <span class="pill ok">no renumbering of existing sites</span>
+        <span class="pill info">every block overridable per site</span>
+        <span class="pill info">2 data centres · 3 campuses · 12 branches</span></div>`});}
+  stagger([...g.querySelectorAll('.mtr')], lt, .3, .24, .5);
+  [...g.querySelectorAll('.mb i')].forEach((el,i)=>{
+    el.style.width=(easeOut(seg(lt,.6+i*.24,1.9+i*.24))*100).toFixed(1)+'%';});
+  g.querySelector('#gsum').style.opacity=easeOut(seg(lt,3.4,4.4));
+  g.querySelector('.pg').style.opacity=1-seg(lt,d-.6,d);
+  chips(null);
+}},
+
+/* ---------- 44. project home / multi-canvas (ep4) ---------- */
+{a:0,b:9,go(lt,d){
+  hideApp(); const g=$('#gfx');
+  const R=[['WAN Overview','pinned','17 site blocks','—','validated'],
+           ['dc-north','data centre','38 devices','10.16.0.0/20','validated'],
+           ['dc-south','data centre','36 devices','10.16.16.0/20','validated'],
+           ['campus-hq','campus','29 devices','10.16.32.0/20','validated'],
+           ['campus-west','campus','24 devices','10.16.48.0/20','validated'],
+           ['branch-041','branch','9 devices','10.17.8.0/21','validated'],
+           ['branch-042','branch','9 devices','10.17.16.0/21','1 finding'],
+           ['branch-043','branch','9 devices','10.17.24.0/21','validated']];
+  if(!g.dataset.n28){g.dataset.n28='1';
+    pageShell(g,{crumb:'netforge.ai / <b>acme-estate</b>',btns:['Add canvas','Validate estate','Publish'],
+      tabs:['Canvases','Members','History','Settings'],tabOn:0,body:`
+      <div class="h1">A project is many canvases</div>
+      <div class="h2">One per site, plus a pinned WAN Overview. Site blocks on the Overview jump straight to their tab.</div>
+      <table class="tbl"><thead><tr><th>Canvas</th><th>Kind</th><th>Contents</th><th>Address block</th><th>State</th></tr></thead>
+      <tbody>${R.map((r,i)=>`<tr id="pj${i}">${r.slice(0,4).map((c,j)=>`<td class="${j===1?'t':''} ${j>1?'dim':''}">${c}</td>`).join('')}
+        <td>${r[4]==='validated'?'<span class="pill ok">validated</span>':'<span class="pill warn">'+r[4]+'</span>'}</td></tr>`).join('')}</tbody></table>
+      <div style="display:flex;gap:10px;margin-top:22px" id="psum">
+        <span class="pill info">18 canvases</span>
+        <span class="pill info">tabs behave like a browser</span></div>`});}
+  stagger([...g.querySelectorAll('tbody tr')], lt, .3, .19, .5);
+  g.querySelector('#psum').style.opacity=easeOut(seg(lt,3.0,4.0));
+  g.querySelector('.pg').style.opacity=1-seg(lt,d-.6,d);
+  chips(null);
+}},
+
+/* ---------- 45. inter-site link, declared once (ep4) ---------- */
+{a:0,b:9,go(lt,d){
+  hideApp(); const g=$('#gfx');
+  const F=[['Link identifier','WAN-DCN-BR041'],['Carrier','MPLS'],['A end','dc-north · DCN-WAN-01 · Eth1/4'],
+           ['B end','branch-041 · BR041-WAN-01 · wan0'],['Bandwidth','200 Mbps'],['Transit block','10.255.16.0/31']];
+  if(!g.dataset.n29){g.dataset.n29='1';
+    pageShell(g,{crumb:'netforge.ai / acme-estate / WAN Overview / <b>link editor</b>',btns:['Delete link','Validate','Apply'],body:`
+      <div class="h1">Declared once on the Overview, mirrored on both tabs</div>
+      <div class="h2">A WAN link has exactly one definition. Each site tab shows its end as a stub cloud, so a link can never exist twice with two sets of values.</div>
+      <div class="split">
+        <div class="panel"><div class="pt">Definition — WAN Overview</div>
+          ${F.map((k,i)=>`<div class="kv" id="xk${i}"><span class="k">${k[0]}</span><span class="v">${k[1]}</span></div>`).join('')}</div>
+        <div class="panel"><div class="pt">Mirrored onto the site tabs</div>
+          <div class="find" id="mr0"><span class="fx" style="background:var(--acs);color:var(--ac)">${I.cloud}</span>
+            <div><div class="ft">dc-north</div><div class="fs">WAN stub cloud · WAN-DCN-BR041 · Eth1/4</div></div>
+            <span class="fw">read-only</span></div>
+          <div class="find" id="mr1"><span class="fx" style="background:var(--acs);color:var(--ac)">${I.cloud}</span>
+            <div><div class="ft">branch-041</div><div class="fs">WAN stub cloud · WAN-DCN-BR041 · wan0</div></div>
+            <span class="fw">read-only</span></div>
+          <div class="find" id="mr2"><span class="fx" style="background:var(--okb);color:var(--ok)">${I.chk}</span>
+            <div><div class="ft">Joined graph</div><div class="fs">both ends resolve to one edge</div></div>
+            <span class="fw">1 definition</span></div>
+        </div>
+      </div>`});}
+  stagger([...g.querySelectorAll('.kv')], lt, .3, .16, .45);
+  stagger([...g.querySelectorAll('.find')], lt, 1.9, .3, .55);
+  g.querySelector('.pg').style.opacity=1-seg(lt,d-.6,d);
+  chips(null);
+}},
+
+/* ---------- 46. joined-graph validation (ep4) ---------- */
+{a:0,b:9,go(lt,d){
+  hideApp(); const g=$('#gfx');
+  const F=[['err','Island site — no path back','branch-042 has no resolved WAN edge to any hub','branch-042'],
+           ['err','Unmatched WAN identifier','WAN-DCS-BR042 declared on the Overview, absent on the site tab','dc-south'],
+           ['warn','Overview and site disagree','Overview says 200 Mbps, site tab renders 100 Mbps','branch-042'],
+           ['warn','Address pool overlap between sites','10.17.16.0/21 also allocated to branch-047','branch-042'],
+           ['ok','Every other site resolves','15 sites, 31 inter-site edges, all matched','estate']];
+  const C={err:['var(--errb)','var(--err)',I.x],warn:['var(--warnb)','var(--warn)',I.x],ok:['var(--okb)','var(--ok)',I.chk]};
+  if(!g.dataset.n30){g.dataset.n30='1';
+    pageShell(g,{crumb:'netforge.ai / acme-estate / <b>validate estate</b>',btns:['Re-run','Filter by site','Fix on canvas'],body:`
+      <div class="h1">Validation runs over the joined graph</div>
+      <div class="h2">Not seventeen separate designs — one graph. Click a finding and it switches you to the tab that owns it.</div>
+      ${F.map((f,i)=>`<div class="find" id="jf${i}">
+        <span class="fx" style="background:${C[f[0]][0]};color:${C[f[0]][1]}">${C[f[0]][2]}</span>
+        <div><div class="ft">${f[1]}</div><div class="fs">${f[2]}</div></div>
+        <span class="fw">→ ${f[3]}</span></div>`).join('')}
+      <div style="display:flex;gap:10px;margin-top:20px" id="jsum">
+        <span class="pill err">2 blocking</span><span class="pill warn">2 to review</span>
+        <span class="pill info">only reachable across canvases</span></div>`});}
+  stagger([...g.querySelectorAll('.find')], lt, .3, .3, .55);
+  g.querySelector('#jsum').style.opacity=easeOut(seg(lt,3.2,4.2));
+  g.querySelector('.pg').style.opacity=1-seg(lt,d-.6,d);
+  chips(null);
+}},
+
+/* ---------- 47. site-filtered export (ep4) ---------- */
+{a:0,b:9,go(lt,d){
+  hideApp(); const g=$('#gfx');
+  const S=[['branch-041','on'],['branch-042','off'],['branch-043','off'],['campus-hq','off'],
+           ['campus-west','off'],['dc-north','off'],['dc-south','off'],['WAN Overview','on']];
+  const O=[['Device configs','9 files','.cfg'],['Cable schedule','14 runs','.csv'],
+           ['Bill of materials','22 lines','.xlsx'],['Design document','11 pages','.pdf']];
+  if(!g.dataset.n31){g.dataset.n31='1';
+    pageShell(g,{crumb:'netforge.ai / acme-estate / export / <b>site filter</b>',btns:['Select all','Clear','Export selection'],body:`
+      <div class="h1">The branch team gets the branch pack</div>
+      <div class="h2">Every deliverable takes a site filter on a multi-site project, so nobody hands a nine-device site a 214-device document.</div>
+      <div class="split">
+        <div class="panel"><div class="pt">Scope</div>
+          ${S.map((s,i)=>`<div class="chk ${s[1]==='on'?'on':''}" id="sc${i}"><i>${s[1]==='on'?I.chk:''}</i>${s[0]}</div>`).join('')}</div>
+        <div class="panel"><div class="pt">What that produces</div>
+          ${O.map((o,i)=>`<div class="find" id="of${i}">
+            <span class="fx" style="background:var(--acs);color:var(--ac)">${I.doc}</span>
+            <div><div class="ft">${o[0]}</div><div class="fs">${o[1]}</div></div>
+            <span class="fw">${o[2]}</span></div>`).join('')}
+          <div style="margin-top:16px;display:flex;gap:10px">
+            <span class="pill ok">same validated canvas</span>
+            <span class="pill info">scoped, not trimmed afterwards</span></div>
+        </div>
+      </div>`});}
+  stagger([...g.querySelectorAll('.chk')], lt, .3, .12, .4);
+  stagger([...g.querySelectorAll('.find')], lt, 1.7, .26, .5);
+  g.querySelector('.pg').style.opacity=1-seg(lt,d-.6,d);
+  chips(null);
+}},
+
+/* ---------- 48. IPAM pool definitions (ep6) ---------- */
+{a:0,b:9,go(lt,d){
+  hideApp(); const g=$('#gfx');
+  const R=[['LOOPBACKS','10.255.255.0/24','/32','sequential','214','42','router-id, VTEP source'],
+           ['P2P-TRANSIT','10.255.0.0/18','/31','sequential','8192','386','routed links'],
+           ['USER-VLANS','10.16.0.0/12','/24','per-site block','4096','214','SVIs and gateways'],
+           ['MGMT','10.200.0.0/16','/24','per-site block','256','17','management plane'],
+           ['FHRP-VIP','derived','—','from the SVI block','—','214','virtual addresses']];
+  if(!g.dataset.n32){g.dataset.n32='1';
+    pageShell(g,{crumb:'netforge.ai / acme-estate / canvas toolbar / <b>IPAM</b>',btns:['New pool','Import CSV','Save'],
+      tabs:['Pools','Allocations','Supernet','Conflicts'],tabOn:0,body:`
+      <div class="h1">Define the pools once</div>
+      <div class="h2">Loopbacks, point-to-points, user VLANs — then let the platform allocate from them instead of typing addresses.</div>
+      <table class="tbl"><thead><tr><th>Pool</th><th>Range</th><th>Prefix</th><th>Strategy</th>
+        <th>Capacity</th><th>In use</th><th>Feeds</th></tr></thead>
+      <tbody>${R.map((r,i)=>`<tr id="pl${i}">${r.map((c,j)=>`<td class="${j===3||j===6?'t':''} ${j>=4&&j<6?'dim':''}">${c}</td>`).join('')}</tr>`).join('')}</tbody></table>
+      <div style="display:flex;gap:10px;margin-top:22px" id="lsum">
+        <span class="pill ok">managed ranges cannot collide by construction</span>
+        <span class="pill info">hand-typed addresses still checked</span></div>`});}
+  stagger([...g.querySelectorAll('tbody tr')], lt, .3, .22, .5);
+  g.querySelector('#lsum').style.opacity=easeOut(seg(lt,3.0,4.0));
+  g.querySelector('.pg').style.opacity=1-seg(lt,d-.6,d);
+  chips(null);
+}},
+
+/* ---------- 49. allocation ledger (ep6) ---------- */
+{a:0,b:9,go(lt,d){
+  hideApp(); const g=$('#gfx');
+  const R=[['10.16.32.1/24','USER-VLANS','campus-hq','HQ-CORE-01','Vlan10','gateway SVI','auto'],
+           ['10.16.32.254','FHRP-VIP','campus-hq','HSRP group 10','virtual','gateway redundancy','auto'],
+           ['10.16.34.1/24','USER-VLANS','campus-hq','HQ-CORE-01','Vlan30','voice SVI','auto'],
+           ['10.255.0.6/31','P2P-TRANSIT','campus-hq','HQ-CORE-01','Eth1/1','routed link','auto'],
+           ['10.255.0.7/31','P2P-TRANSIT','campus-hq','HQ-DIST-01','Eth1/1','routed link','auto'],
+           ['10.255.255.21/32','LOOPBACKS','campus-hq','HQ-CORE-01','Loopback0','router-id','auto'],
+           ['10.200.4.10/24','MGMT','campus-hq','HQ-FW-01','mgmt0','out of band','manual']];
+  if(!g.dataset.n33){g.dataset.n33='1';
+    pageShell(g,{crumb:'netforge.ai / acme-estate / IPAM / <b>allocations</b>',btns:['Filter by pool','Release','Export CSV'],
+      tabs:['Pools','Allocations','Supernet','Conflicts'],tabOn:1,body:`
+      <div class="h1">Every address traces back to a pool</div>
+      <div class="h2">SVIs, routed links and first-hop redundancy addresses are assigned consistently, and each allocation keeps its origin.</div>
+      <table class="tbl"><thead><tr><th>Address</th><th>Pool</th><th>Canvas</th><th>Device</th>
+        <th>Interface</th><th>Role</th><th>Source</th></tr></thead>
+      <tbody>${R.map((r,i)=>`<tr id="al${i}">${r.slice(0,6).map((c,j)=>`<td class="${j===5?'t':''} ${j===2?'dim':''}">${c}</td>`).join('')}
+        <td>${r[6]==='auto'?'<span class="pill info">auto</span>':'<span class="pill warn">manual</span>'}</td></tr>`).join('')}</tbody></table>
+      <div style="display:flex;gap:10px;margin-top:22px" id="asum">
+        <span class="pill ok">6 of 7 allocated from a pool</span>
+        <span class="pill warn">1 typed by hand — still conflict-checked</span></div>`});}
+  stagger([...g.querySelectorAll('tbody tr')], lt, .3, .21, .5);
+  g.querySelector('#asum').style.opacity=easeOut(seg(lt,3.0,4.0));
+  g.querySelector('.pg').style.opacity=1-seg(lt,d-.6,d);
+  chips(null);
+}},
+
+/* ---------- 50. supernet split (ep6) ---------- */
+{a:0,b:9,go(lt,d){
+  hideApp(); const g=$('#gfx');
+  const SEG=[['dc-north','/20',V.cisco,14.6],['dc-south','/20',V.cisco,14.6],['campus-hq','/20',V.arista,14.6],
+             ['campus-west','/20',V.arista,14.6],['12 branches','/21',V.aruba,29.2],['reserved','—',V.gen,12.4]];
+  if(!g.dataset.n34){g.dataset.n34='1';
+    pageShell(g,{crumb:'netforge.ai / acme-estate / IPAM / <b>supernet</b>',btns:['Change supernet','Re-pack','Apply'],
+      tabs:['Pools','Allocations','Supernet','Conflicts'],tabOn:2,body:`
+      <div class="h1">One supernet, right-sized per site</div>
+      <div class="h2">Anything from a slash eight to a slash sixteen. Roughly a slash twenty for a data centre or campus, a slash twenty-one for a branch — packed automatically, overridable per site.</div>
+      <div style="font-family:JBMono,monospace;font-size:19px;color:var(--ac);margin-bottom:14px" id="sn">10.16.0.0/12</div>
+      <div class="bar" id="snbar">${SEG.map((s,i)=>
+        `<i id="sg${i}" style="width:${s[3]}%;background:${s[2]};opacity:0">${s[1]}</i>`).join('')}</div>
+      <div style="display:flex;gap:26px;margin-top:16px;flex-wrap:wrap" class="dvkey">
+        ${SEG.map(s=>`<span><i style="background:${s[2]}"></i>${s[0]} ${s[1]==='—'?'':s[1]}</span>`).join('')}
+      </div>
+      <div style="display:flex;gap:10px;margin-top:26px" id="nsum">
+        <span class="pill ok">no overlaps</span>
+        <span class="pill info">blocks pin on generation</span>
+        <span class="pill info">adding a site takes from reserved, not from a neighbour</span></div>`});}
+  [...g.querySelectorAll('.bar i')].forEach((el,i)=>{
+    el.style.opacity=easeOut(seg(lt,.5+i*.2,1.3+i*.2));});
+  g.querySelector('#sn').style.opacity=easeOut(seg(lt,.2,.9));
+  g.querySelector('#nsum').style.opacity=easeOut(seg(lt,3.2,4.2));
+  g.querySelector('.pg').style.opacity=1-seg(lt,d-.6,d);
+  chips(null);
+}},
+
+/* ---------- 51. overlap checker (ep6) ---------- */
+{a:0,b:9,go(lt,d){
+  hideApp(); const g=$('#gfx');
+  const F=[['err','Duplicate host address','10.50.30.1 assigned to RSITE-CORE-01 Vlan30 and RSITE-FW-01 eth1/3','both typed by hand'],
+           ['err','Pool overlap across canvases','branch-042 10.17.16.0/21 also inside branch-047','one is outside its pinned block'],
+           ['warn','Address outside every pool','10.99.4.7 on HQ-FW-01 mgmt0 belongs to no defined range','not tracked, still checked'],
+           ['ok','Pool-managed ranges','8,466 allocations, zero collisions','structurally impossible']];
+  const C={err:['var(--errb)','var(--err)',I.x],warn:['var(--warnb)','var(--warn)',I.x],ok:['var(--okb)','var(--ok)',I.chk]};
+  if(!g.dataset.n35){g.dataset.n35='1';
+    pageShell(g,{crumb:'netforge.ai / acme-estate / IPAM / <b>conflicts</b>',btns:['Re-scan','Assign from pool','Fix on canvas'],
+      tabs:['Pools','Allocations','Supernet','Conflicts'],tabOn:3,body:`
+      <div class="h1">The overlap checker catches the stragglers</div>
+      <div class="h2">Pool-based allocation makes conflicts impossible for managed ranges. Everything typed by hand outside a pool is still checked across the whole design.</div>
+      ${F.map((f,i)=>`<div class="find" id="ov${i}">
+        <span class="fx" style="background:${C[f[0]][0]};color:${C[f[0]][1]}">${C[f[0]][2]}</span>
+        <div><div class="ft">${f[1]}</div><div class="fs">${f[2]}</div></div>
+        <span class="fw">${f[3]}</span></div>`).join('')}
+      <div style="display:flex;gap:10px;margin-top:20px" id="osum">
+        <span class="pill err">2 blocking</span><span class="pill warn">1 untracked</span>
+        <span class="pill info">checked across every canvas</span></div>`});}
+  stagger([...g.querySelectorAll('.find')], lt, .3, .34, .6);
+  g.querySelector('#osum').style.opacity=easeOut(seg(lt,3.2,4.2));
+  g.querySelector('.pg').style.opacity=1-seg(lt,d-.6,d);
+  chips(null);
+}},
+
+/* ---------- 52. VXLAN EVPN fabric parameters (ep9) ---------- */
+{a:0,b:9,go(lt,d){
+  hideApp(); const g=$('#gfx');
+  const A=[['Fabric name','DC-NORTH-FABRIC'],['Underlay','eBGP · AS 65100 spines, 65101-65112 leaves'],
+           ['Overlay','eBGP EVPN · route-server on the spines'],['VTEP source','Loopback1'],
+           ['Router-id source','Loopback0'],['Anycast gateway','distributed, per VLAN'],
+           ['MTU','9214 underlay'],['Spine / leaf count','4 spines · 12 leaves']];
+  const S=[['Architect','the topology and roles'],['Validate','against the AVD model'],['Deploy','through the pipeline']];
+  if(!g.dataset.n36){g.dataset.n36='1';
+    pageShell(g,{crumb:'netforge.ai / dc-north / <b>AVD wizard</b>',btns:['Preview variables','Validate','Generate fabric'],body:`
+      <div class="h1">A leaf-spine fabric, on the same canvas</div>
+      <div class="h2">The AVD wizard follows Arista's own model — architect, validate, deploy — with full validation parity and bill-of-materials integration.</div>
+      <div class="split">
+        <div class="panel"><div class="pt">Fabric parameters</div>
+          ${A.map((k,i)=>`<div class="kv" id="fk${i}"><span class="k">${k[0]}</span><span class="v">${k[1]}</span></div>`).join('')}</div>
+        <div class="panel"><div class="pt">Arista's model, followed</div>
+          ${S.map((s,i)=>`<div class="find" id="st${i}">
+            <span class="fx" style="background:var(--okb);color:var(--ok)">${I.chk}</span>
+            <div><div class="ft">${s[0]}</div><div class="fs">${s[1]}</div></div>
+            <span class="fw">step ${i+1}</span></div>`).join('')}
+          <svg viewBox="0 0 280 110" style="width:100%;height:150px;margin-top:14px">${miniTopo('spine')}</svg>
+          <div style="display:flex;gap:10px">
+            <span class="pill ok">validation parity with single devices</span>
+            <span class="pill info">optics land in the bill of materials</span></div>
+        </div>
+      </div>`});}
+  stagger([...g.querySelectorAll('.kv')], lt, .3, .15, .45);
+  stagger([...g.querySelectorAll('.find')], lt, 1.8, .3, .55);
+  g.querySelector('.pg').style.opacity=1-seg(lt,d-.6,d);
+  chips(null);
+}},
+
+/* ---------- 53. Terraform, synchronized (ep9) ---------- */
+{a:0,b:9,go(lt,d){
+  hideApp(); const g=$('#gfx');
+  const TF=[['s','# generated from canvas — acme-estate / azure-hub'],
+            ['k','resource','"azurerm_virtual_network" "hub" {'],
+            ['a','  name                = "vnet-hub-uks"'],
+            ['a','  address_space       = ["10.90.0.0/16"]'],
+            ['a','  location            = "uksouth"'],
+            ['','}'],
+            ['k','resource','"azurerm_subnet" "app" {'],
+            ['a','  name             = "snet-app"'],
+            ['c','  address_prefixes = ["10.90.4.0/24"]'],
+            ['','}'],
+            ['k','resource','"azurerm_network_security_group" "app" {'],
+            ['a','  name = "nsg-app"'],
+            ['','}']];
+  const P=[['ok','2 resources unchanged'],['warn','1 resource to update — snet-app prefix'],['ok','0 to destroy']];
+  if(!g.dataset.n37){g.dataset.n37='1';
+    pageShell(g,{crumb:'netforge.ai / acme-estate / azure-hub / <b>terraform</b>',btns:['Re-sync from canvas','Copy','Download .tf'],
+      tabs:['Canvas','Terraform','Drift schedule'],tabOn:1,body:`
+      <div class="h1">The canvas and the Terraform stay the same thing</div>
+      <div class="h2">Azure resources are real nodes on the drawing — virtual networks, subnets, security groups, gateways — with the Terraform kept in step.</div>
+      <div class="split">
+        <div class="panel"><div class="pt">Generated configuration</div>
+          <div class="tfline">${TF.map((t,i)=>`<div id="tf${i}"><span class="${t[0]}">${t[1]}</span>${t[2]?' <span class="s">'+t[2]+'</span>':''}</div>`).join('')}</div></div>
+        <div class="panel"><div class="pt">Plan against the subscription</div>
+          ${P.map((p,i)=>`<div class="find" id="pn${i}">
+            <span class="fx" style="background:${p[0]==='ok'?'var(--okb)':'var(--warnb)'};color:${p[0]==='ok'?'var(--ok)':'var(--warn)'}">${p[0]==='ok'?I.chk:I.x}</span>
+            <div><div class="ft">${p[1]}</div></div></div>`).join('')}
+          <div style="margin-top:16px;display:flex;gap:10px;flex-wrap:wrap">
+            <span class="pill info">drift checks schedulable</span>
+            <span class="pill ok">one bill of materials, cloud and physical</span></div>
+        </div>
+      </div>`});}
+  stagger([...g.querySelectorAll('.tfline div')], lt, .3, .1, .35);
+  stagger([...g.querySelectorAll('.find')], lt, 2.0, .3, .55);
+  g.querySelector('.pg').style.opacity=1-seg(lt,d-.6,d);
+  chips(null);
+}},
+
+/* ---------- 54. Azure subscription import (ep9) ---------- */
+{a:0,b:9,go(lt,d){
+  hideApp(); const g=$('#gfx');
+  const R=[['Virtual network','vnet-hub-uks','10.90.0.0/16','uksouth','import'],
+           ['Subnet','snet-app','10.90.4.0/24','uksouth','import'],
+           ['Subnet','snet-data','10.90.8.0/24','uksouth','import'],
+           ['Network security group','nsg-app','12 rules','uksouth','import'],
+           ['VPN gateway','vgw-hub','active-active','uksouth','import'],
+           ['Route table','rt-app','4 routes','uksouth','skip'],
+           ['Virtual network','vnet-legacy','10.7.0.0/16','ukwest','review']];
+  if(!g.dataset.n38){g.dataset.n38='1';
+    pageShell(g,{crumb:'netforge.ai / import / <b>Azure subscription</b>',btns:['Change subscription','Select all','Import to canvas'],
+      tabs:['Visio topology','Live device (as-built)','Azure subscription'],tabOn:2,body:`
+      <div class="h1">Or reverse-engineer what already exists</div>
+      <div class="h2">Read the subscription and draw it. From there it behaves like anything else on the canvas — validated, documented, and comparable against reality.</div>
+      <table class="tbl"><thead><tr><th>Resource type</th><th>Name</th><th>Detail</th><th>Region</th><th>Action</th></tr></thead>
+      <tbody>${R.map((r,i)=>`<tr id="az${i}">${r.slice(0,4).map((c,j)=>`<td class="${j===0?'t':''} ${j>1?'dim':''}">${c}</td>`).join('')}
+        <td>${r[4]==='import'?'<span class="pill ok">import</span>':r[4]==='skip'?'<span class="pill info">skip</span>':'<span class="pill warn">review</span>'}</td></tr>`).join('')}</tbody></table>
+      <div style="display:flex;gap:10px;margin-top:22px" id="zsum">
+        <span class="pill ok">5 resources to import</span>
+        <span class="pill warn">1 needs review — different region</span>
+        <span class="pill info">becomes nodes, not a picture</span></div>`});}
+  stagger([...g.querySelectorAll('tbody tr')], lt, .3, .21, .5);
+  g.querySelector('#zsum').style.opacity=easeOut(seg(lt,3.0,4.0));
+  g.querySelector('.pg').style.opacity=1-seg(lt,d-.6,d);
+  chips(null);
+}},
+
+/* ---------- 55. as-built import reconcile (ep8) ---------- */
+{a:0,b:9,go(lt,d){
+  hideApp(); const g=$('#gfx');
+  const R=[['matched','RSITE-CORE-01','Cisco NX-OS','on the canvas and on the wire','—'],
+           ['matched','RSITE-ACC-01','ArubaOS-CX','on the canvas and on the wire','—'],
+           ['new','RSITE-ACC-03','ArubaOS-CX','seen via LLDP, absent from the design','add'],
+           ['new','RSITE-AP-11','ArubaOS','seen via LLDP, absent from the design','add'],
+           ['new','link ACC-01 1/1/26 → ACC-03 1/1/25','—','neighbour relationship, undrawn','add'],
+           ['missing','RSITE-ACC-02','ArubaOS-CX','on the canvas, no LLDP neighbour reports it','flag only']];
+  const C={matched:['var(--okb)','var(--ok)'],'new':['var(--infob)','var(--info)'],missing:['var(--warnb)','var(--warn)']};
+  if(!g.dataset.n39){g.dataset.n39='1';
+    pageShell(g,{crumb:'netforge.ai / import / <b>live device (as-built)</b>',btns:['Credentials from vault','Select all','Apply (undoable)'],
+      tabs:['Visio topology','Live device (as-built)','Azure subscription'],tabOn:1,body:`
+      <div class="h1">When reality has already moved on</div>
+      <div class="h2">Pull a live device and its LLDP neighbours through the credential vault, and reconcile matched, new and missing against your design.</div>
+      <table class="tbl"><thead><tr><th>State</th><th>Node</th><th>Platform</th><th>Why</th><th>Action</th></tr></thead>
+      <tbody>${R.map((r,i)=>`<tr id="ab${i}">
+        <td><span class="pill" style="background:${C[r[0]][0]};color:${C[r[0]][1]};border:1px solid ${C[r[0]][1]}55">${r[0]}</span></td>
+        <td>${r[1]}</td><td class="dim">${r[2]}</td><td class="t dim">${r[3]}</td><td class="t">${r[4]}</td></tr>`).join('')}</tbody></table>
+      <div style="display:flex;gap:10px;margin-top:22px" id="bsum">
+        <span class="pill ok">the apply is additive</span>
+        <span class="pill ok">and undoable</span>
+        <span class="pill info">nothing on the canvas is silently deleted</span></div>`});}
+  stagger([...g.querySelectorAll('tbody tr')], lt, .3, .23, .5);
+  g.querySelector('#bsum').style.opacity=easeOut(seg(lt,3.0,4.0));
+  g.querySelector('.pg').style.opacity=1-seg(lt,d-.6,d);
+  chips(null);
+}},
 ];
 
 function showApp(){$('#app').classList.remove('hide');$('#gfx').classList.add('hide');vignette(false);
-  ['s1','s4','s13','s15','s16','sb','n1','n2','n3','n4','n5','n6','n7','n8','n9','n10','n11','n12','n13','n14','n15','n16','n17','n18','n19','n20','n21','n22'].forEach(k=>$('#gfx').dataset[k]='');}
+  ['s1','s4','s13','s15','s16','sb','n1','n2','n3','n4','n5','n6','n7','n8','n9','n10','n11','n12','n13','n14','n15','n16','n17','n18','n19','n20','n21','n22','n23','n24','n25','n26','n27','n28','n29','n30','n31','n32','n33','n34','n35','n36','n37','n38','n39'].forEach(k=>$('#gfx').dataset[k]='');}
 function hideApp(){$('#app').classList.add('hide');$('#gfx').classList.remove('hide');$('#overlay').classList.add('hide');vignette(true);}
 
 /* ============================ seek ============================ */
@@ -1852,7 +2398,7 @@ window.seek=function(t){
   if(window.__scene!==sc){ // scene entry: clear graphic caches so each scene rebuilds cleanly
     const src=(sc._src!==undefined)?sc._src:SCENES.indexOf(sc);
     if(src<3||src>=11)hideApp(); window.__scene=sc;
-    ['s1','s4','s13','s15','s16','sb','n1','n2','n3','n4','n5','n6','n7','n8','n9','n10','n11','n12','n13','n14','n15','n16','n17','n18','n19','n20','n21','n22'].forEach(k=>$('#gfx').dataset[k]='');
+    ['s1','s4','s13','s15','s16','sb','n1','n2','n3','n4','n5','n6','n7','n8','n9','n10','n11','n12','n13','n14','n15','n16','n17','n18','n19','n20','n21','n22','n23','n24','n25','n26','n27','n28','n29','n30','n31','n32','n33','n34','n35','n36','n37','n38','n39'].forEach(k=>$('#gfx').dataset[k]='');
   }
   caption('',0); chips(null); cursorAt(0,0,false);
   sc.go(t-sc.a, sc.b-sc.a, t);

@@ -79,6 +79,7 @@ PHON = {
     'OSPF':        'ˌoʊˌɛspˌiːˈɛf',
     'MTU':         'ˌɛmtˌiːjˈuː',
     'VTY':         'vˌiːtˌiːwˈaɪ',
+    'VTEP':        'vˈiːtɛp',            # said "VEE-tep"; native mangles it
     'ACL':         'ˌeɪsˌiːˈɛl',
     # --- addressing ---
     'IPv6':        'ˌaɪpˌiːvˌiːsˈɪks',

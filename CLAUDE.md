@@ -39,6 +39,7 @@ straight into the synthesiser (`is_phonemes=True` in `docs/demo-video/build/vo.p
 | `OSPF` | oh-ess-pee-EFF | `ˌoʊˌɛspˌiːˈɛf` | `ˈɑːspf` — "ospf" as a word |
 | `MTU` | em-tee-YOU | `ˌɛmtˌiːjˈuː` | correct natively; pinned anyway |
 | `VTY` | vee-tee-WHY | `vˌiːtˌiːwˈaɪ` | correct natively; pinned anyway |
+| `VTEP` | VEE-tep | `vˈiːtɛp` | reads the four letters as one mangled word |
 | `ACL` | ay-see-ELL | `ˌeɪsˌiːˈɛl` | `ˈækəl` — "ackle" |
 | `IPv6` | eye-pee-vee-SIX | `ˌaɪpˌiːvˌiːsˈɪks` | `ˈɪpv sˈɪks` — "ipv six" |
 | `IPAM` | EYE-pam | `ˈaɪpæm` | `ˈɪpæm` — "ipp-am" |
