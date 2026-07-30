@@ -152,16 +152,34 @@ opposed.
 
 ### Act I — The Surface
 
-- **Ground:** gently rolling green, never billiard-flat, never mountainous
-- **Palette:** grass green, earth brown, grey stone, timber
-- **Sky:** clear daylight — pale at the horizon deepening to blue overhead
-- **Forms:** a low stone wall across midfield with two gaps as chokepoints; two
-  towers flanking them for height and as grapple anchors; trees with rounded
-  canopies, spread thin
+- **Ground:** rolling green hills with real relief — enough to break sightlines
+  and hide an approach, never so much that the space stops reading
+- **Palette:** saturated grass green, earth brown, grey stone, timber, terracotta
+  roof tile
+- **Sky:** bright daylight, near-white at the horizon deepening to strong blue
+  overhead, with puffy clouds
+- **Points of interest** — the thing that makes a battle-royale landscape feel
+  like a *place* rather than an arena. Each is a small fight venue with its own
+  character:
+  - **Buildings** with plaster or timber walls, window gaps, a doorway, and
+    pitched tile roofs. Enterable, defensible, and worth fighting over.
+  - **A pond** in a hollow with a sandy shore, crossed by a **plank bridge** —
+    a natural chokepoint that also reads as scenery.
+  - **Rock formations** for cover and elevation.
+  - **A ruined stone wall** across midfield with two gaps, flanked by **towers**
+    for height and as grapple anchors.
+  - **Trees** with rounded canopies and bushes at their feet.
+- **Horizon:** distant hills beyond the playable area, fogged for atmospheric
+  perspective. Cheap, and it stops the world feeling like it ends at a boundary.
 - **Bases:** circular timber platforms ringed by a low team-coloured wall, open
   toward midfield, a gold pedestal holding the flag
 - **Light:** warm key, cool sky fill, subtle rim
 - **Sound:** open air, wind, distant battle
+
+**The POI rule, learned the hard way** (see *Restraint* below): points of interest
+belong on the **flanks**, not in the central lanes. They should reward a player who
+chooses to route through them, never block the sightline of a defender watching
+the direct approach.
 
 ### Act II — The Caverns
 
@@ -270,6 +288,29 @@ layer into full sun is the peak of the match's visual arc.
 Not authored geometry — an authored *response*. When a capture lands in the last
 few seconds: time dilation, camera push, sound drop-out and swell, a burst of
 team-coloured light from the flag, and an automatically saved highlight clip.
+
+## Defeat: disintegration
+
+**When a player is defeated they disintegrate.** The figure comes apart into motes
+that sweep upward from the feet, with a single bright flash at the moment of the
+hit. Nothing is left behind.
+
+This is not only an effect — it settles a design problem the docket has to answer
+anyway. The brief targets ages 10 and up, and defeat has to be *legible and
+satisfying* without a body on the ground:
+
+- **No corpse, no gore, nothing to linger on.** The screen resolves itself.
+- **It reads at distance.** A rising column of motes tells the whole team someone
+  went down over there, which is real tactical information a ragdoll does not give.
+- **It is team-coloured**, so you can tell at a glance whether you just lost a
+  teammate or gained a kill.
+- **It sweeps bottom-to-top rather than bursting**, which takes about a second and
+  gives the moment weight — a burst reads as an accident, a sweep reads as an
+  elimination.
+- **It costs almost nothing.** A few dozen particles per defeat.
+
+Implemented in the prototype. It also makes the temporary nature of elimination
+obvious: the player dissolved, and will re-form at their base.
 
 ## Shareability
 

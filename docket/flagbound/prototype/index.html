@@ -19,8 +19,8 @@
   /* The sky is a CSS gradient behind a transparent canvas — cheaper and smoother
      than any geometry, and it swaps with the phase. */
   #stage{position:fixed;inset:0;transition:background 2.5s ease}
-  #stage.surface{background:radial-gradient(ellipse 130% 95% at 50% 80%,
-      #f2fbff 0%, #a5dcf8 20%, #4fa8ea 52%, #2568bd 100%)}
+  #stage.surface{background:radial-gradient(ellipse 140% 100% at 50% 84%,
+      #ffffff 0%, #cdeeff 14%, #7fc8f5 42%, #3d8fe0 74%, #1f5fb5 100%)}
   #stage.underground{background:radial-gradient(ellipse 120% 85% at 50% 62%,
       #34333d 0%, #1d1c23 46%, #0b0b0f 100%)}
   @media (prefers-reduced-motion:reduce){#stage{transition:none}}
@@ -227,15 +227,17 @@ const DEBRIS_CAP = 2400;
 
 const T = { AIR:0, GRASS:1, GRASS2:2, DIRT:3, STONE:4, WOOD:5, LEAF:6, LEAF2:7,
             GOLD:8, GLOW:9, TEAMA:10, TEAMB:11, PLANK:12, CAVE:13, CAVE2:14,
-            CRYSTAL:15, LAVA:16, COBBLE:17 };
+            CRYSTAL:15, LAVA:16, COBBLE:17, WATER:18, ROOF:19, PLASTER:20,
+            ROCK:21, CLOUD:22, SAND:23 };
 const COL = {
   1:[0.44,0.76,0.30], 2:[0.33,0.61,0.26], 3:[0.53,0.37,0.22], 4:[0.67,0.67,0.72],
   5:[0.50,0.34,0.20], 6:[0.26,0.63,0.28], 7:[0.39,0.78,0.35], 8:[1.00,0.83,0.30],
   9:[0.72,0.94,1.00], 10:[0.24,0.62,1.00], 11:[1.00,0.28,0.36], 12:[0.88,0.71,0.42],
   13:[0.17,0.17,0.23], 14:[0.28,0.28,0.37], 15:[0.45,0.93,1.00], 16:[1.00,0.42,0.12],
-  17:[0.55,0.55,0.62]
+  17:[0.55,0.55,0.62], 18:[0.26,0.62,0.95], 19:[0.74,0.27,0.23], 20:[0.95,0.92,0.83],
+  21:[0.52,0.50,0.54], 22:[1.00,1.00,1.00], 23:[0.92,0.85,0.62]
 };
-const EMIS = {8:0.12, 9:0.30, 15:0.42, 16:0.55};
+const EMIS = {8:0.12, 9:0.30, 15:0.42, 16:0.55, 18:0.10, 22:0.30};
 
 const grid = new Uint8Array(SX*SY*SZ);
 const gi = (x,y,z)=> x + SX*((y+YOFF) + SY*z);
@@ -249,8 +251,12 @@ const rnd = ()=>{ _s=(_s*1664525+1013904223)>>>0; return _s/4294967296; };
 const ri = (a,b)=> a + Math.floor(rnd()*(b-a+1));
 
 /* rolling, non-flat ground — the fastest way to stop reading as a block game */
-const hSurf = (x,z)=> 0.55*(1.7*Math.sin(x*0.11) + 1.2*Math.cos(z*0.09)
-                    + 0.7*Math.sin((x+z)*0.06));
+const hSurf = (x,z)=> 0.85*Math.sin(x*0.075) + 0.75*Math.cos(z*0.065)
+                    + 0.45*Math.sin((x+z)*0.05)
+                    + 1.7*Math.sin(x*0.028+1.0)*Math.cos(z*0.032);
+const POND = {x:16, z:30, r:7.5};
+const pondDepth = (x,z)=>{ const d=Math.hypot(x-POND.x,z-POND.z);
+  return d<POND.r ? Math.min(3, (POND.r-d)*0.7) : 0; };
 const hUnder = (x,z)=> 0.7*(1.4*Math.cos(x*0.09) + 1.1*Math.sin(z*0.12));
 
 /* static smooth props (orbs, caps) live outside the grid */
@@ -260,38 +266,100 @@ const BASE = { A:{x:29,z:10}, B:{x:29,z:47} };
 const baseTopY = k => 2;
 
 /* -------------------------------- arena ---------------------------------- */
-function buildSurface(){
-  for(let z=0;z<SZ;z++) for(let x=0;x<SX;x++){
-    const inBaseA = Math.hypot(x-BASE.A.x, z-BASE.A.z) < 8.5;
-    const inBaseB = Math.hypot(x-BASE.B.x, z-BASE.B.z) < 8.5;
-    const top = (inBaseA||inBaseB) ? 1 : Math.round(hSurf(x,z));
-    for(let y=top-3;y<=top;y++)
-      setB(x,y,z, y===top ? (top>0?T.GRASS:T.GRASS2) : (y>top-3?T.DIRT:T.STONE));
-  }
-  // one low stone wall across midfield with two gaps — the chokepoints
-  const mz=SZ>>1;
-  for(let x=2;x<SX-2;x++){
-    if((x>=12&&x<=18)||(x>=38&&x<=44)) continue;
-    const g=Math.round(hSurf(x,mz));
-    for(let y=g+1;y<=g+4;y++){ setB(x,y,mz,T.STONE); setB(x,y,mz+1,T.STONE); }
-  }
-  // two towers flanking the gaps: verticality, and something to grapple onto
-  for(const [tx,tz] of [[15,mz-7],[41,mz+7]]){
-    const g=Math.round(hSurf(tx,tz));
-    for(let y=g;y<=g+9;y++) for(let dx=-2;dx<=2;dx++) for(let dz=-2;dz<=2;dz++){
-      if(Math.abs(dx)===2||Math.abs(dz)===2||y===g) setB(tx+dx,y,tz+dz, y>g+7?T.COBBLE:T.STONE);
+function groundY(x,z){ return Math.round(hSurf(x,z) - pondDepth(x,z)); }
+
+/* A gabled building: floor, walls with a doorway and window gaps, pitched roof. */
+function house(bx,bz,w,d,h,wall,roof){
+  const g=groundY(bx,bz);
+  for(let dx=-w;dx<=w;dx++) for(let dz=-d;dz<=d;dz++){
+    for(let y=g-2;y<=g;y++) setB(bx+dx,y,bz+dz,T.PLANK);
+    const rim=Math.abs(dx)===w||Math.abs(dz)===d;
+    const door=(dz===d)&&Math.abs(dx)<=1;
+    if(rim&&!door) for(let y=g+1;y<=g+h;y++){
+      const win=(y===g+2)&&(( Math.abs(dx)===w && Math.abs(dz)%3===1) ||
+                            ( Math.abs(dz)===d && Math.abs(dx)%3===1));
+      if(!win) setB(bx+dx,y,bz+dz,wall);
     }
   }
-  // trees: a trunk with a rounded canopy. Eighteen, spread out — not a forest.
-  for(let i=0;i<18;i++){
-    const x=ri(5,SX-6), z=ri(5,SZ-6);
-    if(Math.hypot(x-BASE.A.x,z-BASE.A.z)<13) continue;
-    if(Math.hypot(x-BASE.B.x,z-BASE.B.z)<13) continue;
-    if(Math.abs(z-mz)<4) continue;
-    const g=Math.round(hSurf(x,z)), h=ri(4,6);
+  for(let k=0;k<=w+1;k++){                       // pitched roof
+    const y=g+h+1+k, half=w+1-k;
+    if(half<0) break;
+    for(let dz=-(d+1);dz<=d+1;dz++){
+      setB(bx-half,y,bz+dz,roof); setB(bx+half,y,bz+dz,roof);
+      if(half===0) setB(bx,y,bz+dz,roof);
+    }
+  }
+}
+function rockCluster(cx,cz,rad){
+  const g=groundY(cx,cz);
+  for(let dx=-rad;dx<=rad;dx++) for(let dy=0;dy<=rad;dy++) for(let dz=-rad;dz<=rad;dz++){
+    if(Math.hypot(dx,dy*1.5,dz)<=rad*(0.75+rnd()*0.3)) setB(cx+dx,g+dy,cz+dz,T.ROCK);
+  }
+}
+
+function buildSurface(){
+  for(let z=0;z<SZ;z++) for(let x=0;x<SX;x++){
+    const inBaseA=Math.hypot(x-BASE.A.x,z-BASE.A.z)<8.5;
+    const inBaseB=Math.hypot(x-BASE.B.x,z-BASE.B.z)<8.5;
+    const pd=pondDepth(x,z);
+    const top=(inBaseA||inBaseB) ? 1 : groundY(x,z);
+    for(let y=top-4;y<=top;y++)
+      setB(x,y,z, y===top ? (pd>0.6?T.SAND:(top>0?T.GRASS:T.GRASS2)) : (y>top-3?T.DIRT:T.STONE));
+    if(pd>1.0 && !inBaseA && !inBaseB){          // water sits in the hollow
+      const wl=Math.round(hSurf(x,z))-1;
+      for(let y=top+1;y<=wl;y++) setB(x,y,z,T.WATER);
+    }
+  }
+  const mz=SZ>>1;
+  // a broken stone wall across midfield — two gaps as chokepoints
+  for(let x=2;x<SX-2;x++){
+    if((x>=12&&x<=18)||(x>=38&&x<=44)) continue;
+    const g=groundY(x,mz);
+    const h=(x%7===0)?2:4;                       // ruined, uneven
+    for(let y=g+1;y<=g+h;y++){ setB(x,y,mz,T.COBBLE); setB(x,y,mz+1,T.COBBLE); }
+  }
+  // stone towers flanking the gaps — height, and grapple anchors
+  for(const [tx,tz] of [[15,mz-7],[41,mz+7]]){
+    const g=groundY(tx,tz);
+    for(let y=g-1;y<=g+10;y++) for(let dx=-2;dx<=2;dx++) for(let dz=-2;dz<=2;dz++){
+      if(Math.abs(dx)===2||Math.abs(dz)===2||y===g-1) setB(tx+dx,y,tz+dz, y>g+8?T.ROOF:T.COBBLE);
+    }
+  }
+  // points of interest, kept off the central lanes
+  house(11,20,4,3,4,T.PLASTER,T.ROOF);
+  house(46,40,4,4,5,T.PLANK,T.ROOF);
+  house(44,17,3,3,4,T.PLASTER,T.ROOF);
+  // plank bridge over the pond
+  for(let x=POND.x-9;x<=POND.x+9;x++){
+    const y=Math.round(hSurf(x,POND.z))+1;
+    for(let dz=-1;dz<=1;dz++) setB(x,y,POND.z+dz,T.PLANK);
+    if(x%4===0){ setB(x,y+1,POND.z-2,T.WOOD); setB(x,y+1,POND.z+2,T.WOOD); }
+  }
+  rockCluster(30,12,4); rockCluster(24,47,5); rockCluster(50,29,4); rockCluster(6,44,3);
+  // trees with rounded canopies, plus bushes at their feet
+  for(let i=0;i<20;i++){
+    const x=ri(4,SX-5), z=ri(4,SZ-5);
+    if(Math.hypot(x-BASE.A.x,z-BASE.A.z)<12) continue;
+    if(Math.hypot(x-BASE.B.x,z-BASE.B.z)<12) continue;
+    if(Math.abs(z-mz)<4 || pondDepth(x,z)>0.5) continue;
+    const g=groundY(x,z), h=ri(4,7);
     for(let y=g;y<=g+h;y++) setB(x,y,z,T.WOOD);
-    orbs.push({x:x+0.5,y:g+h+1.1,z:z+0.5,r:1.9,t:T.LEAF, phase:'surface'});
-    orbs.push({x:x+0.5,y:g+h+2.3,z:z+0.5,r:1.25,t:T.LEAF2,phase:'surface'});
+    orbs.push({x:x+0.5,y:g+h+1.2,z:z+0.5,r:2.1,t:T.LEAF, phase:'surface'});
+    orbs.push({x:x+0.5,y:g+h+2.5,z:z+0.5,r:1.3,t:T.LEAF2,phase:'surface'});
+    if(rnd()<0.7) orbs.push({x:x+1.8+rnd(),y:g+0.7,z:z+1.4+rnd(),r:0.8,t:T.LEAF,phase:'surface'});
+  }
+  // puffy clouds overhead
+  for(let i=0;i<12;i++){
+    const cx=rnd()*SX, cz=rnd()*SZ, cy=34+rnd()*14;
+    for(let k=0;k<4+Math.floor(rnd()*3);k++)
+      orbs.push({x:cx+(rnd()-0.5)*11, y:cy+(rnd()-0.5)*3, z:cz+(rnd()-0.5)*9,
+                 r:3.2+rnd()*3.4, t:T.CLOUD, phase:'surface'});
+  }
+  // distant hills for a horizon
+  for(let i=0;i<16;i++){
+    const a=(i/16)*Math.PI*2, d=72+rnd()*45;
+    orbs.push({x:SX/2+Math.cos(a)*d, y:-6-rnd()*8, z:SZ/2+Math.sin(a)*d,
+               r:14+rnd()*13, t:rnd()<0.6?T.GRASS2:T.ROCK, phase:'surface'});
   }
   buildBase('A','surface'); buildBase('B','surface');
 }
@@ -690,7 +758,7 @@ function flush(b){
 }
 
 const wRB=makeBatch(MESH_RB,26000), wSP=makeBatch(MESH_SP,300);
-const dRB=makeBatch(MESH_RB,DEBRIS_CAP+600), dSP=makeBatch(MESH_SP,400);
+const dRB=makeBatch(MESH_RB,DEBRIS_CAP+600), dSP=makeBatch(MESH_SP,1600);
 
 function rebuildWorld(){
   wRB.n=0;
@@ -766,7 +834,7 @@ function resetMatch(){
   for(let i=1;i<5;i++) ents.push(makeEnt('A',false,i));
   for(let i=0;i<5;i++) ents.push(makeEnt('B',false,i));
   flags={A:mkFlag('A'),B:mkFlag('B')};
-  camYaw=0; camPitch=-0.20; shake=0; debrisRB.length=0; debrisSP.length=0;
+  camYaw=0; camPitch=-0.20; shake=0; debrisRB.length=0; debrisSP.length=0; motes.length=0;
   fcs('Objective: take the red flag and bring it home. The battlefield will not hold still.',6);
 }
 
@@ -883,12 +951,52 @@ function strike(a){
 }
 function eliminate(e,by){
   e.respawn=4; e.vy=0;
+  disintegrate(e);
   if(e.carrying){
     const f=flags[e.carrying]; f.carrier=null; f.x=e.x; f.y=e.y+1; f.z=e.z; f.timer=20; f.vy=0;
     e.carrying=null;
     if(by&&by.isPlayer) fcs('Carrier down. Their flag is loose — get it back.',3.5);
     else if(e.isPlayer) fcs('You were taken out carrying the flag. It dropped where you fell.',3.5);
   } else if(e.isPlayer) fcs('You are down. Reforming at base.',2.5);
+}
+
+/* ------------------------------ disintegration ---------------------------- */
+/* On elimination a figure comes apart into motes that sweep upward from the feet,
+   plus one bright flash at the moment of the hit. */
+const motes=[];
+function disintegrate(e){
+  const col=e.col;
+  for(let i=0;i<72;i++){
+    const a=rnd()*Math.PI*2, r=rnd()*0.75, up=rnd();      // up: 0 feet, 1 head
+    motes.push({
+      x:e.x+Math.cos(a)*r, y:e.y+0.2+up*3.3, z:e.z+Math.sin(a)*r,
+      vx:Math.cos(a)*(0.5+rnd()*1.7), vy:1.5+rnd()*3.6, vz:Math.sin(a)*(0.5+rnd()*1.7),
+      s:0.10+rnd()*0.24, life:0.85+rnd()*0.85, max:0,
+      delay:(1-up)*0.30,                                  // dissolves bottom-up
+      col, flash:false
+    });
+  }
+  motes.push({x:e.x, y:e.y+1.8, z:e.z, vx:0,vy:0,vz:0, s:2.4,
+              life:0.22, max:0.22, delay:0, col:[1,1,1], flash:true});
+}
+function stepMotes(dt){
+  for(let i=motes.length-1;i>=0;i--){
+    const m=motes[i];
+    if(m.delay>0){ m.delay-=dt; continue; }
+    if(!m.max) m.max=m.life;
+    if((m.life-=dt)<=0){ motes.splice(i,1); continue; }
+    m.vy-=4.5*dt;
+    m.x+=m.vx*dt; m.y+=m.vy*dt; m.z+=m.vz*dt;
+    m.vx*=0.985; m.vz*=0.985;
+  }
+}
+function drawMotes(){
+  for(const m of motes){
+    if(m.delay>0) continue;
+    const t = m.max ? Math.max(0, m.life/m.max) : 1;
+    const s = m.flash ? m.s*(1.0+(1-t)*1.8) : m.s*t;
+    push(dSP, m.x, m.y, m.z, s,s,s, 0,0,0, m.col, m.flash ? 1.0 : 0.9);
+  }
 }
 
 /* --------------------------------- flags --------------------------------- */
@@ -1065,7 +1173,7 @@ const spriteQueue=[];
 function drawEnt(e){
   const col=e.col;
   // ground shadow, so the sprite is planted rather than floating
-  push(dSP, e.x, e.y+0.06, e.z, 1.7,0.12,1.7, 0,0,0, [0.04,0.05,0.09], 0);
+  push(dSP, e.x, e.y+0.05, e.z, 1.05,0.09,1.05, 0,0,0, [0.17,0.20,0.17], 0);
 
   const H=4.15, W=H*(SPRITE_W/SPRITE_H);
   const cy = e.y + H*0.5 - 0.10;
@@ -1192,7 +1300,7 @@ function render(){
   } else {
     gl.uniform3f(U.light,0.45,0.82,0.36); gl.uniform3f(U.fill,0.45,0.56,0.74);
     gl.uniform3f(U.rim,0.52,0.62,0.72);   gl.uniform3f(U.fog,0.66,0.80,0.90);
-    gl.uniform2f(U.fogRange,55,175);      gl.uniform1f(U.amb,0.52);
+    gl.uniform2f(U.fogRange,70,240);      gl.uniform1f(U.amb,0.52);
   }
   camPos[0]=cx; camPos[1]=cy; camPos[2]=cz;
   gl.clearColor(0,0,0,0);
@@ -1209,6 +1317,7 @@ function render(){
   }
   for(const d of debrisRB) push(dRB,d.x,d.y,d.z,d.s,d.s,d.s,d.rx,d.ry,d.rz,COL[d.t],EMIS[d.t]||0);
   for(const d of debrisSP) push(dSP,d.x,d.y,d.z,d.s,d.s,d.s,0,0,0,COL[d.t],(EMIS[d.t]||0)+0.25);
+  drawMotes();
   gl.uniform1f(U.toon,1.0); flush(dRB); flush(dSP);
 
   // --- sprites last: alpha-tested, so depth alone resolves them ---
@@ -1298,7 +1407,7 @@ function frame(now){
       e.bob += Math.hypot(e.x-ox,e.z-oz)*3.2;
     }
     updateFlags(dt);
-    stepDebris(debrisRB,dt,false); stepDebris(debrisSP,dt,true);
+    stepDebris(debrisRB,dt,false); stepDebris(debrisSP,dt,true); stepMotes(dt);
     if(fcsTimer>0&&(fcsTimer-=dt)<=0) el('fcs').classList.remove('on');
     syncHUD(); syncAbilities();
     if(clock<=0) endMatch();

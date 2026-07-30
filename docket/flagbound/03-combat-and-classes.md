@@ -145,5 +145,8 @@ three radically different worlds would fight the adaptation pillar.
   least one of those three. The two team palettes are warm versus cool rather
   than red versus green, so they survive colour-blindness.
 - Ability effects are stylised and bright — magic, not injury.
-- Defeats are a knockdown followed by a burst of light. No gore.
+- **Defeats disintegrate.** The figure comes apart into team-coloured motes that
+  sweep upward, with one bright flash on the hit. No body, no gore, and it reads
+  from across the map — see
+  [10 — Defeat: disintegration](10-art-direction-and-cinematics.md#defeat-disintegration).
 - Screen-space damage indicators always show the direction of the attacker.
