@@ -37,23 +37,19 @@ body{font-family:Inter,sans-serif;color:var(--tp);-webkit-font-smoothing:antiali
 .kin .l.em{color:var(--ac)}
 .vig{position:absolute;inset:0;background:radial-gradient(ellipse 70% 55% at 50% 50%,#0000 0%,#000000ad 100%);pointer-events:none}
 
-/* ---------- act 1 diff ---------- */
-.diff{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:1180px}
-.diff .dh{display:flex;align-items:center;gap:20px;padding:0 6px 16px;font-size:19px;color:var(--ts)}
-.diff .dh .a,.diff .dh .b{font-family:JBMono,monospace;font-size:17px;color:var(--tt)}
-.diff .dh .b{margin-left:auto}
-.diff .dh .vs{font-size:13px;letter-spacing:2.2px;text-transform:uppercase;color:var(--err);
-  border:1px solid #ff3b3059;background:var(--errb);border-radius:99px;padding:6px 14px;font-weight:600}
-.diff .dr{display:flex;align-items:center;gap:22px;padding:17px 22px;border-radius:var(--r-md);
-  background:#ffffff06;border:1px solid var(--bd);margin-bottom:10px}
-.diff .dr .lv,.diff .dr .rv{font-family:JBMono,monospace;font-size:23px;width:330px}
-.diff .dr .lv{color:var(--ts);text-decoration:line-through;text-decoration-color:#ff3b3080}
-.diff .dr .rv{color:var(--tp)}
-.diff .dr .x{width:24px;height:24px;border-radius:99px;background:var(--err);flex:0 0 24px;
-  display:flex;align-items:center;justify-content:center}
-.diff .dr .x svg{width:13px;height:13px}
-.diff .dr .note{margin-left:auto;font-size:15px;color:var(--warn)}
-.diff .df{padding:14px 6px 0;font-size:17px;color:var(--tt);font-family:JBMono,monospace}
+/* ---------- act 1: two artefacts, and what disagrees between them ---------- */
+.ttl{position:absolute;top:62px;left:0;right:0;text-align:center;font-size:46px;font-weight:600;letter-spacing:-1.1px}
+.pane.p2{top:186px;height:700px}
+.vchip{position:absolute;height:36px;display:flex;align-items:center;padding:0 15px;border-radius:var(--r-sm);
+  font-family:JBMono,monospace;font-size:19px;border:1px solid var(--bd2);background:#ffffff08;white-space:nowrap}
+.vchip.l{right:22px;color:var(--ts)}
+.vchip.l.bad{border-color:#ff3b3055;background:var(--errb);color:#ff8b84;
+  text-decoration:line-through;text-decoration-color:#ff3b30a6}
+.vchip.r{left:22px;color:var(--tp)}
+.vchip.r.hit{border-color:#ff9f0a5c;background:var(--warnb);color:var(--warn)}
+.gapfoot{position:absolute;top:910px;left:0;right:0;text-align:center;
+  font-family:JBMono,monospace;font-size:18px;color:var(--tt)}
+#bridge{position:absolute;inset:0;width:1920px;height:1080px;pointer-events:none;overflow:visible}
 
 /* ---------- act 1 split ---------- */
 .pane{position:absolute;top:196px;height:672px;width:760px;border-radius:var(--r-lg);background:var(--bg2);border:1px solid var(--bd);overflow:hidden}
@@ -463,122 +459,146 @@ const CY=118;
 // exactly the "can't see the whole screen" problem we're fixing.
 function vignette(on){$('#vig').style.opacity=on?1:0;}
 
+/* ---------------- act 1 shared layout ---------------- */
+// Scenes 1 and 2 are the same two artefacts: the stale drawing and the live config.
+// Scene 1 introduces them; scene 2 bridges them to show exactly what disagrees. The
+// earlier red "crack" was replaced because it gestured at a gap without naming one.
+const MISMATCH=[['vlan 20 · VOICE','vlan 30 · VOICE'],['native vlan 1','native vlan 99'],
+                ['bgp as 65001','bgp as 65002'],['mtu 1500','mtu 9216']];
+const CHIP_TOP=[424,480,536,592];
+const PANE_TOP=186, CHIP_MID=18;
+const GAP_L=880-22, GAP_R=1040+22;
+const TERM_SCRIPT=`CORE-SW-01# <b>show running-config</b>
+<b>vlan</b> 30
+  <b>name</b> VOICE
+<b>interface</b> Po1
+  <b>switchport trunk native vlan</b> 99
+<b>router bgp</b> 65002
+  <b>bgp router-id</b> 10.0.0.1
+<b>system jumbomtu</b> 9216`;
+const DOTS='<span class="dotrow"><i style="background:#ff5f57"></i><i style="background:#febc2e"></i><i style="background:#28c840"></i></span>';
+
+function oldMapSVG(){
+  let h='';
+  [[300,20],[150,170],[450,170],[80,320],[300,320],[520,320]].forEach(([x,y],i)=>{
+    h+=`<rect x="${x}" y="${y}" width="130" height="52" rx="6" fill="none" stroke="#8e8e93" stroke-width="1.6"/>`
+      +`<text x="${x+65}" y="${y+31}" fill="#8e8e93" font-size="15" font-family="Inter" text-anchor="middle">DEVICE-0${i+1}</text>`;});
+  h+=`<path d="M365 72 V170 M365 72 H215 V170 M365 72 H515 V170" stroke="#8e8e93" stroke-width="1.4" fill="none"/>`
+    +`<path d="M215 222 V320 H145 M215 222 H365 V320 M515 222 V320 H585" stroke="#8e8e93" stroke-width="1.4" fill="none"/>`;
+  return h;
+}
+function buildPanes(g){
+  g.innerHTML=`
+    <div class="ttl" id="ttl">Every network change starts as a drawing.</div>
+    <div class="pane p2" id="pL" style="left:120px">
+      <div class="ph">${DOTS}site-topology-FINAL-v4.vsdx</div>
+      <div class="stamp" id="stamp">rev 4 — 11 months ago</div>
+      <svg id="oldmap" viewBox="0 0 760 400" style="position:absolute;top:74px;left:0;width:760px;height:340px;opacity:.5">${oldMapSVG()}</svg>
+      ${MISMATCH.map((m,i)=>`<div class="vchip l" id="cl${i}" style="top:${CHIP_TOP[i]}px;opacity:0">${m[0]}</div>`).join('')}
+    </div>
+    <div class="pane p2" id="pR" style="left:1040px">
+      <div class="ph">${DOTS}CORE-SW-01 · running-config</div>
+      <div class="cli" id="term" style="font-size:17px;line-height:1.9"></div>
+      ${MISMATCH.map((m,i)=>`<div class="vchip r" id="cr${i}" style="top:${CHIP_TOP[i]}px;opacity:0">${m[1]}</div>`).join('')}
+    </div>
+    <svg id="bridge"></svg>
+    <div class="gapfoot" id="gfoot" style="opacity:0">4 differences · 11 months since the diagram was touched</div>`;
+}
+// reveal the typed config up to progress p, without splitting HTML tags
+function typedMarkup(src,p){
+  const plain=src.replace(/<[^>]+>/g,''), want=Math.round(clamp(p)*plain.length);
+  let out='',seen=0,i=0;
+  while(i<src.length&&seen<want){
+    if(src[i]==='<'){const j=src.indexOf('>',i);out+=src.slice(i,j+1);i=j+1;}
+    else{out+=src[i];i++;seen++;}
+  }
+  return {html:out,done:seen>=plain.length};
+}
+
 /* ============================ SCENES ============================ */
 // Each: {a,b,go(lt,d,t)}   lt = local time, d = duration
 const SCENES=[
 
-/* ---------- 1. hook (0:00–0:11) ---------- */
-{a:0,b:11,go(lt,d){
-  const g=$('#gfx'); g.innerHTML=`<div class="kin">
-    <div class="l" id="k1">Every network change<br>starts as a drawing.</div></div>`;
-  const p1=easeOut(seg(lt,.6,2.6)), out=1-seg(lt,d-.9,d);
-  const k1=g.querySelector('#k1');
-  k1.style.opacity=p1*out;
-  k1.style.transform=`translateY(${lerp(26,0,p1)}px) scale(${lerp(.99,1,p1)})`;
-}},
-
-/* ---------- 2. stale diagram vs live CLI (0:11–0:28) ---------- */
-{a:11,b:28,go(lt,d,t){
+/* ---------- 1. the two artefacts (carries the opening title) ---------- */
+{a:0,b:14,go(lt,d){
   const g=$('#gfx');
-  if(!g.dataset.s2){g.dataset.s2='1'; g.innerHTML=`
-    <div class="pane" id="pL" style="left:120px">
-      <div class="ph"><span class="dotrow"><i style="background:#ff5f57"></i><i style="background:#febc2e"></i><i style="background:#28c840"></i></span>site-topology-FINAL-v4.vsdx</div>
-      <div class="stamp" id="stamp">rev 4 — 11 months ago</div>
-      <svg id="oldmap" viewBox="0 0 760 700" style="position:absolute;top:60px;left:0;width:760px;height:700px;opacity:.5"></svg>
-    </div>
-    <div class="pane" id="pR" style="left:1040px">
-      <div class="ph"><span class="dotrow"><i style="background:#ff5f57"></i><i style="background:#febc2e"></i><i style="background:#28c840"></i></span>CORE-SW-01 — console</div>
-      <div class="cli" id="term"></div>
-    </div>`;
-    const sv=g.querySelector('#oldmap');
-    const boxes=[[300,60],[150,220],[450,220],[80,380],[300,380],[520,380]];
-    let h='';
-    boxes.forEach(([x,y],i)=>{h+=`<rect x="${x}" y="${y}" width="130" height="52" rx="6" fill="none" stroke="#8e8e93" stroke-width="1.6"/>
-      <text x="${x+65}" y="${y+31}" fill="#8e8e93" font-size="15" font-family="Inter" text-anchor="middle">DEVICE-0${i+1}</text>`;});
-    h+=`<path d="M365 112 V220 M365 112 H215 V220 M365 112 H515 V220" stroke="#8e8e93" stroke-width="1.4" fill="none"/>
-        <path d="M215 272 V380 H145 M215 272 H365 V380 M515 272 V380 H585" stroke="#8e8e93" stroke-width="1.4" fill="none"/>`;
-    sv.innerHTML=h;}
-  const L=g.querySelector('#pL'),R=g.querySelector('#pR'),st=g.querySelector('#stamp'),term=g.querySelector('#term');
-  const pl=easeOut(seg(lt,.2,1.4)), pr=easeOut(seg(lt,3.4,4.6));
-  L.style.opacity=pl; L.style.transform=`translateX(${lerp(-40,0,pl)}px)`;
-  R.style.opacity=pr; R.style.transform=`translateX(${lerp(40,0,pr)}px)`;
-  st.style.opacity=easeOut(seg(lt,2.0,2.8));
-  const script=`CORE-SW-01# <b>show running-config | section bgp</b>
-<b>router bgp</b> 65001
-  <b>bgp router-id</b> 10.0.0.1
-  <b>neighbor</b> 10.0.0.2 <b>remote-as</b> 65001
-  <b>neighbor</b> 10.0.0.2 <b>update-source</b> Loopback0
-    <b>address-family</b> ipv4 unicast
-      <b>network</b> 10.10.0.0 <b>mask</b> 255.255.0.0
-CORE-SW-01# <b>show interface trunk</b>
-<s>Po1   native 1    allowed 10,20,30</s>
-<s>Eth1/7 native 1   allowed <u>ALL</u></s>`;
-  // type by visible characters, keeping tags intact
-  const plain=script.replace(/<[^>]+>/g,''); const want=Math.round(clamp(seg(lt,4.6,d-4.2))*plain.length);
-  let out='',seen=0,i=0;
-  while(i<script.length&&seen<want){ if(script[i]==='<'){const j=script.indexOf('>',i);out+=script.slice(i,j+1);i=j+1;} else {out+=script[i];i++;seen++;} }
-  term.innerHTML=out+(seen<plain.length&&Math.floor(lt*2.2)%2?'<span class="caret"></span>':'');
-  caption(lt>13.0?'A VLAN gets transposed. A BGP neighbour never comes up.':'',easeOut(seg(lt,13.0,14.0))*(1-seg(lt,d-.6,d)));
-}},
-
-/* ---------- 3. the gap, as a concrete diff ---------- */
-// Replaces the red "crack" graphic: a decorative rift said nothing. This shows the
-// actual disagreement between the drawing and the running config, in the app's own
-// row styling, which is the point the narration is making.
-{a:28,b:44,go(lt,d){
-  const g=$('#gfx');
-  const ROWS=[
-    ['vlan 20 · VOICE',   'vlan 30 · VOICE',   'renumbered'],
-    ['native vlan 1',     'native vlan 99',    'trunk mismatch'],
-    ['bgp as 65001',      'bgp as 65002',      'peer never came up'],
-    ['mtu 1500',          'mtu 9216',          'fabric-wide'],
-  ];
-  if(!g.dataset.s3){g.dataset.s3='1';g.dataset.s2='';
-    g.innerHTML=`<div class="diff">
-      <div class="dh"><span class="a">site-topology-FINAL-v4.vsdx</span>
-        <span class="vs">does not match</span>
-        <span class="b">CORE-SW-01 · running-config</span></div>
-      ${ROWS.map((r,i)=>`<div class="dr" id="dr${i}">
-        <span class="lv">${r[0]}</span>
-        <span class="x">${I.x}</span>
-        <span class="rv">${r[1]}</span>
-        <span class="note">${r[2]}</span></div>`).join('')}
-      <div class="df" id="df">4 differences · 11 months since the diagram was touched</div>
-    </div>`;}
-  const hp=easeOut(seg(lt,.3,1.3));
-  const dh=g.querySelector('.dh');
-  dh.style.opacity=hp; dh.style.transform=`translateY(${lerp(-12,0,hp)}px)`;
-  ROWS.forEach((_r,i)=>{
-    const el=g.querySelector('#dr'+i), p=easeOut(clamp(seg(lt,1.5+i*1.05,2.4+i*1.05)));
-    el.style.opacity=p;
-    el.style.transform=`translateY(${lerp(16,0,p)}px)`;
-    const xg=el.querySelector('.x');
-    xg.style.transform=`scale(${easeOutBack(clamp(seg(lt,1.9+i*1.05,2.5+i*1.05)))})`;
-  });
-  const fp=easeOut(seg(lt,6.4,7.6));
-  const df=g.querySelector('#df'); df.style.opacity=fp*.9;
-  g.querySelector('.diff').style.opacity=1-seg(lt,d-.8,d);
+  if(!g.dataset.s1){g.dataset.s1='1';buildPanes(g);}
+  // Order is deliberate: title, then the drawing, and only once the opening line has
+  // actually finished does the running-config pane arrive. Pinned to the VO timeline
+  // rather than hardcoded, so a re-recorded or re-paced line keeps the beat.
+  const l1=voSpan('01');
+  const cfgIn=(l1 ? l1.e - SCENES[0].a : 3.7) + 0.35;
+  const tp=easeOut(seg(lt,.3,1.8));
+  const ttl=g.querySelector('#ttl');
+  ttl.style.opacity=tp; ttl.style.transform=`translateY(${lerp(20,0,tp)}px)`;
+  const L=g.querySelector('#pL'),R=g.querySelector('#pR');
+  const pl=easeOut(seg(lt,1.2,2.5)), pr=easeOut(seg(lt,cfgIn,cfgIn+1.3));
+  L.style.opacity=pl; L.style.transform=`translateX(${lerp(-38,0,pl)}px)`;
+  R.style.opacity=pr; R.style.transform=`translateX(${lerp(38,0,pr)}px)`;
+  g.querySelector('#stamp').style.opacity=easeOut(seg(lt,2.5,3.3));
+  const tm=typedMarkup(TERM_SCRIPT,seg(lt,cfgIn+1.5,d-1.4));
+  g.querySelector('#term').innerHTML=tm.html+(!tm.done&&Math.floor(lt*2.2)%2?'<span class="caret"></span>':'');
   chips(null);
 }},
 
-/* ---------- 4. black + reframe (0:44–0:56) ---------- */
-{a:44,b:56,go(lt,d){
+/* ---------- 2. what disagrees ---------- */
+{a:14,b:25,go(lt,d){
   const g=$('#gfx');
-  if(!g.dataset.s4){g.dataset.s4='1';g.dataset.s3='';g.innerHTML=`<div class="kin">
-    <div class="l" id="r1">So what if the drawing <em style="font-style:normal;color:var(--ac)">was</em> the source of truth?</div>
-    <div class="l sm" id="r2">Not a picture of the network. The network itself.</div>
-    <div class="l" id="r3" style="font-size:76px;font-weight:700;letter-spacing:-2.4px;line-height:1.1">From Sketch to Spine.<br><span style="color:var(--ac)">Instantly Connected.</span></div></div>`;}
-  const r1=g.querySelector('#r1'),r2=g.querySelector('#r2'),r3=g.querySelector('#r3');
-  const p1=easeOut(seg(lt,2.0,3.6)),p2=easeOut(seg(lt,4.6,6.0)),p3=easeOut(seg(lt,8.2,9.8));
-  const f1=1-seg(lt,7.4,8.2);
-  r1.style.opacity=p1*f1;r1.style.transform=`translateY(${lerp(24,0,p1)}px) scale(${lerp(.985,1,p1)})`;
-  r2.style.opacity=p2*f1;r2.style.transform=`translateY(${lerp(20,0,p2)}px)`;
-  r3.style.opacity=p3*(1-seg(lt,d-.7,d));r3.style.transform=`translateY(${lerp(28,0,p3)}px) scale(${lerp(.97,1,p3)})`;
-  r3.style.position=p3>0?'static':'absolute';r3.style.display=p3>0?'block':'none';
-  r1.style.display=f1>0?'block':'none';r2.style.display=f1>0?'block':'none';
+  if(!g.dataset.s1){g.dataset.s1='1';buildPanes(g);}
+  g.querySelector('#ttl').style.opacity=1-seg(lt,0,.8);     // title clears for the comparison
+  const tm=typedMarkup(TERM_SCRIPT,1);
+  g.querySelector('#term').innerHTML=tm.html;
+  // the artefacts recede so the disagreement reads
+  const dim=lerp(1,.3,easeOut(seg(lt,.2,1.2)));
+  g.querySelector('#oldmap').style.opacity=.5*dim;
+  g.querySelector('#term').style.opacity=dim;
+  let svg='';
+  MISMATCH.forEach((m,i)=>{
+    const p=easeOut(clamp(seg(lt,.9+i*.95,1.8+i*.95)));
+    const cl=g.querySelector('#cl'+i), cr=g.querySelector('#cr'+i);
+    cl.style.opacity=p; cr.style.opacity=p;
+    cl.style.transform=`translateX(${lerp(-16,0,p)}px)`;
+    cr.style.transform=`translateX(${lerp(16,0,p)}px)`;
+    if(p>.55){cl.classList.add('bad');cr.classList.add('hit');}
+    else{cl.classList.remove('bad');cr.classList.remove('hit');}
+    // a broken link across the gap: this is the "gap" made literal
+    const y=PANE_TOP+CHIP_TOP[i]+CHIP_MID;
+    const lp=easeOut(clamp(seg(lt,1.25+i*.95,2.15+i*.95)));
+    if(lp>0){
+      const midL=lerp(GAP_L,952,lp), midR=lerp(GAP_R,968,lp);
+      svg+=`<line x1="${GAP_L}" y1="${y}" x2="${midL}" y2="${y}" stroke="var(--err)" stroke-width="2"
+              stroke-dasharray="6 5" opacity="${lp*.85}"/>`
+        +`<line x1="${midR}" y1="${y}" x2="${GAP_R}" y2="${y}" stroke="var(--err)" stroke-width="2"
+              stroke-dasharray="6 5" opacity="${lp*.85}"/>`;
+      const xs=easeOutBack(clamp(seg(lt,1.7+i*.95,2.4+i*.95)));
+      if(xs>0)svg+=`<g transform="translate(960 ${y}) scale(${xs})" opacity="${clamp(xs)}">`
+        +`<circle r="13" fill="var(--err)"/>`
+        +`<path d="M-5 -5 L5 5 M5 -5 L-5 5" stroke="#1a0000" stroke-width="2.6" stroke-linecap="round"/></g>`;
+    }
+  });
+  g.querySelector('#bridge').innerHTML=svg;
+  g.querySelector('#gfoot').style.opacity=easeOut(seg(lt,5.2,6.4))*.95;
+  [...g.querySelectorAll('.pane')].forEach(el=>{el.style.opacity=1-seg(lt,d-.7,d);});
+  g.querySelector('#gfoot').style.opacity*=(1-seg(lt,d-.7,d));
+  chips(null);
 }},
 
-/* ---------- 5. designer: drag a device in (0:56–1:03) ---------- */
+/* ---------- 3. the turn — reframe ---------- */
+// The "From Sketch to Spine / Instantly Connected" title card was removed at the
+// client's request; the reframe lines now hand straight off to the product.
+{a:44,b:56,go(lt,d){
+  const g=$('#gfx');
+  if(!g.dataset.s4){g.dataset.s4='1';g.dataset.s1='';g.innerHTML=`<div class="kin">
+    <div class="l" id="r1">So what if the drawing <em style="font-style:normal;color:var(--ac)">was</em> the source of truth?</div>
+    <div class="l sm" id="r2">Not a picture of the network. The network itself.</div></div>`;}
+  const r1=g.querySelector('#r1'),r2=g.querySelector('#r2');
+  const p1=easeOut(seg(lt,1.0,2.6)),p2=easeOut(seg(lt,3.4,4.8)),out=1-seg(lt,d-.8,d);
+  r1.style.opacity=p1*out;r1.style.transform=`translateY(${lerp(24,0,p1)}px) scale(${lerp(.985,1,p1)})`;
+  r2.style.opacity=p2*out;r2.style.transform=`translateY(${lerp(20,0,p2)}px)`;
+  chips(null);
+}},
+
+/* ---------- 4. designer: drag a device in ---------- */
 {a:56,b:63,go(lt,d,t){
   showApp(); $('#sbr').innerHTML=panelProps({tab:'int',ip:'',vlan:'',cli:''});
   setCanvasView(1,0,CY);
@@ -601,7 +621,7 @@ CORE-SW-01# <b>show interface trunk</b>
   chips(null);
 }},
 
-/* ---------- 6. link ports + properties (1:03–1:10) ---------- */
+/* ---------- 5. link ports + properties ---------- */
 {a:63,b:70,go(lt,d){
   showApp(); setCanvasView(1,0,CY);
   buildNodes(BRANCH,BRANCH_LINKS);
@@ -618,7 +638,7 @@ CORE-SW-01# <b>show interface trunk</b>
   caption(lt>4.6?'Connect the ports. Set your VLANs, your routing, your management.':'',easeOut(seg(lt,4.6,5.4))*(1-seg(lt,d-.5,d)));
 }},
 
-/* ---------- 7. scale to fabric (1:10–1:16) ---------- */
+/* ---------- 6. scale to fabric ---------- */
 {a:70,b:76,go(lt,d){
   showApp();
   buildNodes(FABRIC,FABRIC_LINKS);
@@ -636,7 +656,7 @@ CORE-SW-01# <b>show interface trunk</b>
   chips(['IOS-XE','NX-OS','EOS / AVD','ArubaOS-CX','PAN-OS','EdgeConnect'],seg(lt,6.2,9.4));
 }},
 
-/* ---------- 8. validation runs (1:16–1:22) ---------- */
+/* ---------- 7. validation runs ---------- */
 {a:76,b:82,go(lt,d){
   showApp(); buildNodes(BRANCH,BRANCH_LINKS); setCanvasView(1,0,CY); drawLinks(1);
   $('#btnVal').className='btn on';
@@ -647,7 +667,7 @@ CORE-SW-01# <b>show interface trunk</b>
   chips(null);
 }},
 
-/* ---------- 9. IP conflict caught (1:22–1:27) ---------- */
+/* ---------- 8. IP conflict caught ---------- */
 {a:82,b:87,go(lt,d){
   showApp(); buildNodes(BRANCH,BRANCH_LINKS); setCanvasView(1,0,CY); drawLinks(1);
   $('#btnVal').className='btn on';
@@ -665,7 +685,7 @@ CORE-SW-01# <b>show interface trunk</b>
   caption('IP conflicts. VLAN mismatches. BGP peer gaps. Spanning-tree errors.<br>Caught <em>here</em> — not in the maintenance window.',easeOut(seg(lt,1.4,2.4))*(1-seg(lt,d-.5,d)));
 }},
 
-/* ---------- 10. AI architect (1:27–1:32) ---------- */
+/* ---------- 9. AI architect ---------- */
 {a:87,b:92,go(lt,d){
   showApp(); buildNodes(BRANCH,BRANCH_LINKS); setCanvasView(1,0,CY); drawLinks(1);
   $('#overlay').classList.add('hide'); $('#btnVal').className='btn on';
@@ -676,7 +696,7 @@ CORE-SW-01# <b>show interface trunk</b>
   caption('Then the AI Network Architect reviews the design — and tells you what to fix.',easeOut(seg(lt,1.2,2.2))*(1-seg(lt,d-.5,d)));
 }},
 
-/* ---------- 11. green — the payoff frame (1:32–1:38) ---------- */
+/* ---------- 10. green — the payoff frame ---------- */
 {a:92,b:98,go(lt,d){
   showApp(); buildNodes(BRANCH,BRANCH_LINKS); setCanvasView(1,0,CY); drawLinks(1);
   $('#btnVal').className='btn on'; $('#overlay').classList.add('hide');
@@ -692,7 +712,7 @@ CORE-SW-01# <b>show interface trunk</b>
   cursorAt(0,0,false); caption('',0);
 }},
 
-/* ---------- 12. export → real CLI (1:38–1:45) ---------- */
+/* ---------- 11. export → real CLI ---------- */
 {a:98,b:105,go(lt,d){
   showApp(); buildNodes(BRANCH,BRANCH_LINKS); setCanvasView(1,0,CY); drawLinks(1);
   $('#btnVal').className='btn'; $('#btnExp').className='btn on'; badge(null,'',0);
@@ -704,7 +724,7 @@ CORE-SW-01# <b>show interface trunk</b>
   caption('Production-ready CLI. AVD Ansible YAML. Generated from the same canvas.',easeOut(seg(lt,1.0,2.0))*(1-seg(lt,d-.5,d)));
 }},
 
-/* ---------- 13. export artefacts fan (1:45–1:51) ---------- */
+/* ---------- 12. export artefacts fan ---------- */
 {a:105,b:111,go(lt,d){
   hideApp(); const g=$('#gfx');
   const items=[['PDF','Design package',V.arista],['VSDX','Visio topology',V.az],['XLSX','Bill of materials',V.sp],['CSV','Cable schedule',V.aruba],['CLI','Device configs',V.cisco],['YAML','AVD Ansible',V.palo]];
@@ -721,7 +741,7 @@ CORE-SW-01# <b>show interface trunk</b>
   chips(null);
 }},
 
-/* ---------- 14. cloud on canvas (1:51–1:58) ---------- */
+/* ---------- 13. cloud on canvas ---------- */
 {a:111,b:118,go(lt,d){
   showApp(); $('#btnExp').className='btn';
   buildNodes(CLOUDN,CLOUD_LINKS); setCanvasView(1,0,150);
@@ -736,7 +756,7 @@ CORE-SW-01# <b>show interface trunk</b>
   caption('Reverse-engineer a live Azure subscription onto the canvas —<br>and push it back as <em>Terraform</em>.',easeOut(seg(lt,1.6,2.6))*(1-seg(lt,d-.5,d)));
 }},
 
-/* ---------- 15. outcome (1:58–2:07) ---------- */
+/* ---------- 14. outcome ---------- */
 {a:118,b:127,go(lt,d){
   hideApp(); const g=$('#gfx');
   if(!g.dataset.s15){g.dataset.s15='1';g.dataset.s13='';g.innerHTML=`<div class="kin">
@@ -751,7 +771,7 @@ CORE-SW-01# <b>show interface trunk</b>
   caption('',0);chips(null);badge(null,'',0);
 }},
 
-/* ---------- 16. end card (2:07–2:15) ---------- */
+/* ---------- 15. end card ---------- */
 {a:127,b:135,go(lt,d){
   hideApp(); const g=$('#gfx');
   if(!g.dataset.s16){g.dataset.s16='1';g.dataset.s15='';g.innerHTML=`<div class="endwrap">
@@ -773,12 +793,18 @@ CORE-SW-01# <b>show interface trunk</b>
 ];
 
 function showApp(){$('#app').classList.remove('hide');$('#gfx').classList.add('hide');vignette(false);
-  ['s2','s3','s4','s13','s15','s16'].forEach(k=>$('#gfx').dataset[k]='');}
+  ['s1','s4','s13','s15','s16'].forEach(k=>$('#gfx').dataset[k]='');}
 function hideApp(){$('#app').classList.add('hide');$('#gfx').classList.remove('hide');$('#overlay').classList.add('hide');vignette(true);}
 
 /* ============================ seek ============================ */
 let DURATION=135, TL=null;
 // caption track is global and synced to the VO, so scene-local caption() calls are overridden below
+// absolute span of a VO line, so picture beats can be pinned to the narration
+function voSpan(id){
+  if(!TL) return null;
+  const v=TL.vo.find(x=>x.id===id);
+  return v ? {s:v.start, e:v.start+v.dur} : null;
+}
 function renderCues(t){
   if(!TL)return;
   const c=TL.cues.find(q=>t>=q.t0&&t<q.t1);
@@ -792,8 +818,8 @@ window.seek=function(t){
   $('#btnVal').className='btn'; $('#btnExp').className='btn';
   const sc=SCENES.find(s=>t>=s.a&&t<s.b)||SCENES[SCENES.length-1];
   if(window.__scene!==sc){ // scene entry: clear graphic caches so each scene rebuilds cleanly
-    if(sc.a<56||sc.a>=105)hideApp(); window.__scene=sc;
-    ['s2','s3','s4','s13','s15','s16'].forEach(k=>$('#gfx').dataset[k]='');
+    if(SCENES.indexOf(sc)<3||SCENES.indexOf(sc)>=11)hideApp(); window.__scene=sc;
+    ['s1','s4','s13','s15','s16'].forEach(k=>$('#gfx').dataset[k]='');
   }
   caption('',0); chips(null); cursorAt(0,0,false);
   sc.go(t-sc.a, sc.b-sc.a, t);

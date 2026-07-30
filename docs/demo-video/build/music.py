@@ -18,10 +18,11 @@ SC = TL['scenes']                      # 0-indexed; scene n is SC[n-1]
 N = int(DUR * SR)
 t = np.arange(N) / SR
 
-TURN   = SC[3]['a']                    # 4: reframe / drop
-PROD   = SC[4]['a']                    # 5: product act begins
-PAYOFF = SC[10]['a']                   # 11: "0 conflicts"
-OUTRO  = SC[14]['a']                   # 15: outcome
+# scene indices are 0-based here; act 1 was merged from 4 scenes to 3 in v5
+TURN   = SC[2]['a']                    # scene 3: reframe / drop
+PROD   = SC[3]['a']                    # scene 4: product act begins
+PAYOFF = SC[9]['a']                    # scene 10: "0 conflicts"
+OUTRO  = SC[13]['a']                   # scene 14: outcome
 BPM    = 100.0
 BEAT   = 60.0 / BPM
 
@@ -65,9 +66,13 @@ NOTE = {'A1':55.00,'C2':65.41,'E2':82.41,'F2':87.31,'G2':98.00,'A2':110.00,
         'B3':246.94,'C4':261.63,'D4':293.66,'E4':329.63,'F4':349.23,
         'G4':392.00,'A4':440.00,'C5':523.25,'E5':659.26}
 
-# Am - F - C - G, four beats each, looped through the product act
-PROG = [('A2', ['A3','C4','E4']), ('F2', ['F3','A3','C4']),
-        ('C3', ['C4','E4','G4']), ('G2', ['G3','B3','D4'])]
+# Act 1 sits in A minor (drones only). At the reveal the score modulates to the relative
+# major -- C - G - Am - F -- so "Introducing Netforge.ai" lands as a lift rather than a
+# continuation of the problem music. Am is kept in the loop to hold the link back to act 1.
+PROG = [('C3', ['C4','E4','G4']),      # C  major
+        ('G2', ['G3','B3','D4']),      # G  major
+        ('A2', ['A3','C4','E4']),      # Am
+        ('F2', ['F3','A3','C4'])]      # F  major
 
 pad  = np.zeros(N); bass = np.zeros(N); perc = np.zeros(N)
 arp  = np.zeros(N); shim = np.zeros(N)
@@ -101,6 +106,12 @@ def tick(level=1.0, dark=False):
     v = np.random.RandomState(7).randn(n) * np.exp(-tt * (70 if dark else 110))
     return v * level
 
+def bell(f, level=1.0, dur=1.2):
+    n = int(dur * SR); tt = np.arange(n) / SR
+    v = (np.sin(2 * np.pi * f * tt) + 0.40 * np.sin(2 * np.pi * f * 2 * tt)
+         + 0.22 * np.sin(2 * np.pi * f * 3.01 * tt))
+    return v * np.exp(-tt * 3.2) * level
+
 def pluck(f, level=1.0):
     n = int(0.42 * SR); tt = np.arange(n) / SR
     v = (np.sin(2 * np.pi * f * tt) + 0.35 * np.sin(2 * np.pi * f * 2 * tt)
@@ -123,7 +134,9 @@ if swell_len > 1.0:
     rise = np.sin(2 * np.pi * (NOTE['A2'] * (1 + 0.28 * tt / swell_len)) * tt)
     rise += 0.5 * np.sin(2 * np.pi * NOTE['E3'] * tt)
     add(shim, rise * (tt / swell_len) ** 2.2 * 0.30, TURN + 3.4)
-add(bass, sub_note(NOTE['A1'], 2.0, 0.85), PROD - 0.55)   # downbeat into the product
+add(bass, sub_note(NOTE['C2'], 2.0, 0.85), PROD - 0.55)   # downbeat into the product
+for i, nm in enumerate(('C4', 'E4', 'G4', 'C5')):        # bright ascending reveal
+    add(shim, bell(NOTE[nm], 0.17), PROD - 0.2 + i * 0.17)
 
 # ---------------- PRODUCT ACT: steady pulse ----------------
 bar = 0
@@ -131,7 +144,7 @@ tpos = PROD
 while tpos < OUTRO:
     root, ch = PROG[bar % 4]
     barlen = BEAT * 4
-    lift = 1.22 if PAYOFF <= tpos < SC[10]['b'] else 1.0
+    lift = 1.22 if PAYOFF <= tpos < SC[9]['b'] else 1.0
     add(pad,  pad_voice([NOTE[c] for c in ch], barlen * 1.05, level=0.20 * lift), tpos)
     add(bass, sub_note(NOTE[root], barlen * 0.62, 0.50), tpos)
     add(bass, sub_note(NOTE[root], BEAT * 0.9, 0.30), tpos + BEAT * 2)
@@ -149,23 +162,24 @@ while tpos < OUTRO:
     bar += 1
 
 # ---------------- OUTRO: resolve, hold, fade ----------------
-add(pad,  pad_voice([NOTE['A3'], NOTE['C4'], NOTE['E4']], (DUR - OUTRO) * 0.55, level=0.30), OUTRO)
+add(pad,  pad_voice([NOTE['C4'], NOTE['E4'], NOTE['G4']], (DUR - OUTRO) * 0.55, level=0.30), OUTRO)
 add(pad,  pad_voice([NOTE['F3'], NOTE['A3'], NOTE['C4']], (DUR - OUTRO) * 0.55, level=0.26), OUTRO + (DUR - OUTRO) * 0.42)
-add(bass, sub_note(NOTE['A1'], 5.0, 0.55), OUTRO)
+add(bass, sub_note(NOTE['C2'], 5.0, 0.55), OUTRO)
 add(bass, sub_note(NOTE['F2'], 5.0, 0.40), OUTRO + (DUR - OUTRO) * 0.42)
-add(shim, pad_voice([NOTE['A4'], NOTE['E5']], (DUR - OUTRO) * 0.5, level=0.07), OUTRO + 0.6)
+add(shim, pad_voice([NOTE['C5'], NOTE['E5']], (DUR - OUTRO) * 0.5, level=0.07), OUTRO + 0.6)
+add(shim, bell(NOTE['C5'], 0.13, dur=2.6), DUR - 5.6)    # end-card chime
 for b in range(6):                                       # pulse thins out and stops
     add(perc, kick(0.22 * (1 - b / 6)), OUTRO + b * BEAT * 2)
 
 # ---------------- mix ----------------
-pad  = lp_fast(pad, 1500)
-arp  = lp_fast(arp, 3200)
+pad  = lp_fast(pad, 2100)
+arp  = lp_fast(arp, 4200)
 perc = lp_fast(perc, 6500)
-mix = pad * 1.0 + bass * 0.95 + perc * 0.55 + arp * 0.42 + shim * 0.5
+mix = pad * 1.0 + bass * 0.95 + perc * 0.55 + arp * 0.50 + shim * 0.58
 
 # darker under act 1, opens up at the product act
 tilt = np.ones(N)
-tilt[:int(PROD * SR)] = 0.72
+tilt[:int(PROD * SR)] = 0.62   # act 1 darker still, so the lift is felt
 tilt = lp_fast(tilt, 2.0)
 mix *= tilt
 

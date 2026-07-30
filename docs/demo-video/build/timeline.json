@@ -1,299 +1,190 @@
 {
- "duration": 160.53,
+ "duration": 139.83,
  "voice": "am_onyx",
  "speed": 1.0,
  "scenes": [
   {
    "a": 0.0,
-   "b": 10.79
+   "b": 14.7
   },
   {
-   "a": 10.79,
-   "b": 31.03
+   "a": 14.7,
+   "b": 27.22
   },
   {
-   "a": 31.03,
-   "b": 44.56
+   "a": 27.22,
+   "b": 36.42
   },
   {
-   "a": 44.56,
-   "b": 57.16
+   "a": 36.42,
+   "b": 42.96
   },
   {
-   "a": 57.16,
-   "b": 63.66
+   "a": 42.96,
+   "b": 49.46
   },
   {
-   "a": 63.66,
-   "b": 70.16
+   "a": 49.46,
+   "b": 61.99
   },
   {
-   "a": 70.16,
-   "b": 82.69
+   "a": 61.99,
+   "b": 67.49
   },
   {
-   "a": 82.69,
-   "b": 88.19
+   "a": 67.49,
+   "b": 79.14
   },
   {
-   "a": 88.19,
-   "b": 99.84
+   "a": 79.14,
+   "b": 89.42
   },
   {
-   "a": 99.84,
-   "b": 110.12
+   "a": 89.42,
+   "b": 94.92
   },
   {
-   "a": 110.12,
-   "b": 115.62
+   "a": 94.92,
+   "b": 101.73
   },
   {
-   "a": 115.62,
-   "b": 122.43
+   "a": 101.73,
+   "b": 111.42
   },
   {
-   "a": 122.43,
-   "b": 132.12
+   "a": 111.42,
+   "b": 118.84
   },
   {
-   "a": 132.12,
-   "b": 139.54
+   "a": 118.84,
+   "b": 129.76
   },
   {
-   "a": 139.54,
-   "b": 150.46
-  },
-  {
-   "a": 150.46,
-   "b": 160.53
+   "a": 129.76,
+   "b": 139.83
   }
  ],
  "cues": [
   {
-   "t0": 0.45,
-   "t1": 4.46,
-   "html": "Every network change starts as a drawing."
-  },
-  {
-   "t0": 4.36,
-   "t1": 10.68,
-   "html": "And every outage starts with the gap between that drawing \u2014<br>and <em>what's actually on the box</em>."
-  },
-  {
-   "t0": 11.24,
-   "t1": 17.1,
-   "html": "You design it in Visio. You build it by hand, in CLI."
-  },
-  {
-   "t0": 17.0,
-   "t1": 23.51,
-   "html": "Somewhere between the two, a VLAN gets transposed.<br>A BGP neighbour never comes up."
-  },
-  {
-   "t0": 23.41,
-   "t1": 31.14,
-   "html": "You find out at 2am \u2014 inside a maintenance window,<br>with no time left to use the rollback plan."
-  },
-  {
-   "t0": 31.78,
-   "t1": 36.55,
-   "html": "The drawing was never wrong.<br>It was just never <em>connected to anything</em>."
-  },
-  {
-   "t0": 36.45,
-   "t1": 44.26,
-   "html": "Every diagram tool gives you a picture of the network.<br>Then it hands you a keyboard and wishes you luck."
-  },
-  {
-   "t0": 46.31,
-   "t1": 50.3,
+   "t0": 27.97,
+   "t1": 31.86,
    "html": "So what if the drawing <em>was</em> the source of truth?"
-  },
-  {
-   "t0": 50.2,
-   "t1": 54.86,
-   "html": "Not a picture of the network. The network itself."
-  },
-  {
-   "t0": 57.71,
-   "t1": 63.24,
-   "html": "Drag a device onto the canvas."
-  },
-  {
-   "t0": 64.21,
-   "t1": 69.55,
-   "html": "Connect the ports. Set your VLANs, your routing, your management."
-  },
-  {
-   "t0": 70.71,
-   "t1": 76.84,
-   "html": "Scale the same canvas to a full <em>leaf-spine VXLAN EVPN fabric</em>."
-  },
-  {
-   "t0": 76.74,
-   "t1": 82.59,
-   "html": "Cisco. Arista. Aruba. Palo Alto. Silver Peak. <em>One canvas.</em>"
-  },
-  {
-   "t0": 83.04,
-   "t1": 87.25,
-   "html": "Before anything ships \u2014 it gets checked."
-  },
-  {
-   "t0": 88.54,
-   "t1": 94.56,
-   "html": "IP conflicts. VLAN mismatches. BGP peer gaps. Spanning-tree errors."
-  },
-  {
-   "t0": 94.46,
-   "t1": 99.84,
-   "html": "Caught <em>here</em>, on the canvas \u2014<br>not out there, in the maintenance window."
-  },
-  {
-   "t0": 100.19,
-   "t1": 110.12,
-   "html": "Then the AI Network Architect reviews the whole design \u2014<br>and tells you what to fix."
-  },
-  {
-   "t0": 115.97,
-   "t1": 122.53,
-   "html": "Production-ready CLI. AVD Ansible YAML.<br>Generated from the same canvas."
-  },
-  {
-   "t0": 122.78,
-   "t1": 132.22,
-   "html": "PDF packages, Visio diagrams, Excel BOM, cable schedules \u2014<br>documentation that <em>can't drift</em> from the design."
-  },
-  {
-   "t0": 132.47,
-   "t1": 139.64,
-   "html": "Reverse-engineer a live Azure subscription onto the canvas \u2014<br>and push it back as <em>Terraform</em>."
   }
  ],
  "vo": [
   {
    "id": "01",
-   "start": 0.7,
+   "start": 0.6,
    "dur": 3.11
   },
   {
    "id": "02",
-   "start": 4.61,
-   "dur": 4.97
-  },
-  {
-   "id": "03",
-   "start": 11.49,
-   "dur": 5.16
-  },
-  {
-   "id": "04",
-   "start": 17.25,
-   "dur": 5.8
+   "start": 4.21,
+   "dur": 4.59
   },
   {
    "id": "05",
-   "start": 23.66,
-   "dur": 6.38
+   "start": 9.3,
+   "dur": 4.5
+  },
+  {
+   "id": "04",
+   "start": 15.6,
+   "dur": 5.65
   },
   {
    "id": "06",
-   "start": 32.03,
+   "start": 21.85,
    "dur": 3.97
   },
   {
-   "id": "07",
-   "start": 36.7,
-   "dur": 6.46
-  },
-  {
    "id": "08",
-   "start": 46.56,
+   "start": 28.22,
    "dur": 3.09
   },
   {
    "id": "09",
-   "start": 50.45,
+   "start": 32.01,
    "dur": 3.31
   },
   {
    "id": "10",
-   "start": 57.96,
-   "dur": 4.18
+   "start": 37.22,
+   "dur": 4.54
   },
   {
    "id": "11",
-   "start": 64.46,
+   "start": 43.76,
    "dur": 3.99
   },
   {
    "id": "12",
-   "start": 70.96,
+   "start": 50.26,
    "dur": 5.53
   },
   {
    "id": "13",
-   "start": 76.99,
+   "start": 56.29,
    "dur": 4.5
   },
   {
    "id": "14",
-   "start": 83.29,
+   "start": 62.59,
    "dur": 2.86
   },
   {
    "id": "15",
-   "start": 88.79,
+   "start": 68.09,
    "dur": 5.42
   },
   {
    "id": "16",
-   "start": 94.71,
+   "start": 74.01,
    "dur": 4.03
   },
   {
    "id": "17",
-   "start": 100.44,
+   "start": 79.74,
    "dur": 8.58
   },
   {
    "id": "18",
-   "start": 110.62,
+   "start": 89.92,
    "dur": 3.16
   },
   {
    "id": "19",
-   "start": 116.22,
+   "start": 95.52,
    "dur": 5.21
   },
   {
    "id": "20",
-   "start": 123.03,
+   "start": 102.33,
    "dur": 8.09
   },
   {
    "id": "21",
-   "start": 132.72,
+   "start": 112.02,
    "dur": 5.82
   },
   {
    "id": "22",
-   "start": 140.34,
+   "start": 119.64,
    "dur": 4.84
   },
   {
    "id": "23",
-   "start": 145.78,
+   "start": 125.08,
    "dur": 3.48
   },
   {
    "id": "24",
-   "start": 151.26,
+   "start": 130.56,
    "dur": 4.52
   },
   {
    "id": "25",
-   "start": 156.28,
+   "start": 135.58,
    "dur": 2.05
   }
  ]

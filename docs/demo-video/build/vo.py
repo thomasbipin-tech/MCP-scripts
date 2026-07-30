@@ -91,59 +91,44 @@ def phonemes_for(text):
 # ---------------------------------------------------------------- script
 # (id, scene, text, caption)  — caption None = let the visuals carry it
 LINES = [
- ('01', 1, "Every network change starts as a drawing.",
-        "Every network change starts as a drawing."),
- ('02', 1, "And every outage starts with the gap between that drawing, and what's actually on the box.",
-        "And every outage starts with the gap between that drawing —<br>and <em>what's actually on the box</em>."),
- ('03', 2, "So you design it in Visio. You build it by hand, box by box, in CLI.",
-        "You design it in Visio. You build it by hand, in CLI."),
- ('04', 2, "And somewhere between the two, a VLAN gets transposed. A BGP neighbour never comes up.",
-        "Somewhere between the two, a VLAN gets transposed.<br>A BGP neighbour never comes up."),
- ('05', 2, "You find out at two in the morning, inside a maintenance window, with a rollback plan and no time left to use it.",
-        "You find out at 2am — inside a maintenance window,<br>with no time left to use the rollback plan."),
- ('06', 3, "The drawing wasn't wrong. It was just never connected to anything.",
-        "The drawing was never wrong.<br>It was just never <em>connected to anything</em>."),
- ('07', 3, "Every diagram tool on the market gives you a picture of the network. Then it hands you a keyboard, and wishes you luck.",
-        "Every diagram tool gives you a picture of the network.<br>Then it hands you a keyboard and wishes you luck."),
- ('08', 4, "So what if the drawing was the source of truth?",
+ # ---- act 1: the gap. Tightened so the product arrives at ~0:35 instead of ~0:59.
+ # Two lines were cut rather than sped up: "So you design it in Visio... in CLI"
+ # (the two panes already show exactly that) and "Every diagram tool on the market..."
+ # (a good line, but the pivot at 06 makes the same point in half the time).
+ ('01', 1, "Every network change starts as a drawing.", None),   # now the shot's title card
+ ('02', 1, "And every outage starts with the gap between that drawing, and what's on the box.", None),
+ ('05', 1, "You find out at two in the morning, with no time left to use the rollback plan.", None),
+ ('04', 2, "Somewhere between the two, a VLAN gets transposed. A BGP neighbour never comes up.", None),
+ ('06', 2, "The drawing wasn't wrong. It was just never connected to anything.", None),
+ ('08', 3, "So what if the drawing was the source of truth?",
         "So what if the drawing <em>was</em> the source of truth?"),
- ('09', 4, "Not a picture of the network. The network itself.",
-        "Not a picture of the network. The network itself."),
- ('10', 5, "This is Netforge.ai. Drag a device onto the canvas.",
-        "Drag a device onto the canvas."),
- ('11', 6, "Connect the ports. Set your VLANs, your routing, your management.",
-        "Connect the ports. Set your VLANs, your routing, your management."),
- ('12', 7, "Scale the same canvas, to a full Arista leaf-spine VXLAN EVPN fabric.",
-        "Scale the same canvas to a full <em>leaf-spine VXLAN EVPN fabric</em>."),
- ('13', 7, "Cisco. Arista. Aruba. Palo Alto. Silver Peak. One canvas.",
-        "Cisco. Arista. Aruba. Palo Alto. Silver Peak. <em>One canvas.</em>"),
- ('14', 8, "And before anything ships, it gets checked.",
-        "Before anything ships — it gets checked."),
- ('15', 9, "IP conflicts. VLAN mismatches. BGP peer gaps. Spanning-tree errors.",
-        "IP conflicts. VLAN mismatches. BGP peer gaps. Spanning-tree errors."),
- ('16', 9, "Caught here, on the canvas. Not out there, in the maintenance window.",
-        "Caught <em>here</em>, on the canvas —<br>not out there, in the maintenance window."),
- ('17',10, "Then the AI Network Architect reviews the whole design. Single points of failure, CVD and AVD alignment. And tells you what to fix.",
-        "Then the AI Network Architect reviews the whole design —<br>and tells you what to fix."),
- ('18',11, "Zero conflicts. 42 checks passed.", None),
- ('19',12, "Then the design ships itself. Production-ready CLI. AVD Ansible YAML.",
-        "Production-ready CLI. AVD Ansible YAML.<br>Generated from the same canvas."),
- ('20',13, "PDF packages. Visio diagrams. Excel BOM. Cable schedules. Documentation that can't drift from the design.",
-        "PDF packages, Visio diagrams, Excel BOM, cable schedules —<br>documentation that <em>can't drift</em> from the design."),
- ('21',14, "Reverse-engineer a live Azure subscription onto that canvas, and push it back as Terraform.",
-        "Reverse-engineer a live Azure subscription onto the canvas —<br>and push it back as <em>Terraform</em>."),
- ('22',15, "Design. Configure. Validate. Deploy. One canvas, one source of truth.", None),
- ('23',15, "The drawing and the network. Finally the same thing.", None),
- ('24',16, "Netforge.ai. Open the designer, drag your first device.", None),
- ('25',16, "Free to start. No card.", None),
+ ('09', 3, "Not a picture of the network. The network itself.", None),
+ # ---- act 2: the product
+ ('10', 4, "Introducing Netforge.ai. Drag a device onto the canvas.", None),
+ ('11', 5, "Connect the ports. Set your VLANs, your routing, your management.", None),
+ ('12', 6, "Scale the same canvas, to a full Arista leaf-spine VXLAN EVPN fabric.", None),
+ ('13', 6, "Cisco. Arista. Aruba. Palo Alto. Silver Peak. One canvas.", None),
+ ('14', 7, "And before anything ships, it gets checked.", None),
+ ('15', 8, "IP conflicts. VLAN mismatches. BGP peer gaps. Spanning-tree errors.", None),
+ ('16', 8, "Caught here, on the canvas. Not out there, in the maintenance window.", None),
+ ('17', 9, "Then the AI Network Architect reviews the whole design. Single points of failure, CVD and AVD alignment. And tells you what to fix.", None),
+ ('18',10, "Zero conflicts. 42 checks passed.", None),
+ ('19',11, "Then the design ships itself. Production-ready CLI. AVD Ansible YAML.", None),
+ ('20',12, "PDF packages. Visio diagrams. Excel BOM. Cable schedules. Documentation that can't drift from the design.", None),
+ ('21',13, "Reverse-engineer a live Azure subscription onto that canvas, and push it back as Terraform.", None),
+ ('22',14, "Design. Configure. Validate. Deploy. One canvas, one source of truth.", None),
+ ('23',14, "The drawing and the network. Finally the same thing.", None),
+ ('24',15, "Netforge.ai. Open the designer, drag your first device.", None),
+ ('25',15, "Free to start. No card.", None),
 ]
 
-SCENE_MIN = {1:10, 2:12, 3:11, 4:11, 5:6.5, 6:6.5, 7:8, 8:5.5,
-             9:8, 10:7, 11:5.5, 12:6.5, 13:7, 14:6.5, 15:8, 16:8}
-PACE = {1:(0.7,0.8,1.2), 2:(0.7,0.6,1.0), 3:(1.0,0.7,1.4), 4:(2.0,0.8,3.4),
-        5:(0.8,0.5,1.2), 6:(0.8,0.5,1.2), 7:(0.8,0.5,1.2), 8:(0.6,0.5,0.9),
-        9:(0.6,0.5,1.1), 10:(0.6,0.5,1.1), 11:(0.5,0.5,1.5), 12:(0.6,0.5,1.0),
-        13:(0.6,0.5,1.0), 14:(0.6,0.5,1.0), 15:(0.8,0.6,1.2), 16:(0.8,0.5,2.2)}
+SCENE_MIN = {1:14, 2:9, 3:7, 4:6.5, 5:6.5, 6:8, 7:5.5, 8:8,
+             9:7, 10:5.5, 11:6.5, 12:7, 13:6.5, 14:8, 15:8}
+PACE = {1:(0.6,0.5,0.9), 2:(0.9,0.6,1.4), 3:(1.0,0.7,1.1),   # tail no longer holds a title card
+        4:(0.8,0.5,1.2), 5:(0.8,0.5,1.2), 6:(0.8,0.5,1.2), 7:(0.6,0.5,0.9),
+        8:(0.6,0.5,1.1), 9:(0.6,0.5,1.1), 10:(0.5,0.5,1.5), 11:(0.6,0.5,1.0),
+        12:(0.6,0.5,1.0), 13:(0.6,0.5,1.0), 14:(0.8,0.6,1.2), 15:(0.8,0.5,2.2)}
+N_SCENES = 15
 
 def ipa(s):
     return subprocess.run(['espeak-ng','-v','en-us','--ipa','-q',s],
@@ -216,7 +201,7 @@ def build():
         a, sr = read(f'vo/{lid}.wav'); durs[lid] = len(a)/sr
 
     scenes, placed, cursor = [], [], 0.0
-    for si in range(1, 17):
+    for si in range(1, N_SCENES + 1):
         mine = [l for l in LINES if l[1] == si]
         intro, gap, tail = PACE[si]
         t, local = intro, []
