@@ -34,9 +34,20 @@ Available to every class, regardless of build:
 
 - Players have health and stamina. Blocking and dodging cost stamina; running
   out leaves you vulnerable, which is what stops block-spam.
-- Defeat is a **temporary elimination**, not a permanent one — respawn at your
-  base after a timer (*proposed:* 8s in Act I/II, 8s in Act III including
-  falls).
+- Defeat is a **temporary elimination**, not a permanent one — you re-form after a
+  timer (*proposed:* 8s in every act, including falls).
+- **You reboot at a corner pad, not at your base.** Two reboot pads sit in
+  diagonally opposite corners of the map, one per team. This is the single change
+  that gives dying a real cost: the timer is short, but the walk back is not, so
+  a death costs you *position* rather than just seconds.
+  - **Why not scale the timer instead:** long respawn timers snowball a losing
+    team and make the last minutes one-sided, which the brief explicitly does not
+    want. Distance is a cost that shrinks naturally as the fight moves toward
+    your side of the map, so it self-corrects.
+  - **Risk to watch:** a walk back that feels punishing rather than tense. If
+    playtesting says so, move the pads inward rather than shortening the timer.
+  - Reboot pads are **safe ground** — no spawn-camping. *Proposed:* brief
+    invulnerability on re-forming, and enemies cannot capture or hold the pad.
 - A defeated flag carrier **drops the flag** where they fell. It can be picked up
   by either team; if untouched it returns to base after a timeout (*proposed:*
   20s).
@@ -138,8 +149,9 @@ three radically different worlds would fight the adaptation pillar.
 - Attacks telegraph with a visible wind-up.
 - **Every class is identifiable by silhouette alone** — proportion and one
   accessory, never colour, since colour belongs to the team. In a fight at
-  third-person distance, silhouette is all a player gets. See
-  [10 — Characters](10-art-direction-and-cinematics.md#characters).
+  third-person distance, silhouette is all a player gets. Figures are hard-edged
+  squares against a soft rounded world, so a player separates from terrain
+  instantly — see [10 — Characters](10-art-direction-and-cinematics.md#characters).
 - Team colour is applied as **emissive** trim so it stays readable in Act I
   daylight, against Act II's glowing dark, and against Act III's bright cloud. Flat colour fails at
   least one of those three. The two team palettes are warm versus cool rather

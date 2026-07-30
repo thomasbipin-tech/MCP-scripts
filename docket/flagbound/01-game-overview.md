@@ -49,11 +49,11 @@ respectful one.
 
 ## Visual identity
 
-Flagbound pairs **cel-shaded anime characters** with a **vivid stylised world**.
-Slim, sharply-drawn figures with dramatic hair, oversized expressive eyes and
-trailing scarves, fighting across saturated, boldly-shaped terrain under a bright
-sky. Hard shadow terminators, ink silhouettes and hot rim light — drawn rather
-than photographed.
+Flagbound puts **hard-edged square figures** on a **soft, stylised battlefield** —
+rolling green hills, tile-roofed buildings, a pond and a bridge, all built from
+rounded cells under a bright sky. The contrast is deliberate: nothing else on
+screen has a sharp edge, so a player reads as a player at any distance.
+Cel-shaded throughout — hard shadow bands, ink silhouettes, rim light.
 
 Underneath, the world is simulated as a **grid of half-metre cells**, and that is
 the load-bearing decision: it is what lets the battlefield genuinely come apart

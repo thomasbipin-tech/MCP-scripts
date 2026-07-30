@@ -5,6 +5,14 @@ production. Grouped by how badly they block work.
 
 ## Resolved since v0.1
 
+### ~~Which route for anime characters?~~ — withdrawn
+
+The anime character direction was set aside; figures are now simple squares
+([10](10-art-direction-and-cinematics.md#directions-explored-and-set-aside)). If
+it is ever revisited, the finding stands: procedural primitives cannot produce it,
+authored 2D art on billboards can, and the cost of that route is that an
+opponent's facing becomes unreadable.
+
 ### ~~Is the no-loading-screen transition achievable?~~ — largely resolved
 
 This was the docket's existential risk: two full world swaps mid-match with no
@@ -14,7 +22,7 @@ loading screen.
 between — there is one continuous vertical block world, and the transitions are
 block operations within it
 ([11](11-technical-architecture.md#the-voxel-data-model)). What remains is a
-*performance* question, not a feasibility one, and it is tracked as questions 10 and 11 below.
+*performance* question, not a feasibility one, and it is tracked as questions 9 and 10 below.
 
 ## Blocking — needed before phase 1 of the build
 
@@ -59,22 +67,7 @@ is whether to extend existing voxel middleware or build the layer in-house
 
 ## High priority — needed before the systems they touch
 
-### 4. Which route for anime characters — 3D models or 2D art?
-
-[10](10-art-direction-and-cinematics.md#two-ways-to-ship-anime-characters) sets
-out both. 3D cel-shaded rigged models are the genre norm and keep facing and
-camera freedom intact; authored 2D art on billboards gives truer anime line
-quality at a fraction of the cost, but limits angles and makes an opponent's
-facing unreadable without an explicit cue.
-
-- **The prototype uses 2D billboards**, because it is the only route that produces
-  genuinely anime figures without an art team.
-- **Resolve by:** deciding whether competitive facing-readability is negotiable.
-  If it is not, Route A is required and should be budgeted early — it drives
-  hiring.
-- **Owner:** art director plus whoever owns the budget.
-
-### 5. Legal and child-safety framework
+### 4. Legal and child-safety framework
 
 The 10+ audience triggers COPPA, GDPR-K and equivalent regimes: age
 verification, parental consent, data retention for moderation logs, and rules on
@@ -83,7 +76,7 @@ proposes sensible defaults but explicitly does not attempt the legal work.
 
 - **Owner:** specialist legal counsel. **Must be settled before any beta.**
 
-### 6. Do flags relocate in Act III, and where?
+### 5. Do flags relocate in Act III, and where?
 
 The brief says flags "may move to new locations."
 [02](02-match-flow-and-world-phases.md) proposes symmetric relocation to each
@@ -94,7 +87,7 @@ team's sky tower, announced to both teams.
 - **Resolve by:** playtesting Act III. The risk of the proposal is that it
   invalidates a defensive position a team spent five minutes earning.
 
-### 7. Is there a revive/downed state?
+### 6. Is there a revive/downed state?
 
 [04](04-teamwork-scoring-and-strategies.md) scores revives conditionally. A
 downed state would strongly reinforce the teamwork pillar but adds significant
@@ -102,7 +95,7 @@ combat complexity and lengthens fights.
 
 - **Resolve by:** prototyping in phase 3.
 
-### 8. F.C.S. — generative or fully authored?
+### 7. F.C.S. — generative or fully authored?
 
 Authored is safe, fast, testable and cheap. Generative answers the brief's
 "players can ask questions" requirement more flexibly but adds latency, cost,
@@ -113,7 +106,7 @@ earned.
 - **Resolve by:** prototyping the question-answering path and measuring whether
   players actually ask open-ended questions or converge on a handful of intents.
 
-### 9. Are unlockable abilities worth the balance risk?
+### 8. Are unlockable abilities worth the balance risk?
 
 [09](09-progression-and-rewards.md) resolves the brief's "new abilities" as
 strict sidegrades. That is defensible but expensive — every new ability needs
@@ -123,7 +116,7 @@ full balance work against the starter kit forever.
   free. Simpler, safer, and arguably a better fit for the fairness pillar.
 - **Owner:** design lead.
 
-### 10. What is the debris budget on minimum spec?
+### 9. What is the debris budget on minimum spec?
 
 The collapse's impact scales with how many blocks visibly fall, and tens of
 thousands of simulated cubes will not hold frame rate on low-end hardware
@@ -134,7 +127,7 @@ thousands of simulated cubes will not hold frame rate on low-end hardware
   a block count.** A collapse that only impresses on expensive hardware defeats
   the point of choosing a cheap-to-render style.
 
-### 11. Does seeded client-side debris look identical enough?
+### 10. Does seeded client-side debris look identical enough?
 
 The netcode plan replicates a region diff and lets each client simulate its own
 debris from a shared seed
@@ -148,19 +141,19 @@ shared-moment quality the brief is asking for.
 
 ## Medium priority
 
-### 12. Platforms
+### 11. Platforms
 
 Not specified in the brief. PC, console, mobile? Cross-play? This affects
 control scheme, performance budget and the F.C.S. voice input design (push-to-
 talk assumes a mic that mobile players may not want to use).
 
-### 13. Are the four classes enough?
+### 12. Are the four classes enough?
 
 Four covers the strategy space in [04](04-teamwork-scoring-and-strategies.md)
 cleanly. A fifth introduced later is a good live-ops beat, but only if the
 counterplay matrix in [03](03-combat-and-classes.md) survives it.
 
-### 14. Map variety
+### 13. Map variety
 
 The brief describes one three-act sequence. Do all matches run the same three
 worlds? Same worlds with varied layouts? Multiple act sequences that shuffle?
@@ -169,14 +162,14 @@ worlds? Same worlds with varied layouts? Multiple act sequences that shuffle?
   entirely by player action, not by map variation. That may be enough for
   launch; it is unlikely to be enough for year two.
 
-### 15. Ranked / competitive mode
+### 14. Ranked / competitive mode
 
 Not mentioned in the brief. Given the strategy focus and the 15-minute format,
 there is an obvious competitive audience — but ranked play sharpens every
 balance flaw and demands stricter matchmaking than the "under 30 seconds to a
 match" priority in [07](07-multiplayer-and-servers.md) allows.
 
-### 16. Spectating and replays
+### 15. Spectating and replays
 
 [10](10-art-direction-and-cinematics.md) proposes automatic highlight capture.
 Full spectating and replay would extend that, and would help the shareability

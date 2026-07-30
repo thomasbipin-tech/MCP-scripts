@@ -15,7 +15,7 @@
 | **Match length** | ~15 minutes |
 | **Players** | Real players, backfilled by intelligent AI bots |
 | **Target audience** | Ages 10+ |
-| **Art style** | Cel-shaded anime characters in a vivid stylised world that comes apart and rebuilds |
+| **Art style** | Cel-shaded — square figures on a soft stylised battlefield that comes apart and rebuilds |
 | **Main goal** | Steal the enemy flag and return it to your base while the battlefield transforms underneath you |
 
 ## The one-line pitch
@@ -26,8 +26,10 @@ so no strategy survives the whole match.
 
 ## Core features
 
-- **Cel-shaded anime look** — hard shadow bands, ink silhouettes, hot rim light;
-  the world stays grid-simulated so it genuinely comes apart and re-stacks
+- **Cel-shaded look** — hard shadow bands, ink silhouettes, rim light; square
+  figures against a rounded world so players separate from terrain at a glance
+- **Reboot pads** in opposite corners — dying costs you position, not just seconds
+- **Disintegration on defeat** — no bodies, and it reads from across the map
 - Dynamic transforming world (surface → underground → sky), three acts per match
 - Skill-based action combat: attack, block, dodge, sprint, jump
 - **Skills worth pressing** — dash, glide, grapple, ground slam, barriers, stealth,

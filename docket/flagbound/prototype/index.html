@@ -97,11 +97,117 @@
   #legend b{color:var(--parchment);font-weight:600}
   @media (max-width:720px){#legend{display:none}}
 
-  /* ---- overlays ---- */
-  .veil{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;padding:24px;
-    background:radial-gradient(ellipse 120% 90% at 50% 12%,#4a2578 0%,#1d0f38 46%,#0b0718 100%);
-    z-index:20}
+  /* ================= start page ================= */
+  .veil{position:fixed;inset:0;z-index:20;overflow-y:auto;
+    background:
+      radial-gradient(120% 70% at 78% 12%, rgba(38,84,150,.55) 0%, rgba(0,0,0,0) 60%),
+      radial-gradient(100% 60% at 20% 92%, rgba(120,48,38,.55) 0%, rgba(0,0,0,0) 62%),
+      linear-gradient(180deg,#0a1220 0%,#0b1526 42%,#170f1c 78%,#1a1013 100%)}
   .veil.hidden{display:none}
+  .startPage{max-width:1120px;margin:0 auto;padding:26px 24px 60px;
+    display:flex;flex-direction:column;gap:26px}
+
+  .fbHead{display:flex;align-items:center;justify-content:space-between;gap:16px}
+  .brand{display:flex;align-items:center;gap:13px}
+  .mark{display:grid;place-items:center;width:38px;height:42px;font-weight:800;font-size:19px;
+    color:#eaf6ff;background:linear-gradient(180deg,#3aa6e8,#1e63b8);
+    clip-path:polygon(50% 0,100% 25%,100% 75%,50% 100%,0 75%,0 25%)}
+  .wordmark{font-size:26px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:#f2f7ff}
+  .live{display:flex;align-items:center;gap:11px;font-family:var(--mono);font-size:11px;
+    letter-spacing:.22em;text-transform:uppercase;color:#9fb6d4}
+  .live .dot{width:9px;height:9px;border-radius:50%;background:#ff4d5e;box-shadow:0 0 10px #ff4d5e;
+    animation:blip 1.6s ease-in-out infinite}
+  @keyframes blip{50%{opacity:.35}}
+  .clockBig{font-size:22px;font-weight:800;letter-spacing:.04em;color:#f2f7ff;
+    font-variant-numeric:tabular-nums}
+
+  .hero{padding:26px 0 6px}
+  .eyebrow{margin:0 0 14px;font-family:var(--mono);font-size:12px;letter-spacing:.34em;
+    text-transform:uppercase;color:#5fc8f5}
+  .hero h1{margin:0 0 22px;font-size:clamp(40px,8.2vw,86px);line-height:.95;font-weight:800;
+    letter-spacing:-.015em;text-transform:uppercase;color:#f4f8ff;text-wrap:balance}
+  .hero h1 .gold{color:#ffc45c}
+  .lede{margin:0 0 30px;max-width:46ch;font-size:clamp(15px,2.1vw,19px);line-height:1.55;color:#c6d5ea}
+  .heroActions{display:flex;flex-wrap:wrap;align-items:center;gap:22px}
+  .cta{font-family:var(--mono);font-size:14px;letter-spacing:.16em;text-transform:uppercase;
+    font-weight:700;color:#08192c;background:linear-gradient(90deg,#63d8ff,#2f7fe0);
+    border:0;border-radius:0;padding:19px 34px;cursor:pointer;
+    box-shadow:0 10px 34px rgba(45,140,225,.42);transition:filter .15s ease,transform .15s ease}
+  .cta:hover{filter:brightness(1.08);transform:translateY(-1px)}
+  .ghost{background:none;border:0;color:#dce8f8;cursor:pointer;padding:8px 2px;
+    font-family:var(--mono);font-size:13px;letter-spacing:.14em;text-transform:uppercase}
+  .ghost:hover{color:#7fe0ff}
+  button:focus-visible{outline:2px solid #7fe0ff;outline-offset:3px}
+
+  .panel{border:1px solid rgba(120,160,210,.22);background:rgba(10,20,36,.5);
+    border-radius:4px;padding:20px 22px}
+  .label{margin:0;font-family:var(--mono);font-size:11px;letter-spacing:.22em;
+    text-transform:uppercase;color:#8fa6c4}
+  .label.cyan{color:#5fc8f5}
+  .label.right{text-align:right}
+  .mt{margin-top:20px}
+
+  .phaseTop{display:flex;align-items:center;justify-content:space-between;gap:14px}
+  .phaseTop .score{font-size:26px;font-weight:800;color:#f2f7ff;font-variant-numeric:tabular-nums;
+    letter-spacing:.08em}
+  .phaseBars{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:16px 0 14px}
+  .phaseBars i{height:3px;background:rgba(120,160,210,.25);display:block}
+  .phaseBars i.on{background:linear-gradient(90deg,#63d8ff,#2f7fe0)}
+  .phaseList{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:0;padding:0;list-style:none}
+  .phaseList li{font-family:var(--mono);font-size:13px;letter-spacing:.14em;text-transform:uppercase;
+    color:#7f93b0;padding:11px 14px}
+  .phaseList li b{color:#5fc8f5;margin-right:9px}
+  .phaseList li.on{color:#eaf3ff;background:rgba(38,84,150,.28);border-left:3px solid #63d8ff}
+
+  .fcsHead{display:flex;align-items:center;gap:15px}
+  .orb{width:44px;height:44px;border-radius:50%;flex-shrink:0;
+    background:radial-gradient(circle at 34% 30%,#bfeaff,#3aa6e8 45%,#12447e 100%);
+    box-shadow:0 0 24px rgba(70,180,255,.45)}
+  .fcsTitle{margin:4px 0 0;font-size:17px;font-weight:700;letter-spacing:.06em;
+    text-transform:uppercase;color:#eaf3ff}
+  .fcsHead .bars{margin-left:auto;display:flex;gap:7px}
+  .fcsHead .bars i{width:13px;height:13px;background:#4fc3f7;display:block;
+    animation:eq 1.3s ease-in-out infinite}
+  .fcsHead .bars i:nth-child(2){animation-delay:.18s}
+  .fcsHead .bars i:nth-child(3){animation-delay:.36s}
+  @keyframes eq{50%{opacity:.3;transform:translateY(-3px)}}
+  .fcsQuote{margin:20px 0 20px;font-size:16.5px;line-height:1.6;color:#dbe7f7}
+  .fcsBtns{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px}
+  .fcsBtns button{font-family:var(--mono);font-size:12px;letter-spacing:.16em;text-transform:uppercase;
+    color:#cfe0f5;background:rgba(16,30,50,.7);border:1px solid rgba(120,160,210,.3);
+    border-radius:0;padding:16px 10px;cursor:pointer}
+  .fcsBtns button:hover{border-color:#63d8ff;color:#fff}
+
+  .classes{display:flex;flex-direction:column;gap:16px}
+  .classGrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}
+  .classCard{display:flex;flex-direction:column;align-items:center;gap:7px;padding:26px 16px 20px;
+    background:linear-gradient(180deg,rgba(40,28,34,.75),rgba(18,14,20,.8));
+    border:1px solid rgba(120,160,210,.2);border-radius:3px;cursor:pointer;color:#dfe9f7;
+    transition:border-color .15s ease,background .15s ease}
+  .classCard .ico{font-size:24px;line-height:1}
+  .classCard b{font-family:var(--mono);font-size:14px;letter-spacing:.16em;text-transform:uppercase}
+  .classCard em{font-family:var(--mono);font-style:normal;font-size:10.5px;letter-spacing:.2em;
+    text-transform:uppercase;color:#8fa6c4}
+  .classCard .perk{font-size:11.5px;line-height:1.45;color:#93a6c0;max-width:26ch;text-align:center;margin-top:5px}
+  .classCard:hover{border-color:rgba(120,200,245,.5)}
+  .classCard.sel{border-color:#63d8ff;background:linear-gradient(180deg,rgba(70,52,58,.8),rgba(26,22,30,.85))}
+
+  .loadout .weapon{margin:9px 0 3px;font-size:30px;font-weight:800;color:#f2f7ff}
+  .loadout .weaponSub{margin:0;font-family:var(--mono);font-size:12px;letter-spacing:.1em;color:#7fb6d8}
+  .tag{font-size:9.5px;letter-spacing:.14em;color:#0a1220;background:#8fa6c4;padding:3px 7px;
+    border-radius:2px;margin-left:9px}
+  .chips{display:flex;flex-wrap:wrap;gap:11px;margin-top:14px}
+  .chips span{font-family:var(--mono);font-size:12px;letter-spacing:.13em;text-transform:uppercase;
+    color:#cfe0f5;border:1px solid rgba(120,160,210,.32);padding:11px 15px;opacity:.55}
+  .chips .rare{border-color:rgba(190,120,235,.42);color:#e5cdf7}
+  .loadout .note{margin:16px 0 0;font-family:var(--mono);font-size:11px;line-height:1.7;color:#6f819b}
+
+  @media (prefers-reduced-motion:reduce){
+    .live .dot,.fcsHead .bars i{animation:none}
+    .cta:hover{transform:none}
+  }
+
+  /* ---- overlays ---- */
   .card{width:100%;max-width:620px;max-height:100%;overflow-y:auto}
   .eyebrow{font-family:var(--mono);font-size:10px;letter-spacing:.3em;text-transform:uppercase;
     color:var(--gold);margin-bottom:14px}
@@ -117,12 +223,12 @@
   .keys div{display:flex;justify-content:space-between;gap:10px;
     border-bottom:1px dotted rgba(169,156,196,.26);padding-bottom:5px}
   .keys b{color:var(--parchment);font-weight:600}
-  button{font-family:var(--mono);font-size:13px;letter-spacing:.2em;text-transform:uppercase;
-    font-weight:700;color:#2a1550;background:linear-gradient(180deg,#ffe6a8,#ffc95f);
-    border:0;border-radius:999px;padding:14px 32px;cursor:pointer;transition:filter .15s ease}
-  button:hover{filter:brightness(1.08)}
-  button:disabled{filter:saturate(.25);cursor:progress}
-  button:focus-visible{outline:2px solid var(--parchment);outline-offset:3px}
+  #endVeil .card{display:flex;flex-direction:column;align-items:flex-start;
+    max-width:620px;margin:auto;padding:24px}
+  #againBtn{font-family:var(--mono);font-size:13px;letter-spacing:.16em;text-transform:uppercase;
+    font-weight:700;color:#08192c;background:linear-gradient(90deg,#63d8ff,#2f7fe0);
+    border:0;padding:16px 32px;cursor:pointer}
+  #againBtn:hover{filter:brightness(1.08)}
   .note{font-family:var(--mono);font-size:10.5px;line-height:1.7;color:#8478a0;margin:22px 0 0;max-width:62ch}
   .note b{color:var(--stone);font-weight:600}
   #resultLine{font-family:var(--mono);font-size:13px;letter-spacing:.1em;color:var(--stone);
@@ -139,7 +245,7 @@
       <span class="score" id="scoreA">0</span>
       <span class="flagState" id="flagA">flag secure</span>
     </div>
-    <div id="clockCol"><span id="clock">3:00</span><span id="phase">surface</span></div>
+    <div id="clockCol"><span id="clock">3:00</span><span id="phase">citadel</span></div>
     <div class="team crimson b">
       <span class="teamName">Crimson</span>
       <span class="score" id="scoreB">0</span>
@@ -164,30 +270,88 @@
 </div>
 
 <div class="veil" id="startVeil">
-  <div class="card">
-    <div class="eyebrow">Playable prototype · Act I → Collapse</div>
-    <h1>Flagbound</h1>
-    <p class="sub">The Shifting Battlefield</p>
-    <div class="brief">
-      <p>Steal the <strong style="color:var(--crimson)">red flag</strong> from the far base and carry it back to your own. Your flag must be home for a capture to count.</p>
-      <p><strong>Finding it:</strong> a tall pink beam marks the red flag from anywhere — just walk toward it. The tag on screen always shows the direction and distance. You are the round one with the gold gem spinning overhead.</p>
-      <p><strong>Skills:</strong> <b>Q</b> dashes you forward, <b>E</b> fires a grapple at whatever you are looking at and reels you in, and <b>R</b> in mid-air slams down with a shockwave that flattens everyone nearby. Hold <b>Space</b> while falling to glide — worth remembering when the ground disappears.</p>
-      <p>Sixty seconds in, the battlefield breaks apart. Everything you are standing on comes loose and falls, dropping you into the glowing deep below. Your flag comes with you if you are carrying it.</p>
+ <div class="startPage">
+
+  <header class="fbHead">
+    <div class="brand"><span class="mark">F</span><span class="wordmark">Flagbound</span></div>
+    <div class="live"><span class="dot"></span>Live match<span class="clockBig" id="lobbyClock">03:00</span></div>
+  </header>
+
+  <section class="hero">
+    <p class="eyebrow">Operation // Shifting Front</p>
+    <h1>The battlefield<br><span class="gold">is alive.</span></h1>
+    <p class="lede">Capture the flag across a world that fractures, descends, and rises into the sky.</p>
+    <div class="heroActions">
+      <button id="playBtn" type="button" class="cta">Enter the battle <span aria-hidden="true">→</span></button>
+      <button id="intelBtn" type="button" class="ghost"><span aria-hidden="true">▶</span> F.C.S. intel</button>
     </div>
-    <div class="keys">
-      <div><span>Move</span><b>W A S D</b></div>
-      <div><span>Jump</span><b>Space</b></div>
-      <div><span>Look</span><b>Mouse / ← →</b></div>
-      <div><span>Attack</span><b>Click / F</b></div>
-      <div><span>Sprint</span><b>Shift</b></div>
-      <div><span>Dash</span><b>Q</b></div>
-      <div><span>Grapple</span><b>E</b></div>
-      <div><span>Ground slam</span><b>R</b></div>
-      <div><span>Glide</span><b>Hold Space falling</b></div>
+  </section>
+
+  <section class="panel phases">
+    <div class="phaseTop">
+      <span class="label">Capture the flag</span>
+      <span class="score">0 — 0</span>
+      <span class="label right">Sector 01</span>
     </div>
-    <button id="playBtn" type="button">Deploy</button>
-    <p class="note"><b>Scope.</b> This demonstrates one idea from the design docket — a battlefield that transforms mid-match — with 5v5 bots. Not in this build: online multiplayer, the four character classes, the sky-tower act, and voice F.C.S.</p>
-  </div>
+    <div class="phaseBars"><i class="on"></i><i></i><i></i></div>
+    <ol class="phaseList">
+      <li class="on"><b>01</b> Citadel</li>
+      <li><b>02</b> Underdeep</li>
+      <li><b>03</b> Skyforge</li>
+    </ol>
+  </section>
+
+  <section class="panel fcsPanel">
+    <div class="fcsHead">
+      <span class="orb"></span>
+      <div>
+        <p class="label cyan">F.C.S. online</p>
+        <p class="fcsTitle">Flagbound Command System</p>
+      </div>
+      <div class="bars"><i></i><i></i><i></i></div>
+    </div>
+    <p class="fcsQuote" id="fcsQuote">“Battlefield stable. Your flag is secure. A swift assault through the west bridge is recommended.”</p>
+    <div class="fcsBtns">
+      <button type="button" data-ask="flag">Flag status</button>
+      <button type="button" data-ask="strategy">Strategy</button>
+      <button type="button" data-ask="team">Team help</button>
+    </div>
+  </section>
+
+  <section class="classes">
+    <p class="label">Choose your combat path</p>
+    <div class="classGrid" id="classGrid">
+      <button type="button" class="classCard sel" data-cls="guardian">
+        <span class="ico" style="color:#ffc95f">✦</span><b>Guardian</b><em>Defend</em>
+        <span class="perk">Tougher, slower, shorter slam cooldown</span></button>
+      <button type="button" class="classCard" data-cls="swift">
+        <span class="ico" style="color:#7fe4ff">↗</span><b>Swiftblade</b><em>Capture</em>
+        <span class="perk">Fastest, quicker dash, carries the flag better</span></button>
+      <button type="button" class="classCard" data-cls="element">
+        <span class="ico" style="color:#d98cff">◈</span><b>Element</b><em>Control</em>
+        <span class="perk">Balanced, quicker grapple</span></button>
+      <button type="button" class="classCard" data-cls="shadow">
+        <span class="ico" style="color:#9fb0d8">◑</span><b>Shadow</b><em>Flank</em>
+        <span class="perk">Quick, long invulnerability on dash</span></button>
+    </div>
+  </section>
+
+  <section class="panel loadout">
+    <p class="label cyan">Active loadout</p>
+    <p class="weapon">Scout Knife</p>
+    <p class="weaponSub">Quick light strike — every player starts equal</p>
+    <p class="label cyan mt">Field pickups <span class="tag">not in this build</span></p>
+    <div class="chips">
+      <span>Hammer</span><span>Daggers</span><span>Staff</span><span>Bow</span>
+      <span class="rare">Comet Chain</span><span class="rare">Rift Gauntlet</span>
+      <span class="rare">Nimbus Cannon</span><span class="rare">Prism Boomerang</span>
+      <span class="rare">Timewinder</span><span class="rare">Dragon Kite</span>
+    </div>
+    <p class="note">This build ships the Scout Knife only. Pickups are design intent —
+      see the docket for the full ability roster.</p>
+  </section>
+
+ </div>
 </div>
 
 <div class="veil hidden" id="endVeil">
@@ -263,6 +427,9 @@ const hUnder = (x,z)=> 0.7*(1.4*Math.cos(x*0.09) + 1.1*Math.sin(z*0.12));
 let orbs=[];   // {x,y,z,r,t,phase}
 
 const BASE = { A:{x:29,z:10}, B:{x:29,z:47} };
+/* Reboot pads sit in diagonally opposite corners. Eliminated players re-form
+   here rather than at their flag, so returning is a journey. */
+const REBOOT = { A:{x:8,z:8}, B:{x:SX-9,z:SZ-9} };
 const baseTopY = k => 2;
 
 /* -------------------------------- arena ---------------------------------- */
@@ -295,6 +462,21 @@ function rockCluster(cx,cz,rad){
   for(let dx=-rad;dx<=rad;dx++) for(let dy=0;dy<=rad;dy++) for(let dz=-rad;dz<=rad;dz++){
     if(Math.hypot(dx,dy*1.5,dz)<=rad*(0.75+rnd()*0.3)) setB(cx+dx,g+dy,cz+dz,T.ROCK);
   }
+}
+
+function rebootPad(key, ph){
+  const b=REBOOT[key], mat = key==='A'?T.TEAMA:T.TEAMB;
+  const gy = ph==='surface' ? groundY(b.x,b.z) : UNDER_Y;
+  for(let dx=-4;dx<=4;dx++) for(let dz=-4;dz<=4;dz++){
+    for(let y=gy-2;y<=gy;y++) setB(b.x+dx,y,b.z+dz,
+      (Math.abs(dx)===4||Math.abs(dz)===4) ? mat : T.PLANK);
+  }
+  for(const [sx,sz] of [[-4,-4],[4,-4],[-4,4],[4,4]])
+    for(let y=gy+1;y<=gy+5;y++) setB(b.x+sx,y,b.z+sz, y===gy+5?T.GOLD:T.COBBLE);
+  for(let y=gy+1;y<=gy+3;y++) setB(b.x,y,b.z,T.GLOW);      // the glowing core
+  // a beam so the pad is findable from anywhere
+  for(let i=0;i<16;i++)
+    orbs.push({x:b.x+0.5, y:gy+7+i*2.5, z:b.z+0.5, r:0.42, t:mat, phase:ph});
 }
 
 function buildSurface(){
@@ -362,6 +544,7 @@ function buildSurface(){
                r:14+rnd()*13, t:rnd()<0.6?T.GRASS2:T.ROCK, phase:'surface'});
   }
   buildBase('A','surface'); buildBase('B','surface');
+  rebootPad('A','surface'); rebootPad('B','surface');
 }
 
 function buildBase(key,ph){
@@ -412,6 +595,7 @@ function buildUnderground(){
     for(let k=0;k<len;k++) setB(x,-18-k,z,T.CAVE);
   }
   buildBase('A','under'); buildBase('B','under');
+  rebootPad('A','under'); rebootPad('B','under');
 }
 
 /* ------------------------------ GL program ------------------------------- */
@@ -492,188 +676,6 @@ const U={}; for(const k of ['vp','cam','light','fill','rim','fog','fogRange','am
    Two views per character (front / back). Cel style: flat fills, one shadow
    tone, crisp ink line.
    =========================================================================== */
-const SPRITE_W = 256, SPRITE_H = 384;
-
-function animeSVG(P, view){
-  const L = P.line, S = P.skin, Sh = P.skinShade;
-  const H = P.hair, Hs = P.hairShade, Hl = P.hairLight;
-  const O = P.outfit, Os = P.outfitShade, A = P.accent, As = P.accentShade;
-  const common = `stroke="${L}" stroke-width="3.2" stroke-linejoin="round" stroke-linecap="round"`;
-
-  /* ---- shared body: coat, belt, separated arms, long legs, boots ---- */
-  const body = `
-    <path d="M114 214 L109 316 L107 344 L127 344 L128 316 L127 214 Z" fill="${Os}" ${common}/>
-    <path d="M130 214 L129 316 L130 344 L150 344 L147 316 L142 214 Z" fill="${Os}" ${common}/>
-    <path d="M105 338 L103 368 Q103 376 112 376 L128 376 Q133 376 131 367 L130 338 Z" fill="${L}" ${common}/>
-    <path d="M130 338 L129 367 Q127 376 132 376 L148 376 Q157 376 155 368 L153 338 Z" fill="${L}" ${common}/>
-    <path d="M87 132 C 80 148 77 178 79 204 L 93 206 L 96 138 Z" fill="${O}" ${common}/>
-    <path d="M169 132 C 176 148 179 178 177 204 L 163 206 L 160 138 Z" fill="${O}" ${common}/>
-    <path d="M78 200 L93 202 L91 218 L76 216 Z" fill="${L}" ${common}/>
-    <path d="M178 200 L163 202 L165 218 L180 216 Z" fill="${L}" ${common}/>
-    <path d="M128 118 C 106 118 95 128 93 142 L 89 166 L 84 220
-             C 100 227 114 230 128 230 C 142 230 156 227 172 220
-             L 167 166 L 163 142 C 161 128 150 118 128 118 Z" fill="${O}" ${common}/>
-    <path d="M128 118 C 140 118 152 122 159 130 L 166 168 L 170 218
-             C 158 224 143 227 128 228 Z" fill="${Os}" stroke="none"/>
-    <path d="M97 164 L159 164 L161 176 L95 176 Z" fill="${L}" ${common}/>
-    <rect x="120" y="163" width="16" height="14" rx="3" fill="${A}" ${common}/>`;
-
-  const scarf = `
-    <path d="M106 116 C 117 125 139 125 150 116 C 154 127 150 136 128 138
-             C 106 136 102 127 106 116 Z" fill="${A}" ${common}/>`;
-  const scarfTail = `
-    <path d="M148 122 C 173 134 192 161 200 192 C 185 187 173 181 165 172
-             C 161 155 155 138 148 122 Z" fill="${As}" ${common}/>`;
-
-  if(view === 'back'){
-    return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 384" width="256" height="384">
-      <path d="M128 30 C 84 30 68 66 71 104 C 74 140 64 164 58 186
-               C 82 172 100 164 116 161 L 140 161 C 156 164 174 172 198 186
-               C 192 164 182 140 185 104 C 188 66 172 30 128 30 Z" fill="${H}" ${common}/>
-      <path d="M112 44 C 100 62 98 92 102 122 C 110 118 118 116 128 116 L 128 40 Z" fill="${Hl}" stroke="none" opacity="0.55"/>
-      ${scarfTail}${body}${scarf}
-      <path d="M104 60 C 92 84 92 116 100 140 C 112 132 120 129 128 129
-               C 136 129 144 132 156 140 C 164 116 164 84 152 60
-               C 144 48 112 48 104 60 Z" fill="${H}" ${common}/>
-    </svg>`;
-  }
-
-  /* ---- front view ---- */
-  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 384" width="256" height="384">
-    <defs>
-      <linearGradient id="ir" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0" stop-color="${P.eyeDeep}"/><stop offset="1" stop-color="${P.eye}"/>
-      </linearGradient>
-    </defs>
-    <path d="M128 30 C 84 30 68 66 71 104 C 74 140 64 164 58 186
-             C 82 172 100 164 116 161 L 140 161 C 156 164 174 172 198 186
-             C 192 164 182 140 185 104 C 188 66 172 30 128 30 Z" fill="${Hs}" ${common}/>
-    ${scarfTail}${body}
-    <path d="M121 104 L135 104 L135 122 L121 122 Z" fill="${Sh}" ${common}/>
-    <path d="M128 40 C 108 40 99 57 99 76 C 99 92 104 104 112 111
-             C 117 115 123 117 128 117 C 133 117 139 115 144 111
-             C 152 104 157 92 157 76 C 157 57 148 40 128 40 Z" fill="${S}" ${common}/>
-    <path d="M144 111 C 152 104 157 92 157 76 C 157 61 150 47 138 42
-             C 146 54 149 67 147 82 C 145 97 144 106 144 111 Z" fill="${Sh}" stroke="none"/>
-    <g stroke="none">
-      <ellipse cx="115" cy="82" rx="9.5" ry="11.5" fill="#fff"/>
-      <ellipse cx="141" cy="82" rx="9.5" ry="11.5" fill="#fff"/>
-      <ellipse cx="115.5" cy="83" rx="7" ry="9.8" fill="url(#ir)"/>
-      <ellipse cx="141.5" cy="83" rx="7" ry="9.8" fill="url(#ir)"/>
-      <ellipse cx="115.5" cy="86" rx="3.5" ry="5" fill="#161225"/>
-      <ellipse cx="141.5" cy="86" rx="3.5" ry="5" fill="#161225"/>
-      <circle cx="112.5" cy="77.5" r="2.9" fill="#fff"/>
-      <circle cx="138.5" cy="77.5" r="2.9" fill="#fff"/>
-      <circle cx="118" cy="89" r="1.4" fill="#fff" opacity=".8"/>
-      <circle cx="144" cy="89" r="1.4" fill="#fff" opacity=".8"/>
-    </g>
-    <path d="M104 71 C 109 65 121 65 125 69" stroke="${L}" stroke-width="4.6" fill="none" stroke-linecap="round"/>
-    <path d="M131 69 C 135 65 147 65 152 71" stroke="${L}" stroke-width="4.6" fill="none" stroke-linecap="round"/>
-    <path d="M105 62 C 110 58 118 58 123 60" stroke="${L}" stroke-width="2.6" fill="none" stroke-linecap="round" opacity=".8"/>
-    <path d="M133 60 C 138 58 146 58 151 62" stroke="${L}" stroke-width="2.6" fill="none" stroke-linecap="round" opacity=".8"/>
-    <path d="M126 93 L130 93" stroke="${L}" stroke-width="2.2" stroke-linecap="round"/>
-    <path d="M123 101 C 126 105 130 105 133 101" stroke="${L}" stroke-width="2.6" fill="none" stroke-linecap="round"/>
-    <path d="M128 36 C 98 36 84 58 86 82 C 88 96 92 104 96 108
-             C 96 92 100 78 108 70 C 116 78 128 80 140 76
-             C 150 72 158 64 160 56 C 168 66 170 84 168 104
-             C 176 96 180 76 176 60 C 170 42 152 36 128 36 Z" fill="${H}" ${common}/>
-    <path d="M156 40 C 176 46 190 62 196 84 C 186 78 178 74 170 72
-             C 168 60 163 49 156 40 Z" fill="${H}" ${common}/>
-    <path d="M98 40 C 78 48 66 66 62 88 C 72 80 80 76 88 74
-             C 89 61 93 49 98 40 Z" fill="${H}" ${common}/>
-    <path d="M120 40 C 108 52 102 68 102 84 C 108 74 116 66 126 62 Z" fill="${Hl}" stroke="none" opacity=".6"/>
-    ${scarf}
-  </svg>`;
-}
-
-/* ---- character palettes: five per side, cool for Azure, warm for Crimson ---- */
-const CHARS = {
-  A: [
-    {hair:'#8fdcff', hairShade:'#4aa8d8', hairLight:'#e2f6ff', eye:'#3fc4ff', eyeDeep:'#123a6b'},
-    {hair:'#c9b6ff', hairShade:'#8f79d8', hairLight:'#efe8ff', eye:'#7f9dff', eyeDeep:'#1d2a6b'},
-    {hair:'#a8ffe8', hairShade:'#5fc9b0', hairLight:'#e6fff8', eye:'#2fd8c0', eyeDeep:'#0f4a44'},
-    {hair:'#f2f7ff', hairShade:'#b9c6db', hairLight:'#ffffff', eye:'#57b6ff', eyeDeep:'#183a63'},
-    {hair:'#6fb0ff', hairShade:'#3a72cc', hairLight:'#d4e8ff', eye:'#9be0ff', eyeDeep:'#10305e'},
-  ],
-  B: [
-    {hair:'#ffa8c6', hairShade:'#d96a94', hairLight:'#ffe2ee', eye:'#ff6f8a', eyeDeep:'#6b1226'},
-    {hair:'#ffcf8a', hairShade:'#d99a45', hairLight:'#fff2d8', eye:'#ffa14f', eyeDeep:'#6b3410'},
-    {hair:'#ff9a7a', hairShade:'#d46247', hairLight:'#ffe0d4', eye:'#ff7a5c', eyeDeep:'#6b2416'},
-    {hair:'#f5e6c8', hairShade:'#c4ae86', hairLight:'#fffaf0', eye:'#ff8f6f', eyeDeep:'#5e2418'},
-    {hair:'#e07ab0', hairShade:'#a84a80', hairLight:'#ffd8ec', eye:'#ff5f9c', eyeDeep:'#5e1030'},
-  ]
-};
-const TEAM_FIT = { A:{outfit:'#2f6fd0', outfitShade:'#1f4c96', accent:'#ffd85c', accentShade:'#e8b23a', line:'#241a33'},
-                   B:{outfit:'#d8354a', outfitShade:'#9c2033', accent:'#ffe08a', accentShade:'#e2b455', line:'#2a1420'} };
-const SKIN_SET = [['#ffe0cf','#efbfa8'],['#f0c8a4','#d6a681'],['#c98d63','#a86e49'],['#8d5a3c','#6e422a'],['#ffd6bd','#e8b295']];
-
-/* ---- sprite program: alpha-tested textured billboards, so no depth sorting ---- */
-const SVS = `#version 300 es
-layout(location=0) in vec2 a_p;
-uniform mat4 u_vp; uniform vec3 u_pos, u_right, u_up; uniform vec2 u_size; uniform float u_flip;
-out vec2 v_uv;
-void main(){
-  vec3 w = u_pos + u_right*(a_p.x*u_size.x) + u_up*(a_p.y*u_size.y);
-  float ux = a_p.x + 0.5;
-  v_uv = vec2(u_flip > 0.5 ? 1.0-ux : ux, 0.5 - a_p.y);
-  gl_Position = u_vp * vec4(w,1.0);
-}`;
-const SFS = `#version 300 es
-precision highp float;
-in vec2 v_uv; uniform sampler2D u_tex; uniform float u_dim; uniform vec3 u_flash;
-out vec4 o;
-void main(){
-  vec4 c = texture(u_tex, v_uv);
-  if(c.a < 0.45) discard;
-  o = vec4(c.rgb*u_dim + u_flash, 1.0);
-}`;
-const sprog = gl.createProgram();
-gl.attachShader(sprog, sh(gl.VERTEX_SHADER,SVS)); gl.attachShader(sprog, sh(gl.FRAGMENT_SHADER,SFS));
-gl.linkProgram(sprog);
-if(!gl.getProgramParameter(sprog,gl.LINK_STATUS)) throw new Error(gl.getProgramInfoLog(sprog));
-const SU={}; for(const k of ['vp','pos','right','up','size','flip','tex','dim','flash'])
-  SU[k]=gl.getUniformLocation(sprog,'u_'+k);
-const quadVAO = gl.createVertexArray();
-(function(){
-  gl.bindVertexArray(quadVAO);
-  const vb=gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER,vb);
-  gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-0.5,-0.5, 0.5,-0.5, 0.5,0.5, -0.5,-0.5, 0.5,0.5, -0.5,0.5]),gl.STATIC_DRAW);
-  gl.enableVertexAttribArray(0); gl.vertexAttribPointer(0,2,gl.FLOAT,false,0,0);
-  gl.bindVertexArray(null);
-})();
-
-function svgToTexture(svg){
-  return new Promise((res,rej)=>{
-    const img=new Image();
-    img.onload=()=>{
-      const cv=document.createElement('canvas'); cv.width=SPRITE_W; cv.height=SPRITE_H;
-      cv.getContext('2d').drawImage(img,0,0,SPRITE_W,SPRITE_H);
-      const t=gl.createTexture();
-      gl.bindTexture(gl.TEXTURE_2D,t);
-      gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,gl.RGBA,gl.UNSIGNED_BYTE,cv);
-      gl.generateMipmap(gl.TEXTURE_2D);
-      gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR_MIPMAP_LINEAR);
-      gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.LINEAR);
-      gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,gl.CLAMP_TO_EDGE);
-      gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.CLAMP_TO_EDGE);
-      res(t);
-    };
-    img.onerror=()=>rej(new Error('sprite rasterise failed'));
-    img.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svg);
-  });
-}
-const SPRITES={A:[],B:[]};
-async function buildSprites(){
-  for(const team of ['A','B']){
-    for(let i=0;i<5;i++){
-      const P = Object.assign({}, TEAM_FIT[team], CHARS[team][i],
-                              {skin:SKIN_SET[i][0], skinShade:SKIN_SET[i][1]});
-      SPRITES[team][i] = { front: await svgToTexture(animeSVG(P,'front')),
-                           back:  await svgToTexture(animeSVG(P,'back')) };
-    }
-  }
-}
-
 /* ------------------------------- meshes ---------------------------------- */
 /* Spherified cube: a subdivided cube whose vertices are pulled toward a sphere.
    At blend 0.45 it reads as a soft pebble — no hard Minecraft edges. */
@@ -720,7 +722,8 @@ function uploadMesh(m){
   gl.bufferData(gl.ELEMENT_ARRAY_BUFFER,new Uint16Array(m.idx),gl.STATIC_DRAW);
   return {vb,ib,count:m.idx.length};
 }
-const MESH_RB = uploadMesh(meshRoundedBox(3,0.45));
+const MESH_RB = uploadMesh(meshRoundedBox(3,0.45));   // world: soft rounded cells
+const MESH_CUBE = uploadMesh(meshRoundedBox(1,0.0));  // figures: hard squares
 const MESH_SP = uploadMesh(meshSphere(14,10));
 
 const STRIDE=13;
@@ -759,6 +762,7 @@ function flush(b){
 
 const wRB=makeBatch(MESH_RB,26000), wSP=makeBatch(MESH_SP,300);
 const dRB=makeBatch(MESH_RB,DEBRIS_CAP+600), dSP=makeBatch(MESH_SP,1600);
+const dCB=makeBatch(MESH_CUBE,600);   // figures
 
 function rebuildWorld(){
   wRB.n=0;
@@ -802,21 +806,31 @@ function boxHits(x,y,z){
 let ents=[], flags={}, phase='surface', clock=MATCH_TIME, score={A:0,B:0}, running=false, gameT=0;
 const dead = e => e.respawn>0;
 
-const PAL_A=[[0.24,0.68,1.00],[0.28,0.94,0.84],[0.52,0.52,1.00],[0.16,0.84,0.96],[0.62,0.42,1.00]];
-const PAL_B=[[1.00,0.28,0.36],[1.00,0.56,0.14],[1.00,0.38,0.70],[0.95,0.20,0.28],[1.00,0.74,0.22]];
+/* Outfit colours: distinct within a team, but grounded rather than neon —
+   saturated primaries on a large flat surface read as plastic. */
+const PAL_A=[[0.22,0.42,0.74],[0.26,0.55,0.78],[0.20,0.48,0.58],[0.33,0.43,0.80],[0.24,0.60,0.68]];
+const PAL_B=[[0.72,0.24,0.26],[0.80,0.38,0.20],[0.66,0.21,0.32],[0.84,0.32,0.30],[0.74,0.44,0.24]];
+const TROUSER=[[0.19,0.20,0.26],[0.24,0.24,0.28],[0.17,0.19,0.22],[0.22,0.21,0.29],[0.20,0.22,0.25]];
+const SKIN=[[0.97,0.81,0.67],[0.89,0.70,0.53],[0.75,0.55,0.39],[0.55,0.38,0.26],[0.38,0.27,0.20]];
 /* hair reads as an accent but stays inside the team's temperature */
 const HAIR_A=[[0.94,0.97,1.00],[0.62,0.88,1.00],[0.78,0.72,1.00],[0.50,0.96,0.92],[0.86,0.80,1.00]];
 const HAIR_B=[[1.00,0.86,0.62],[1.00,0.62,0.30],[1.00,0.72,0.82],[0.82,0.24,0.26],[1.00,0.92,0.48]];
 
-function spawnPoint(team){
-  const b=BASE[team], a=rnd()*Math.PI*2, r=3.5+rnd()*2.2;
-  const gy = phase==='surface' ? 1 : UNDER_Y+1;
-  return {x:b.x+Math.cos(a)*r, y:gy+2.0, z:b.z+Math.sin(a)*r};
+function spawnPoint(team, atBase){
+  const a=rnd()*Math.PI*2;
+  if(atBase){
+    const b=BASE[team], r=3.5+rnd()*2.2;
+    const gy = phase==='surface' ? 1 : UNDER_Y+1;
+    return {x:b.x+Math.cos(a)*r, y:gy+2.0, z:b.z+Math.sin(a)*r};
+  }
+  const b=REBOOT[team], r=1.2+rnd()*1.8;
+  const gy = phase==='surface' ? groundY(b.x,b.z) : UNDER_Y;
+  return {x:b.x+Math.cos(a)*r, y:gy+2.2, z:b.z+Math.sin(a)*r};
 }
 function makeEnt(team,isPlayer,i){
-  const s=spawnPoint(team);
+  const s=spawnPoint(team,true);
   return {team,isPlayer,x:s.x,y:s.y,z:s.z,vy:0,yaw:team==='A'?0:Math.PI,
-    col:(team==='A'?PAL_A:PAL_B)[i%5], spr:SPRITES[team][i%5],
+    col:(team==='A'?PAL_A:PAL_B)[i%5], leg:TROUSER[i%5], skin:SKIN[(i*2+(team==='A'?0:1))%5],
     grounded:false,respawn:0,carrying:null,cool:0,stray:0,strayDir:0,swing:0,invuln:1.5,
     bob:0,blink:0,blinkT:1+rnd()*4,
     dash:0,dx:0,dz:0,grap:null,slamming:false,slamQ:0,gliding:false,
@@ -831,6 +845,7 @@ function homeFlag(f){ const b=baseOf(f.team); f.x=b.x; f.y=b.y; f.z=b.z; f.home=
 
 function resetMatch(){
   ents=[makeEnt('A',true,0)];
+  ents[0].cls = CLASSES[chosenClass];
   for(let i=1;i<5;i++) ents.push(makeEnt('A',false,i));
   for(let i=0;i<5;i++) ents.push(makeEnt('B',false,i));
   flags={A:mkFlag('A'),B:mkFlag('B')};
@@ -864,13 +879,25 @@ function moveEnt(e,dx,dz,dt){
 /* ------------------------------- abilities -------------------------------- */
 const CD = {dash:4.0, grap:6.5, slam:9.0};
 
+/* The four paths from the start screen. Small, real differences — the full kits
+   in docket 13 are not implemented, but the choice is not cosmetic either. */
+const CLASSES = {
+  guardian:{name:'Guardian', spd:0.86, dash:1.0, grap:1.0, slam:0.65, iframe:1.0, carry:0.78},
+  swift:   {name:'Swiftblade',spd:1.20, dash:0.65,grap:1.0, slam:1.0,  iframe:1.0, carry:0.92},
+  element: {name:'Element',   spd:1.00, dash:1.0, grap:0.62,slam:0.85, iframe:1.0, carry:0.82},
+  shadow:  {name:'Shadow',    spd:1.10, dash:0.85,grap:1.0, slam:1.0,  iframe:2.6, carry:0.82},
+};
+let chosenClass = 'guardian';
+const clsOf = e => (e.cls || CLASSES.guardian);
+
 /* Dash — a short burst along the facing direction. Cheap, and the single most
    universally loved movement ability in any game. */
 function useDash(e){
   if(e.cdDash>0 || e.dash>0) return;
-  e.cdDash=CD.dash; e.dash=0.20;
+  const k=clsOf(e);
+  e.cdDash=CD.dash*k.dash; e.dash=0.20;
   e.dx=Math.sin(e.yaw); e.dz=Math.cos(e.yaw);
-  e.invuln=Math.max(e.invuln,0.22);           // brief i-frames, so it is an escape too
+  e.invuln=Math.max(e.invuln, 0.22*k.iframe);           // brief i-frames, so it is an escape too
 }
 
 /* Grapple — raycast along the view direction, then reel the player in. */
@@ -889,14 +916,14 @@ function useGrapple(e){
     }
   }
   if(!hit){ fcs('Grapple found nothing — aim at a surface.',2.2); return; }
-  e.cdGrap=CD.grap; e.grap={x:hit.x,y:hit.y,z:hit.z,t:1.1};
+  e.cdGrap=CD.grap*clsOf(e).grap; e.grap={x:hit.x,y:hit.y,z:hit.z,t:1.1};
 }
 
 /* Ground slam — a shockwave on impact. Pressing it while standing leaps first,
    so the button always does something instead of silently failing. */
 function useSlam(e){
   if(e.cdSlam>0 || e.slamming || e.slamQ>0) return;
-  e.cdSlam=CD.slam; e.grap=null;
+  e.cdSlam=CD.slam*clsOf(e).slam; e.grap=null;
   if(e.grounded){ e.vy=11.0; e.slamQ=0.34; }   // hop, then come down hard
   else { e.slamming=true; e.vy=-36; }
 }
@@ -957,7 +984,7 @@ function eliminate(e,by){
     e.carrying=null;
     if(by&&by.isPlayer) fcs('Carrier down. Their flag is loose — get it back.',3.5);
     else if(e.isPlayer) fcs('You were taken out carrying the flag. It dropped where you fell.',3.5);
-  } else if(e.isPlayer) fcs('You are down. Reforming at base.',2.5);
+  } else if(e.isPlayer) fcs('You are down. Rebooting at the corner pad.',2.5);
 }
 
 /* ------------------------------ disintegration ---------------------------- */
@@ -1087,7 +1114,7 @@ function doCollapse(){
   rebuildWorld();
   for(const key of ['A','B']) if(!flags[key].carrier) homeFlag(flags[key]);
   for(const e of ents) e.invuln=Math.max(e.invuln,2.5);
-  fcs('Underground caverns. Flags re-anchored to the new bases. Find the routes.',6);
+  fcs('Underdeep. Flags re-anchored to the new bases. Find the routes.',6);
 }
 function stepDebris(list,dt,isOrb){
   for(let i=list.length-1;i>=0;i--){
@@ -1158,7 +1185,7 @@ function syncHUD(){
   el('clock').textContent=m+':'+String(s).padStart(2,'0');
   const ph=el('phase');
   if(phase==='surface'&&clock<=MATCH_TIME-TREMOR_AT){ ph.textContent='collapse imminent'; ph.classList.add('warn'); }
-  else { ph.textContent=phase==='surface'?'surface':'caverns'; ph.classList.remove('warn'); }
+  else { ph.textContent=phase==='surface'?'citadel':'underdeep'; ph.classList.remove('warn'); }
   for(const [k,id] of [['A','flagA'],['B','flagB']]){
     const f=flags[k], n=el(id);
     n.textContent = f.carrier?(f.carrier.team==='A'?'taken by azure':'taken by crimson'):f.home?'flag secure':'dropped';
@@ -1167,39 +1194,63 @@ function syncHUD(){
 }
 
 /* --------------------------------- draw ---------------------------------- */
-/* Figures are drawn art on billboards, not geometry. drawEnt only queues the
-   sprite plus the 3D effects that sit around it. */
-const spriteQueue=[];
+/* Square figures: hard-edged cubes, deliberately sharp against the soft rounded
+   world. The gait is speed-driven — amplitude scales with how fast the figure is
+   actually moving, so a standing figure stands still instead of freezing
+   mid-stride. */
 function drawEnt(e){
-  const col=e.col;
-  // ground shadow, so the sprite is planted rather than floating
+  const c=Math.cos(e.yaw), s=Math.sin(e.yaw);
+  const bob=e.bob||0;
+  const gait=Math.min(1,(e.spd||0)/7.5);          // 0 standing, 1 at full run
+  const sw   = Math.sin(bob) * 0.62 * gait;        // stride
+  const lift = Math.abs(Math.sin(bob)) * 0.11 * gait;   // body rises twice a cycle
+  const lean = 0.13 * gait;                        // leans into the run
+  const col=e.col, leg=e.leg||[0.2,0.2,0.25], skin=e.skin||[0.95,0.8,0.66];
+
+  const B=(lx,ly,lz,sx,sy,sz,cl,em,rx)=>
+    push(dCB, e.x+lx*c+lz*s, e.y+ly, e.z-lx*s+lz*c, sx,sy,sz, rx||0, e.yaw, 0, cl, em||0);
+  const limb=(lx,jointY,lz,w,len,d,cl,ang)=>{
+    const dy=-Math.cos(ang)*len/2, dz=Math.sin(ang)*len/2;
+    B(lx, jointY+dy, lz+dz, w, len, d, cl, 0, ang);
+  };
+
   push(dSP, e.x, e.y+0.05, e.z, 1.05,0.09,1.05, 0,0,0, [0.17,0.20,0.17], 0);
 
-  const H=4.15, W=H*(SPRITE_W/SPRITE_H);
-  const cy = e.y + H*0.5 - 0.10;
-  // which way is this figure looking relative to the camera?
-  const toCam = [camPos[0]-e.x, camPos[2]-e.z];
-  const tl = Math.hypot(toCam[0],toCam[1])||1; toCam[0]/=tl; toCam[1]/=tl;
-  const fwd = [Math.sin(e.yaw), Math.cos(e.yaw)];
-  const facingCam = (fwd[0]*toCam[0] + fwd[1]*toCam[1]) > 0;
-  const side = fwd[0]*billRight[2] - fwd[1]*billRight[0];
-  const tex = facingCam ? e.spr.front : e.spr.back;
+  if(e.isPlayer && camDist < 3.4){
+    if(e.swing>0) B(0, 2.3+lift, 1.4, 1.2,0.34,0.9, COL[8], 0.9);
+    return;
+  }
 
-  if(!(e.isPlayer && camDist < 3.8))
-    spriteQueue.push({t:tex, x:e.x, y:cy, z:e.z, w:W, h:H, flip: side<0?1:0, dim:1});
-  // dash leaves ghost images of the figure itself — the anime speed trail
-  if(e.dash>0) for(let i=1;i<=3;i++)
-    spriteQueue.push({t:tex, x:e.x-e.dx*i*1.05, y:cy, z:e.z-e.dz*i*1.05,
-                      w:W, h:H, flip: side<0?1:0, dim:0.55-i*0.13});
+  // legs shorten very slightly at the extremes of the stride, which reads as a
+  // knee bend and stops the swinging foot scraping through the ground
+  const shorten = 1 - 0.10*Math.abs(Math.sin(bob))*gait;
+  limb(-0.26, 1.62+lift, 0, 0.42, 1.62*shorten, 0.44, leg,  sw);
+  limb( 0.26, 1.62+lift, 0, 0.42, 1.62*shorten, 0.44, leg, -sw);
+  limb(-0.68, 2.72+lift, 0, 0.34, 1.24, 0.38, col,  -sw*0.85);
+  limb( 0.68, 2.72+lift, 0, 0.34, 1.24, 0.38, col,   sw*0.85);
+
+  B(0, 2.14+lift, 0, 0.98, 1.14, 0.54, col,  0, lean);   // torso
+  B(0, 1.60+lift, 0, 1.02, 0.14, 0.58, COL[8], 0.2);     // belt
+  B(0, 3.18+lift, 0, 0.86, 0.86, 0.82, skin, 0, lean);   // head
+  B(0, 3.52+lift, 0, 0.90, 0.22, 0.86, col, 0.15, lean); // team band, readable far off
+
+  const ey=3.20+lift, open=e.blink>0?0.16:1;
+  B(-0.20, ey, 0.43, 0.22, 0.24*open, 0.05, [0.98,0.98,1.0], 0.15);
+  B( 0.20, ey, 0.43, 0.22, 0.24*open, 0.05, [0.98,0.98,1.0], 0.15);
+  if(open===1){
+    B(-0.20, ey-0.01, 0.46, 0.11,0.13,0.04, [0.07,0.07,0.12]);
+    B( 0.20, ey-0.01, 0.46, 0.11,0.13,0.04, [0.07,0.07,0.12]);
+  }
 
   if(e.isPlayer){
-    const gy=e.y+4.6+Math.sin(gameT*2)*0.10;
-    push(dRB, e.x, gy, e.z, 0.44,0.68,0.44, 0.5, gameT*1.7, 0.2, COL[8], 1.0);
+    const gy=e.y+4.35+Math.sin(gameT*2)*0.10;
+    push(dRB, e.x, gy, e.z, 0.44,0.66,0.44, 0.5, gameT*1.7, 0.2, COL[8], 1.0);
   }
-  if(e.swing>0){
-    const fx=Math.sin(e.yaw), fz=Math.cos(e.yaw);
-    push(dRB, e.x+fx*1.5, e.y+2.2, e.z+fz*1.5, 1.5,0.30,1.0, 0,e.yaw,0, COL[8], 0.9);
-  }
+  if(e.swing>0) B(0, 2.3+lift, 1.4, 1.2,0.34,0.9, COL[8], 0.9);
+
+  if(e.dash>0) for(let i=1;i<=4;i++)
+    push(dCB, e.x-e.dx*i*0.95, e.y+2.0, e.z-e.dz*i*0.95,
+         0.95-i*0.13, 2.6-i*0.35, 0.55-i*0.07, 0,e.yaw,0, col, 0.7-i*0.13);
   if(e.grap){
     for(let i=1;i<12;i++){ const t=i/12;
       push(dSP, e.x+(e.grap.x-e.x)*t, e.y+2.9+(e.grap.y-(e.y+2.9))*t, e.z+(e.grap.z-e.z)*t,
@@ -1308,7 +1359,7 @@ function render(){
 
   gl.uniform1f(U.toon,0.30); flush(wRB); flush(wSP);
 
-  dRB.n=0; dSP.n=0; spriteQueue.length=0;
+  dRB.n=0; dSP.n=0; dCB.n=0;
   for(const e of ents) if(!dead(e)) drawEnt(e);
   for(const k of ['A','B']){
     const f=flags[k];
@@ -1318,30 +1369,7 @@ function render(){
   for(const d of debrisRB) push(dRB,d.x,d.y,d.z,d.s,d.s,d.s,d.rx,d.ry,d.rz,COL[d.t],EMIS[d.t]||0);
   for(const d of debrisSP) push(dSP,d.x,d.y,d.z,d.s,d.s,d.s,0,0,0,COL[d.t],(EMIS[d.t]||0)+0.25);
   drawMotes();
-  gl.uniform1f(U.toon,1.0); flush(dRB); flush(dSP);
-
-  // --- sprites last: alpha-tested, so depth alone resolves them ---
-  if(spriteQueue.length){
-    gl.useProgram(sprog);
-    gl.uniformMatrix4fv(SU.vp,false,vpArr);
-    gl.uniform3f(SU.right, billRight[0],billRight[1],billRight[2]);
-    gl.uniform3f(SU.up, 0,1,0);
-    gl.uniform1i(SU.tex,0);
-    gl.activeTexture(gl.TEXTURE0);
-    gl.bindVertexArray(quadVAO);
-    const lit = phase==='underground' ? 0.62 : 1.0;
-    for(const s of spriteQueue){
-      gl.bindTexture(gl.TEXTURE_2D, s.t);
-      gl.uniform3f(SU.pos, s.x,s.y,s.z);
-      gl.uniform2f(SU.size, s.w,s.h);
-      gl.uniform1f(SU.flip, s.flip);
-      gl.uniform1f(SU.dim, s.dim*lit);
-      gl.uniform3f(SU.flash, 0,0,0);
-      gl.drawArrays(gl.TRIANGLES,0,6);
-    }
-    gl.bindVertexArray(null);
-    gl.useProgram(prog);
-  }
+  gl.uniform1f(U.toon,1.0); flush(dRB); flush(dSP); flush(dCB);
 
   updateMarker();
 }
@@ -1382,7 +1410,9 @@ function frame(now){
       if(e.blink>0) e.blink-=dt; else if((e.blinkT-=dt)<=0){ e.blink=0.14; e.blinkT=2+rnd()*4; }
       stepAbilities(e,dt);
       if(dead(e)){ e.respawn-=dt;
-        if(e.respawn<=0){ const s=spawnPoint(e.team); e.x=s.x; e.y=s.y; e.z=s.z; e.vy=0; e.invuln=1.5; }
+        if(e.respawn<=0){ const s=spawnPoint(e.team,false);
+          e.x=s.x; e.y=s.y; e.z=s.z; e.vy=0; e.invuln=1.5; e.grap=null; e.dash=0;
+          if(e.isPlayer) fcs('Rebooted at the corner pad. Long way back.',3); }
         continue; }
       const ox=e.x, oz=e.z;
       if(e.isPlayer){
@@ -1396,15 +1426,22 @@ function frame(now){
         if(keys.KeyA){fx+=Math.cos(camYaw);fz-=Math.sin(camYaw);}
         if(keys.KeyD){fx-=Math.cos(camYaw);fz+=Math.sin(camYaw);}
         const m=Math.hypot(fx,fz);
-        let sp=(keys.ShiftLeft||keys.ShiftRight)?13:9;
-        if(e.carrying) sp*=0.82;
+        const k=clsOf(e);
+        let sp=((keys.ShiftLeft||keys.ShiftRight)?13:9) * k.spd;
+        if(e.carrying) sp*=k.carry;
         if(m>0){ fx/=m; fz/=m; e.yaw=Math.atan2(fx,fz); }
         if(keys.Space&&e.grounded){ e.vy=11.5; e.gliding=false; }
         // holding Space while already falling glides instead
         e.gliding = !!keys.Space && !e.grounded && e.vy<0 && !e.slamming && !e.grap && e.slamQ<=0;
         moveEnt(e,fx*sp*dt,fz*sp*dt,dt);
       } else botThink(e,dt);
-      e.bob += Math.hypot(e.x-ox,e.z-oz)*3.2;
+      const moved = Math.hypot(e.x-ox, e.z-oz);
+      e.bob += moved * 1.05;                          // ~1.5 strides/sec at run speed
+      e.spd = (e.spd||0)*0.72 + (moved/Math.max(dt,0.001))*0.28;
+      if(e.spd < 0.4){                                // ease back to a neutral stance
+        const k = e.bob % (Math.PI*2);
+        e.bob += (Math.round(k/Math.PI)*Math.PI - k) * Math.min(1, dt*7);
+      }
     }
     updateFlags(dt);
     stepDebris(debrisRB,dt,false); stepDebris(debrisSP,dt,true); stepMotes(dt);
@@ -1433,18 +1470,33 @@ function start(){
   el('startVeil').classList.add('hidden'); el('endVeil').classList.add('hidden');
   running=true;
 }
+/* ---- start screen ---- */
+const FCS_LINES = {
+  intel:   '“Two teams, one flag each. Take theirs, bring it home — but yours has to be sitting on its pedestal for the capture to count.”',
+  flag:    '“Both flags secure on their pedestals. A beam marks each one; follow it and you cannot get lost.”',
+  strategy:'“Their base opens toward midfield. Grapple a tower for height, or take the bridge low and quiet. Do not go alone.”',
+  team:    '“Four squadmates on your side. They will escort a carrier and chase theirs — stay near them and the flag gets home.”',
+};
+document.querySelectorAll('.fcsBtns button').forEach(b=>{
+  b.addEventListener('click',()=>{ el('fcsQuote').textContent = FCS_LINES[b.dataset.ask]; });
+});
+el('intelBtn').addEventListener('click',()=>{
+  el('fcsQuote').textContent = FCS_LINES.intel;
+  document.querySelector('.fcsPanel').scrollIntoView({behavior:'smooth',block:'center'});
+});
+document.querySelectorAll('.classCard').forEach(c=>{
+  c.addEventListener('click',()=>{
+    document.querySelectorAll('.classCard').forEach(o=>o.classList.remove('sel'));
+    c.classList.add('sel');
+    chosenClass = c.dataset.cls;
+  });
+});
+{ const m=Math.floor(MATCH_TIME/60), sec=MATCH_TIME%60;
+  el('lobbyClock').textContent = m+':'+String(sec).padStart(2,'0'); }
+
 el('playBtn').addEventListener('click',start);
 el('againBtn').addEventListener('click',start);
 
-/* Character art is rasterised before play begins, so nothing pops in mid-match. */
-(function(){
-  const btn=el('playBtn'), label=btn.textContent;
-  btn.disabled=true; btn.textContent='Drawing characters…';
-  buildSprites().then(()=>{ btn.disabled=false; btn.textContent=label; })
-    .catch(err=>{ btn.textContent='Character art failed';
-      el('fcsMsg').textContent='Could not rasterise the character art: '+err.message;
-      el('fcs').classList.add('on'); });
-})();
 </script>
 
 </body>

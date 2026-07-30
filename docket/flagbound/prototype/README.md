@@ -13,12 +13,15 @@ works straight off the filesystem (`file://`), no server required.
 
 | From the docket | Here |
 |---|---|
-| Rounded block world ([10](../10-art-direction-and-cinematics.md)) | Hand-written WebGL2 instanced renderer, two generated meshes: a spherified cube for the world and figures, and a smooth sphere for effects. Rolling green ground, a stone wall with two gaps, two towers, trees with rounded canopies, CSS-gradient sky per phase |
+| Rounded block world ([10](../10-art-direction-and-cinematics.md)) | Hand-written WebGL2 instanced renderer, two generated meshes: a flat-faced cube for the world and a sphere for atmosphere and effects. Rolling green ground, a stone wall with two gaps, two towers, trees with rounded canopies, CSS-gradient sky per phase |
 | **Disintegration on defeat** ([10](../10-art-direction-and-cinematics.md#defeat-disintegration)) | 72 team-coloured motes sweeping upward from the feet on a staggered delay, plus one expanding white flash. No body left behind |
+| **Reboot pads** ([03](../03-combat-and-classes.md#health-defeat-and-respawn)) | Two raised platforms in diagonally opposite corners, one per team, with a glowing core and a locator beam. You spawn at your base at match start but re-form here after every elimination |
 | **Battlefield points of interest** ([10](../10-art-direction-and-cinematics.md#act-i--the-surface)) | Three buildings with window gaps and pitched tile roofs, a pond with a sandy shore and plank bridge, four rock formations, a ruined midfield wall with two gaps, two towers, trees with bushes, clouds overhead, and fogged distant hills for a horizon |
 | Restraint in density ([10](../10-art-direction-and-cinematics.md#restraint-is-part-of-the-style)) | One wall, two towers, eighteen trees. An earlier pass added floating islands, drifting motes and dozens of spires and was judged too crowded — objectives disappeared into the noise |
-| **Anime characters as drawn art** ([10](../10-art-direction-and-cinematics.md#two-ways-to-ship-anime-characters)) | Each figure is an SVG illustration — layered hair, big eyes with iris gradient and highlights, coat, belt, scarf — rasterised to a texture and billboarded into the 3D world. Ten characters, two views each (front / back), mirrored for left / right. Alpha-tested, so depth alone resolves them with no sorting |
-| Cel shading ([10](../10-art-direction-and-cinematics.md#the-rendering-signature)) | Three hard-stepped light bands, fresnel ink silhouette, hot rim, specular pops — applied to the 3D world. The characters need none of it: they are already drawn |
+| **Square figures** ([10](../10-art-direction-and-cinematics.md#characters)) | Hard-edged cubes — head, torso, two arms, two legs, belt, square eyes — deliberately sharp against the soft rounded world so players separate from terrain at any distance |
+| **Three-way colour split** | Skin-toned head, team-coloured outfit, dark trousers, plus a team band on the head. One saturated hue over a whole figure read as plastic |
+| **Speed-driven gait** | ~1.3 stride cycles/sec at run speed (2.7 steps/sec), amplitude scaling with measured speed, body rising twice per cycle, a lean into the run, and legs shortening at the stride extremes so feet do not scrape. Measured, not eyeballed — an earlier build ran at 9.2 steps/sec |
+| Cel shading ([10](../10-art-direction-and-cinematics.md#the-rendering-signature)) | Three hard-stepped light bands, fresnel ink silhouette, rim, specular pops — full strength on figures, a third on terrain so cells are not each outlined |
 | Soft lighting ([10](../10-art-direction-and-cinematics.md#the-rendering-signature)) | Warm key, cool sky-coloured fill, and a restrained rim term that separates silhouettes without turning dreamlike |
 | Warm-vs-cool team palettes ([03](../03-combat-and-classes.md)) | Every character has its own hue; Azure hues all cool, Crimson all warm |
 | Two teams, two flags, capture rules ([01](../01-game-overview.md)) | Azure vs Crimson, own flag must be home to score |
@@ -27,6 +30,7 @@ works straight off the filesystem (`file://`), no server required.
 | Debris budget ([12](../12-open-questions.md), Q9) | Capped at 4,200 blocks, nearest-to-player prioritised |
 | Debris is cosmetic, not authoritative ([11](../11-technical-architecture.md)) | Debris has no collision — it cannot be landed on |
 | Third-person camera | Tries raising itself over an obstruction before pulling in, since a lifted view keeps the figure on screen where pulling in buries the camera in it. Falls back to pull-in, then to converging on the player. Your own figure is hidden when the camera ends up point-blank |
+| Two meshes | A spherified cube for the world and a plain cube for figures — the same instanced renderer, two geometries, which is what makes the soft-versus-sharp contrast possible |
 | Objective-aware bots ([06](../06-ai-bots.md)) | 4 per side: attack, escort the carrier, chase the enemy carrier, recover a dropped flag |
 | F.C.S. callouts ([05](../05-fcs-ai-assistant.md)) | Text-only, priority-free, reacting to flag events and the collapse |
 | Cells are 0.5 m ([10](../10-art-direction-and-cinematics.md)) | Characters stand 3.7 cells tall (~1.85 m) |
@@ -38,12 +42,6 @@ Named here so the prototype is not mistaken for the game:
 - Online multiplayer — bots only, all local
 - The four character classes — one generic loadout
 - **Act III, the sky towers** — the prototype ends after the underground
-- **Skeletal character animation.** The figures are static illustrations that bob
-  and leave dash afterimages; they do not walk. Layered puppet animation or frame
-  sets would fix this within the 2D route
-- **Facing readability.** A billboard always faces you, so an opponent's facing is
-  not readable from the sprite alone — a real gameplay problem with this route, and
-  the reason [12](../12-open-questions.md) (Q4) recommends 3D models for shipping
 - Hit-stop and impact frames, which is where most of the perceived punch would come from
 - F.C.S. voice, and player questions to F.C.S.
 - Chat, moderation, progression, matchmaking
@@ -51,6 +49,32 @@ Named here so the prototype is not mistaken for the game:
 
 Match length is compressed to 3 minutes with the collapse at 60s, so the
 transition is reachable quickly. The docket specifies 15 minutes.
+
+## The start screen
+
+A full front-end rather than a play button: wordmark and live-match clock, a hero
+with **ENTER THE BATTLE**, the three-act phase bar, an F.C.S. panel, class
+selection, and the active loadout.
+
+- **Phase names** — Citadel, Underdeep, Skyforge — are used in-game too, so the
+  HUD label matches the lobby.
+- **F.C.S. panel** answers for real. *Flag status*, *Strategy* and *Team help*
+  each return a different briefing line, as does *F.C.S. intel*.
+- **Class selection is not cosmetic.** Each of the four paths changes movement
+  speed, one ability cooldown, the flag-carry penalty, or dash invulnerability:
+
+  | Path | Effect |
+  |---|---|
+  | **Guardian** | 0.86× speed, slam cooldown 0.65×, heaviest carry penalty |
+  | **Swiftblade** | 1.20× speed, dash cooldown 0.65×, lightest carry penalty |
+  | **Element** | Baseline speed, grapple cooldown 0.62× |
+  | **Shadow** | 1.10× speed, dash invulnerability 2.6× |
+
+  These are deliberately small stand-ins for the full kits in
+  [13](../13-abilities-and-skills.md), which are not implemented.
+- **Field pickups are labelled "not in this build"** on the screen itself. The
+  Scout Knife is the only weapon; the pickup roster is design intent and the
+  screen says so rather than implying otherwise.
 
 ## Skills
 

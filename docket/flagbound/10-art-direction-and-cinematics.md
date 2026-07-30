@@ -1,89 +1,56 @@
 # 10 — Art Direction & Cinematics
 
-## Direction: cel-shaded anime characters in a vivid stylised world
+## Direction: a stylised battlefield with square figures
 
 From the brief: prioritise **creativity, scale and exciting environments** over
 photorealism. Players should feel like they are inside an epic adventure.
 
-**Style target, in two halves:**
+**Style target, in two halves that deliberately contrast:**
 
-- **Characters — anime.** Slim, tall, stylish figures with sharp silhouettes,
-  dramatic spiky hair, oversized expressive eyes, and scarves and coats that
-  trail behind them. Cel-shaded: hard-edged shadow terminators, ink-dark
-  silhouette lines, hot rim light, and bright specular pops on hair and armour.
-  They should look like characters from an action anime, not like soldiers.
-- **World — stylised, vivid, large.** Saturated colour, bold readable silhouettes,
-  exaggerated scale, spectacle over detail. The reference point for the *world* is
-  a modern stylised battle-royale look: instantly legible, colourful, and
-  cheerful, with the drama coming from scale and events rather than surface
-  realism.
+- **The world — soft, stylised, vivid.** A battle-royale landscape: rolling green
+  hills, buildings with tile roofs, a pond and a bridge, rock formations, trees.
+  Saturated colour, bold readable silhouettes, spectacle over detail. Built on a
+  grid of half-metre cells drawn as **soft rounded masses**, so it comes apart
+  convincingly when the battlefield transforms.
+- **The figures — hard squares.** Blocky humanoids built from sharp-edged cubes:
+  head, torso, two arms, two legs, limbs swinging from their joints. Simple,
+  instantly readable, and cheap to produce in any quantity.
 
-The combination is the pitch: **anime heroes doing impossible things on a
-battlefield that keeps falling apart.**
+**The contrast is the point.** Sharp-edged figures against a soft rounded
+landscape separate cleanly at every distance — the thing that matters most in a
+game where you need to spot an opponent across a field. Nothing else on screen
+has a hard edge, so a player reads as a player immediately.
 
-## Two ways to ship anime characters
+## Directions explored and set aside
 
-This is a real fork, and it should be decided deliberately rather than drifted
-into.
+Recorded so they are not re-proposed, and because each taught something worth
+keeping:
 
-### Route A — 3D cel-shaded models (the genre norm)
+| Direction | Why it was set aside |
+|---|---|
+| **Blocky Minecraft-style world** | Invited an unflattering comparison and read as generic |
+| **Surreal dreamscape** (violet sky, floating islands, glowing motes) | Judged *too crowded* — objectives were lost in the noise. Produced the density rule below, which still stands |
+| **Round blob characters** | Read as stacked boxes, not as rounded creatures. Primitives cannot fake smooth organic form |
+| **Cel-shaded anime characters** | The look needs *drawn* characters. Approximating anime from procedural boxes was not close, and no amount of shading fixed the geometry. Authored 2D art on billboards did work, and is a viable route if the direction is ever revisited — but it makes an opponent's facing unreadable, which is a real competitive cost |
 
-Sculpted, rigged characters with authored hair, cloth and a facial rig, lit by a
-cel-shading pipeline.
-
-- **Gives:** full freedom of camera angle, real 3D animation, correct occlusion,
-  facing readable from any direction.
-- **Costs:** character artists, riggers, animators, and a shading pipeline —
-  ramp textures, a controllable terminator, an outline pass, per-material control.
-  This is the largest budget line the art direction implies.
-
-### Route B — authored 2D art on billboards (what the prototype uses)
-
-Each character is a drawn illustration, rasterised to a texture and composited
-into the 3D world facing the camera.
-
-- **Gives:** *the truest anime line quality available*, because the art is
-  literally drawn rather than approximated by a shader. Dramatically cheaper. One
-  illustrator can produce a full roster.
-- **Costs:** limited viewing angles (the prototype authors a front and a back view
-  and mirrors for left/right), animation must be done as layered puppet motion or
-  frames rather than skeletally, and **facing becomes a gameplay problem** — a
-  billboard always faces you, so you cannot read which way an opponent is looking
-  without an explicit cue.
-
-**The prototype takes Route B deliberately.** It is the only route that produces
-genuinely anime-looking figures without an art team, and it proves the direction
-in a way a shader pass over primitives cannot. Earlier attempts to approximate
-anime characters from procedural boxes were not close, and no amount of shading
-fixed the underlying geometry.
-
-**Recommendation:** Route A for a shipping product in this genre, because facing
-and camera freedom matter in competitive play. Route B is worth keeping in mind
-for a stylistically distinctive alternative, and it is far from a toy — several
-shipped games use billboarded or 2D-composited characters to great effect. Tracked
-as an open question in [12](12-open-questions.md).
+**The general lesson, worth keeping:** a shader can change how geometry is *lit*,
+never what it *is*. When a look was not achievable, the fix was always to change
+the geometry or the source art, not to add another shading term.
 
 ## The rendering signature
 
-Four choices carry the anime read. All are cheap, and the prototype implements
-all four:
+Cel shading, which suits both halves of the direction:
 
 - **Hard-stepped light.** Three bands with sharp terminators instead of a smooth
-  falloff. This one choice does more than the rest combined.
-- **Ink silhouette.** Grazing-angle darkening toward near-black, so every figure
-  is outlined against whatever is behind it. In production this becomes a proper
-  outline pass; the prototype fakes it with a fresnel term, which is convincing
-  in motion and cheap.
-- **Hot rim light.** A bright, hard-edged rim tracing each silhouette — the
-  signature of anime key art, and it also solves the gameplay problem of figures
-  separating from a busy background.
-- **Specular pops.** Tight highlights on hair and armour. Small, and they are what
-  make a character look *drawn* rather than lit.
-
-**Applied unevenly on purpose:** figures get the full treatment; terrain gets
-about a third of it. Outlining every terrain cell would turn the ground into
-visual noise — the same crowding mistake described below, arriving through the
-shader instead of through props.
+  falloff. Flat, poster-like, and it keeps the palette readable at distance.
+- **Ink silhouette.** Grazing-angle darkening toward near-black, so figures are
+  outlined against whatever is behind them. Applied fully to figures and at about
+  a third strength to terrain — outlining every terrain cell turns the ground into
+  noise.
+- **Rim light.** A restrained rim tracing silhouettes, so a figure separates from
+  a busy background.
+- **Specular pops.** Tight highlights that keep surfaces from reading as flat
+  colour.
 
 ## The world still sits on a grid
 
@@ -108,7 +75,7 @@ Not from surface detail. From four things, in rough order of impact:
    an afterimage trail on a dash, a hooked enemy dragged across the ground, an
    updraft launching a teammate onto a tower.
 3. **Impact framing.** Two techniques worth budgeting for, both cheap and both
-   central to how anime action feels: **hit-stop** — a few frames of freeze on a
+   central to how action games feel: **hit-stop** — a few frames of freeze on a
    heavy connect — and **impact frames**, a single high-contrast flash on the
    biggest hits. Nothing else buys as much perceived punch per unit of effort.
 4. **Camera drama on ultimates.** A brief push-in and time dilation when an
@@ -141,7 +108,7 @@ the middle of the map removes a sightline from a defender.
 |---|---|
 | **World cell** | 0.5 m — terrain, structures, towers (drawn rounded, not cubic) |
 | **Detail element** | 0.125 m — props, trim |
-| **Player height** | ~1.85 m — slim anime build, long-legged |
+| **Player height** | ~1.85 m — blocky square figure |
 | **Arch / structure height** | 10–20 m — must still feel monumental |
 | **Sky tower height** | 100 m+ |
 
@@ -201,51 +168,57 @@ the direct approach.
 
 ## Characters
 
-**Anime figures.** Slim and tall — roughly **1.85 m**, long-legged, narrow through
-the waist and shoulders, closer to seven heads tall than to a stocky game
-silhouette. Nothing about the proportions is realistic; they are drawn
-proportions, chosen to look striking in motion.
+**Square figures.** Hard-edged cubes: head, torso, two arms, two legs, plus a belt
+and simple square eyes. Roughly 1.85 m.
 
-In the prototype these are **drawn illustrations** — SVG art rasterised to a
-texture and billboarded into the 3D world — not geometry. That is what finally
-made them read as anime.
+**Colour is split three ways, not one hue per character.** A skin-toned head, a
+team-coloured outfit on torso and arms, and dark neutral trousers. A single
+saturated colour over a whole figure reads as plastic; splitting it gives value
+contrast and lets the outfit carry team identity without the character looking
+like a toy. A team-coloured band across the top of the head reinforces the read at
+distance. Skin tones vary across the roster.
 
-The features that do the work, in order:
+**The walk has to be right, and the numbers matter.** Limbs pivot at hip and
+shoulder with arms counter-swinging against the legs, but three details do the
+actual work:
 
-| Feature | Why it matters |
-|---|---|
-| **Hair** | The strongest anime signal available, and the fastest way to make a character recognisable at distance. Bold swept spikes with a designed shape, in a colour that reads as an accent. |
-| **Eyes** | Oversized, tall, with a defined iris and a bright specular highlight. Set proud of the face so they read at third-person distance. Blinking on a loose timer. |
-| **Trailing cloth** | A scarf or coat tail that swings against the stride. Cheap, and it is most of what makes a figure feel fast. |
-| **Silhouette accessories** | One bold, class-defining shape per class — the thing you recognise before you recognise anything else. |
-| **Pose and timing** | Snappy, exaggerated, strongly-posed animation. An anime character never moves smoothly through a transition; it snaps between readable shapes. |
+- **Cadence.** *Proposed:* about **1.3 stride cycles per second at run speed**
+  (~2.7 steps/sec). An early build ran at 9 steps/sec — the same animation, four
+  times too fast, and it read as broken rather than quick. Stride rate should be
+  driven by distance travelled, not by time, so it stays correct at every speed.
+- **Amplitude scales with actual speed**, and a stationary figure eases back to a
+  neutral stance instead of freezing mid-stride.
+- **The body rises twice per cycle**, once per footfall, and the figure leans
+  slightly into a run. Legs shorten a little at the extremes, which reads as a
+  knee bend and stops the swinging foot scraping the ground.
+
+**Why square, against a rounded world.** Contrast. The landscape is the only soft
+thing on screen and the figures are the only hard-edged thing, so players separate
+from terrain instantly at any distance. It also makes the roster trivially cheap
+to extend — a new character is a palette, not an art commission.
 
 The four classes must be identifiable **by silhouette alone**, because in a fight
-that is all a player gets. Class reads through proportion and one accessory,
-never through colour — colour belongs to the team:
+that is all a player gets. Class reads through proportion and one accessory, never
+through colour — colour belongs to the team:
 
 | Class | Silhouette |
 |---|---|
-| **Guardian** | Heaviest build, broad shoulder plates, an oversized shield slung on one arm, a long coat. Reads as a wall. |
-| **Swiftblade** | Slightest and fastest, hair swept hard back, a long trailing scarf, a blade held low. Reads as fast even standing still. |
-| **Element Warrior** | Tall and upright, layered robes, motes orbiting in the current element's colour, eyes tinted to match. Reads as dangerous at range. |
-| **Shadow Runner** | Hooded, hunched, darkened, eyes the only bright thing about it. Reads as *hard to see*, which is the point. |
+| **Guardian** | Broadest and heaviest, thick limbs, a shield slab on one arm. Reads as a wall. |
+| **Swiftblade** | Narrowest and shortest, leaning forward, a trailing marker. Reads as fast even standing still. |
+| **Element Warrior** | Tallest, with motes orbiting in the current element's colour and eyes tinted to match. Reads as dangerous at range. |
+| **Shadow Runner** | Small and darkened, its eyes the only bright thing about it. Reads as *hard to see*, which is the point. |
 
 **Team identity:** every character has its own colour, but one team's palette is
 entirely **cool** and the other entirely **warm** — personality without costing
-team readability. Warm-versus-cool also survives colour-blindness where
-red-versus-green would not. Hair takes an accent colour drawn from the same
-temperature, so a bright hairstyle never makes a player misread which side someone
-is on. On top of that, a floating team-coloured marker above allies.
+team readability, and warm-versus-cool survives colour-blindness where
+red-versus-green would not.
 
 **Character customisation** is where the cosmetic economy in
-[09](09-progression-and-rewards.md) earns its keep. An anime direction is a
-natural fit for outfits, hairstyles, colours and accessories — and it must include
-skin tone and body options, because an audience this age needs to be able to make
-a character that looks like them.
+[09](09-progression-and-rewards.md) earns its keep. Square figures take colour,
+pattern and accessory swaps cheaply, which suits a cosmetic-only economy well.
 
-**The player's own character** floats a spinning gold gem, so a player can always
-find themselves in a crowd.
+**The player's own character** floats a spinning gold gem, and is hidden entirely
+when the camera ends up point-blank, as in any third-person game.
 
 ## Cinematic moments
 
