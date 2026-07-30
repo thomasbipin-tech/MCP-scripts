@@ -77,6 +77,28 @@ all the fun.
 | **Decoy** | A copy of you that runs a route and draws attention | 12s | Watching a whole defence chase nothing is the best joke in the game | Bots learn to ignore repeated decoys; it deals no damage |
 | **Mark** | Reveals enemy positions in an area to your whole team | 10s | Pure information — and it scores contribution, so support play is visibly rewarded | Reveals your own position when cast |
 
+## Weapons
+
+Separate from abilities, and shared by every class — what you are *holding*
+rather than what you can *do*.
+
+| Weapon | Damage | Role | Counterplay |
+|---|---|---|---|
+| **Blade** | 35 | The reliable close option. Never runs dry. | Five hits through a full pool is a long time to stay next to someone |
+| **Rifle** | 75 | Mid-range workhorse | Hitscan, so it rewards aim over positioning; three shots to drop a full target |
+| **Rocket** | 150 | Area denial and structure clearing | Slow travel time you can see and dodge; does not one-shot a shielded target |
+| **Stink Bomb** | 8 per half-second | Denies ground without killing — a support weapon | Lobbed and slow; the cloud is enormous and obvious, so it warns as much as it punishes |
+| **Sniper** | 175 | The only true one-shot in the game | Long reload, and scoping narrows your view drastically — a scoped player is nearly blind to a flanker |
+
+**The sniper is deliberately the only one-shot**, and it is gated behind the
+harshest trade in the roster: while scoped you cannot see anyone approaching from
+the side. That is what keeps a one-shot weapon fair in a game about objectives —
+holding an angle costs you awareness of the objective.
+
+**Stink gas is the support weapon of the set.** It scores contribution through
+denial rather than damage, which fits the pillar that support play earns as much
+as fighting ([04](04-teamwork-scoring-and-strategies.md)).
+
 ## Ultimates
 
 *Proposed:* one per class, charged during the match — and here is the important

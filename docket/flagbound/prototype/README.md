@@ -87,6 +87,15 @@ on reboot. Health regrows slowly after four seconds out of combat.
 | **Blade** | 1 | 35 | 5 | Melee, ~1.9 m reach, 0.42s between swings |
 | **Rifle** | 2 | 75 | 3 | Hitscan out to 35 m, tracer, 0.8s between shots |
 | **Rocket** | 3 | 150 | 2 | Travelling projectile, 3.5 m blast, 2.6s reload |
+| **Stink Bomb** | 4 | 8 per half-second | — | Lobbed; leaves a 3 m gas cloud for 6.5s that damages and slows anyone inside to 55% speed |
+| **Sniper** | 5 | 175 | 1 | Hitscan to 110 m, 1.7s between shots. **One-shot through a full shield and health pool.** Right-click or C to scope |
+
+**The scope** narrows the field of view from 1.15 rad to 0.30, pulls the camera
+in over the shoulder, drops mouse sensitivity to 30% for fine aim, and shows a
+lens vignette with a ranged reticle and a live distance readout to the enemy flag.
+
+Every weapon is **visible in the figure's hand** and pitches with the aim, so you
+can see what an opponent is carrying before they fire.
 
 **Worth knowing:** with 75 shield on top of 100 health, a rocket no longer drops a
 full-health target in one hit — 150 is less than 175, leaving 25 health. It is a
@@ -129,6 +138,22 @@ Two aids exist because the flag was genuinely hard to locate in testing:
 The player's own character floats a spinning gold diamond, so you can tell which
 one is you.
 
+## Drawing a map this size
+
+The world is streamed rather than uploaded whole. Exposed cells are scanned once
+into a flat list; uploading then filters that list by distance and by layer, and
+the buffer is only re-sent when it actually changes rather than every frame.
+
+Two things mattered more than the distance radius:
+
+- **Only the layer you are in.** Citadel was uploading the whole Underdeep out of
+  sight underneath it. Culling by layer alone took the draw from 116,000 cells to
+  about 52,000.
+- **Dirty-flag uploads.** The static world was re-sending several megabytes to the
+  GPU every frame for geometry that had not moved.
+
+Fog range is tied to the cull radius so cells fade out before they are dropped.
+
 ## Spawn safety
 
 Spawn points are **validated, not assumed**. `findSpawn` looks for ground near the
@@ -158,7 +183,7 @@ a proposed design change:
 
 | Value | Docket | Prototype | Why |
 |---|---|---|---|
-| Map | — | 116 × 116 cells (58 m square) | Four times the earlier area |
+| Map | — | 164 × 164 cells (82 m square) | Eight times the original area |
 | Match length | 15 min | 3 min | Reach the collapse quickly |
 | Collapse at | 6:00 | 1:00 | Same |
 | Respawn timer | 8s | 4s | Short match |

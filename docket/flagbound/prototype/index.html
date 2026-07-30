@@ -87,6 +87,25 @@
   .wp.sel{border-color:#63d8ff;background:rgba(24,48,78,.85)}
   .wp.cool{opacity:.45}
 
+  /* ---- sniper scope ---- */
+  #scope{position:fixed;inset:0;display:none;z-index:8;pointer-events:none;
+    background:radial-gradient(circle at 50% 50%,
+      rgba(0,0,0,0) 0 26%, rgba(0,0,0,.55) 30%, rgba(0,0,0,.94) 38%, #000 46%)}
+  #scope.on{display:block}
+  #scope .lens{position:absolute;left:50%;top:50%;width:52vmin;height:52vmin;
+    margin:-26vmin 0 0 -26vmin;border-radius:50%;
+    box-shadow:0 0 0 2px rgba(180,220,255,.35), inset 0 0 60px rgba(0,0,0,.75)}
+  #scope .v,#scope .h{position:absolute;background:rgba(210,235,255,.75)}
+  #scope .v{left:50%;top:0;bottom:0;width:1px;margin-left:-.5px}
+  #scope .h{top:50%;left:0;right:0;height:1px;margin-top:-.5px}
+  #scope .dot{position:absolute;left:50%;top:50%;width:5px;height:5px;margin:-2.5px 0 0 -2.5px;
+    background:#ff5f6b;border-radius:50%}
+  #scope .tick{position:absolute;left:50%;width:14px;height:1px;margin-left:-7px;
+    background:rgba(210,235,255,.55)}
+  #scope .t1{top:58%} #scope .t2{top:64%} #scope .t3{top:70%}
+  #scope .scopeInfo{position:absolute;left:50%;bottom:14%;transform:translateX(-50%);
+    font-family:var(--mono);font-size:12px;letter-spacing:.18em;color:#bfe4ff}
+
   #cross{position:fixed;left:50%;top:50%;width:18px;height:18px;margin:-9px 0 0 -9px;
     pointer-events:none;display:none;z-index:6;opacity:.85;
     background:
@@ -137,9 +156,28 @@
     border-radius:12px;padding:8px 13px;backdrop-filter:blur(5px)}
   #legend b{color:var(--parchment);font-weight:600}
   @media (max-width:720px){#legend{display:none}}
-  @media (max-height:560px){
-    #fcs{bottom:110px;font-size:11px}
-    .hpTrack{width:140px}
+  /* The HUD has to survive small windows: five weapons, four abilities, health,
+     F.C.S. and the legend all want the bottom of the screen. */
+  @media (max-width:1180px){
+    .ab{width:62px;padding:6px 4px 5px}
+    .ab .n{font-size:7.5px}
+    .wp{padding:5px 8px}
+    .wp span{font-size:10px}
+    .wp em{display:none}
+    .hpTrack{width:150px}
+    #legend{display:none}
+  }
+  @media (max-width:860px){
+    #abil{gap:5px}
+    .ab{width:52px}
+    .wp span{display:none}
+    .wp{padding:6px 9px}
+    .hpTrack{width:112px}
+    #fcs{max-width:min(330px,calc(100% - 32px));font-size:11px}
+  }
+  @media (max-height:620px){
+    #fcs{bottom:118px;padding:8px 11px}
+    #fcs .fcsMsg,#fcsMsg{font-size:11px}
   }
 
   /* ================= start page ================= */
@@ -322,6 +360,14 @@
   </div>
 </div>
 
+<div id="scope">
+  <div class="lens">
+    <i class="v"></i><i class="h"></i>
+    <i class="tick t1"></i><i class="tick t2"></i><i class="tick t3"></i>
+    <span class="dot"></span>
+  </div>
+  <div class="scopeInfo"><span id="scopeRange">—</span></div>
+</div>
 <div id="cross"></div>
 <div id="hitMark"></div>
 
@@ -336,6 +382,8 @@
     <button class="wp sel" data-w="blade"><b>1</b><span>Blade</span><em>35 dmg</em></button>
     <button class="wp" data-w="gun"><b>2</b><span>Rifle</span><em>75 dmg</em></button>
     <button class="wp" data-w="rocket"><b>3</b><span>Rocket</span><em>150 dmg</em></button>
+    <button class="wp" data-w="stink"><b>4</b><span>Stink</span><em>gas · slows</em></button>
+    <button class="wp" data-w="sniper"><b>5</b><span>Sniper</span><em>175 · scoped</em></button>
   </div>
 </div>
 
@@ -351,7 +399,7 @@
 
 <div id="legend">
   <div><b>WASD</b> move &nbsp; <b>Move mouse</b> to look &nbsp; <b>Space</b> jump</div>
-  <div><b>Click</b> attack &nbsp; <b>Shift</b> sprint</div>
+  <div><b>Click</b> attack &nbsp; <b>1-5</b> weapon &nbsp; <b>Right-click</b> scope</div>
 </div>
 
 <div class="veil" id="startVeil">
@@ -424,10 +472,10 @@
   <section class="panel loadout">
     <p class="label cyan">Active loadout</p>
     <p class="weapon">Blade · Rifle · Rocket</p>
-    <p class="weaponSub">100 health under 75 shield · switch with 1 / 2 / 3 — blade 35, rifle 75, rocket 150</p>
+    <p class="weaponSub">100 health under 75 shield · switch with 1–5 — blade 35, rifle 75, rocket 150, stink gas, sniper 175</p>
     <p class="label cyan mt">Field pickups <span class="tag">not in this build</span></p>
     <div class="chips">
-      <span class="live">Blade · 35</span><span class="live">Rifle · 75</span><span class="live">Rocket · 150</span>
+      <span class="live">Blade · 35</span><span class="live">Rifle · 75</span><span class="live">Rocket · 150</span><span class="live">Stink Bomb · gas</span><span class="live">Sniper · 175</span>
       <span>Hammer</span><span>Daggers</span><span>Staff</span><span>Bow</span>
       <span class="rare">Comet Chain</span><span class="rare">Rift Gauntlet</span>
       <span class="rare">Nimbus Cannon</span><span class="rare">Prism Boomerang</span>
@@ -470,7 +518,7 @@ if(!gl){
 }
 
 /* ------------------------------- constants ------------------------------- */
-const SX=116, SY=76, SZ=116, YOFF=48;
+const SX=164, SY=88, SZ=164, YOFF=48;
 const UNDER_Y  = -34;
 const COLLAPSE_CUT = -16;
 const MATCH_TIME = 180, TREMOR_AT = 50, COLLAPSE_AT = 60;
@@ -505,7 +553,7 @@ const ri = (a,b)=> a + Math.floor(rnd()*(b-a+1));
 const hSurf = (x,z)=> 0.85*Math.sin(x*0.075) + 0.75*Math.cos(z*0.065)
                     + 0.45*Math.sin((x+z)*0.05)
                     + 1.7*Math.sin(x*0.028+1.0)*Math.cos(z*0.032);
-const POND = {x:30, z:58, r:13};
+const POND = {x:44, z:82, r:17};
 const pondDepth = (x,z)=>{ const d=Math.hypot(x-POND.x,z-POND.z);
   return d<POND.r ? Math.min(3, (POND.r-d)*0.7) : 0; };
 const hUnder = (x,z)=> 0.7*(1.4*Math.cos(x*0.09) + 1.1*Math.sin(z*0.12));
@@ -513,10 +561,10 @@ const hUnder = (x,z)=> 0.7*(1.4*Math.cos(x*0.09) + 1.1*Math.sin(z*0.12));
 /* static smooth props (orbs, caps) live outside the grid */
 let orbs=[];   // {x,y,z,r,t,phase}
 
-const BASE = { A:{x:58,z:18}, B:{x:58,z:97} };
+const BASE = { A:{x:82,z:26}, B:{x:82,z:138} };
 /* Reboot pads sit in diagonally opposite corners. Eliminated players re-form
    here rather than at their flag, so returning is a journey. */
-const REBOOT = { A:{x:14,z:14}, B:{x:SX-15,z:SZ-15} };
+const REBOOT = { A:{x:20,z:20}, B:{x:SX-21,z:SZ-21} };
 const baseTopY = k => 2;
 
 /* -------------------------------- arena ---------------------------------- */
@@ -544,6 +592,33 @@ function house(bx,bz,w,d,h,wall,roof){
     }
   }
 }
+/* Multi-storey towers: floor slabs every four cells, window bands, a parapet and
+   a roof block. Tall enough to matter for sniping and grappling. */
+function tallBuilding(bx,bz,w,d,storeys,wall,trim){
+  for(const b of [BASE.A,BASE.B]) if(Math.hypot(bx-b.x,bz-b.z) < 16) return;
+  for(const b of [REBOOT.A,REBOOT.B]) if(Math.hypot(bx-b.x,bz-b.z) < 14) return;
+  const g=groundY(bx,bz), h=storeys*4;
+  for(let dx=-w;dx<=w;dx++) for(let dz=-d;dz<=d;dz++)
+    for(let y=g-2;y<=g;y++) setB(bx+dx,y,bz+dz,T.COBBLE);
+  for(let y=g+1;y<=g+h;y++){
+    const floorSlab = (y-g)%4===0;
+    for(let dx=-w;dx<=w;dx++) for(let dz=-d;dz<=d;dz++){
+      const rim=Math.abs(dx)===w||Math.abs(dz)===d;
+      if(floorSlab){ setB(bx+dx,y,bz+dz, rim?trim:T.PLANK); continue; }
+      if(!rim) continue;
+      const band=(y-g)%4===2;                       // window band
+      const door=(y-g)<=3 && dz===d && Math.abs(dx)<=1;
+      if(door) continue;
+      if(band && ((Math.abs(dx)%3===1)||(Math.abs(dz)%3===1))) continue;
+      setB(bx+dx,y,bz+dz,wall);
+    }
+  }
+  for(let dx=-w-1;dx<=w+1;dx++) for(let dz=-d-1;dz<=d+1;dz++){
+    setB(bx+dx,g+h+1,bz+dz,trim);                   // parapet lip
+    if(Math.abs(dx)<=w&&Math.abs(dz)<=d) setB(bx+dx,g+h+2,bz+dz,T.PLANK);
+  }
+}
+
 function rockCluster(cx,cz,rad){
   // never inside a base or a reboot pad — both are spawn areas
   for(const b of [BASE.A,BASE.B]) if(Math.hypot(cx-b.x,cz-b.z) < 12+rad) return;
@@ -585,13 +660,13 @@ function buildSurface(){
   const mz=SZ>>1;
   // a broken stone wall across midfield — two gaps as chokepoints
   for(let x=2;x<SX-2;x++){
-    if((x>=24&&x<=36)||(x>=58&&x<=66)||(x>=80&&x<=92)) continue;
+    if((x>=34&&x<=50)||(x>=76&&x<=88)||(x>=114&&x<=130)) continue;
     const g=groundY(x,mz);
     const h=(x%7===0)?2:4;                       // ruined, uneven
     for(let y=g+1;y<=g+h;y++){ setB(x,y,mz,T.COBBLE); setB(x,y,mz+1,T.COBBLE); }
   }
   // stone towers flanking the gaps — height, and grapple anchors
-  for(const [tx,tz] of [[30,mz-9],[82,mz+9],[58,mz-14],[58,mz+14]]){
+  for(const [tx,tz] of [[42,mz-13],[116,mz+13],[82,mz-20],[82,mz+20],[24,mz+9],[140,mz-9]]){
     const g=groundY(tx,tz);
     for(let y=g-1;y<=g+10;y++) for(let dx=-2;dx<=2;dx++) for(let dz=-2;dz<=2;dz++){
       if(Math.abs(dx)===2||Math.abs(dz)===2||y===g-1) setB(tx+dx,y,tz+dz, y>g+8?T.ROOF:T.COBBLE);
@@ -599,21 +674,30 @@ function buildSurface(){
   }
   // points of interest, kept off the central lanes
   for(const [hx,hz,w,d,h,wall] of [
-      [22,38,4,3,4,T.PLASTER],[92,78,4,4,5,T.PLANK],[88,32,3,3,4,T.PLASTER],
-      [26,84,4,4,5,T.PLANK],[70,50,3,3,4,T.PLASTER],[44,68,4,3,5,T.PLANK],
-      [96,58,3,4,4,T.PLASTER],[18,64,3,3,4,T.PLANK]])
+      [32,54,4,3,4,T.PLASTER],[130,110,4,4,5,T.PLANK],[124,46,3,3,4,T.PLASTER],
+      [37,119,4,4,5,T.PLANK],[99,71,3,3,4,T.PLASTER],[62,96,4,3,5,T.PLANK],
+      [136,82,3,4,4,T.PLASTER],[26,90,3,3,4,T.PLANK],[70,40,4,3,4,T.PLASTER],
+      [110,132,4,4,5,T.PLANK],[48,140,3,3,4,T.PLASTER],[144,120,3,3,4,T.PLANK]])
     house(hx,hz,w,d,h,wall,T.ROOF);
+  // tall buildings — the skyline, and the reason to carry a sniper
+  for(const [tx,tz,w,d,st,wall,trim] of [
+      [54,64,5,5,7,T.PLASTER,T.COBBLE], [112,98,5,4,9,T.COBBLE,T.ROOF],
+      [58,116,4,5,6,T.PLANK,T.COBBLE],  [122,58,4,4,8,T.PLASTER,T.ROOF],
+      [96,140,5,5,7,T.COBBLE,T.PLASTER],[34,34,4,4,6,T.PLANK,T.ROOF],
+      [140,32,4,5,9,T.PLASTER,T.COBBLE],[24,128,5,4,7,T.COBBLE,T.ROOF]])
+    tallBuilding(tx,tz,w,d,st,wall,trim);
   // plank bridge over the pond
-  for(let x=POND.x-15;x<=POND.x+15;x++){
+  for(let x=POND.x-20;x<=POND.x+20;x++){
     const y=Math.round(hSurf(x,POND.z))+1;
     for(let dz=-1;dz<=1;dz++) setB(x,y,POND.z+dz,T.PLANK);
     if(x%4===0){ setB(x,y+1,POND.z-2,T.WOOD); setB(x,y+1,POND.z+2,T.WOOD); }
   }
-  for(const [rx,rz,rr] of [[40,30,4],[76,44,5],[34,74,5],[96,90,4],[16,50,4],
-                           [62,30,3],[102,26,4],[24,104,4],[86,104,3],[50,52,3],
-                           [104,66,4],[8,88,3]]) rockCluster(rx,rz,rr);
+  for(const [rx,rz,rr] of [[56,42,4],[107,62,5],[48,105,5],[136,127,4],[23,71,4],
+                           [88,42,3],[144,37,4],[34,147,4],[121,147,3],[70,73,3],
+                           [147,93,4],[11,124,3],[92,110,4],[64,150,4],[150,150,3],
+                           [18,44,4],[126,20,3],[40,86,4]]) rockCluster(rx,rz,rr);
   // trees with rounded canopies, plus bushes at their feet
-  for(let i=0;i<78;i++){
+  for(let i=0;i<150;i++){
     const x=ri(4,SX-5), z=ri(4,SZ-5);
     if(Math.hypot(x-BASE.A.x,z-BASE.A.z)<12) continue;
     if(Math.hypot(x-BASE.B.x,z-BASE.B.z)<12) continue;
@@ -627,15 +711,15 @@ function buildSurface(){
     if(rnd()<0.7) orbs.push({x:x+1.8+rnd(),y:g+0.7,z:z+1.4+rnd(),r:0.8,t:T.LEAF,phase:'surface'});
   }
   // puffy clouds overhead
-  for(let i=0;i<30;i++){
-    const cx=rnd()*SX, cz=rnd()*SZ, cy=36+rnd()*16;
+  for(let i=0;i<52;i++){
+    const cx=rnd()*SX, cz=rnd()*SZ, cy=48+rnd()*18;
     for(let k=0;k<4+Math.floor(rnd()*3);k++)
       orbs.push({x:cx+(rnd()-0.5)*11, y:cy+(rnd()-0.5)*3, z:cz+(rnd()-0.5)*9,
                  r:3.2+rnd()*3.4, t:T.CLOUD, phase:'surface'});
   }
   // distant hills for a horizon
   for(let i=0;i<22;i++){
-    const a=(i/22)*Math.PI*2, d=128+rnd()*70;
+    const a=(i/22)*Math.PI*2, d=175+rnd()*90;
     orbs.push({x:SX/2+Math.cos(a)*d, y:-6-rnd()*8, z:SZ/2+Math.sin(a)*d,
                r:22+rnd()*20, t:rnd()<0.6?T.GRASS2:T.ROCK, phase:'surface'});
   }
@@ -668,7 +752,7 @@ function buildUnderground(){
     for(let y=top-3;y<=top;y++) setB(x,y,z, y===top?T.CAVE2:T.CAVE);
   }
   // a few lava pools in the hollows
-  for(let i=0;i<14;i++){
+  for(let i=0;i<26;i++){
     const cx=ri(8,SX-9), cz=ri(8,SZ-9), rad=3+rnd()*3.5;
     if(Math.hypot(cx-BASE.A.x,cz-BASE.A.z)<12||Math.hypot(cx-BASE.B.x,cz-BASE.B.z)<12) continue;
     for(let dx=-5;dx<=5;dx++) for(let dz=-5;dz<=5;dz++){
@@ -677,7 +761,7 @@ function buildUnderground(){
     }
   }
   // rock columns, some crystal-tipped, for cover and grapple points
-  for(let i=0;i<58;i++){
+  for(let i=0;i<112;i++){
     const x=ri(5,SX-6), z=ri(5,SZ-6);
     if(Math.hypot(x-BASE.A.x,z-BASE.A.z)<11||Math.hypot(x-BASE.B.x,z-BASE.B.z)<11) continue;
     if(Math.hypot(x-REBOOT.A.x,z-REBOOT.A.z)<10||Math.hypot(x-REBOOT.B.x,z-REBOOT.B.z)<10) continue;
@@ -846,6 +930,7 @@ function makeBatch(mesh,cap){
 }
 function push(b,x,y,z,sx,sy,sz,rx,ry,rz,col,emis){
   if(b.n>=b.cap) return;
+  b.dirty=true;
   const o=b.n*STRIDE, d=b.data;
   d[o]=x; d[o+1]=y; d[o+2]=z; d[o+3]=sx; d[o+4]=sy; d[o+5]=sz;
   d[o+6]=rx; d[o+7]=ry; d[o+8]=rz;
@@ -854,28 +939,57 @@ function push(b,x,y,z,sx,sy,sz,rx,ry,rz,col,emis){
 }
 function flush(b){
   if(!b.n) return;
-  gl.bindBuffer(gl.ARRAY_BUFFER,b.buf);
-  gl.bufferSubData(gl.ARRAY_BUFFER,0,b.data,0,b.n*STRIDE);
+  if(b.dirty){                       // the static world only re-uploads when it changes
+    gl.bindBuffer(gl.ARRAY_BUFFER,b.buf);
+    gl.bufferSubData(gl.ARRAY_BUFFER,0,b.data,0,b.n*STRIDE);
+    b.dirty=false;
+  }
   gl.bindVertexArray(b.vao);
   gl.drawElementsInstanced(gl.TRIANGLES,b.mesh.count,gl.UNSIGNED_SHORT,0,b.n);
 }
 
-const wRB=makeBatch(MESH_RB,90000), wSP=makeBatch(MESH_SP,900);
+const wRB=makeBatch(MESH_RB,120000), wSP=makeBatch(MESH_SP,1400);
 const dRB=makeBatch(MESH_RB,DEBRIS_CAP+600), dSP=makeBatch(MESH_SP,1600);
 const dCB=makeBatch(MESH_CUBE,600);   // figures
 
-function rebuildWorld(){
-  wRB.n=0;
+/* The exposed-cell list is scanned once per world change. Uploading then just
+   filters it by distance, so walking around costs a cheap filter rather than a
+   full grid scan, and the GPU only ever holds what is near the player. */
+let cellList=[], lastCX=1e9, lastCZ=1e9;
+const VIEW_R = 104, VIEW_R2 = VIEW_R*VIEW_R;
+function scanCells(){
+  cellList = [];
   for(let z=0;z<SZ;z++) for(let y=-YOFF;y<SY-YOFF;y++) for(let x=0;x<SX;x++){
     const t=getB(x,y,z); if(!t) continue;
     if(solid(x+1,y,z)&&solid(x-1,y,z)&&solid(x,y+1,z)&&solid(x,y-1,z)&&solid(x,y,z+1)&&solid(x,y,z-1)) continue;
-    push(wRB, x+0.5,y+0.5,z+0.5, 1.14,1.14,1.14, 0,0,0, COL[t], EMIS[t]||0);
+    cellList.push(x,y,z,t);
+  }
+}
+function uploadCells(px,pz){
+  wRB.n=0;
+  // Only the layer you are actually in. During Citadel the whole underdeep was
+  // being uploaded and drawn out of sight, which was most of the buffer.
+  const surf = phase!=='underground';
+  for(let i=0;i<cellList.length;i+=4){
+    const y=cellList[i+1];
+    if(surf ? y < COLLAPSE_CUT : y > COLLAPSE_CUT) continue;
+    const x=cellList[i], z=cellList[i+2];
+    const dx=x-px, dz=z-pz;
+    if(dx*dx+dz*dz > VIEW_R2) continue;
+    const t=cellList[i+3];
+    push(wRB, x+0.5, y+0.5, z+0.5, 1.14,1.14,1.14, 0,0,0, COL[t], EMIS[t]||0);
   }
   wSP.n=0;
   for(const o of orbs){
     if(phase==='underground' && o.phase==='surface') continue;
     push(wSP, o.x,o.y,o.z, o.r*2,o.r*2,o.r*2, 0,0,0, COL[o.t], (EMIS[o.t]||0)+0.25);
   }
+  lastCX=px; lastCZ=pz;
+}
+function rebuildWorld(){
+  scanCells();
+  const p=ents[0];
+  uploadCells(p?p.x:SX/2, p?p.z:SZ/2);
 }
 
 /* ------------------------------ math ------------------------------------- */
@@ -970,7 +1084,7 @@ function resetMatch(){
   for(let i=0;i<5;i++) ents.push(makeEnt('B',false,i));
   flags={A:mkFlag('A'),B:mkFlag('B')};
   camYaw=0; camPitch=-0.20; shake=0; debrisRB.length=0; debrisSP.length=0; motes.length=0;
-  rockets.length=0; tracers.length=0; hitMark=0;
+  rockets.length=0; tracers.length=0; clouds.length=0; hitMark=0;
   fcs('Objective: take the red flag and bring it home. The battlefield will not hold still.',6);
 }
 
@@ -1008,9 +1122,13 @@ const WEAPONS = {
   blade:  {name:'Blade',  kind:'melee',   dmg:35,  cd:0.42, range:3.8,  hits:3},
   gun:    {name:'Rifle',  kind:'hitscan', dmg:75,  cd:0.80, range:70,   hits:2},
   rocket: {name:'Rocket', kind:'rocket',  dmg:150, cd:2.60, range:90,   hits:1, splash:7},
+  stink:  {name:'Stink',  kind:'stink',   dmg:0,   cd:9.00, range:40,   hits:0,
+           tick:8, every:0.5, radius:6.5, life:6.5, slow:0.55},
+  sniper: {name:'Sniper', kind:'hitscan', dmg:175, cd:1.70, range:220,  hits:1, scope:true},
 };
-const WKEYS = ['blade','gun','rocket'];
-const rockets=[], tracers=[];
+const WKEYS = ['blade','gun','rocket','stink','sniper'];
+let scoped = false;
+const rockets=[], tracers=[], clouds=[];
 
 /* The four paths from the start screen. Small, real differences — the full kits
    in docket 13 are not implemented, but the choice is not cosmetic either. */
@@ -1126,13 +1244,16 @@ function fire(a){
   const ox=a.x, oy=a.y+2.4, oz=a.z;
 
   if(w.kind==='melee'){
+    const fl=Math.hypot(ax,az)||1, fx=ax/fl, fz=az/fl;   // aim direction, flattened
+    let best=null, bestD=1e9;
     for(const b of ents){
       if(b.team===a.team||dead(b)||b.invuln>0) continue;
       const dx=b.x-a.x, dz=b.z-a.z; if(Math.abs(b.y-a.y)>4) continue;
       const d=Math.hypot(dx,dz); if(d>w.range) continue;
-      if((dx*Math.sin(a.yaw)+dz*Math.cos(a.yaw))/(d||1) < 0.25) continue;
-      damage(b, w.dmg, a); break;
+      if((dx*fx+dz*fz)/(d||1) < 0.25) continue;          // ~150 degree arc
+      if(d<bestD){ bestD=d; best=b; }                    // nearest target in the arc
     }
+    if(best) damage(best, w.dmg, a);
     return;
   }
 
@@ -1155,6 +1276,11 @@ function fire(a){
     return;
   }
 
+  if(w.kind==='stink'){                        // lobbed, so it arcs over cover
+    rockets.push({x:ox, y:oy, z:oz, vx:ax*22, vy:ay*22+6, vz:az*22,
+                  life:4, owner:a, stink:true});
+    return;
+  }
   rockets.push({x:ox, y:oy, z:oz, vx:ax*34, vy:ay*34, vz:az*34, life:3.2, owner:a});
 }
 const strike = fire;   // keep the old call sites working
@@ -1246,6 +1372,24 @@ function explode(x,y,z,owner){
   motes.push({x,y,z,vx:0,vy:0,vz:0,s:3.2,life:0.22,max:0.22,delay:0,col:[1,0.86,0.6],flash:true});
   shake=Math.max(shake,0.42);
 }
+/* A lingering cloud: damages and slows anyone inside who is not on the thrower's
+   team. Ticks rather than applying continuously, so the hurt flash reads. */
+function stepClouds(dt){
+  const w=WEAPONS.stink;
+  for(let i=clouds.length-1;i>=0;i--){
+    const c=clouds[i];
+    if((c.life-=dt)<=0){ clouds.splice(i,1); continue; }
+    c.t += dt;
+    const tick = c.t >= w.every;
+    if(tick) c.t = 0;
+    for(const e of ents){
+      if(dead(e) || e.team===c.owner.team) continue;
+      if(Math.hypot(e.x-c.x, e.z-c.z) > w.radius || Math.abs(e.y+1.7-c.y) > w.radius) continue;
+      e.stink = 0.6;                       // refreshed while stood in it
+      if(tick) damage(e, w.tick, c.owner);
+    }
+  }
+}
 function stepRockets(dt){
   for(let i=rockets.length-1;i>=0;i--){
     const r=rockets[i];
@@ -1257,7 +1401,12 @@ function stepRockets(dt){
       if(Math.hypot(b.x-nx,b.z-nz)<1.4 && ny>b.y-0.5 && ny<b.y+HH+0.5){ boom=true; break; }
     }
     r.x=nx; r.y=ny; r.z=nz;
-    if(boom || (r.life-=dt)<=0){ explode(r.x,r.y,r.z,r.owner); rockets.splice(i,1); }
+    if(boom || (r.life-=dt)<=0){
+      if(r.stink) clouds.push({x:r.x, y:r.y, z:r.z, life:WEAPONS.stink.life,
+                               max:WEAPONS.stink.life, owner:r.owner, t:0, seed:rnd()*99});
+      else explode(r.x,r.y,r.z,r.owner);
+      rockets.splice(i,1);
+    }
   }
   for(let i=tracers.length-1;i>=0;i--) if((tracers[i].life-=dt)<=0) tracers.splice(i,1);
 }
@@ -1311,7 +1460,7 @@ function botThink(e,dt){
   if(e.stray>0){ e.stray-=dt; const a=Math.atan2(dz,dx)+e.strayDir; dx=Math.cos(a); dz=Math.sin(a); }
   else { dx/=d; dz/=d; }
   e.yaw=Math.atan2(dx,dz);
-  const sp=e.carrying?7.5:9.0, px=e.x, pz=e.z;
+  const sp=(e.carrying?7.5:9.0)*(e.stink>0?WEAPONS.stink.slow:1), px=e.x, pz=e.z;
   moveEnt(e,dx*sp*dt,dz*sp*dt,dt);
   if(Math.hypot(e.x-px,e.z-pz)<sp*dt*0.35){
     if(e.grounded&&rnd()<0.35) e.vy=10.5;
@@ -1351,6 +1500,7 @@ function doCollapse(){
   phase='underground';
   document.getElementById('stage').className='underground';
   rebuildWorld();
+  lastCX=1e9;
   for(const key of ['A','B']) if(!flags[key].carrier) homeFlag(flags[key]);
   for(const e of ents) e.invuln=Math.max(e.invuln,2.5);
   fcs('Underdeep. Flags re-anchored to the new bases. Find the routes.',6);
@@ -1381,6 +1531,9 @@ addEventListener('keydown',e=>{ keys[e.code]=true;
   if(e.code==='Digit1'){ p.weapon='blade';  syncAbilities(); }
   if(e.code==='Digit2'){ p.weapon='gun';    syncAbilities(); }
   if(e.code==='Digit3'){ p.weapon='rocket'; syncAbilities(); }
+  if(e.code==='Digit4'){ p.weapon='stink';  syncAbilities(); }
+  if(e.code==='Digit5'){ p.weapon='sniper'; syncAbilities(); }
+  if(e.code==='KeyC' && p.weapon==='sniper') scoped = !scoped;
   if(e.code==='KeyQ') useDash(p);
   if(e.code==='KeyE') useGrapple(p);
   if(e.code==='KeyR') useSlam(p);
@@ -1393,27 +1546,32 @@ addEventListener('keyup',e=>{ keys[e.code]=false; });
 let haveMouse=false, edgeTurn=0;
 cvs.addEventListener('mousedown',e=>{
   if(!running) return;
+  if(e.button===2){ if(ents[0].weapon==='sniper') scoped=true; return; }   // right hold to scope
   fire(ents[0]);
   if(!locked && cvs.requestPointerLock){ try{ cvs.requestPointerLock(); }catch(_){} }
 });
 addEventListener('mousemove',e=>{
   if(!running) return;
   if(locked){
-    camYaw   -= e.movementX*0.0026;
-    camPitch  = Math.max(-1.1,Math.min(0.35, camPitch - e.movementY*0.0022));
+    const sens = scoped ? 0.30 : 1;
+    camYaw   -= e.movementX*0.0026*sens;
+    camPitch  = Math.max(-1.1,Math.min(0.35, camPitch - e.movementY*0.0022*sens));
     edgeTurn = 0;
     return;
   }
   if(haveMouse){
-    camYaw  -= (e.clientX-lastMX)*0.0055;
-    camPitch = Math.max(-1.1,Math.min(0.35, camPitch - (e.clientY-lastMY)*0.0042));
+    const sens = scoped ? 0.30 : 1;
+    camYaw  -= (e.clientX-lastMX)*0.0055*sens;
+    camPitch = Math.max(-1.1,Math.min(0.35, camPitch - (e.clientY-lastMY)*0.0042*sens));
   }
   lastMX=e.clientX; lastMY=e.clientY; haveMouse=true;
-  const w=innerWidth, band=Math.max(60, w*0.09);
+  const w=innerWidth, band=Math.max(48, w*0.06);
   if(e.clientX < band)            edgeTurn =  (band-e.clientX)/band;
   else if(e.clientX > w-band)     edgeTurn = -(e.clientX-(w-band))/band;
   else                            edgeTurn = 0;
+  edgeTurn = Math.max(-0.8, Math.min(0.8, edgeTurn));
 });
+addEventListener('mouseup',e=>{ if(e.button===2) scoped=false; });
 addEventListener('mouseleave',()=>{ edgeTurn=0; haveMouse=false; });
 document.addEventListener('pointerlockchange',()=>{ locked=document.pointerLockElement===cvs; });
 cvs.addEventListener('contextmenu',e=>e.preventDefault());
@@ -1424,7 +1582,7 @@ let fcsTimer=0;
 function fcs(m,d){ el('fcsMsg').textContent=m; el('fcs').classList.add('on'); fcsTimer=d||4; }
 function syncVitals(dt){
   const p=ents[0], v=el('vitals');
-  if(!p||!running){ v.classList.remove('on'); el('cross').classList.remove('on'); return; }
+  if(!p||!running){ v.classList.remove('on'); el('cross').classList.remove('on'); el('scope').classList.remove('on'); return; }
   v.classList.add('on');
   const hp=Math.max(0,Math.round(p.hp)), sh=Math.max(0,Math.round(p.sh));
   const fill=el('hpFill');
@@ -1438,7 +1596,12 @@ function syncVitals(dt){
     b.classList.toggle('sel', b.dataset.w===p.weapon);
     b.classList.toggle('cool', b.dataset.w===p.weapon && p.cool>0);
   });
-  el('cross').classList.add('on');
+  el('scope').classList.toggle('on', scoped);
+  el('cross').classList.toggle('on', !scoped);
+  if(scoped){
+    const f=flags.B, tx=f.carrier?f.carrier.x:f.x, tz=f.carrier?f.carrier.z:f.z;
+    el('scopeRange').textContent = Math.round(Math.hypot(tx-p.x,tz-p.z)*0.5)+' M TO FLAG';
+  }
   if(hitMark>0){ hitMark-=dt; el('hitMark').classList.add('on'); }
   else el('hitMark').classList.remove('on');
 }
@@ -1520,6 +1683,37 @@ function drawEnt(e){
   if(open===1){
     B(-0.20, ey-0.01, 0.46, 0.11,0.13,0.04, [0.07,0.07,0.12]);
     B( 0.20, ey-0.01, 0.46, 0.11,0.13,0.04, [0.07,0.07,0.12]);
+  }
+
+  /* Held weapon — visible in hand, pitched with the aim so it points where the
+     shot will go. Drawn for bots too, so you can see what is coming at you. */
+  {
+    const aim = e.isPlayer ? -camPitch*0.8 : 0;
+    const hx = 0.70, hy = 2.62+lift - sw*0.10;      // right hand, riding the arm swing
+    const W = e.weapon || 'blade';
+    if(W==='blade'){
+      B(hx, hy-0.12, 0.42, 0.10,0.10,0.34, [0.28,0.24,0.22], 0, aim);   // grip
+      B(hx, hy-0.02, 0.72, 0.26,0.09,0.30, [0.62,0.64,0.70], 0.1, aim); // guard
+      B(hx, hy+0.06, 1.42, 0.13,0.07,1.30, [0.86,0.89,0.95], 0.3, aim); // blade
+    } else if(W==='gun'){
+      B(hx, hy-0.10, 0.34, 0.16,0.20,0.44, [0.24,0.22,0.24], 0, aim);   // stock
+      B(hx, hy,      1.05, 0.15,0.17,1.30, [0.19,0.19,0.22], 0, aim);   // body
+      B(hx, hy+0.02, 1.90, 0.09,0.09,0.70, [0.34,0.34,0.38], 0.1, aim); // barrel
+      B(hx, hy+0.16, 0.86, 0.09,0.12,0.24, [0.40,0.42,0.48], 0.2, aim); // sight
+    } else if(W==='rocket'){
+      B(hx-0.06, hy+0.24, 0.72, 0.40,0.40,2.10, [0.28,0.34,0.24], 0, aim);  // tube
+      B(hx-0.06, hy+0.24, 1.86, 0.46,0.46,0.22, [0.20,0.24,0.18], 0, aim);  // muzzle
+      B(hx-0.06, hy+0.02, 0.52, 0.12,0.26,0.16, [0.22,0.20,0.20], 0, aim);  // grip
+    } else if(W==='sniper'){
+      B(hx, hy-0.10, 0.30, 0.16,0.22,0.50, [0.20,0.17,0.15], 0, aim);   // stock
+      B(hx, hy,      1.20, 0.14,0.16,1.70, [0.16,0.16,0.19], 0, aim);   // receiver
+      B(hx, hy+0.01, 2.40, 0.08,0.08,1.10, [0.32,0.32,0.36], 0.1, aim); // long barrel
+      B(hx, hy+0.22, 1.10, 0.11,0.11,0.62, [0.40,0.45,0.52], 0.35, aim);// scope body
+      B(hx, hy+0.22, 1.46, 0.14,0.14,0.10, [0.62,0.82,0.95], 0.7, aim); // lens
+    } else if(W==='stink'){
+      B(hx, hy-0.02, 0.52, 0.30,0.34,0.30, [0.42,0.52,0.24], 0.15, aim);    // canister
+      B(hx, hy+0.24, 0.52, 0.12,0.14,0.12, [0.72,0.78,0.34], 0.5, aim);     // nozzle
+    }
   }
 
   if(e.isPlayer){
@@ -1616,7 +1810,7 @@ function render(){
     cx+=(Math.random()-0.5)*shake; cy+=(Math.random()-0.5)*shake; cz+=(Math.random()-0.5)*shake;
   }
 
-  vpArr.set(mul(perspective(1.15, cvs.width/cvs.height||1, 0.1, 620), lookAt([cx,cy,cz],[p.x,hy,p.z],[0,1,0])));
+  vpArr.set(mul(perspective(scoped?0.30:1.15, cvs.width/cvs.height||1, 0.1, 900), lookAt([cx,cy,cz],[p.x,hy,p.z],[0,1,0])));
   { // billboard basis: perpendicular to the camera's view direction in XZ
     let vx=p.x-cx, vz=p.z-cz; const vl=Math.hypot(vx,vz)||1; vx/=vl; vz/=vl;
     billRight[0]=vz; billRight[1]=0; billRight[2]=-vx;
@@ -1627,11 +1821,11 @@ function render(){
   if(phase==='underground'){
     gl.uniform3f(U.light,0.30,0.80,0.25); gl.uniform3f(U.fill,0.34,0.40,0.55);
     gl.uniform3f(U.rim,0.30,0.40,0.52);   gl.uniform3f(U.fog,0.09,0.09,0.11);
-    gl.uniform2f(U.fogRange,26,120);       gl.uniform1f(U.amb,0.30);
+    gl.uniform2f(U.fogRange,26,110);       gl.uniform1f(U.amb,0.30);
   } else {
     gl.uniform3f(U.light,0.45,0.82,0.36); gl.uniform3f(U.fill,0.45,0.56,0.74);
     gl.uniform3f(U.rim,0.52,0.62,0.72);   gl.uniform3f(U.fog,0.66,0.80,0.90);
-    gl.uniform2f(U.fogRange,95,340);      gl.uniform1f(U.amb,0.52);
+    gl.uniform2f(U.fogRange,58,100);      gl.uniform1f(U.amb,0.52);
   }
   camPos[0]=cx; camPos[1]=cy; camPos[2]=cz;
   gl.clearColor(0,0,0,0);
@@ -1650,8 +1844,23 @@ function render(){
   for(const d of debrisSP) push(dSP,d.x,d.y,d.z,d.s,d.s,d.s,0,0,0,COL[d.t],(EMIS[d.t]||0)+0.25);
   drawMotes();
   for(const r of rockets){
-    push(dCB, r.x,r.y,r.z, 0.34,0.34,0.9, 0, Math.atan2(r.vx,r.vz), 0, [0.72,0.72,0.76], 0.2);
-    push(dSP, r.x-r.vx*0.02, r.y-r.vy*0.02, r.z-r.vz*0.02, 0.5,0.5,0.5, 0,0,0, [1,0.62,0.24], 0.95);
+    if(r.stink){
+      push(dSP, r.x,r.y,r.z, 0.6,0.6,0.6, 0,0,0, [0.55,0.78,0.22], 0.5);
+      push(dSP, r.x,r.y+0.35,r.z, 0.3,0.3,0.3, 0,0,0, [0.85,0.95,0.4], 0.8);
+    } else {
+      push(dCB, r.x,r.y,r.z, 0.34,0.34,0.9, 0, Math.atan2(r.vx,r.vz), 0, [0.72,0.72,0.76], 0.2);
+      push(dSP, r.x-r.vx*0.02, r.y-r.vy*0.02, r.z-r.vz*0.02, 0.5,0.5,0.5, 0,0,0, [1,0.62,0.24], 0.95);
+    }
+  }
+  for(const c of clouds){
+    const t=c.life/c.max, grow=Math.min(1, (1-t)*3.5+0.35);
+    for(let i=0;i<26;i++){
+      const a=c.seed+i*2.4+gameT*0.5, rr=(0.35+((i*37)%100)/140)*WEAPONS.stink.radius*grow;
+      const yy=c.y + Math.sin(a*0.7+i)*1.5 + 0.6;
+      const sz=(1.5+((i*53)%100)/90)*Math.max(0.35,t);
+      push(dSP, c.x+Math.cos(a)*rr, yy, c.z+Math.sin(a)*rr, sz,sz*0.8,sz, 0,0,0,
+           [0.46+0.12*Math.sin(i), 0.68, 0.20], 0.30*t+0.10);
+    }
   }
   for(const t of tracers){
     const f=t.life/t.max;
@@ -1699,6 +1908,7 @@ function frame(now){
       if(e.invuln>0) e.invuln-=dt;
       if(e.blink>0) e.blink-=dt; else if((e.blinkT-=dt)<=0){ e.blink=0.14; e.blinkT=2+rnd()*4; }
       if(e.hurt>0) e.hurt-=dt;
+      if(e.stink>0) e.stink-=dt;
       e.lastHit += dt;
       if(e.lastHit > 4 && e.hp < MAXHP) e.hp = Math.min(MAXHP, e.hp + 16*dt);   // slow regen
       stepAbilities(e,dt);
@@ -1710,7 +1920,11 @@ function frame(now){
         continue; }
       const ox=e.x, oz=e.z;
       if(e.isPlayer){
-        camYaw += edgeTurn * 2.4 * dt;          // keep turning at the screen edge
+        // Edge steering decays as soon as the mouse stops. Without this it kept
+        // applying every frame and the camera span 360s on its own.
+        camYaw += edgeTurn * 2.4 * dt;
+        edgeTurn *= Math.exp(-dt*13);      // gone within ~0.3s of the mouse stopping
+        if(Math.abs(edgeTurn) < 0.03) edgeTurn = 0;
         if(keys.ArrowLeft) camYaw+=1.9*dt;
         if(keys.ArrowRight) camYaw-=1.9*dt;
         if(keys.ArrowUp) camPitch=Math.min(0.35,camPitch+1.3*dt);
@@ -1723,8 +1937,10 @@ function frame(now){
         const m=Math.hypot(fx,fz);
         const k=clsOf(e);
         let sp=((keys.ShiftLeft||keys.ShiftRight)?13:9) * k.spd;
+        if(e.stink>0) sp *= WEAPONS.stink.slow;
         if(e.carrying) sp*=k.carry;
-        if(m>0){ fx/=m; fz/=m; e.yaw=Math.atan2(fx,fz); }
+        if(m>0){ fx/=m; fz/=m; }
+        e.yaw = camYaw;        // face where you are looking, not where you last walked
         if(keys.Space&&e.grounded){ e.vy=11.5; e.gliding=false; }
         // holding Space while already falling glides instead
         e.gliding = !!keys.Space && !e.grounded && e.vy<0 && !e.slamming && !e.grap && e.slamQ<=0;
@@ -1738,8 +1954,10 @@ function frame(now){
         e.bob += (Math.round(k/Math.PI)*Math.PI - k) * Math.min(1, dt*7);
       }
     }
+    { const p0=ents[0];                       // stream new cells in as you travel
+      if(p0 && ((p0.x-lastCX)**2 + (p0.z-lastCZ)**2) > 400) uploadCells(p0.x, p0.z); }
     updateFlags(dt);
-    stepDebris(debrisRB,dt,false); stepDebris(debrisSP,dt,true); stepMotes(dt); stepRockets(dt);
+    stepDebris(debrisRB,dt,false); stepDebris(debrisSP,dt,true); stepMotes(dt); stepRockets(dt); stepClouds(dt);
     if(fcsTimer>0&&(fcsTimer-=dt)<=0) el('fcs').classList.remove('on');
     syncHUD(); syncAbilities(); syncVitals(dt);
     if(clock<=0) endMatch();
