@@ -21,25 +21,47 @@ photorealism. Players should feel like they are inside an epic adventure.
 The combination is the pitch: **anime heroes doing impossible things on a
 battlefield that keeps falling apart.**
 
-## What this actually costs to build
+## Two ways to ship anime characters
 
-Stated plainly, because this is the most expensive art direction in the docket and
-the requirement should not be discovered late:
+This is a real fork, and it should be decided deliberately rather than drifted
+into.
 
-| Need | Why |
-|---|---|
-| **Sculpted, rigged character models** | Anime figures live or die on face, hair and silhouette. These must be authored by character artists — they cannot be assembled from primitives. |
-| **Hair as authored geometry** | Anime hair is a designed shape, not a simulation. Each character needs bespoke hair. |
-| **Cloth or bone-driven cloth** | Trailing scarves and coats are half the appeal, and they must move. |
-| **A facial rig** | Expression is the point of an anime character. At minimum: blink, eye direction, and a few emotive states. |
-| **A cel-shading pipeline** | Ramp textures, a controllable terminator, an outline pass (inverted hull or post-process edge detect), and per-material control. Not a single shader. |
-| **Skeletal animation** | A full locomotion set plus ability animations, and anime style demands *pose-driven* animation with strong silhouettes and snappy timing. |
+### Route A — 3D cel-shaded models (the genre norm)
 
-**The prototype does not have any of this** and cannot. It approximates the
-*look* — cel bands, ink edges, rim, spiky hair blocked out of primitives, big eyes
-with highlights — to prove the direction reads. Actual character quality is an
-art-staffing question, and it is the single largest budget line this direction
-implies.
+Sculpted, rigged characters with authored hair, cloth and a facial rig, lit by a
+cel-shading pipeline.
+
+- **Gives:** full freedom of camera angle, real 3D animation, correct occlusion,
+  facing readable from any direction.
+- **Costs:** character artists, riggers, animators, and a shading pipeline —
+  ramp textures, a controllable terminator, an outline pass, per-material control.
+  This is the largest budget line the art direction implies.
+
+### Route B — authored 2D art on billboards (what the prototype uses)
+
+Each character is a drawn illustration, rasterised to a texture and composited
+into the 3D world facing the camera.
+
+- **Gives:** *the truest anime line quality available*, because the art is
+  literally drawn rather than approximated by a shader. Dramatically cheaper. One
+  illustrator can produce a full roster.
+- **Costs:** limited viewing angles (the prototype authors a front and a back view
+  and mirrors for left/right), animation must be done as layered puppet motion or
+  frames rather than skeletally, and **facing becomes a gameplay problem** — a
+  billboard always faces you, so you cannot read which way an opponent is looking
+  without an explicit cue.
+
+**The prototype takes Route B deliberately.** It is the only route that produces
+genuinely anime-looking figures without an art team, and it proves the direction
+in a way a shader pass over primitives cannot. Earlier attempts to approximate
+anime characters from procedural boxes were not close, and no amount of shading
+fixed the underlying geometry.
+
+**Recommendation:** Route A for a shipping product in this genre, because facing
+and camera freedom matter in competitive play. Route B is worth keeping in mind
+for a stylistically distinctive alternative, and it is far from a toy — several
+shipped games use billboarded or 2D-composited characters to great effect. Tracked
+as an open question in [12](12-open-questions.md).
 
 ## The rendering signature
 
@@ -165,6 +187,10 @@ opposed.
 the waist and shoulders, closer to seven heads tall than to a stocky game
 silhouette. Nothing about the proportions is realistic; they are drawn
 proportions, chosen to look striking in motion.
+
+In the prototype these are **drawn illustrations** — SVG art rasterised to a
+texture and billboarded into the 3D world — not geometry. That is what finally
+made them read as anime.
 
 The features that do the work, in order:
 

@@ -15,8 +15,8 @@ works straight off the filesystem (`file://`), no server required.
 |---|---|
 | Rounded block world ([10](../10-art-direction-and-cinematics.md)) | Hand-written WebGL2 instanced renderer, two generated meshes: a spherified cube for the world and figures, and a smooth sphere for effects. Rolling green ground, a stone wall with two gaps, two towers, trees with rounded canopies, CSS-gradient sky per phase |
 | Restraint in density ([10](../10-art-direction-and-cinematics.md#restraint-is-part-of-the-style)) | One wall, two towers, eighteen trees. An earlier pass added floating islands, drifting motes and dozens of spires and was judged too crowded — objectives disappeared into the noise |
-| Anime-styled figures ([10](../10-art-direction-and-cinematics.md#characters)) | Slim tall build, swept hair spikes, oversized eyes with iris and specular highlight, a scarf that swings against the stride, limbs pivoting at hip and shoulder |
-| Cel shading ([10](../10-art-direction-and-cinematics.md#the-rendering-signature)) | Three hard-stepped light bands, fresnel ink silhouette, hot rim, specular pops — applied fully to figures and at a third strength to terrain so cells are not each outlined |
+| **Anime characters as drawn art** ([10](../10-art-direction-and-cinematics.md#two-ways-to-ship-anime-characters)) | Each figure is an SVG illustration — layered hair, big eyes with iris gradient and highlights, coat, belt, scarf — rasterised to a texture and billboarded into the 3D world. Ten characters, two views each (front / back), mirrored for left / right. Alpha-tested, so depth alone resolves them with no sorting |
+| Cel shading ([10](../10-art-direction-and-cinematics.md#the-rendering-signature)) | Three hard-stepped light bands, fresnel ink silhouette, hot rim, specular pops — applied to the 3D world. The characters need none of it: they are already drawn |
 | Soft lighting ([10](../10-art-direction-and-cinematics.md#the-rendering-signature)) | Warm key, cool sky-coloured fill, and a restrained rim term that separates silhouettes without turning dreamlike |
 | Warm-vs-cool team palettes ([03](../03-combat-and-classes.md)) | Every character has its own hue; Azure hues all cool, Crimson all warm |
 | Two teams, two flags, capture rules ([01](../01-game-overview.md)) | Azure vs Crimson, own flag must be home to score |
@@ -24,10 +24,10 @@ works straight off the filesystem (`file://`), no server required.
 | Carrier keeps the flag through a transition ([02](../02-match-flow-and-world-phases.md)) | Implemented — uncarried flags re-anchor to the new bases |
 | Debris budget ([12](../12-open-questions.md), Q9) | Capped at 4,200 blocks, nearest-to-player prioritised |
 | Debris is cosmetic, not authoritative ([11](../11-technical-architecture.md)) | Debris has no collision — it cannot be landed on |
-| Third-person camera | Pulls in when something is behind it, lifts out of terrain, then converges toward the player as a guaranteed fallback — worst case it sits at the shoulder, which always beats rendering from inside a wall |
+| Third-person camera | Tries raising itself over an obstruction before pulling in, since a lifted view keeps the figure on screen where pulling in buries the camera in it. Falls back to pull-in, then to converging on the player. Your own figure is hidden when the camera ends up point-blank |
 | Objective-aware bots ([06](../06-ai-bots.md)) | 4 per side: attack, escort the carrier, chase the enemy carrier, recover a dropped flag |
 | F.C.S. callouts ([05](../05-fcs-ai-assistant.md)) | Text-only, priority-free, reacting to flag events and the collapse |
-| Cells are 0.5 m ([10](../10-art-direction-and-cinematics.md)) | Player stands 3.7 cells tall (~1.85 m) |
+| Cells are 0.5 m ([10](../10-art-direction-and-cinematics.md)) | Characters stand 3.7 cells tall (~1.85 m) |
 
 ## What it does not implement
 
@@ -36,10 +36,12 @@ Named here so the prototype is not mistaken for the game:
 - Online multiplayer — bots only, all local
 - The four character classes — one generic loadout
 - **Act III, the sky towers** — the prototype ends after the underground
-- **Authored anime character art** — the figures are blocked out from primitives to
-  prove the cel-shaded direction reads. Real anime characters need sculpted, rigged
-  models with authored hair, cloth and a facial rig
-  ([10](../10-art-direction-and-cinematics.md#what-this-actually-costs-to-build))
+- **Skeletal character animation.** The figures are static illustrations that bob
+  and leave dash afterimages; they do not walk. Layered puppet animation or frame
+  sets would fix this within the 2D route
+- **Facing readability.** A billboard always faces you, so an opponent's facing is
+  not readable from the sprite alone — a real gameplay problem with this route, and
+  the reason [12](../12-open-questions.md) (Q4) recommends 3D models for shipping
 - Hit-stop and impact frames, which is where most of the perceived punch would come from
 - F.C.S. voice, and player questions to F.C.S.
 - Chat, moderation, progression, matchmaking
