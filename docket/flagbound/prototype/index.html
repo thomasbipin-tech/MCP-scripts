@@ -202,6 +202,26 @@
   .chips .rare{border-color:rgba(190,120,235,.42);color:#e5cdf7}
   .loadout .note{margin:16px 0 0;font-family:var(--mono);font-size:11px;line-height:1.7;color:#6f819b}
 
+  .phaseTop{flex-wrap:wrap}
+  .phaseTop .score{white-space:nowrap}
+  .fbHead{flex-wrap:wrap}
+  .live{white-space:nowrap}
+
+  @media (max-width:680px){
+    .startPage{padding:20px 16px 48px;gap:20px}
+    .wordmark{font-size:20px;letter-spacing:.12em}
+    .mark{width:32px;height:36px;font-size:16px}
+    .live{font-size:10px;letter-spacing:.16em;gap:8px}
+    .clockBig{font-size:18px}
+    .phaseBars{grid-template-columns:1fr;gap:6px;margin:14px 0 12px}
+    .phaseBars i{height:3px}
+    .phaseList{grid-template-columns:1fr;gap:8px}
+    .phaseTop .label.right{text-align:left}
+    .cta{width:100%;justify-content:center}
+    .heroActions{gap:14px}
+    .fcsHead .bars{display:none}
+  }
+
   @media (prefers-reduced-motion:reduce){
     .live .dot,.fcsHead .bars i{animation:none}
     .cta:hover{transform:none}
@@ -223,12 +243,14 @@
   .keys div{display:flex;justify-content:space-between;gap:10px;
     border-bottom:1px dotted rgba(169,156,196,.26);padding-bottom:5px}
   .keys b{color:var(--parchment);font-weight:600}
-  #endVeil .card{display:flex;flex-direction:column;align-items:flex-start;
-    max-width:620px;margin:auto;padding:24px}
-  #againBtn{font-family:var(--mono);font-size:13px;letter-spacing:.16em;text-transform:uppercase;
-    font-weight:700;color:#08192c;background:linear-gradient(90deg,#63d8ff,#2f7fe0);
-    border:0;padding:16px 32px;cursor:pointer}
-  #againBtn:hover{filter:brightness(1.08)}
+  /* :not(.hidden) keeps this from out-specifying .veil.hidden{display:none} */
+  #endVeil:not(.hidden){display:grid;place-items:center;padding:24px}
+  .endWrap{display:flex;flex-direction:column;align-items:center;gap:16px;text-align:center}
+  .endWrap .brand{margin-bottom:10px}
+  .endWrap h1{margin:0;font-size:clamp(44px,9vw,84px);line-height:1;font-weight:800;
+    letter-spacing:-.01em;text-transform:uppercase;color:#f4f8ff}
+  #resultLine{margin:0 0 14px;font-family:var(--mono);font-size:14px;letter-spacing:.18em;
+    text-transform:uppercase;color:#9fb6d4;font-variant-numeric:tabular-nums}
   .note{font-family:var(--mono);font-size:10.5px;line-height:1.7;color:#8478a0;margin:22px 0 0;max-width:62ch}
   .note b{color:var(--stone);font-weight:600}
   #resultLine{font-family:var(--mono);font-size:13px;letter-spacing:.1em;color:var(--stone);
@@ -355,11 +377,12 @@
 </div>
 
 <div class="veil hidden" id="endVeil">
-  <div class="card">
-    <div class="eyebrow">Match complete</div>
+  <div class="endWrap">
+    <div class="brand"><span class="mark">F</span><span class="wordmark">Flagbound</span></div>
+    <p class="eyebrow">Match complete</p>
     <h1 id="resultTitle">Draw</h1>
-    <p id="resultLine">0 — 0</p>
-    <button id="againBtn" type="button">Run it again</button>
+    <p id="resultLine">Azure 0 — 0 Crimson</p>
+    <button id="againBtn" type="button" class="cta">Run it again <span aria-hidden="true">→</span></button>
   </div>
 </div>
 

@@ -1,6 +1,8 @@
 # 🏴 Flagbound: The Shifting Battlefield — Design Docket
 
-> **Status:** Design docket, v0.1 — concept locked, no implementation yet.
+> **Status:** Design docket, plus a **playable prototype** in
+> [`prototype/`](prototype/) — open `index.html` in any browser. The prototype
+> covers Act I, the collapse and Act II; everything else here is specification.
 > **Scope of this folder:** the full design specification for Flagbound. Nothing in
 > here is wired into the AI Music Studio app that lives in the rest of this
 > repository; this is a standalone dossier.

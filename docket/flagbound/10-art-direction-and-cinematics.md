@@ -117,7 +117,7 @@ the middle of the map removes a sightline from a defender.
 Each act must be recognisable from a single frame. The palettes are deliberately
 opposed.
 
-### Act I — The Surface
+### Act I — Citadel
 
 - **Ground:** rolling green hills with real relief — enough to break sightlines
   and hide an approach, never so much that the space stops reading
@@ -148,7 +148,7 @@ belong on the **flanks**, not in the central lanes. They should reward a player 
 chooses to route through them, never block the sightline of a defender watching
 the direct approach.
 
-### Act II — The Caverns
+### Act II — Underdeep
 
 - **Palette:** cool grey and near-black rock, lit by orange lava and pale cyan
   crystal — the darkest act, and the only one where light sources are objects
@@ -157,7 +157,7 @@ the direct approach.
 - **Light:** low ambient, emissive forms doing the work
 - **Sound:** close and echoing, dripping, a deep hollow pulse
 
-### Act III — The Sky Towers
+### Act III — Skyforge
 
 - **Palette:** pale stone and gold against deep blue, bright cloud below
 - **Forms:** colossal smooth towers, floating platforms, long thin bridges with

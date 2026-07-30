@@ -11,13 +11,13 @@ The split below is a proposal for playtesting.
 | Time | Phase | What is happening |
 |---|---|---|
 | −0:45 → 0:00 | **Briefing** | Spawn-in, class select, F.C.S. objective brief |
-| 0:00 → 5:00 | **Act I — Surface** | Open battlefield CTF |
+| 0:00 → 5:00 | **Act I — Citadel** | Open battlefield CTF |
 | 5:00 → 6:00 | **Tremors** | Warning signals, first structural failures |
 | 6:00 → 6:30 | **THE COLLAPSE** | Transition event — the world breaks |
-| 6:30 → 10:30 | **Act II — Underground** | Hidden kingdom CTF |
+| 6:30 → 10:30 | **Act II — Underdeep** | Hidden kingdom CTF |
 | 10:30 → 11:15 | **Awakening** | Ancient technology activates, ruins begin to lift |
 | 11:15 → 11:45 | **THE ASCENT** | Transition event — the world rises |
-| 11:45 → 15:00 | **Act III — Sky** | Vertical sky-tower CTF, flags relocate |
+| 11:45 → 15:00 | **Act III — Skyforge** | Vertical sky-tower CTF, flags relocate |
 
 **Design intent behind the shape:** each act is shorter than the last. Act I is
 long enough to establish a plan, Act II long enough to break it, Act III short
@@ -54,7 +54,7 @@ These make it feel like *one battle in a changing world*, not three maps.
 - **Nobody dies to the transition.** Transitions never eliminate players. They
   relocate them. Falling during a collapse is choreography, not a death.
 
-## Act I — The Surface Battlefield
+## Act I — Citadel (the surface battlefield)
 
 **Fantasy:** a classic siege. Two great bases facing each other across contested
 ground.
@@ -102,7 +102,7 @@ cheapest spectacle in the game rather than the most expensive.
 drop. It is a moment, not a cutscene. Nobody wants their best flag run
 interrupted by a loading screen.
 
-## Act II — The Underground Kingdom
+## Act II — Underdeep (the underground kingdom)
 
 **Fantasy:** you did not fall into a basement. You fell into a civilisation that
 was down here the whole time.
@@ -146,7 +146,7 @@ battlefield transforms again.
    clouds. Sunlight after ten minutes underground: the visual payoff of the
    match.
 
-## Act III — The Sky Towers
+## Act III — Skyforge (the sky towers)
 
 **Fantasy:** the endgame. Nothing below you.
 

@@ -16,7 +16,7 @@ works straight off the filesystem (`file://`), no server required.
 | Rounded block world ([10](../10-art-direction-and-cinematics.md)) | Hand-written WebGL2 instanced renderer, two generated meshes: a flat-faced cube for the world and a sphere for atmosphere and effects. Rolling green ground, a stone wall with two gaps, two towers, trees with rounded canopies, CSS-gradient sky per phase |
 | **Disintegration on defeat** ([10](../10-art-direction-and-cinematics.md#defeat-disintegration)) | 72 team-coloured motes sweeping upward from the feet on a staggered delay, plus one expanding white flash. No body left behind |
 | **Reboot pads** ([03](../03-combat-and-classes.md#health-defeat-and-respawn)) | Two raised platforms in diagonally opposite corners, one per team, with a glowing core and a locator beam. You spawn at your base at match start but re-form here after every elimination |
-| **Battlefield points of interest** ([10](../10-art-direction-and-cinematics.md#act-i--the-surface)) | Three buildings with window gaps and pitched tile roofs, a pond with a sandy shore and plank bridge, four rock formations, a ruined midfield wall with two gaps, two towers, trees with bushes, clouds overhead, and fogged distant hills for a horizon |
+| **Battlefield points of interest** ([10](../10-art-direction-and-cinematics.md#act-i--citadel)) | Three buildings with window gaps and pitched tile roofs, a pond with a sandy shore and plank bridge, four rock formations, a ruined midfield wall with two gaps, two towers, trees with bushes, clouds overhead, and fogged distant hills for a horizon |
 | Restraint in density ([10](../10-art-direction-and-cinematics.md#restraint-is-part-of-the-style)) | One wall, two towers, eighteen trees. An earlier pass added floating islands, drifting motes and dozens of spires and was judged too crowded — objectives disappeared into the noise |
 | **Square figures** ([10](../10-art-direction-and-cinematics.md#characters)) | Hard-edged cubes — head, torso, two arms, two legs, belt, square eyes — deliberately sharp against the soft rounded world so players separate from terrain at any distance |
 | **Three-way colour split** | Skin-toned head, team-coloured outfit, dark trousers, plus a team band on the head. One saturated hue over a whole figure read as plastic |
@@ -108,6 +108,20 @@ Two aids exist because the flag was genuinely hard to locate in testing:
 
 The player's own character floats a spinning gold diamond, so you can tell which
 one is you.
+
+## Where the prototype deviates from the docket
+
+Deliberate, so the demo fits in a few minutes on modest hardware. Nothing here is
+a proposed design change:
+
+| Value | Docket | Prototype | Why |
+|---|---|---|---|
+| Match length | 15 min | 3 min | Reach the collapse quickly |
+| Collapse at | 6:00 | 1:00 | Same |
+| Respawn timer | 8s | 4s | Short match |
+| Team size | 8v8 | 5v5 | Frame budget in a browser |
+| Debris cap | 5,000 | 2,400 | Browser frame budget |
+| Acts | Three | Two — Skyforge is not built | The ascent is not implemented |
 
 ## Verification
 
