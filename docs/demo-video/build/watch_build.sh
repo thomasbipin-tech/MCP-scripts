@@ -5,7 +5,9 @@
 #   - when all frames exist, it encodes
 cd "$(dirname "$0")"
 SLUG="$1"; PORT="${2:-8500}"; N="$3"
-FF=/usr/local/lib/python3.11/dist-packages/imageio_ffmpeg/binaries/ffmpeg-linux-x86_64-v7.0.2
+# ffmpeg: the system build if present, else the wheel-bundled one. The container is
+# rebuilt between sessions and only one of the two survives.
+FF=$(command -v ffmpeg || echo /usr/local/lib/python3.11/dist-packages/imageio_ffmpeg/binaries/ffmpeg-linux-x86_64-v7.0.2)
 export NODE_PATH=$(npm root -g)
 stall=0; last=-1
 while :; do

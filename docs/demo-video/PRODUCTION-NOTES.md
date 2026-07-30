@@ -82,6 +82,24 @@ in isolation but to letters mid-sentence, depending on surrounding text.
 `BGP`, `CVD`, `STP`, `IP`, `PDF`, `AI` and `YAML` are correct natively, and are pinned to
 their native strings anyway so a model or voice change can't silently regress them.
 
+**The table was too short.** It covered the terms in the 2:31 master and nothing else, so
+the longer cuts shipped with `WAN` read as the English word "wan" (pale), `SD-WAN` as a
+mangled "sd-wan", `OSPF` as `ˈɑːspf`, `IPAM` as "ipp-am", `CIDR` as "sidder", `ACL` as
+"ackle", `EOS` as "ee-ohz" and `AS` as the word "as". The table now carries every acronym
+the narration actually uses (60+ entries — see `CLAUDE.md`), and `python3 vo.py coverage`
+fails the build if a narration line introduces one that isn't pinned. Plurals need their
+own entry (`VRF`/`VRFs`): without one the `s` is silently dropped.
+
+Two matching bugs came out with it:
+
+- **Matching was unbounded**, so a short term could fire inside a longer word — `IP`
+  plucked out of `IPAM`. Terms are now matched on word boundaries.
+- **Fragments were phonemised in isolation.** Splitting the line at each term and
+  phonemising the pieces separately loses sentence context, and espeak then gives function
+  words their citation form: *"a WAN overview"* came out as stressed "AY wan". `vo.py` now
+  masks each term with an ordinary word, phonemises the whole line in one pass so the
+  article correctly reduces to `ɐ`, and swaps the mask for the pinned phonemes.
+
 **A trap worth recording:** espeak puts the stress mark immediately before the *vowel*
 (`ˌeɪvˌiːdˈiː`), not before the syllable as IPA convention suggests (`ˌeɪvˌiːˈdiː`).
 Kokoro is trained on espeak's convention, so the textbook-correct form is wrong here — the
@@ -139,6 +157,28 @@ line's end from `timeline.json` (`voSpan('01')`) and brings the config pane in 0
 it, so a re-recorded or re-paced line keeps the beat instead of needing a new hardcoded
 number. Verified by sampling the pane region: mean brightness 0.00 at 3.5s, 2.84 at 4.3s,
 7.11 at 5.5s.
+
+## Config Compare — the colours are structural, not a git diff
+
+The Config Compare screen was drawn as a source-control diff: red for the left pane, green
+for the right, one colour per *side*. That is not what the product does, and the narration
+already described the real thing. The screen now matches it:
+
+| Colour | Means | Drawn as |
+|---|---|---|
+| green | identical once the ignore rules have been applied | `=` gutter, faint green row |
+| yellow | the same line, edited | `~` gutter, changed words boxed **inside** the row |
+| red | opening words have no counterpart on the other side | `×` gutter; the other pane shows a hatched stub |
+
+Severity is a **separate axis** from colour: each differing line also carries a
+major/minor badge, classified fail-closed, on whichever pane actually holds the line so it
+is never printed twice. The footer carries the counts, the `block-aware sort` state, and
+the two facts that matter commercially — it exports as a unified `.diff` or a standalone
+HTML report, and nothing leaves the browser.
+
+The classification lands ~0.35s after the text staggers in (rows hold at `saturate(.12)`
+until then), so the colour reads as a verdict on lines you have already seen rather than
+as decoration.
 
 ## v5 — the score lifts at the reveal
 

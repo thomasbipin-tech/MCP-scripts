@@ -94,7 +94,7 @@ EPISODES = [
        (4,"That capability-aware validation is the difference between a config that looks "
           "right and one that loads."),
        (1,'Site Areas carry a shared management plane that every device in the site inherits — with per-device override where one box genuinely differs. The site panel uses the same tabs the devices do.'),
-       (2,'The management plane goes deep: AAA servers with timeout, retransmit, VRF and source interface — and a Test AAA action. Common-Criteria password policy. NTP with authentication, prefer, source and access groups.'),
+       (2,'The management plane goes deep: AAA servers with timeout, retransmit, VRF and source interface — and a Test AAA action. Common Criteria password policy. NTP with authentication, prefer, source and access groups.'),
        (2,'Console and VTY line hardening. Global CDP and LLDP. NetFlow exporter detail. Static routes with IP SLA tracking, so a route withdraws when the thing it depends on stops answering.'),
        (2,"NTP authentication picks MD5, HMAC-SHA1 or HMAC-SHA2-256 and inherits from the site. On NX-OS it falls back to MD5 with a note rather than silently emitting something the platform won't take."),
        (3,'SSH host keys are configurable on every Cisco template — key label and modulus, two thousand forty-eight, three thousand seventy-two or four thousand ninety-six, with a NIST and CIS two-thousand-forty-eight-bit floor.'),

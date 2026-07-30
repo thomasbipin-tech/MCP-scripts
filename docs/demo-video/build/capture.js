@@ -20,7 +20,12 @@ function serve(port) {
   const mode = process.argv[2] || 'probe';
   const PORT = Number(process.env.PORT || 8123);
   const srv = await serve(PORT);
-  const browser = await chromium.launch({ args: ['--force-device-scale-factor=2', '--font-render-hinting=none'] });
+  // The container ships a pinned Chromium build; the npm playwright version does not
+  // always match it, so point at the installed binary rather than re-downloading one.
+  const exe = process.env.CHROME_PATH || '/opt/pw-browsers/chromium-1194/chrome-linux/chrome';
+  const browser = await chromium.launch({
+    executablePath: fs.existsSync(exe) ? exe : undefined,
+    args: ['--force-device-scale-factor=2', '--font-render-hinting=none'] });
   const ctx = await browser.newContext({ viewport: { width: 1920, height: 1080 }, deviceScaleFactor: 2 });
   const page = await ctx.newPage();
   const tlq = process.env.TL ? `?tl=${encodeURIComponent(process.env.TL)}` : '';

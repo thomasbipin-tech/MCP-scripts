@@ -15,6 +15,7 @@ Usage:
   python3 vo.py                # synthesise + time
   python3 vo.py skip           # re-time existing vo/*.wav (e.g. human takes)
   python3 vo.py audit          # print the pronunciation table's phonemes
+  python3 vo.py coverage       # fail if narration uses an acronym with no entry
   python3 vo.py voices         # render a voice A/B comparison clip
 """
 import json, os, re, subprocess, sys, wave
@@ -37,6 +38,14 @@ os.makedirs('vo', exist_ok=True)
 # context-dependent guessing is bypassed entirely -- it renders CLI as "cly" in
 # isolation and as letters mid-sentence, which is not something to build on.
 PHON = {
+    # --- compounds first; _TERMS sorts longest-first so these win over their parts ---
+    'ArubaOS-CX':  'əɹˈuːbə ˌoʊˈɛs sˌiːˈɛks',
+    'HMAC-SHA2-256': 'ˌeɪtʃmˈæk ʃˈɑː tˈuː tˌuːfˈɪfti sˈɪks',
+    'HMAC-SHA1':   'ˌeɪtʃmˈæk ʃˈɑː wˈʌn',
+    'SD-WAN':      'ˌɛsdˌiːwˈæn',        # native: reads "sd" as a word. Wrong.
+    'IOS-XE':      'ˌaɪˌoʊˈɛs ˌɛksˈiː',
+    'PAN-OS':      'pˈæn ˌoʊˈɛs',
+    'NX-OS':       'ˌɛnˈɛks ˌoʊˈɛs',
     'VLAN':        'vˈiːlæn',            # native: vlˈæn -- one syllable. Wrong.
     'VLANs':       'vˈiːlænz',           # native: vlˈæn -- plural silently dropped.
     'VXLAN':       'vˌiːˌɛkslˈæn',
@@ -55,10 +64,61 @@ PHON = {
     'Visio':       'vˈɪzioʊ',            # native: vˈɪsɪˌoʊ ("VIS-ee-oh")
     'Netforge.ai': 'nˈɛtfɔːɹdʒ dˌɑːt ˌeɪˈaɪ',
     'Netforge':    'nˈɛtfɔːɹdʒ',
+    # --- transport / topology ---
+    'WAN':         'wˈæn',               # native: wˈɑːn -- the English word "wan". Wrong.
+    'LAN':         'lˈæn',
+    'MPLS':        'ˌɛmpˌiːˌɛlˈɛs',
+    'VPN':         'vˌiːpˌiːˈɛn',
+    'VRFs':        'vˌiːˌɑːɹˈɛfs',
+    'VRF':         'vˌiːˌɑːɹˈɛf',
+    'SVIs':        'ˌɛsvˌiːˈaɪz',        # native: "sviss". Wrong.
+    'SVI':         'ˌɛsvˌiːˈaɪ',
+    'HSRP':        'ˌeɪtʃˌɛsˌɑːɹpˈiː',
+    'VRRP':        'vˌiːˌɑːɹˌɑːɹpˈiː',
+    'FHRP':        'ˌɛfˌeɪtʃˌɑːɹpˈiː',
+    'OSPF':        'ˌoʊˌɛspˌiːˈɛf',
+    'MTU':         'ˌɛmtˌiːjˈuː',
+    'VTY':         'vˌiːtˌiːwˈaɪ',
+    'ACL':         'ˌeɪsˌiːˈɛl',
+    # --- addressing ---
+    'IPv6':        'ˌaɪpˌiːvˌiːsˈɪks',
+    'IPAM':        'ˈaɪpæm',             # native: "ipp-am". Wrong.
+    'CIDR':        'sˈaɪdɚ',             # said "cider"; native spells it out
+    'MAC':         'mˈæk',
+    'DHCP':        'dˌiːˌeɪtʃsˌiːpˈiː',
+    'DNS':         'dˌiːˌɛnˈɛs',
+    # --- management plane ---
+    'AAA':         'ˌeɪˌeɪˈeɪ',
+    'TACACS':      'tˈækæks',            # said "tack-axe"
+    'RADIUS':      'ɹˈeɪdiəs',
+    'SNMP':        'ˌɛsˌɛnˌɛmpˈiː',
+    'NTP':         'ˌɛntˌiːpˈiː',
+    'SSH':         'ˌɛsˌɛsˈeɪtʃ',
+    'LLDP':        'ˌɛlˌɛldˌiːpˈiː',
+    'CDP':         'sˌiːdˌiːpˈiː',
+    'OOB':         'ˌoʊˌoʊˈbiː',
+    'MD5':         'ˌɛmdˌiːfˈaɪv',
+    # --- hardware / optics ---
+    'QSFP':        'kjˌuːˌɛsˌɛfpˈiː',
+    'SFP':         'ˌɛsˌɛfpˈiː',
+    'DAC':         'dˈæk',
+    'EOS':         'ˌiːˌoʊˈɛs',
+    # --- everything else that is spoken as letters ---
+    'SLAs':        'ˌɛsˌɛlˈeɪz',
+    'SLA':         'ˌɛsˌɛlˈeɪ',
+    'HTML':        'ˌeɪtʃtˌiːˌɛmˈɛl',
+    'CSV':         'sˌiːˌɛsvˈiː',
+    'UI':          'jˌuːˈaɪ',
+    'NIST':        'nˈɪst',
+    'AS':          'ˌeɪˈɛs',           # BGP autonomous system: "ay-ESS", not the word "as"
+    'CIS':         'sˌiːˌaɪˈɛs',
 }
 # longest first so "VLANs" wins over "VLAN" and "Netforge.ai" over "Netforge"
 _TERMS = sorted(PHON, key=len, reverse=True)
-_SPLIT = re.compile('(' + '|'.join(re.escape(t) for t in _TERMS) + ')')
+# Bounded on both sides so a short term can never fire inside a longer word -- "IP"
+# must not be plucked out of "IPAM", and "MAC" must not fire inside a hostname.
+_SPLIT = re.compile('(?<![A-Za-z0-9])(' + '|'.join(re.escape(t) for t in _TERMS) +
+                    ')(?![A-Za-z0-9])')
 
 _tok = None
 def tokenizer():
@@ -68,12 +128,34 @@ def tokenizer():
         _tok = Tokenizer()
     return _tok
 
+# Masking token. Phonemising the fragments either side of a term *in isolation* loses
+# the sentence context, and espeak then gives function words their citation form: "a WAN
+# overview" came out as stressed "AY wan". So the terms are masked with an ordinary word
+# first, the whole sentence is phonemised in one pass -- the article correctly reduces to
+# ɐ -- and the mask is swapped for the pinned phonemes afterwards.
+_MASK = 'Kevin'
+_MASK_PH = re.compile(r'k[ˈˌ]?ɛv[ˈˌ]?ɪn')
+
 def phonemes_for(text):
     """Phonemise the line, splicing in the overrides.
 
     Text either side of an override is phonemised normally, so ordinary prosody is
     untouched; only the overridden terms are pinned.
     """
+    terms = []
+    masked = _SPLIT.sub(lambda m: (terms.append(m.group(1)), _MASK)[1], text)
+    if terms:
+        parts = _MASK_PH.split(tokenizer().phonemize(masked).strip())
+        # If the mask did not survive intact (an unexpected phonemisation), fall through
+        # to the older fragment-splicing path rather than emitting a mangled line.
+        if len(parts) == len(terms) + 1:
+            buf = [parts[0]]
+            for term, seg in zip(terms, parts[1:]):
+                buf += [PHON[term], seg]
+            joined = ''.join(buf)
+            joined = re.sub(r'\s+([.,;:!?])', r'\1', joined)
+            return re.sub(r'\s{2,}', ' ', joined).strip()
+
     out = []
     for part in _SPLIT.split(text):
         if not part:
@@ -169,6 +251,48 @@ def audit():
         bad = [c for c in ('\u02c8','\u02cc') if c+'d' in v or c+'p' in v or c+'l' in v]
         print(f"  {term:6} primary={pri} secondary={sec}  "
               f"{'OK' if pri == 1 and not bad else 'CHECK: mark sits before a consonant'}")
+
+# Words that read as ordinary prose despite the capitals -- they are not acronyms and
+# need no phoneme pin. Anything else uncovered is a bug: SD-WAN and WAN shipped
+# mispronounced because nothing checked for them.
+_NOT_ACRONYMS = {'AND', 'NOT', 'ONE', 'OK', 'CHECK', 'SAME', 'STILL', 'UNDER', 'PRIMARY',
+                 'FAILING', 'NO', 'CUT', 'TV'}
+
+def coverage(files=('walkthrough.py', 'series.py', 'shorts.py', 'vo.py')):
+    """Fail if a narration line contains an acronym with no entry in PHON."""
+    import ast
+    missing = {}
+    for f in files:
+        if not os.path.exists(f):
+            continue
+        for node in ast.walk(ast.parse(open(f).read())):
+            # narration is always (scene_index, "text") -- metadata strings and
+            # docstrings are not spoken and must not be flagged
+            if not (isinstance(node, ast.Tuple) and len(node.elts) >= 2):
+                continue
+            head, body = node.elts[0], node.elts[1]
+            # (scene, "text") in the series/shorts scripts; ("id", scene, "text", cap)
+            # in this file's own LINES
+            if (isinstance(head, ast.Constant) and isinstance(head.value, str)
+                    and len(node.elts) >= 3):
+                head, body = node.elts[1], node.elts[2]
+            if not (isinstance(head, ast.Constant) and isinstance(head.value, int)):
+                continue
+            if not (isinstance(body, ast.Constant) and isinstance(body.value, str)):
+                continue
+            for w in re.findall(r"[A-Za-z][A-Za-z0-9./\-]*", body.value):
+                w = w.rstrip('.')
+                if not (re.search(r'[A-Z]{2,}', w) or re.match(r'^[A-Z][a-z]*-[A-Z]', w)):
+                    continue
+                if w in PHON or w.upper() in _NOT_ACRONYMS:
+                    continue
+                if all(p in PHON or not p for p in re.split(r'[-/]', w)):
+                    continue          # a compound whose every part is already pinned
+                missing.setdefault(w, f)
+    for w, f in sorted(missing.items()):
+        print(f"  MISSING phoneme entry: {w:16} (in {f})")
+    print(f"{len(missing)} uncovered term(s)" if missing else "all narration acronyms are pinned")
+    return 1 if missing else 0
 
 def write_wav(path, samples, sr=SR):
     with wave.open(path,'w') as w:
@@ -268,6 +392,7 @@ def build():
 
 if __name__ == '__main__':
     if 'audit' in sys.argv: audit(); sys.exit()
+    if 'coverage' in sys.argv: sys.exit(coverage())
     if 'voices' in sys.argv: voice_demo(); sys.exit()
     if 'skip' not in sys.argv: synth_all()
     build()

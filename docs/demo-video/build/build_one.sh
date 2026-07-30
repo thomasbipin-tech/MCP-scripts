@@ -2,7 +2,9 @@
 # Build a single cut by slug: build_one.sh <slug> [port]
 set -euo pipefail
 cd "$(dirname "$0")"
-FF=/usr/local/lib/python3.11/dist-packages/imageio_ffmpeg/binaries/ffmpeg-linux-x86_64-v7.0.2
+# ffmpeg: the system build if present, else the wheel-bundled one. The container is
+# rebuilt between sessions and only one of the two survives.
+FF=$(command -v ffmpeg || echo /usr/local/lib/python3.11/dist-packages/imageio_ffmpeg/binaries/ffmpeg-linux-x86_64-v7.0.2)
 export NODE_PATH=$(npm root -g)
 SLUG="$1"; PORT="${2:-8500}"
 TL_PATH="timeline_${SLUG}.json" VO_PATH="vo_${SLUG}.wav" MUSIC_OUT="music_${SLUG}.wav" python3 music.py

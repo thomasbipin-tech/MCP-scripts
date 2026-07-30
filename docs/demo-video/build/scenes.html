@@ -92,8 +92,22 @@ body{font-family:Inter,sans-serif;color:var(--tp);-webkit-font-smoothing:antiali
 .dvh{padding:12px 16px;background:#ffffff08;border-bottom:1px solid var(--bd);font-size:13.5px;color:var(--ts);font-family:Inter,sans-serif}
 .dvl{display:flex;gap:12px;padding:6px 16px;line-height:1.5;white-space:pre}
 .dvl .g{width:14px;flex:0 0 14px;color:var(--tph);text-align:center}
-.dvl.del{background:#ff3b3014} .dvl.del .g{color:var(--err)} .dvl.del span:last-child{color:#ff9b94}
-.dvl.add{background:#34c75914} .dvl.add .g{color:var(--ok)} .dvl.add span:last-child{color:#8ce9a6}
+.dvl .tx{flex:1;min-width:0;white-space:pre-wrap;word-break:break-all}
+/* Config Compare colours the row by STRUCTURE, not by side:
+   green = identical, yellow = same line with edits, red = no counterpart. */
+.dvl.same{background:#34c75918} .dvl.same .g{color:var(--ok)}
+.dvl.edit{background:#ff9f0a28} .dvl.edit .g{color:var(--warn)}
+.dvl.none{background:#ff3b3028} .dvl.none .g{color:var(--err)} .dvl.none .tx{color:#ff9b94}
+.dvl.gap{background:repeating-linear-gradient(135deg,#ffffff08 0 7px,transparent 7px 14px)}
+.dvl.gap .g,.dvl.gap .tx{color:var(--tph)}
+.dvl .tk{font-style:normal;border-radius:4px;padding:1px 5px;background:#ff9f0a40;color:#ffd48a}
+.dvl.none .tk{background:#ff3b3038;color:#ff9b94}
+.sev{font-family:Inter,sans-serif;font-size:11px;letter-spacing:.04em;text-transform:uppercase;
+     padding:2px 8px;border-radius:99px;align-self:center;flex:0 0 auto}
+.sev.major{background:var(--errb);color:#ff9b94;border:1px solid #ff3b3040}
+.sev.minor{background:var(--warnb);color:#ffd48a;border:1px solid #ff9f0a40}
+.dvkey{display:flex;gap:22px;align-items:center;font-family:Inter,sans-serif;font-size:14px;color:var(--ts)}
+.dvkey i{width:11px;height:11px;border-radius:3px;display:inline-block;margin-right:8px;vertical-align:-1px}
 .dvmid{width:1px;background:var(--bd)}
 
 /* dashboard rows */
@@ -1088,37 +1102,72 @@ const SCENES=[
 /* ---------- 20. Config Compare ---------- */
 {a:0,b:9,go(lt,d){
   hideApp(); const g=$('#gfx');
-  const LEFT=[['','interface Vlan30'],['','  description VOICE'],['-','  ip address 10.50.30.1 255.255.255.0'],
-              ['','!'],['','router bgp 65001'],['-','  neighbor 10.0.0.2 remote-as 65001'],
-              ['','!'],['','interface Po1'],['-','  switchport trunk native vlan 1'],
-              ['','  switchport mode trunk'],['','!'],['','system jumbomtu 9216'],
-              ['','spanning-tree mode rapid-pvst']];
-  const RIGHT=[['','interface Vlan30'],['','  description VOICE'],['+','  ip address 10.50.30.1 255.255.255.0'],
-               ['','!'],['','router bgp 65002'],['+','  neighbor 10.0.0.2 remote-as 65002'],
-               ['','!'],['','interface Po1'],['+','  switchport trunk native vlan 99'],
-               ['','  switchport mode trunk'],['','!'],['','system jumbomtu 9216'],
-               ['','spanning-tree mode rapid-pvst']];
-  const row=(r,cls)=>`<div class="dvl ${r[0]==='-'?'del':r[0]==='+'?'add':''}"><span class="g">${r[0]||' '}</span><span>${r[1]}</span></div>`;
+  // Netforge aligns the two configs block by block, then classifies every line.
+  // The colour axis is STRUCTURAL, not per-side (this is not a git diff):
+  //   green  = identical once the ignore rules have been applied
+  //   yellow = same line, edited -- the changed words are marked inside the row
+  //   red    = opening words have no counterpart on the other side
+  // Severity (major/minor) is a SEPARATE axis, classified fail-closed.
+  const ROWS=[
+    {k:'same',l:'interface Vlan30',                      r:'interface Vlan30'},
+    {k:'edit',l:'  description VOICE',                   r:'  description VOICE-30',
+              a:'VOICE',      b:'VOICE-30',      sev:'minor'},
+    {k:'edit',l:'  ip address 10.50.30.1 255.255.255.0', r:'  ip address 10.50.30.254 255.255.255.0',
+              a:'10.50.30.1', b:'10.50.30.254',  sev:'major'},
+    {k:'none',l:'  ip helper-address 10.10.8.20',        r:null, sev:'major'},
+    {k:'same',l:'!',                                     r:'!'},
+    {k:'same',l:'router bgp 65001',                      r:'router bgp 65001'},
+    {k:'edit',l:'  neighbor 10.0.0.2 remote-as 65001',   r:'  neighbor 10.0.0.2 remote-as 65002',
+              a:'65001',      b:'65002',         sev:'major'},
+    {k:'none',l:null,                                    r:'  maximum-paths 4', sev:'minor'},
+    {k:'same',l:'!',                                     r:'!'},
+    {k:'same',l:'interface Port-Channel1',               r:'interface Port-Channel1'},
+    {k:'edit',l:'  switchport trunk native vlan 99',     r:'  switchport trunk native vlan 1',
+              a:'99',         b:'1',             sev:'major'},
+    {k:'same',l:'  switchport mode trunk',               r:'  switchport mode trunk'},
+    {k:'same',l:'system jumbomtu 9216',                  r:'system jumbomtu 9216'},
+  ];
+  const MARK={same:'=',edit:'~',none:'×'};
+  const mk=(s,tok)=>tok?s.replace(tok,`<i class="tk">${tok}</i>`):s;
+  // the badge sits on whichever pane actually carries the line, so it is never doubled
+  const badgeSide=(rw)=>rw.r!==null?'r':'l';
+  const cell=(rw,side)=>{
+    const txt=side==='l'?rw.l:rw.r;
+    if(txt===null) return `<div class="dvl gap"><span class="g">·</span><span class="tx">— no counterpart —</span></div>`;
+    const sev=(rw.sev&&badgeSide(rw)===side)?`<span class="sev ${rw.sev}">${rw.sev}</span>`:'';
+    return `<div class="dvl ${rw.k}"><span class="g">${MARK[rw.k]}</span>`+
+           `<span class="tx">${mk(txt,side==='l'?rw.a:rw.b)}</span>${sev}</div>`;
+  };
+  const n=(k)=>ROWS.filter(r=>r.k===k).length;
+  const sv=(s)=>ROWS.filter(r=>r.sev===s).length;
   if(!g.dataset.n4){g.dataset.n4='1';
-    pageShell(g,{crumb:'netforge.ai / tools / <b>config compare</b>',btns:['Swap','Export diff','Fix on canvas'],
+    pageShell(g,{crumb:'netforge.ai / tools / <b>config compare</b>',
+      btns:['Ignore rules · 5','Major only','Export ▾'],
       tabs:['Config Compare','Traceroute','Port check','Subnet calculator','CIDR aggregator'],tabOn:0,body:`
-      <div class="h1">Intended vs running</div>
-      <div class="h2">RSITE-CORE-01 · captured 2 minutes ago</div>
+      <div class="h1">Compare two configurations</div>
+      <div class="h2">Paste or drop two files — the panes become a live comparison. No compare button.</div>
       <div class="dv">
-        <div class="dvcol"><div class="dvh">intended — generated from the canvas</div><div id="dl">${LEFT.map(r=>row(r)).join('')}</div></div>
+        <div class="dvcol"><div class="dvh">config A — RSITE-CORE-01 · intended</div><div id="dl">${ROWS.map(r=>cell(r,'l')).join('')}</div></div>
         <div class="dvmid"></div>
-        <div class="dvcol"><div class="dvh">running — read from the device</div><div id="dr">${RIGHT.map(r=>row(r)).join('')}</div></div>
+        <div class="dvcol"><div class="dvh">config B — RSITE-CORE-01 · running</div><div id="dr">${ROWS.map(r=>cell(r,'r')).join('')}</div></div>
       </div>
-      <div style="display:flex;gap:14px;align-items:center;margin-top:20px" id="dsum">
-        <span class="pill err">3 differences</span>
-        <span class="pill warn">1 will drop the voice VLAN</span>
-        <span style="font-size:14px;color:var(--ts)">last verified — never</span>
+      <div style="display:flex;gap:26px;align-items:center;margin-top:20px" id="dsum">
+        <div class="dvkey">
+          <span><i style="background:#34c759"></i>${n('same')} identical</span>
+          <span><i style="background:#ff9f0a"></i>${n('edit')} same line, edited</span>
+          <span><i style="background:#ff3b30"></i>${n('none')} no counterpart</span>
+        </div>
+        <span class="pill err">${sv('major')} major</span>
+        <span class="pill warn">${sv('minor')} minor</span>
+        <span style="font-size:14px;color:var(--ts)">block-aware sort on · unified .diff or HTML report · nothing leaves your browser</span>
       </div>`});}
   const rows=[...g.querySelectorAll('.dvl')];
   stagger(rows, lt, .25, .055, .5);
-  rows.forEach(el=>{ if(el.classList.contains('del')||el.classList.contains('add')){
-    const on=lt>2.6; el.style.filter=on?'none':'saturate(.15)'; }});
+  // the classification lands a beat after the text, so the colour reads as a verdict
+  rows.forEach(el=>{ if(!el.classList.contains('same')){
+    const on=lt>2.6; el.style.filter=on?'none':'saturate(.12)'; }});
   const sp=easeOut(seg(lt,3.4,4.3));
+  g.querySelectorAll('.sev').forEach(el=>el.style.opacity=sp);
   g.querySelector('#dsum').style.opacity=sp;
   g.querySelector('.pg').style.opacity=1-seg(lt,d-.6,d);
   chips(null);

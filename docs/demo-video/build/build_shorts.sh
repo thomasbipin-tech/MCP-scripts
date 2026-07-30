@@ -2,7 +2,9 @@
 # Render + encode every short. One port per variant so a stray server can't collide.
 set -euo pipefail
 cd "$(dirname "$0")"
-FF=/usr/local/lib/python3.11/dist-packages/imageio_ffmpeg/binaries/ffmpeg-linux-x86_64-v7.0.2
+# ffmpeg: the system build if present, else the wheel-bundled one. The container is
+# rebuilt between sessions and only one of the two survives.
+FF=$(command -v ffmpeg || echo /usr/local/lib/python3.11/dist-packages/imageio_ffmpeg/binaries/ffmpeg-linux-x86_64-v7.0.2)
 export NODE_PATH=$(npm root -g)
 PORT_BASE=8200
 i=0

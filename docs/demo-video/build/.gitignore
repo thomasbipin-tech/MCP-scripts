@@ -9,3 +9,6 @@ vo/
 vo_*/
 *.wav
 *.log
+__pycache__/
+node_modules/
+package-lock.json
