@@ -1,7 +1,11 @@
 frames/
+frames_*/
 probe/
 verify*/
+v6/
 voices/
 kokoro/
 vo/
+vo_*/
 *.wav
+*.log

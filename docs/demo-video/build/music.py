@@ -8,21 +8,34 @@ and a resolve under the end card. Ducked under the narration.
 
 Out: music.wav (stereo 44.1k)
 """
-import json, wave
+import json, os, wave
 import numpy as np
 
 SR = 44100
-TL = json.load(open('timeline.json'))
+TL_PATH = os.environ.get('TL_PATH', 'timeline.json')
+OUT_PATH = os.environ.get('MUSIC_OUT', 'music.wav')
+VO_PATH = os.environ.get('VO_PATH', 'vo.wav')
+TL = json.load(open(TL_PATH))
 DUR = TL['duration'] + 0.6
 SC = TL['scenes']                      # 0-indexed; scene n is SC[n-1]
 N = int(DUR * SR)
 t = np.arange(N) / SR
 
-# scene indices are 0-based here; act 1 was merged from 4 scenes to 3 in v5
-TURN   = SC[2]['a']                    # scene 3: reframe / drop
-PROD   = SC[3]['a']                    # scene 4: product act begins
-PAYOFF = SC[9]['a']                    # scene 10: "0 conflicts"
-OUTRO  = SC[13]['a']                   # scene 14: outcome
+# The master cut anchors by scene index. Short-form variants pass explicit anchors in
+# their timeline, and set turn=None -- they have no long dark act to swell out of.
+A = TL.get('anchors')
+if A:
+    TURN   = A.get('turn')
+    PROD   = A['prod']
+    PAYOFF = A.get('payoff')
+    OUTRO  = A['outro']
+    PAYOFF_END = A.get('payoff_end', (PAYOFF or 0) + 6.0)
+else:
+    TURN   = SC[2]['a']                # scene 3: reframe / drop
+    PROD   = SC[3]['a']                # scene 4: product act begins
+    PAYOFF = SC[9]['a']                # scene 10: "0 conflicts"
+    OUTRO  = SC[13]['a']               # scene 14: outcome
+    PAYOFF_END = SC[9]['b']
 BPM    = 100.0
 BEAT   = 60.0 / BPM
 
@@ -124,16 +137,20 @@ add(shim, bell(NOTE['C5'], 0.16, dur=2.8), 0.35)
 add(shim, bell(NOTE['G4'], 0.10, dur=2.4), 0.62)
 
 # ---------------- ACT 1: sparse, dark, unresolved ----------------
-add(pad, pad_voice([NOTE['A2'], NOTE['E3']], TURN + 1.0, level=0.30), 0.0)
-add(pad, pad_voice([NOTE['C3'], NOTE['F3']], 14.0, level=0.16), 16.0)
-k = 0.0
-while k < TURN - 2.0:                                   # slow, lonely sub pulse
-    add(bass, sub_note(NOTE['A1'], 2.4, 0.42), k)
-    add(perc, tick(0.05, dark=True), k)
-    k += 4.8
+if TURN:
+    add(pad, pad_voice([NOTE['A2'], NOTE['E3']], TURN + 1.0, level=0.30), 0.0)
+    add(pad, pad_voice([NOTE['C3'], NOTE['F3']], 14.0, level=0.16), 16.0)
+    k = 0.0
+    while k < TURN - 2.0:                               # slow, lonely sub pulse
+        add(bass, sub_note(NOTE['A1'], 2.4, 0.42), k)
+        add(perc, tick(0.05, dark=True), k)
+        k += 4.8
+else:
+    # shorts: a brief minor bed under the opening, no long dark act
+    add(pad, pad_voice([NOTE['A2'], NOTE['E3']], max(PROD, 1.0), level=0.22), 0.0)
 
 # ---------------- THE TURN: drop, then a rising swell ----------------
-swell_len = PROD - (TURN + 3.4)
+swell_len = (PROD - (TURN + 3.4)) if TURN else 0.0
 if swell_len > 1.0:
     n = int(swell_len * SR); tt = np.arange(n) / SR
     rise = np.sin(2 * np.pi * (NOTE['A2'] * (1 + 0.28 * tt / swell_len)) * tt)
@@ -149,7 +166,7 @@ tpos = PROD
 while tpos < OUTRO:
     root, ch = PROG[bar % 4]
     barlen = BEAT * 4
-    lift = 1.22 if PAYOFF <= tpos < SC[9]['b'] else 1.0
+    lift = 1.22 if (PAYOFF is not None and PAYOFF <= tpos < PAYOFF_END) else 1.0
     add(pad,  pad_voice([NOTE[c] for c in ch], barlen * 1.05, level=0.20 * lift), tpos)
     add(bass, sub_note(NOTE[root], barlen * 0.62, 0.50), tpos)
     add(bass, sub_note(NOTE[root], BEAT * 0.9, 0.30), tpos + BEAT * 2)
@@ -189,7 +206,7 @@ tilt = lp_fast(tilt, 2.0)
 mix *= tilt
 
 # duck under the narration
-with wave.open('vo.wav') as w:
+with wave.open(VO_PATH) as w:
     vo = np.frombuffer(w.readframes(w.getnframes()), dtype='<i2').astype(np.float32) / 32768.0
     vo_sr = w.getframerate()
 vo44 = np.interp(np.arange(N) / SR, np.arange(len(vo)) / vo_sr, vo, left=0, right=0)
@@ -206,10 +223,11 @@ mix = np.tanh(mix * 1.25) / 1.25
 mix *= 10 ** (-19.0 / 20) / max(np.abs(mix).max(), 1e-6)  # quiet bed; VO stays on top
 
 st = np.stack([mix, np.roll(mix, 90)], axis=1)            # slight width
-with wave.open('music.wav', 'w') as w:
+with wave.open(OUT_PATH, 'w') as w:
     w.setnchannels(2); w.setsampwidth(2); w.setframerate(SR)
     w.writeframes((np.clip(st, -1, 1) * 32767).astype('<i2').tobytes())
 
-print(f'music.wav  {DUR:.2f}s')
-print(f'  turn {TURN:.1f}s | product {PROD:.1f}s | payoff {PAYOFF:.1f}s | outro {OUTRO:.1f}s')
+print(f'{OUT_PATH}  {DUR:.2f}s')
+fmt = lambda v: 'n/a' if v is None else f'{v:.1f}s'
+print(f'  turn {fmt(TURN)} | product {fmt(PROD)} | payoff {fmt(PAYOFF)} | outro {fmt(OUTRO)}')
 print(f'  peak {np.abs(st).max():.3f}  rms {np.sqrt((mix**2).mean()):.4f}')

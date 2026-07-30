@@ -18,12 +18,13 @@ function serve(port) {
 
 (async () => {
   const mode = process.argv[2] || 'probe';
-  const PORT = 8123;
+  const PORT = Number(process.env.PORT || 8123);
   const srv = await serve(PORT);
   const browser = await chromium.launch({ args: ['--force-device-scale-factor=2', '--font-render-hinting=none'] });
   const ctx = await browser.newContext({ viewport: { width: 1920, height: 1080 }, deviceScaleFactor: 2 });
   const page = await ctx.newPage();
-  await page.goto(`http://127.0.0.1:${PORT}/scenes.html`, { waitUntil: 'load' });
+  const tlq = process.env.TL ? `?tl=${encodeURIComponent(process.env.TL)}` : '';
+  await page.goto(`http://127.0.0.1:${PORT}/scenes.html${tlq}`, { waitUntil: 'load' });
   await page.waitForFunction(() => window.__ready === true);
   await page.evaluate(() => document.fonts.ready);
   await page.waitForTimeout(600);
@@ -43,9 +44,10 @@ function serve(port) {
     }
   } else {
     const FPS = 30;
-    const DUR = JSON.parse(fs.readFileSync(path.join(ROOT, 'timeline.json'), 'utf8')).duration;
+    const TL = process.env.TL || 'timeline.json';
+    const DUR = JSON.parse(fs.readFileSync(path.join(ROOT, TL), 'utf8')).duration;
     const N = Math.round(FPS * DUR);
-    const OUT = path.join(ROOT, 'frames');
+    const OUT = path.join(ROOT, process.env.FRAMES || 'frames');
     fs.rmSync(OUT, { recursive: true, force: true });
     fs.mkdirSync(OUT, { recursive: true });
     const t0 = Date.now();
