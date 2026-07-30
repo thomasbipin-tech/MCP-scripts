@@ -20,11 +20,15 @@ import vo, shorts
 
 SPEED = 1.0
 PADS  = (0.45, 0.40, 0.75)
-BRAND, ENDCARD = 24, 25
+BRAND, ENDCARD = 36, 37
 PANES, BRIDGE, REFRAME, DRAG, PORTS, FABRIC = 0, 1, 2, 3, 4, 5
 VALIDATE, CONFLICT, AIARCH, GREEN, CLIOUT, EXPORTS, CLOUD, OUTCOME = 6, 7, 8, 9, 10, 11, 12, 13
 BLUEPRINT, MULTISITE, TEMPLATES, CONFIGCMP = 14, 15, 16, 17
 ADDRESSING, WATCHTOWER, TOOLS, PREFLIGHT, LOOKINGGLASS, RACKBOM = 18, 19, 20, 21, 22, 23
+# dedicated topic screens (batch 2) -- one subject each, so narration and picture agree
+ACCOUNT, ROLES, DEVPROPS, CABLESCHED = 24, 25, 26, 27
+EXPORTFMT, DESIGNDOC, DRIFTDASH, DEPLOYRUN = 28, 29, 30, 31
+SITEAREAS, CONSOLEOOB, VAULT, MGMTPLANE = 32, 33, 34, 35
 
 TAG = "Netforge.ai. From sketch to spine."
 
@@ -346,7 +350,7 @@ def build(ep, do_synth=True):
     # A scene animates for ~6s then holds. Slots carrying 25s+ of narration would sit
     # static for most of that, so they are split into consecutive slots on the SAME scene:
     # the shot replays its build, which reads as re-emphasis and keeps the frame moving.
-    MAXSLOT = 22.0
+    MAXSLOT = 10_000.0   # disabled: replaying a scene to fill time repeats screens
     exp_slots, exp_of = [], {}
     for slot, (sidx, floor) in enumerate(ep['slots']):
         mine = [n for n in ids if ids[n][0] == slot]

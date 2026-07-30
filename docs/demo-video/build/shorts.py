@@ -21,7 +21,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import vo
 
 SPEED = 1.10
-BRAND, ENDCARD = 24, 25
+BRAND, ENDCARD = 32, 33
 # Scene indices of the additional product surfaces built for these shorts:
 BLUEPRINT, MULTISITE, TEMPLATES, CONFIGCMP = 14, 15, 16, 17
 ADDRESSING, WATCHTOWER, TOOLS, PREFLIGHT   = 18, 19, 20, 21

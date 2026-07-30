@@ -127,6 +127,58 @@ body{font-family:Inter,sans-serif;color:var(--tp);-webkit-font-smoothing:antiali
 .ru .ub{flex:1;height:100%;border-radius:5px;border:1px solid var(--bd);background:#ffffff05}
 .ru .ub.f{display:flex;align-items:center;padding:0 10px;font-family:JBMono,monospace;font-size:12.5px}
 
+
+/* ---------- batch 2 screens ---------- */
+.form{max-width:560px}
+.frow{margin-bottom:15px}
+.frow label{display:block;font-size:11px;letter-spacing:1.2px;text-transform:uppercase;color:var(--tt);font-weight:600;margin-bottom:6px}
+.frow .fi{height:44px;border-radius:var(--r-sm);border:1px solid var(--bd2);background:#ffffff08;display:flex;align-items:center;padding:0 14px;font-size:15.5px;color:var(--tp)}
+.frow .fi.ok{border-color:#34c75955;background:var(--okb)}
+.chk{display:flex;align-items:center;gap:10px;font-size:14.5px;color:var(--ts);padding:6px 0}
+.chk i{width:18px;height:18px;border-radius:5px;border:1.5px solid var(--bd3);display:flex;align-items:center;justify-content:center;flex:0 0 18px}
+.chk i svg{width:11px;height:11px}
+.chk.on{color:var(--tp)} .chk.on i{background:var(--ok);border-color:var(--ok)}
+.totp{display:flex;gap:10px;margin-top:6px}
+.totp span{width:52px;height:62px;border-radius:var(--r-sm);border:1px solid var(--bd2);background:#ffffff08;
+  display:flex;align-items:center;justify-content:center;font-family:JBMono,monospace;font-size:28px;color:var(--ac)}
+.qr{width:150px;height:150px;border-radius:var(--r-sm);background:#fff;padding:9px}
+.qr svg{width:100%;height:100%}
+
+.rolegrid{width:100%;border-collapse:collapse;font-size:15px}
+.rolegrid th{text-align:left;font-size:11px;letter-spacing:1.2px;text-transform:uppercase;color:var(--tt);font-weight:600;padding:0 12px 12px}
+.rolegrid th.c,.rolegrid td.c{text-align:center;width:110px}
+.rolegrid td{padding:13px 12px;border-top:1px solid #ffffff0d;font-size:15px}
+.rolegrid td.r{font-family:JBMono,monospace;color:var(--tp)}
+.dot{width:20px;height:20px;border-radius:99px;display:inline-flex;align-items:center;justify-content:center}
+.dot.y{background:var(--ok)} .dot.n{background:#ffffff12}
+.dot svg{width:11px;height:11px}
+
+.proppane{display:flex;gap:0;border-radius:var(--r-md);border:1px solid var(--bd);overflow:hidden}
+.propnav{width:230px;flex:0 0 230px;background:#ffffff05;border-right:1px solid var(--bd);padding:12px}
+.propnav div{padding:11px 13px;border-radius:var(--r-sm);font-size:14.5px;color:var(--ts)}
+.propnav div.on{background:var(--acs);color:var(--ac);font-weight:600}
+.propbody{flex:1;padding:20px 24px;min-width:0}
+.kv{display:flex;gap:16px;padding:11px 0;border-top:1px solid #ffffff0d;font-size:15px;align-items:center}
+.kv .k{width:250px;color:var(--ts)}
+.kv .v{font-family:JBMono,monospace;color:var(--tp)}
+.kv .badge{margin-left:auto;font-size:11px;padding:3px 9px;border-radius:99px;border:1px solid var(--bd2);color:var(--tt);font-family:JBMono,monospace}
+.kv .badge.inh{border-color:#38bdf84d;color:var(--ac);background:var(--acs)}
+.kv .badge.ovr{border-color:#ff9f0a4d;color:var(--warn);background:var(--warnb)}
+
+.fmtgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:8px}
+.fmt{border-radius:var(--r-md);border:1px solid var(--bd);background:#ffffff06;padding:20px;display:flex;gap:16px;align-items:flex-start}
+.fmt .ic{width:52px;height:52px;flex:0 0 52px;border-radius:var(--r-sm);display:flex;align-items:center;justify-content:center;border:1px solid var(--bd2)}
+.fmt .ic svg{width:26px;height:26px}
+.fmt .nm{font-size:17px;font-weight:600;letter-spacing:-.2px}
+.fmt .ext{font-family:JBMono,monospace;font-size:12.5px;color:var(--ac);margin-top:2px}
+.fmt .ds{font-size:13.5px;color:var(--ts);margin-top:7px;line-height:1.45}
+
+.docpg{width:250px;height:324px;border-radius:8px;background:#f5f5f7;box-shadow:0 18px 40px #000000a6;padding:18px;flex:0 0 250px}
+.docpg .dt{font-size:13px;font-weight:700;color:#1d1d1f}
+.docpg .ds{font-size:9px;color:#6e6e73;margin-top:2px}
+.docpg .dl{height:5px;background:#d8d8dd;border-radius:2px;margin-top:7px}
+.docpg .dbox{height:96px;border:1px solid #c9c9ce;border-radius:4px;margin:10px 0}
+
 /* ---------- opening brand card: bookends the end card ---------- */
 .openbrand{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;
   justify-content:center;gap:26px;transform-origin:50% 50%;
@@ -1284,6 +1336,410 @@ const SCENES=[
   chips(null);
 }},
 
+/* ================= dedicated topic screens (batch 2) ================= */
+
+/* ---------- 27. account, verification, 2FA ---------- */
+{a:0,b:9,go(lt,d){
+  hideApp(); const g=$('#gfx');
+  if(!g.dataset.n11){g.dataset.n11='1';
+    const qr=(()=>{let h='';for(let y=0;y<13;y++)for(let x=0;x<13;x++){
+      const on=((x*7+y*11+((x*y)%5))%3===0)||((x<4&&y<4)||(x>8&&y<4)||(x<4&&y>8));
+      if(on)h+=`<rect x="${x*10}" y="${y*10}" width="10" height="10" fill="#000"/>`;}
+      return `<svg viewBox="0 0 130 130">${h}</svg>`;})();
+    pageShell(g,{crumb:'netforge.ai / <b>create account</b>',btns:['Sign in','Create account'],body:`
+      <div class="h1">Sign up, verify, secure</div>
+      <div class="h2">Your email address is your username. The account activates when you click the link.</div>
+      <div style="display:flex;gap:56px;align-items:flex-start">
+        <div class="form">
+          <div class="frow"><label>Email — this is your username</label><div class="fi ok" id="f0">thomas@example.com</div></div>
+          <div class="frow"><label>Password</label><div class="fi" id="f1">••••••••••••••••</div></div>
+          <div style="margin-top:4px">
+            ${['At least 12 characters','Upper and lower case','A number','A special character','Not a recently used password']
+              .map((t,i)=>`<div class="chk" id="c${i}"><i>${I.chk}</i>${t}</div>`).join('')}
+          </div>
+        </div>
+        <div style="flex:1">
+          <div style="font-size:11px;letter-spacing:1.3px;text-transform:uppercase;color:var(--tt);font-weight:700;margin-bottom:12px">Two-factor authentication</div>
+          <div style="display:flex;gap:24px;align-items:flex-start">
+            <div class="qr" id="qr">${qr}</div>
+            <div>
+              <div style="font-size:14.5px;color:var(--ts);line-height:1.55;max-width:330px">
+                Scan with any TOTP app, then confirm the six-digit code. Required for owner,
+                admin and lab-editor accounts — the rest of the app stays locked until it verifies.</div>
+              <div class="totp" id="tp">${'------'.split('').map(()=>'<span></span>').join('')}</div>
+            </div>
+          </div>
+          <div style="display:flex;gap:10px;margin-top:22px" id="asum">
+            <span class="pill ok">verification sent</span><span class="pill info">TOTP enrolled</span>
+          </div>
+        </div>
+      </div>`});}
+  const p=easeOut(seg(lt,.2,1.0)); g.querySelector('.pg').style.opacity=p;
+  [0,1,2,3,4].forEach(i=>{const el=g.querySelector('#c'+i);
+    el.classList.toggle('on', lt>1.0+i*.28);});
+  const code='418302';
+  [...g.querySelectorAll('#tp span')].forEach((el,i)=>{
+    el.textContent = lt>3.0+i*.22 ? code[i] : '';
+    el.style.borderColor = lt>3.0+i*.22 ? '#38bdf866' : '';
+  });
+  g.querySelector('#asum').style.opacity=easeOut(seg(lt,4.8,5.7));
+  g.querySelector('.pg').style.opacity=p*(1-seg(lt,d-.6,d));
+  chips(null);
+}},
+
+/* ---------- 28. roles and access ---------- */
+{a:0,b:9,go(lt,d){
+  hideApp(); const g=$('#gfx');
+  const ROWS=[['owner','Everything, plus role assignment and billing',1,1,1,1,1],
+              ['admin','Creates accounts, resets passwords, schedules checks',1,1,1,1,0],
+              ['editor','Builds and edits designs — the default for new sign-ups',1,1,1,0,0],
+              ['lab_editor','Editor, plus live labs on the lab host',1,1,1,0,0],
+              ['viewer','Read-only canvas and configuration',1,0,0,0,0],
+              ['observer','Dashboards and status only',1,0,0,0,0]];
+  const COLS=['View','Edit design','Publish','Admin portal','Assign roles'];
+  if(!g.dataset.n12){g.dataset.n12='1';
+    pageShell(g,{crumb:'netforge.ai / admin / <b>roles &amp; access</b>',btns:['Invite','Audit log','Save'],
+      tabs:['Roles & access','Accounts','Sessions','Security'],tabOn:0,body:`
+      <div class="h1">Who can do what</div>
+      <div class="h2">Enforced end to end — not just hidden in the interface.</div>
+      <table class="rolegrid"><thead><tr><th>Role</th><th>Scope</th>
+        ${COLS.map(c=>`<th class="c">${c}</th>`).join('')}</tr></thead>
+      <tbody>${ROWS.map((r,i)=>`<tr id="rr${i}"><td class="r">${r[0]}</td><td style="color:var(--ts)">${r[1]}</td>
+        ${r.slice(2).map(v=>`<td class="c"><span class="dot ${v?'y':'n'}">${v?I.chk:''}</span></td>`).join('')}</tr>`).join('')}
+      </tbody></table>
+      <div style="display:flex;gap:10px;margin-top:26px" id="rsum">
+        <span class="pill info">new sign-ups start as editor</span>
+        <span class="pill warn">role changes are owner-only</span>
+        <span class="pill ok">applies on next page load — no re-login</span></div>`});}
+  stagger([...g.querySelectorAll('tbody tr')], lt, .3, .22, .55);
+  g.querySelector('#rsum').style.opacity=easeOut(seg(lt,2.6,3.6));
+  g.querySelector('.pg').style.opacity=1-seg(lt,d-.6,d);
+  chips(null);
+}},
+
+/* ---------- 29. device properties panel ---------- */
+{a:0,b:9,go(lt,d){
+  hideApp(); const g=$('#gfx');
+  const NAV=['Interfaces','Layer 2','Layer 3','Routing','Features','Management','Monitoring'];
+  const KV=[['Interface','Vlan30',''],['Description','VOICE',''],['IP address','10.50.30.1 / 24',''],
+            ['MTU','9216','inherited'],['HSRP group','30 · priority 110 · preempt 30s',''],
+            ['Tracking','Po1 decrement 20',''],['Hello / hold','1s / 3s','inherited'],
+            ['Virtual IP','10.50.30.254',''],['Secondary VIP','10.50.30.253','override'],
+            ['Authentication','MD5 · vault ref','inherited']];
+  if(!g.dataset.n13){g.dataset.n13='1';
+    pageShell(g,{crumb:'netforge.ai / remote-site / <b>RSITE-CORE-01</b>',btns:['Duplicate','Validate','Apply'],body:`
+      <div class="h1">Every setting, in the platform's own dialect</div>
+      <div class="h2">Cisco NX-OS · 48 ports · inherits the site management plane</div>
+      <div class="proppane">
+        <div class="propnav">${NAV.map((n,i)=>`<div class="${i===0?'on':''}" id="pn${i}">${n}</div>`).join('')}</div>
+        <div class="propbody">
+          ${KV.map((k,i)=>`<div class="kv" id="kv${i}"><span class="k">${k[0]}</span><span class="v">${k[1]}</span>
+            ${k[2]?`<span class="badge ${k[2]==='inherited'?'inh':'ovr'}">${k[2]}</span>`:''}</div>`).join('')}
+        </div>
+      </div>`});}
+  stagger([...g.querySelectorAll('.kv')], lt, .3, .18, .5);
+  const nav=[...g.querySelectorAll('.propnav div')];
+  const on=Math.min(nav.length-1, Math.floor(clamp(seg(lt,2.6,6.5))*nav.length));
+  nav.forEach((el,i)=>el.classList.toggle('on', i===(lt>2.6?on:0)));
+  g.querySelector('.pg').style.opacity=1-seg(lt,d-.6,d);
+  chips(null);
+}},
+
+/* ---------- 30. cable schedule ---------- */
+{a:0,b:9,go(lt,d){
+  hideApp(); const g=$('#gfx');
+  const R=[['C-001','RSITE-CORE-01','Eth1/1','RSITE-ACC-01','1/1/25','SFP+ DAC','10G','3 m'],
+           ['C-002','RSITE-CORE-01','Eth1/2','RSITE-ACC-02','1/1/25','SFP+ DAC','10G','3 m'],
+           ['C-003','RSITE-CORE-01','Eth1/47','RSITE-FW-01','eth1/2','SFP+ SR','10G','10 m'],
+           ['C-004','RSITE-CORE-01','Eth1/48','RSITE-WAN-01','wan0','SFP+ SR','10G','10 m'],
+           ['C-005','RSITE-ACC-01','1/1/1','RSITE-AP-04','eth0','Cat6A','1G','25 m'],
+           ['C-006','RSITE-ACC-02','1/1/1','RSITE-AP-05','eth0','Cat6A','1G','25 m'],
+           ['C-007','RSITE-CORE-01','mgmt0','SLC-01','port 01','Cat6 console','—','2 m'],
+           ['C-008','RSITE-FW-01','console','SLC-01','port 02','Cat6 console','—','2 m']];
+  if(!g.dataset.n14){g.dataset.n14='1';
+    pageShell(g,{crumb:'netforge.ai / remote-site / publish / <b>cable schedule</b>',btns:['Filter by site','CSV','XLSX'],
+      tabs:['Cable schedule','Rack elevation','Bill of materials','Design document'],tabOn:0,body:`
+      <div class="h1">Every link, ready for the rack team</div>
+      <div class="h2">A-end and B-end device, port, media, speed and length — generated from the drawing.</div>
+      <table class="tbl"><thead><tr><th>ID</th><th>A-end device</th><th>A port</th><th>B-end device</th>
+        <th>B port</th><th>Media</th><th>Speed</th><th>Length</th></tr></thead>
+      <tbody>${R.map((r,i)=>`<tr id="cs${i}">${r.map((c,j)=>`<td class="${j===1||j===3?'t':''} ${j>4?'dim':''}">${c}</td>`).join('')}</tr>`).join('')}</tbody></table>
+      <div style="display:flex;gap:10px;margin-top:24px" id="csum">
+        <span class="pill info">8 runs</span><span class="pill info">6 data · 2 console</span>
+        <span class="pill ok">matches the canvas</span></div>`});}
+  stagger([...g.querySelectorAll('tbody tr')], lt, .3, .2, .5);
+  g.querySelector('#csum').style.opacity=easeOut(seg(lt,2.8,3.8));
+  g.querySelector('.pg').style.opacity=1-seg(lt,d-.6,d);
+  chips(null);
+}},
+
+/* ---------- 31. export formats (replaces the fan) ---------- */
+{a:0,b:9,go(lt,d){
+  hideApp(); const g=$('#gfx');
+  const F=[['Design package','.pdf','The drawing plus per-device summaries, ready to hand over',V.arista],
+           ['Visio topology','.vsdx','Editable stencils, so the drawing survives in your own tooling',V.az],
+           ['Bill of materials','.xlsx','Chassis, line cards, optics and cables, aggregated with quantities',V.sp],
+           ['Cable schedule','.csv','A-end, B-end, port, media, speed — one row per run',V.aruba],
+           ['Device configs','.cfg','Per-device, per-vendor CLI for the whole design',V.cisco],
+           ['AVD Ansible','.yml','Arista AVD package, straight into your fabric pipeline',V.palo]];
+  if(!g.dataset.n15){g.dataset.n15='1';
+    pageShell(g,{crumb:'netforge.ai / remote-site / <b>export</b>',btns:['Select all','Site filter','Export'],
+      tabs:['Export suite','History','Scheduled'],tabOn:0,body:`
+      <div class="h1">Six deliverables, one source</div>
+      <div class="h2">Every file below is generated from the same validated canvas, at the same moment — so the documentation cannot drift from the design.</div>
+      <div class="fmtgrid">${F.map((f,i)=>`<div class="fmt" id="fm${i}">
+        <span class="ic" style="background:${f[3]}1a;color:${f[3]}">${I.doc}</span>
+        <div><div class="nm">${f[0]}</div><div class="ext">${f[1]}</div><div class="ds">${f[2]}</div></div></div>`).join('')}</div>
+      <div style="display:flex;gap:10px;margin-top:26px" id="fsum">
+        <span class="pill ok">in sync with canvas</span>
+        <span class="pill info">per-site sections available</span></div>`});}
+  stagger([...g.querySelectorAll('.fmt')], lt, .3, .24, .7);
+  g.querySelector('#fsum').style.opacity=easeOut(seg(lt,3.0,4.0));
+  g.querySelector('.pg').style.opacity=1-seg(lt,d-.6,d);
+  chips(null);
+}},
+
+/* ---------- 32. design document / handover pack ---------- */
+{a:0,b:9,go(lt,d){
+  hideApp(); const g=$('#gfx');
+  const P=[['Design document','remote-site · rev 12','topology'],
+           ['Per-device summary','RSITE-CORE-01','table'],
+           ['Firewall handover','RSITE-FW-01 · zones and rules','table'],
+           ['Rack elevation','RACK A · 42U','rack']];
+  const art=k=>k==='topology'
+    ? `<svg viewBox="0 0 210 96"><rect x="80" y="4" width="50" height="18" rx="3" fill="none" stroke="#8e8e93"/><rect x="20" y="40" width="50" height="18" rx="3" fill="none" stroke="#8e8e93"/><rect x="140" y="40" width="50" height="18" rx="3" fill="none" stroke="#8e8e93"/><rect x="80" y="74" width="50" height="18" rx="3" fill="none" stroke="#8e8e93"/><path d="M105 22V40M105 22H45V40M105 22H165V40M45 58v16h60M165 58v16h-60" stroke="#8e8e93" fill="none"/></svg>`
+    : k==='rack' ? `<svg viewBox="0 0 210 96">${Array.from({length:7},(_x,i)=>`<rect x="60" y="${4+i*13}" width="90" height="10" rx="2" fill="${i%3?'#e5e5ea':'#38bdf8'}" opacity="${i%3?1:.7}"/>`).join('')}</svg>`
+    : `<svg viewBox="0 0 210 96">${Array.from({length:7},(_x,i)=>`<rect x="6" y="${5+i*13}" width="${198-((i*37)%60)}" height="7" rx="2" fill="#d8d8dd"/>`).join('')}</svg>`;
+  if(!g.dataset.n16){g.dataset.n16='1';
+    pageShell(g,{crumb:'netforge.ai / remote-site / publish / <b>design document</b>',btns:['Preview','Site filter','Download PDF'],
+      tabs:['Design document','Cable schedule','Bill of materials','Firewall handover'],tabOn:0,body:`
+      <div class="h1">The hand-off package</div>
+      <div class="h2">The drawing, per-device summaries, and the firewall handover — as one document.</div>
+      <div style="display:flex;gap:26px;margin-top:6px">
+        ${P.map((p,i)=>`<div class="docpg" id="dp${i}">
+          <div class="dt">${p[0]}</div><div class="ds">${p[1]}</div>
+          <div class="dbox">${art(p[2])}</div>
+          ${Array.from({length:6},()=>'<div class="dl"></div>').join('')}
+        </div>`).join('')}
+      </div>
+      <div style="display:flex;gap:10px;margin-top:26px" id="dsum2">
+        <span class="pill info">34 pages</span><span class="pill ok">generated from the canvas</span></div>`});}
+  [...g.querySelectorAll('.docpg')].forEach((el,i)=>{
+    const p=easeOut(clamp(seg(lt,.3+i*.3,1.1+i*.3)));
+    el.style.opacity=p;
+    el.style.transform=`translateY(${lerp(26,0,p)}px) rotate(${lerp(3,(i-1.5)*1.1,p)}deg)`;
+  });
+  g.querySelector('#dsum2').style.opacity=easeOut(seg(lt,2.6,3.6));
+  g.querySelector('.pg').style.opacity=1-seg(lt,d-.6,d);
+  chips(null);
+}},
+
+/* ---------- 33. drift dashboard (distinct from Config Compare) ---------- */
+{a:0,b:9,go(lt,d){
+  hideApp(); const g=$('#gfx');
+  const DEV=[['RSITE-CORE-01','NX-OS','sync','2 min ago',''],
+             ['RSITE-FW-01','PAN-OS','sync','2 min ago',''],
+             ['RSITE-ACC-01','ArubaOS-CX','sync','2 min ago',''],
+             ['RSITE-ACC-02','ArubaOS-CX','drift','just now','+2 / −1 lines · structural'],
+             ['RSITE-WAN-01','EdgeConnect','unreachable','—','SSH timeout'],
+             ['RSITE-AP-04','ArubaOS','nobase','—','never deployed from here']];
+  const PILL={sync:['ok','in sync'],drift:['warn','drifted'],unreachable:['err','unreachable'],nobase:['info','no baseline']};
+  if(!g.dataset.n17){g.dataset.n17='1';
+    pageShell(g,{crumb:'netforge.ai / remote-site / <b>drift</b>',btns:['Schedule','Re-check','Reconcile'],
+      tabs:['Drift','Baselines','Schedules','History'],tabOn:0,body:`
+      <div class="h1">Live config versus what we deployed</div>
+      <div class="h2">Compared against the intended baseline — the config Netforge.ai last pushed — not another file somebody kept.</div>
+      ${DEV.map((x,i)=>`<div class="drow" id="dd${i}">
+        <span class="nm">${x[0]}</span><span class="vd">${x[1]}</span>
+        <span id="dp${i}"></span>
+        <span style="flex:1;font-size:13.5px;color:var(--ts);padding-left:18px">${x[4]}</span>
+        <span class="mt">${x[3]}</span></div>`).join('')}
+      <div style="display:flex;gap:10px;margin-top:22px" id="drsum">
+        <span class="pill ok">3 in sync</span><span class="pill warn">1 drifted</span>
+        <span class="pill err">1 unreachable</span><span class="pill info">1 no baseline</span>
+        <span style="font-size:13.5px;color:var(--ts);margin-left:8px">running-configs are secret-scrubbed before any diff is stored</span></div>`});}
+  stagger([...g.querySelectorAll('.drow')], lt, .3, .22, .55);
+  DEV.forEach((x,i)=>{
+    const shown=lt>.9+i*.22;
+    const [cls,txt]=PILL[x[2]];
+    g.querySelector('#dp'+i).innerHTML = shown?`<span class="pill ${cls}">${txt}</span>`:'';
+    if(shown&&x[2]!=='sync')g.querySelector('#dd'+i).style.borderColor=
+      x[2]==='drift'?'#ff9f0a4d':x[2]==='unreachable'?'#ff3b304d':'#007aff4d';
+  });
+  g.querySelector('#drsum').style.opacity=easeOut(seg(lt,2.8,3.8));
+  g.querySelector('.pg').style.opacity=1-seg(lt,d-.6,d);
+  chips(null);
+}},
+
+/* ---------- 34. deploy run ---------- */
+{a:0,b:9,go(lt,d){
+  hideApp(); const g=$('#gfx');
+  const STEPS=[['Fetch credentials from the shared store','vault · never in the design'],
+               ['RSITE-CORE-01','core · 214 lines'],['RSITE-FW-01','security · 96 lines'],
+               ['RSITE-ACC-01','access · 88 lines'],['RSITE-ACC-02','access · 88 lines'],
+               ['RSITE-WAN-01','wan · 61 lines']];
+  if(!g.dataset.n18){g.dataset.n18='1';
+    pageShell(g,{crumb:'netforge.ai / remote-site / <b>deploy</b>',btns:['Abort','Logs','Deploying…'],body:`
+      <div style="max-width:1180px;margin:0 auto">
+        <div class="h1">Ansible-based deploy, in order</div>
+        <div class="h2">Core first, then distribution, then access. Credentials are read at deploy time and never stored in the design.</div>
+        ${STEPS.map((x,i)=>`<div class="drow" id="dv${i}" style="margin-bottom:10px">
+          <span id="dvi${i}" style="width:24px;flex:0 0 24px"></span>
+          <span class="nm" style="width:420px;font-family:${'Inter'},sans-serif;font-size:16.5px">${x[0]}</span>
+          <span class="vd" style="flex:1;width:auto">${x[1]}</span>
+          <span id="dvp${i}"></span></div>`).join('')}
+        <div style="display:flex;gap:10px;margin-top:22px" id="dvsum">
+          <span class="pill ok">rollback point rev 12</span>
+          <span class="pill info">dry run clean</span></div>
+      </div>`});}
+  STEPS.forEach((x,i)=>{
+    const p=easeOut(clamp(seg(lt,.3+i*.55,.9+i*.55)));
+    const row=g.querySelector('#dv'+i); row.style.opacity=p;
+    row.style.transform=`translateY(${lerp(12,0,p)}px)`;
+    const done=lt>1.15+i*.55, busy=lt>.95+i*.55&&!done;
+    g.querySelector('#dvi'+i).innerHTML = done
+      ? `<span style="width:22px;height:22px;border-radius:99px;background:var(--ok);display:flex;align-items:center;justify-content:center">${I.chk}</span>`
+      : `<span style="width:22px;height:22px;border-radius:99px;border:1.6px solid ${busy?'var(--ac)':'var(--bd3)'};display:block"></span>`;
+    g.querySelector('#dvp'+i).innerHTML = done?'<span class="pill ok">applied</span>':(busy?'<span class="pill info">pushing…</span>':'');
+  });
+  g.querySelector('#dvsum').style.opacity=easeOut(seg(lt,4.2,5.1));
+  g.querySelector('.pg').style.opacity=1-seg(lt,d-.6,d);
+  chips(null);
+}},
+
+/* ---------- 35. Site Areas and inheritance ---------- */
+{a:0,b:9,go(lt,d){
+  hideApp(); const g=$('#gfx');
+  const R=[['NTP servers','10.50.0.10, 10.50.0.11','site','inherited by 6'],
+           ['NTP authentication','HMAC-SHA2-256 · vault ref','site','inherited by 6'],
+           ['AAA — TACACS+','10.50.0.20 · timeout 5s · VRF mgmt','site','inherited by 6'],
+           ['Syslog','10.50.0.30 · local7','site','inherited by 6'],
+           ['SNMP','v3 · authPriv · vault ref','site','inherited by 6'],
+           ['Management VRF','mgmt','site','inherited by 6'],
+           ['Console timeout','9600 8N1 · exec-timeout 5','device','RSITE-FW-01 overrides'],
+           ['Login banner','site standard','device','RSITE-WAN-01 overrides']];
+  if(!g.dataset.n19){g.dataset.n19='1';
+    pageShell(g,{crumb:'netforge.ai / remote-site / <b>site area</b>',btns:['Add override','Validate','Apply to site'],
+      tabs:['Management','Interfaces','Routing','Features','Local users'],tabOn:0,body:`
+      <div class="h1">Set it once, for the whole site</div>
+      <div class="h2">The site panel uses the same tabs the devices do. Every device inherits — until one genuinely differs.</div>
+      <table class="tbl"><thead><tr><th>Setting</th><th>Value</th><th>Defined at</th><th>Scope</th></tr></thead>
+      <tbody>${R.map((r,i)=>`<tr id="sa${i}"><td class="t">${r[0]}</td><td>${r[1]}</td>
+        <td><span class="pill ${r[2]==='site'?'info':'warn'}" style="height:22px;font-size:11.5px">${r[2]}</span></td>
+        <td class="dim">${r[3]}</td></tr>`).join('')}</tbody></table>
+      <div style="display:flex;gap:10px;margin-top:24px" id="sasum">
+        <span class="pill info">6 devices inherit</span><span class="pill warn">2 per-device overrides</span>
+        <span class="pill ok">rendered per vendor</span></div>`});}
+  stagger([...g.querySelectorAll('tbody tr')], lt, .3, .2, .5);
+  g.querySelector('#sasum').style.opacity=easeOut(seg(lt,2.8,3.8));
+  g.querySelector('.pg').style.opacity=1-seg(lt,d-.6,d);
+  chips(null);
+}},
+
+/* ---------- 36. console and out-of-band ---------- */
+{a:0,b:9,go(lt,d){
+  hideApp(); const g=$('#gfx');
+  const P=[['port 01','RSITE-CORE-01','console','9600 8N1'],['port 02','RSITE-FW-01','console','9600 8N1'],
+           ['port 03','RSITE-ACC-01','console','9600 8N1'],['port 04','RSITE-ACC-02','console','9600 8N1'],
+           ['port 05','RSITE-WAN-01','console','115200 8N1'],['port 06','—','free','—']];
+  const M=[['RSITE-CORE-01','mgmt0','10.50.250.11/24','mgmt'],['RSITE-FW-01','management1','10.50.250.12/24','mgmt'],
+           ['RSITE-ACC-01','vlan mgmt','10.50.250.13/24','mgmt'],['RSITE-WAN-01','mgmt0','10.50.250.14/24','mgmt']];
+  if(!g.dataset.n20){g.dataset.n20='1';
+    pageShell(g,{crumb:'netforge.ai / remote-site / <b>console &amp; OOB</b>',btns:['Auto-cable','Validate','Apply'],
+      tabs:['Console server','Management interfaces','Credentials'],tabOn:0,body:`
+      <div class="h1">The way in when the network is down</div>
+      <div class="h2">Every device gets a console port and its real dedicated management interface. Drag onto the Lantronix and the console run cables itself.</div>
+      <div style="display:flex;gap:34px">
+        <div style="flex:0 0 620px">
+          <div style="font-size:11px;letter-spacing:1.3px;text-transform:uppercase;color:var(--tt);font-weight:700;margin-bottom:12px">SLC-01 · Lantronix terminal server</div>
+          ${P.map((x,i)=>`<div class="drow" id="cp${i}" style="margin-bottom:9px;padding:12px 16px">
+            <span class="nm" style="width:110px;font-size:14.5px">${x[0]}</span>
+            <span style="flex:1;font-family:JBMono,monospace;font-size:15px;color:${x[1]==='—'?'var(--tph)':'var(--tp)'}">${x[1]}</span>
+            <span class="pill ${x[2]==='free'?'info':'ok'}" style="height:22px;font-size:11.5px">${x[2]}</span>
+            <span class="mt" style="width:110px">${x[3]}</span></div>`).join('')}
+        </div>
+        <div style="flex:1">
+          <div style="font-size:11px;letter-spacing:1.3px;text-transform:uppercase;color:var(--tt);font-weight:700;margin-bottom:12px">Dedicated management interfaces</div>
+          <table class="tbl"><thead><tr><th>Device</th><th>Interface</th><th>Address</th><th>VRF</th></tr></thead>
+          <tbody>${M.map((m,i)=>`<tr id="mg${i}"><td class="t">${m[0]}</td><td>${m[1]}</td><td>${m[2]}</td><td class="dim">${m[3]}</td></tr>`).join('')}</tbody></table>
+          <div style="display:flex;gap:10px;margin-top:20px" id="oobsum">
+            <span class="pill ok">auto-assigned from IPAM</span><span class="pill info">manual override protected</span></div>
+        </div>
+      </div>`});}
+  stagger([...g.querySelectorAll('.drow')], lt, .3, .18, .5);
+  stagger([...g.querySelectorAll('tbody tr')], lt, 1.4, .18, .5);
+  g.querySelector('#oobsum').style.opacity=easeOut(seg(lt,3.0,4.0));
+  g.querySelector('.pg').style.opacity=1-seg(lt,d-.6,d);
+  chips(null);
+}},
+
+/* ---------- 37. credential vault ---------- */
+{a:0,b:9,go(lt,d){
+  hideApp(); const g=$('#gfx');
+  const V=[['enable secret','core-enable','6 devices'],['local user · netadmin','netadmin-pw','6 devices'],
+           ['TACACS+ key','tacacs-primary','6 devices'],['RADIUS key','radius-wifi','2 devices'],
+           ['SNMP v3 auth','snmp-auth','6 devices'],['SNMP v3 priv','snmp-priv','6 devices'],
+           ['NTP key','ntp-md5','6 devices'],['SD-WAN orchestrator','ec-orch','1 device']];
+  if(!g.dataset.n21){g.dataset.n21='1';
+    pageShell(g,{crumb:'netforge.ai / organization / <b>credential vault</b>',btns:['Add secret','Rotate','Audit'],
+      tabs:['Secrets','References','Deploy store','Audit log'],tabOn:0,body:`
+      <div style="display:flex;gap:36px">
+        <div style="flex:1;min-width:0">
+          <div class="h1">Secrets live here, not in the design</div>
+          <div class="h2">Designs and public shares carry only the reference. Deleted references are flagged.</div>
+          <table class="tbl"><thead><tr><th>Secret</th><th>Reference</th><th>Used by</th><th>Value</th></tr></thead>
+          <tbody>${V.map((v,i)=>`<tr id="cv${i}"><td class="t">${v[0]}</td><td style="color:var(--ac)">${v[1]}</td>
+            <td class="dim">${v[2]}</td><td class="dim">••••••••••</td></tr>`).join('')}</tbody></table>
+        </div>
+        <div style="width:520px;flex:0 0 520px">
+          <div style="font-size:11px;letter-spacing:1.3px;text-transform:uppercase;color:var(--tt);font-weight:700;margin-bottom:12px">Generated config</div>
+          <div class="cli" style="padding:16px 18px;border:1px solid var(--bd);border-radius:var(--r-sm);background:#ffffff05;font-size:15px;line-height:1.8" id="cvcli"></div>
+          <div style="display:flex;gap:10px;margin-top:18px" id="cvsum">
+            <span class="pill ok">encrypted per organization</span><span class="pill info">scrubbed from shares</span></div>
+        </div>
+      </div>`});}
+  stagger([...g.querySelectorAll('tbody tr')], lt, .3, .18, .5);
+  const CFG=`<b>enable secret</b> 9 $9$Xy7.. <s>! vault: core-enable</s>
+<b>username</b> netadmin <b>secret</b> 9 $9$Qa2.. <s>! vault: netadmin-pw</s>
+<b>tacacs-server key</b> 7 06550F.. <s>! vault: tacacs-primary</s>
+<b>snmp-server user</b> nms v3 <b>auth</b> sha .. <s>! vault: snmp-auth</s>`;
+  const lines=CFG.split('\n');
+  g.querySelector('#cvcli').innerHTML=lines.slice(0,Math.round(clamp(seg(lt,1.2,4.2))*lines.length)).join('\n');
+  g.querySelector('#cvsum').style.opacity=easeOut(seg(lt,4.0,5.0));
+  g.querySelector('.pg').style.opacity=1-seg(lt,d-.6,d);
+  chips(null);
+}},
+
+/* ---------- 38. management plane / AAA ---------- */
+{a:0,b:9,go(lt,d){
+  hideApp(); const g=$('#gfx');
+  const NAV=['AAA','NTP','Logging','SNMP','SSH','Console & VTY','CDP / LLDP','NetFlow','Static routes'];
+  const KV=[['AAA server group','TACACS-GRP',''],['Server','10.50.0.20 · port 49',''],
+            ['Timeout / retransmit','5s / 2','inherited'],['Source interface','Loopback0','inherited'],
+            ['VRF','mgmt','inherited'],['Authentication','login default group TACACS-GRP local',''],
+            ['Authorization','exec default group TACACS-GRP local',''],
+            ['Accounting','commands 15 default start-stop',''],
+            ['Password policy','Common Criteria · 15 char min','inherited'],
+            ['Test AAA','last run 3 min ago — pass','']];
+  if(!g.dataset.n22){g.dataset.n22='1';
+    pageShell(g,{crumb:'netforge.ai / remote-site / RSITE-CORE-01 / <b>management</b>',btns:['Test AAA','Validate','Apply'],body:`
+      <div class="h1">The management plane, in depth</div>
+      <div class="h2">Rendered per vendor — and where a platform can't do it, omitted and flagged rather than invented.</div>
+      <div class="proppane">
+        <div class="propnav">${NAV.map((n,i)=>`<div class="${i===0?'on':''}" id="mn${i}">${n}</div>`).join('')}</div>
+        <div class="propbody">
+          ${KV.map((k,i)=>`<div class="kv" id="mk${i}"><span class="k">${k[0]}</span><span class="v">${k[1]}</span>
+            ${k[2]?`<span class="badge inh">${k[2]}</span>`:''}</div>`).join('')}
+        </div>
+      </div>`});}
+  stagger([...g.querySelectorAll('.kv')], lt, .3, .17, .5);
+  const nav=[...g.querySelectorAll('.propnav div')];
+  const on=Math.min(nav.length-1, Math.floor(clamp(seg(lt,2.4,6.8))*nav.length));
+  nav.forEach((el,i)=>el.classList.toggle('on', i===(lt>2.4?on:0)));
+  g.querySelector('.pg').style.opacity=1-seg(lt,d-.6,d);
+  chips(null);
+}},
+
 /* ---------- 16. standalone brand card (shorts open on this) ---------- */
 {a:0,b:3,go(lt,d){
   hideApp(); const g=$('#gfx');
@@ -1319,7 +1775,7 @@ const SCENES=[
 ];
 
 function showApp(){$('#app').classList.remove('hide');$('#gfx').classList.add('hide');vignette(false);
-  ['s1','s4','s13','s15','s16','sb','n1','n2','n3','n4','n5','n6','n7','n8','n9','n10'].forEach(k=>$('#gfx').dataset[k]='');}
+  ['s1','s4','s13','s15','s16','sb','n1','n2','n3','n4','n5','n6','n7','n8','n9','n10','n11','n12','n13','n14','n15','n16','n17','n18','n19','n20','n21','n22'].forEach(k=>$('#gfx').dataset[k]='');}
 function hideApp(){$('#app').classList.add('hide');$('#gfx').classList.remove('hide');$('#overlay').classList.add('hide');vignette(true);}
 
 /* ============================ seek ============================ */
@@ -1347,7 +1803,7 @@ window.seek=function(t){
   if(window.__scene!==sc){ // scene entry: clear graphic caches so each scene rebuilds cleanly
     const src=(sc._src!==undefined)?sc._src:SCENES.indexOf(sc);
     if(src<3||src>=11)hideApp(); window.__scene=sc;
-    ['s1','s4','s13','s15','s16','sb','n1','n2','n3','n4','n5','n6','n7','n8','n9','n10'].forEach(k=>$('#gfx').dataset[k]='');
+    ['s1','s4','s13','s15','s16','sb','n1','n2','n3','n4','n5','n6','n7','n8','n9','n10','n11','n12','n13','n14','n15','n16','n17','n18','n19','n20','n21','n22'].forEach(k=>$('#gfx').dataset[k]='');
   }
   caption('',0); chips(null); cursorAt(0,0,false);
   sc.go(t-sc.a, sc.b-sc.a, t);
