@@ -91,15 +91,24 @@ def phonemes_for(text):
 # ---------------------------------------------------------------- script
 # (id, scene, text, caption)  — caption None = let the visuals carry it
 LINES = [
- # ---- act 1: the gap. Tightened so the product arrives at ~0:35 instead of ~0:59.
- # Two lines were cut rather than sped up: "So you design it in Visio... in CLI"
- # (the two panes already show exactly that) and "Every diagram tool on the market..."
- # (a good line, but the pivot at 06 makes the same point in half the time).
- ('01', 1, "Every network change starts as a drawing.", None),   # now the shot's title card
- ('02', 1, "And every outage starts with the gap between that drawing, and what's on the box.", None),
+ # ---- act 1. The hook is client-supplied copy, read at 1.2x (see SPEED_BY_LINE).
+ # Three earlier lines were CUT because the hook already states them, and the video
+ # should not say the same thing twice:
+ #   "And every outage starts with the gap between that drawing and what's on the box"
+ #        -> hook: "almost every outage begins the same way too"
+ #   "a VLAN gets transposed. A BGP neighbour never comes up"
+ #        -> hook: "One missing neighbor. One forgotten VLAN."
+ #   "The drawing wasn't wrong."
+ #        -> hook: "not because the design was wrong"
+ ('01', 1, "Every enterprise network begins the same way: a clean diagram on a whiteboard.", None),
+ ('02', 1, "And almost every outage begins the same way too. Not because the design was wrong, "
+           "but because someone had to manually translate that design into thousands of lines "
+           "of configuration.", None),
+ ('03', 1, "One typo. One missing neighbor. One duplicated IP. One forgotten VLAN.", None),
  ('05', 1, "You find out at two in the morning, with no time left to use the rollback plan.", None),
- ('04', 2, "Somewhere between the two, a VLAN gets transposed. A BGP neighbour never comes up.", None),
- ('06', 2, "The drawing wasn't wrong. It was just never connected to anything.", None),
+ # scene 2 frames the mismatch bridge without restating the hook's list
+ ('04', 2, "Months later, the drawing and the device disagree.", None),
+ ('06', 2, "None of it was ever verified.", None),
  ('08', 3, "So what if the drawing was the source of truth?",
         "So what if the drawing <em>was</em> the source of truth?"),
  ('09', 3, "Not a picture of the network. The network itself.", None),
@@ -111,20 +120,31 @@ LINES = [
  ('14', 7, "And before anything ships, it gets checked.", None),
  ('15', 8, "IP conflicts. VLAN mismatches. BGP peer gaps. Spanning-tree errors.", None),
  ('16', 8, "Caught here, on the canvas. Not out there, in the maintenance window.", None),
- ('17', 9, "Then the AI Network Architect reviews the whole design. Single points of failure, CVD and AVD alignment. And tells you what to fix.", None),
- ('18',10, "Zero conflicts. 42 checks passed.", None),
+ ('17', 9, "Then the AI Network Architect reviews the whole design. Single points of failure, "
+           "CVD and AVD alignment. And tells you what to fix.", None),
+ # scene 10 ("0 conflicts / 42 checks passed") is screen-only -- the badge and the
+ # validation panel already say it, so narrating it was reading the screen aloud.
  ('19',11, "Then the design ships itself. Production-ready CLI. AVD Ansible YAML.", None),
- ('20',12, "PDF packages. Visio diagrams. Excel BOM. Cable schedules. Documentation that can't drift from the design.", None),
- ('21',13, "Reverse-engineer a live Azure subscription onto that canvas, and push it back as Terraform.", None),
+ ('20',12, "PDF packages. Visio diagrams. Excel BOM. Cable schedules. Documentation that can't "
+           "drift from the design.", None),
+ # the Azure section had no lead-in; it now turns into the section instead of cutting to it
+ ('21',13, "Or, if you want to visualize an environment that already exists: reverse-engineer a "
+           "live Azure subscription onto the canvas, and push it back as Terraform.", None),
  ('22',14, "Design. Configure. Validate. Deploy. One canvas, one source of truth.", None),
  ('23',14, "The drawing and the network. Finally the same thing.", None),
- ('24',15, "Netforge.ai. Open the designer, drag your first device.", None),
- ('25',15, "Free to start. No card.", None),
+ ('24',15, "Netforge.ai. From sketch to spine.", None),
 ]
 
-SCENE_MIN = {1:14, 2:9, 3:7, 4:6.5, 5:6.5, 6:8, 7:5.5, 8:8,
+# Per-line speed. The hook's prose runs at 1.2x. Two lines are deliberately left at 1.0:
+#   '03' -- at 1.1x and above, "VLAN" (vˈiːlæn) compresses and reads as "villain".
+#           Verified with ASR at 1.2/1.1/1.0; only 1.0 comes back as VLAN. It is also the
+#           hook's closing list, which lands harder deliberate than rushed.
+#   '05' -- the 2am line is the section's punchline; 1.2x makes it sound hurried.
+SPEED_BY_LINE = {'01': 1.2, '02': 1.2}
+
+SCENE_MIN = {1:16, 2:8, 3:7, 4:6.5, 5:6.5, 6:8, 7:5.5, 8:8,
              9:7, 10:5.5, 11:6.5, 12:7, 13:6.5, 14:8, 15:8}
-PACE = {1:(0.6,0.5,0.9), 2:(0.9,0.6,1.4), 3:(1.0,0.7,1.1),   # tail no longer holds a title card
+PACE = {1:(0.5,0.45,0.9), 2:(0.8,0.6,1.4), 3:(1.0,0.7,1.1),   # tail no longer holds a title card
         4:(0.8,0.5,1.2), 5:(0.8,0.5,1.2), 6:(0.8,0.5,1.2), 7:(0.6,0.5,0.9),
         8:(0.6,0.5,1.1), 9:(0.6,0.5,1.1), 10:(0.5,0.5,1.5), 11:(0.6,0.5,1.0),
         12:(0.6,0.5,1.0), 13:(0.6,0.5,1.0), 14:(0.8,0.6,1.2), 15:(0.8,0.5,2.2)}
@@ -172,7 +192,7 @@ def synth_line(text, path, voice=VOICE, speed=SPEED):
 
 def synth_all():
     for lid, _s, text, _c in LINES:
-        d = synth_line(text, f'vo/{lid}.wav')
+        d = synth_line(text, f'vo/{lid}.wav', speed=SPEED * SPEED_BY_LINE.get(lid, 1.0))
         print(f'  {lid} {d:5.2f}s  {phonemes_for(text)[:70]}')
 
 def voice_demo():
@@ -240,7 +260,8 @@ def build():
         print(f"{s['i']:3} {s['a']:7.2f} {s['b']:7.2f} {s['d']:6.2f} {s['need']:6.2f} "
               f"{s['floor']:6.1f}  {'VO' if s['need']>s['floor'] else 'visual floor'}")
     sp = sum(d for _l,_s,d,_c in placed)
-    print(f"\nvoice {VOICE} @ speed {SPEED}")
+    print(f"\nvoice {VOICE} @ speed {SPEED}"
+          f"   ({', '.join(f'{k}@{SPEED*v:.2f}' for k, v in SPEED_BY_LINE.items())})")
     print(f"runtime {DUR:.2f}s ({int(DUR//60)}:{DUR%60:05.2f})   speech {sp:.1f}s = {sp/DUR*100:.0f}%")
 
 if __name__ == '__main__':

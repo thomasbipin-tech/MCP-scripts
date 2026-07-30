@@ -167,8 +167,8 @@ body{font-family:Inter,sans-serif;color:var(--tp);-webkit-font-smoothing:antiali
 .endlogo .m{width:82px;height:82px;display:flex;align-items:center;justify-content:center}
 .endlogo .m svg{width:82px;height:82px}
 .endlogo .n{font-size:52px;font-weight:700;letter-spacing:-1.4px}
-.endcta{height:60px;padding:0 34px;border-radius:99px;background:var(--ac);color:#00121c;font-size:21px;font-weight:600;display:flex;align-items:center;gap:11px;white-space:nowrap}
-.endcta svg{width:24px;height:24px;flex:0 0 24px}
+.endtag{font-size:40px;font-weight:600;letter-spacing:-1px;color:var(--ac);white-space:nowrap}
+.endurl{font-family:JBMono,monospace;font-size:23px;color:var(--tt);letter-spacing:.5px}
 .endsub{font-size:19px;color:var(--ts)}
 </style>
 
@@ -471,11 +471,18 @@ const GAP_L=880-22, GAP_R=1040+22;
 const TERM_SCRIPT=`CORE-SW-01# <b>show running-config</b>
 <b>vlan</b> 30
   <b>name</b> VOICE
+<b>interface</b> Vlan30
+  <b>ip address</b> 10.50.30.1 255.255.255.0
 <b>interface</b> Po1
+  <b>switchport mode trunk</b>
   <b>switchport trunk native vlan</b> 99
+  <b>switchport trunk allowed vlan</b> 10,20,30
 <b>router bgp</b> 65002
   <b>bgp router-id</b> 10.0.0.1
-<b>system jumbomtu</b> 9216`;
+  <b>neighbor</b> 10.0.0.2 <b>remote-as</b> 65002
+<b>system jumbomtu</b> 9216
+<b>spanning-tree mode</b> rapid-pvst
+CORE-SW-01# <s>! last verified by  --</s>`;
 const DOTS='<span class="dotrow"><i style="background:#ff5f57"></i><i style="background:#febc2e"></i><i style="background:#28c840"></i></span>';
 
 function oldMapSVG(){
@@ -489,7 +496,7 @@ function oldMapSVG(){
 }
 function buildPanes(g){
   g.innerHTML=`
-    <div class="ttl" id="ttl">Every network change starts as a drawing.</div>
+    <div class="ttl" id="ttl">Designed once. Configured by hand.</div>
     <div class="pane p2" id="pL" style="left:120px">
       <div class="ph">${DOTS}site-topology-FINAL-v4.vsdx</div>
       <div class="stamp" id="stamp">rev 4 — 11 months ago</div>
@@ -772,22 +779,21 @@ const SCENES=[
 }},
 
 /* ---------- 15. end card ---------- */
+// The "Open Designer" button was removed: an MP4 cannot carry a working hyperlink, so a
+// button that looks clickable but isn't is worse than no button. The bare URL stays so the
+// destination is still on screen. The credit-card line went with it.
 {a:127,b:135,go(lt,d){
   hideApp(); const g=$('#gfx');
   if(!g.dataset.s16){g.dataset.s16='1';g.dataset.s15='';g.innerHTML=`<div class="endwrap">
     <div class="endlogo" id="el"><span class="m">${I.logo}</span><span class="n">Netforge.ai</span></div>
-    <div class="endsub" id="es">Design, configure, validate, and deploy production-ready networks.</div>
-    <div class="endcta" id="ec">Open Designer ${I.arrow}</div>
-    <div class="endsub" id="ef" style="font-size:16px;color:var(--tt)">Free to start — no card required.</div></div>`;}
-  const p1=easeOut(seg(lt,.2,1.6)),p2=easeOut(seg(lt,1.1,2.4)),p3=easeOutBack(clamp(seg(lt,1.8,3.0))),p4=easeOut(seg(lt,2.8,4.0));
-  const L=g.querySelector('#el'),S=g.querySelector('#es'),C=g.querySelector('#ec'),F=g.querySelector('#ef');
+    <div class="endtag" id="et">From Sketch to Spine.</div>
+    <div class="endurl" id="eu">netforge.ai</div></div>`;}
+  const L=g.querySelector('#el'),T=g.querySelector('#et'),U=g.querySelector('#eu');
+  const p1=easeOut(seg(lt,.2,1.6)),p2=easeOut(seg(lt,1.3,2.8)),p3=easeOut(seg(lt,2.6,4.0));
   L.style.opacity=p1;L.style.transform=`translateY(${lerp(20,0,p1)}px) scale(${lerp(.96,1,p1)})`;
-  S.style.opacity=p2*.95;S.style.transform=`translateY(${lerp(16,0,p2)}px)`;
-  const pulse=1+.028*Math.max(0,Math.sin((lt-4.4)*3.0))*(lt>4.4?1:0);
-  C.style.opacity=clamp(p3*1.3);C.style.transform=`translateY(${lerp(18,0,clamp(p3))}px) scale(${clamp(p3)*0+pulse})`;
-  F.style.opacity=p4*.9;
-  const fade=1-seg(lt,d-.8,d);
-  g.querySelector('.endwrap').style.opacity=fade;
+  T.style.opacity=p2;T.style.transform=`translateY(${lerp(16,0,p2)}px)`;
+  U.style.opacity=p3*.85;
+  g.querySelector('.endwrap').style.opacity=1-seg(lt,d-.8,d);
   caption('',0);chips(null);badge(null,'',0);
 }},
 ];
