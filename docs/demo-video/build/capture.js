@@ -48,11 +48,18 @@ function serve(port) {
     const DUR = JSON.parse(fs.readFileSync(path.join(ROOT, TL), 'utf8')).duration;
     const N = Math.round(FPS * DUR);
     const OUT = path.join(ROOT, process.env.FRAMES || 'frames');
-    fs.rmSync(OUT, { recursive: true, force: true });
+    // RESUME=1 keeps already-rendered frames. The container can be recycled mid-run, and
+    // a 24k-frame render is too expensive to restart from zero because of a restart.
+    const RESUME = process.env.RESUME === '1';
+    if (!RESUME) fs.rmSync(OUT, { recursive: true, force: true });
     fs.mkdirSync(OUT, { recursive: true });
+    const have = RESUME ? new Set(fs.readdirSync(OUT)) : new Set();
+    if (RESUME && have.size) console.log(`resuming: ${have.size} frames already on disk`);
     const t0 = Date.now();
     for (let i = 0; i < N; i++) {
-      await shoot(i / FPS, path.join(OUT, String(i).padStart(5, '0') + '.png'));
+      const name = String(i).padStart(5, '0') + '.png';
+      if (have.has(name)) continue;
+      await shoot(i / FPS, path.join(OUT, name));
       if (i % 150 === 0) {
         const el = (Date.now() - t0) / 1000;
         console.log(`${i}/${N}  ${el.toFixed(0)}s elapsed  eta ${(el / (i + 1) * (N - i) / 60).toFixed(1)}min`);
