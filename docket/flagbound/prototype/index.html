@@ -481,6 +481,9 @@ function house(bx,bz,w,d,h,wall,roof){
   }
 }
 function rockCluster(cx,cz,rad){
+  // never inside a base or a reboot pad — both are spawn areas
+  for(const b of [BASE.A,BASE.B]) if(Math.hypot(cx-b.x,cz-b.z) < 12+rad) return;
+  for(const b of [REBOOT.A,REBOOT.B]) if(Math.hypot(cx-b.x,cz-b.z) < 10+rad) return;
   const g=groundY(cx,cz);
   for(let dx=-rad;dx<=rad;dx++) for(let dy=0;dy<=rad;dy++) for(let dz=-rad;dz<=rad;dz++){
     if(Math.hypot(dx,dy*1.5,dz)<=rad*(0.75+rnd()*0.3)) setB(cx+dx,g+dy,cz+dz,T.ROCK);
@@ -540,12 +543,14 @@ function buildSurface(){
     for(let dz=-1;dz<=1;dz++) setB(x,y,POND.z+dz,T.PLANK);
     if(x%4===0){ setB(x,y+1,POND.z-2,T.WOOD); setB(x,y+1,POND.z+2,T.WOOD); }
   }
-  rockCluster(30,12,4); rockCluster(24,47,5); rockCluster(50,29,4); rockCluster(6,44,3);
+  rockCluster(34,24,4); rockCluster(20,36,5); rockCluster(50,29,4); rockCluster(12,47,3);
   // trees with rounded canopies, plus bushes at their feet
   for(let i=0;i<20;i++){
     const x=ri(4,SX-5), z=ri(4,SZ-5);
     if(Math.hypot(x-BASE.A.x,z-BASE.A.z)<12) continue;
     if(Math.hypot(x-BASE.B.x,z-BASE.B.z)<12) continue;
+    if(Math.hypot(x-REBOOT.A.x,z-REBOOT.A.z)<9) continue;
+    if(Math.hypot(x-REBOOT.B.x,z-REBOOT.B.z)<9) continue;
     if(Math.abs(z-mz)<4 || pondDepth(x,z)>0.5) continue;
     const g=groundY(x,z), h=ri(4,7);
     for(let y=g;y<=g+h;y++) setB(x,y,z,T.WOOD);
@@ -607,6 +612,7 @@ function buildUnderground(){
   for(let i=0;i<16;i++){
     const x=ri(5,SX-6), z=ri(5,SZ-6);
     if(Math.hypot(x-BASE.A.x,z-BASE.A.z)<11||Math.hypot(x-BASE.B.x,z-BASE.B.z)<11) continue;
+    if(Math.hypot(x-REBOOT.A.x,z-REBOOT.A.z)<10||Math.hypot(x-REBOOT.B.x,z-REBOOT.B.z)<10) continue;
     const g=UNDER_Y+Math.round(hUnder(x,z)), h=ri(3,7);
     for(let y=g;y<=g+h;y++) for(let dx=0;dx<=1;dx++) for(let dz=0;dz<=1;dz++)
       setB(x+dx,y,z+dz,T.COBBLE);
@@ -839,16 +845,35 @@ const SKIN=[[0.97,0.81,0.67],[0.89,0.70,0.53],[0.75,0.55,0.39],[0.55,0.38,0.26],
 const HAIR_A=[[0.94,0.97,1.00],[0.62,0.88,1.00],[0.78,0.72,1.00],[0.50,0.96,0.92],[0.86,0.80,1.00]];
 const HAIR_B=[[1.00,0.86,0.62],[1.00,0.62,0.30],[1.00,0.72,0.82],[0.82,0.24,0.26],[1.00,0.92,0.48]];
 
-function spawnPoint(team, atBase){
-  const a=rnd()*Math.PI*2;
-  if(atBase){
-    const b=BASE[team], r=3.5+rnd()*2.2;
-    const gy = phase==='surface' ? 1 : UNDER_Y+1;
-    return {x:b.x+Math.cos(a)*r, y:gy+2.0, z:b.z+Math.sin(a)*r};
+/* Find somewhere the player box actually fits. Looks for the ground near the
+   expected level, then checks the whole body clears — so a tree trunk, a pillar
+   or a stray rock never swallows a spawning player. */
+function findSpawn(cx, cz, minR, maxR, level){
+  for(let i=0;i<80;i++){
+    const a=rnd()*Math.PI*2, r=minR+rnd()*(maxR-minR);
+    const x=cx+Math.cos(a)*r, z=cz+Math.sin(a)*r;
+    const bx=Math.floor(x), bz=Math.floor(z);
+    let g=null;
+    for(let y=level+3; y>=level-4; y--) if(solid(bx,y,bz)){ g=y; break; }
+    if(g===null) continue;                       // no ground near the expected level
+    const fy=g+1.02;
+    if(boxHits(x,fy,z)) continue;                // body must clear
+    let open=0;                                  // and there must be somewhere to walk
+    for(const [dx,dz] of [[1.3,0],[-1.3,0],[0,1.3],[0,-1.3]])
+      if(!boxHits(x+dx,fy,z+dz)) open++;
+    if(open>=2) return {x, y:fy, z};
   }
-  const b=REBOOT[team], r=1.2+rnd()*1.8;
-  const gy = phase==='surface' ? groundY(b.x,b.z) : UNDER_Y;
-  return {x:b.x+Math.cos(a)*r, y:gy+2.2, z:b.z+Math.sin(a)*r};
+  return null;
+}
+function spawnPoint(team, atBase){
+  const b = atBase ? BASE[team] : REBOOT[team];
+  const level = phase==='surface' ? (atBase ? 1 : groundY(b.x,b.z)) : UNDER_Y;
+  const found = atBase ? findSpawn(b.x, b.z, 3.2, 5.8, level)
+                       : findSpawn(b.x, b.z, 2.3, 3.6, level);
+  if(found) return found;
+  // widen the search before falling back to dropping in from above
+  const wide = findSpawn(b.x, b.z, 1.0, 7.0, level);
+  return wide || {x:b.x+0.5, y:level+4, z:b.z+0.5};
 }
 function makeEnt(team,isPlayer,i){
   const s=spawnPoint(team,true);

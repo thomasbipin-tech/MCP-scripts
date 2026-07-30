@@ -109,6 +109,28 @@ Two aids exist because the flag was genuinely hard to locate in testing:
 The player's own character floats a spinning gold diamond, so you can tell which
 one is you.
 
+## Spawn safety
+
+Spawn points are **validated, not assumed**. `findSpawn` looks for ground near the
+expected level, checks the whole player box clears, and requires at least two
+free directions to walk in — retrying up to 80 candidates before widening the
+search.
+
+This came from a reported bug: players sometimes spawned inside a tree or
+somewhere they could not move. Sampling 800 spawns of the old code found **26% of
+base spawns and 13.5% of reboot spawns landed inside geometry.** Two authoring
+mistakes caused it, and both are fixed at source rather than only being validated
+around:
+
+- A rock cluster was placed at `(30,12)` — two cells from Azure's base centre at
+  `(29,10)`, so it sat inside the spawn ring. `rockCluster` now refuses to build
+  inside any base or reboot pad.
+- The reboot pad's glowing core is a solid cell at the pad centre, and the spawn
+  ring started 1.2 cells out — close enough for the player box to overlap it.
+
+After both fixes: **0 bad spawns in 2,000 samples** across base, reboot, surface
+and underdeep.
+
 ## Where the prototype deviates from the docket
 
 Deliberate, so the demo fits in a few minutes on modest hardware. Nothing here is

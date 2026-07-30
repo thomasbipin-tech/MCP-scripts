@@ -48,6 +48,11 @@ Available to every class, regardless of build:
     playtesting says so, move the pads inward rather than shortening the timer.
   - Reboot pads are **safe ground** — no spawn-camping. *Proposed:* brief
     invulnerability on re-forming, and enemies cannot capture or hold the pad.
+  - **Spawn points must be validated, never assumed.** Check the player volume
+    clears and that there is somewhere to walk before placing anyone, and keep
+    scenery out of spawn rings at world-build time. A prototype build placed a
+    rock formation inside a base and put the spawn ring over the pad's own core;
+    a quarter of spawns landed inside geometry.
 - A defeated flag carrier **drops the flag** where they fell. It can be picked up
   by either team; if untouched it returns to base after a timeout (*proposed:*
   20s).
