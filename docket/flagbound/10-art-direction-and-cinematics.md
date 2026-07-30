@@ -264,9 +264,14 @@ team-coloured light from the flag, and an automatically saved highlight clip.
 
 ## Defeat: disintegration
 
-**When a player is defeated they disintegrate.** The figure comes apart into motes
-that sweep upward from the feet, with a single bright flash at the moment of the
-hit. Nothing is left behind.
+**When a player is defeated they burn to ash.** The figure comes apart into
+irregular grey flakes that lift, tumble and drift on the air, darkening as they
+cool, with a handful of embers in the first instant and a single bright flash at
+the moment of the hit. Nothing is left behind.
+
+**Ash, not bubbles.** The distinction matters more than it sounds: round particles
+that fall read as foam or soap and undercut the moment. Flakes need to be flat,
+irregular, tumbling, slow, and lit — they should hang and drift rather than drop.
 
 This is not only an effect — it settles a design problem the docket has to answer
 anyway. The brief targets ages 10 and up, and defeat has to be *legible and

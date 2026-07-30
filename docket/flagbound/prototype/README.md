@@ -76,6 +76,26 @@ selection, and the active loadout.
   Scout Knife is the only weapon; the pickup roster is design intent and the
   screen says so rather than implying otherwise.
 
+## Health, shield and weapons
+
+**100 health under 75 shield** — damage eats shield first, so a full target has
+175 effective. Shield does not regenerate; it is a per-life resource that resets
+on reboot. Health regrows slowly after four seconds out of combat.
+
+| Weapon | Key | Damage | Hits to drop a full target | Notes |
+|---|---|---|---|---|
+| **Blade** | 1 | 35 | 5 | Melee, ~1.9 m reach, 0.42s between swings |
+| **Rifle** | 2 | 75 | 3 | Hitscan out to 35 m, tracer, 0.8s between shots |
+| **Rocket** | 3 | 150 | 2 | Travelling projectile, 3.5 m blast, 2.6s reload |
+
+**Worth knowing:** with 75 shield on top of 100 health, a rocket no longer drops a
+full-health target in one hit — 150 is less than 175, leaving 25 health. It is a
+one-shot against anyone who has already lost their shield. If a guaranteed
+one-shot is wanted, either the rocket needs 175+ or the shield needs to come down.
+
+Damage falls off toward the edge of a blast, so a near miss wounds rather than
+kills, and rockets do not hurt teammates.
+
 ## Skills
 
 Four are playable, bound to keys. The full roster — class signatures, ultimates,
@@ -138,6 +158,7 @@ a proposed design change:
 
 | Value | Docket | Prototype | Why |
 |---|---|---|---|
+| Map | — | 116 × 116 cells (58 m square) | Four times the earlier area |
 | Match length | 15 min | 3 min | Reach the collapse quickly |
 | Collapse at | 6:00 | 1:00 | Same |
 | Respawn timer | 8s | 4s | Short match |

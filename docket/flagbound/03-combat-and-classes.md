@@ -32,8 +32,19 @@ Available to every class, regardless of build:
 
 ## Health, defeat and respawn
 
-- Players have health and stamina. Blocking and dodging cost stamina; running
-  out leaves you vulnerable, which is what stops block-spam.
+- Players have **100 health under 75 shield**. Damage eats shield first, so a full
+  target has 175 effective. Shield is a per-life resource that does not
+  regenerate; health regrows slowly out of combat.
+- **Weapons deal real damage — nothing is a one-tap.** *Proposed:* blade 35
+  (five hits through a full target), rifle 75 (three), rocket 150 (two, or one
+  against an unshielded target). Blast damage falls off toward the rim so a near
+  miss wounds rather than kills.
+  - **Note the interaction:** 150 is less than 175, so a rocket does not one-shot
+    a fully shielded player. That is a deliberate consequence of the shield layer,
+    not an oversight — if a guaranteed one-shot is wanted, rocket damage has to
+    exceed the combined pool.
+- Players also have stamina. Blocking and dodging cost stamina; running out leaves
+  you vulnerable, which is what stops block-spam.
 - Defeat is a **temporary elimination**, not a permanent one — you re-form after a
   timer (*proposed:* 8s in every act, including falls).
 - **You reboot at a corner pad, not at your base.** Two reboot pads sit in
