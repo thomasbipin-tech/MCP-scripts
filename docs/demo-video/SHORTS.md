@@ -1,45 +1,58 @@
 # Netforge.ai — short-form set
 
-Five shorts, all 1920×1080 / 30fps / H.264 + AAC, all built from the same scene library
-as the master cut (`netforge-demo-v7.mp4`).
+Five shorts, all 1920×1080 / 30fps / H.264 + AAC.
 
-| # | File | Length | Angle | Best for | Scene spine |
-|---|---|---|---|---|---|
-| 1 | `netforge-s1-2am.mp4` | 0:37 | The 2 a.m. autopsy | video / pitch opener | brand → drawing vs config → the 4 disagreements → validation → green → end |
-| 2 | `netforge-s2-in-2026.mp4` | 0:32 | In 2026 | landing page, demo intro | brand → Visio + CLI → drag a device → export fan → end |
-| 3 | `netforge-s3-weeks-to-hours.mp4` | 0:33 | Weeks to hours | sales deck, webinar | brand → leaf-spine fabric → validation → export fan → end |
-| 4 | `netforge-s4-deploy-minute.mp4` | 0:31 | The deploy minute | social, founder-voice | brand → IP conflict caught → AI Architect → green → end |
-| 5 | `netforge-s5-already-running.mp4` | 0:29 | The network you already have | cloud / hybrid, retargeting | brand → Azure on canvas → export fan → end |
+**Every screen in these is new.** None of them reuse a shot from the master cut, and no
+screen appears in more than one short — ten additional product surfaces were built for
+this set. Verified programmatically: 10 content screens used, 10 unique, zero drawn from
+the master's 14 scenes.
 
-**Uniformity.** Every short opens on the standalone brand card (logo + *From Sketch to
-Spine.*) and closes on the end card, so the set reads as one family regardless of which
-one someone sees first. Verified by pixel-sampling the centre of the first and last shots
-across all five — identical brightness in every file.
+| # | File | Length | Angle | Screens (unique to it) |
+|---|---|---|---|---|
+| 1 | `netforge-s1-autopsy.mp4` | 0:26 | The 2 a.m. autopsy | **Config Compare** — intended vs running, side-by-side diff with +/− gutters → **Watchtower** — per-device drift monitoring, one device flipping to drift |
+| 2 | `netforge-s2-in-2026.mp4` | 0:27 | In 2026 | **Templates gallery** — 9 reference designs with live mini-topologies → **Blueprint wizard** — multi-site scoping, counters ticking to 17 sites |
+| 3 | `netforge-s3-weeks-to-hours.mp4` | 0:28 | Weeks to hours | **Multi-site WAN overview** — 6 site groups radiating from a WAN hub, one tab per site → **Addressing plan** — 14-row subnet table + CIDR aggregation panel |
+| 4 | `netforge-s4-deploy-minute.mp4` | 0:25 | The deploy minute | **Publish preflight** — dry-run steps ticking green, rollback point → **Looking Glass** — 6-hop path trace lighting up with latencies |
+| 5 | `netforge-s5-paperwork.mp4` | 0:26 | The paperwork | **Rack elevation + BOM** — 17U rack filling, 12-line bill of materials → **Free network tools** — the 19-tool suite by category |
 
-**Pacing** is 1.10× against the master's 1.0×, with tighter pads (0.35s intro, 0.35s
-between lines, 0.55s tail) and lower visual floors. Same voice throughout (`am_onyx`).
+**Uniformity.** Every short opens on the brand card (logo + *From Sketch to Spine.*) and
+closes on the end card. Verified by pixel-sampling both: identical values across all five
+files (15.9 open / 16.0 close).
 
-**#5 is mine** rather than one of your four angles. The four supplied hooks are all about
-configs you're *about to write*; nothing covered the network you already have and never
-documented, which is a different buyer (cloud/platform rather than campus/DC) and the one
-place `Cloud on Canvas` is the hero. The other four follow your copy closely, tightened
-for the shorter form.
+**Pacing** is 1.10× against the master's 1.0×, tighter pads, same voice (`am_onyx`).
+
+## The new screens are real features, not invented UI
+
+Every surface maps to something netforge.ai actually ships — `/tools` and `/templates`
+enumerate them, and the Blueprint wizard is described on the home page ("builds your whole
+multi-site network — DCs, campuses, branches — one tab per site, wired through a WAN
+overview"). The tool names in the tools grid are the site's own list: DNS Lookup, Ping,
+Traceroute, Port Check, Speed Test, Config Compare, Subnet Calculator, IPv6 Tools, CIDR
+Aggregator, My IP, IP Geolocation, MAC Lookup, DNS Propagation, WHOIS, RDAP, Email Auth,
+SSL/TLS Check, HTTP Headers, Blacklist Check, Watchtower.
+
+Where a screen needed data the site doesn't publish — part numbers, subnet allocations,
+hop latencies — the values are plausible engineering placeholders, consistent with the
+topology used everywhere else in the set. Nothing claims a metric the product doesn't.
+
+**#5 is mine.** The four supplied angles are all about the config. Nobody budgets for the
+paperwork — rack elevation, BOM, cable schedule — and it's the least glamorous, most
+reliably painful part of a build, which makes it a good top-of-funnel piece with the free
+tools as the CTA.
 
 ## How they're built
 
-No footage is duplicated. `shorts.py` defines each variant as a **scene order plus its own
-narration**; `scenes.html` reads that order from the timeline and re-sequences the
-master's shots. Adding a sixth short is a dozen lines, not a new render pipeline.
+`shorts.py` defines each variant as a **scene order plus its own narration**;
+`scenes.html` reads that order from the timeline. The ten new screens live in the same
+scene library as the master's, so a sixth short — or a re-mix using different screens — is
+a dozen lines.
 
 ```bash
 python3 shorts.py            # VO + timeline_<slug>.json for all five
-python3 shorts.py s1-2am     # just one
+python3 shorts.py s1-autopsy # just one
 python3 shorts.py --list     # show the plan without synthesising
 ./build_shorts.sh            # music, mix, render, encode -> netforge-<slug>.mp4
 ```
-
-`build_shorts.sh` gives each variant its own port and frames directory, and deletes the
-PNG frames after encoding (~500 MB per short otherwise).
 
 ## Pronunciation at higher speed — and why the checker is only a net
 

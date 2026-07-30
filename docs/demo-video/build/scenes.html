@@ -37,6 +37,96 @@ body{font-family:Inter,sans-serif;color:var(--tp);-webkit-font-smoothing:antiali
 .kin .l.em{color:var(--ac)}
 .vig{position:absolute;inset:0;background:radial-gradient(ellipse 70% 55% at 50% 50%,#0000 0%,#000000ad 100%);pointer-events:none}
 
+
+/* ---------- new short-form screens: shared page chrome ---------- */
+.pg{position:absolute;inset:0;background:var(--bg);display:flex;flex-direction:column}
+.pgtabs{display:flex;gap:24px;padding:0 26px;border-bottom:1px solid var(--bd);background:var(--bg2);flex:0 0 46px;align-items:center}
+.pgtabs div{font-size:14px;color:var(--ts);font-weight:500;padding:13px 0 11px;border-bottom:2px solid transparent;margin-bottom:-1px;white-space:nowrap}
+.pgtabs div.on{color:var(--ac);border-bottom-color:var(--ac)}
+.pgbody{flex:1;padding:30px 44px;overflow:hidden;position:relative;
+  display:flex;flex-direction:column;justify-content:center}
+/* column flex + margin:0 auto would shrink children to content width; keep them full-bleed */
+.pgbody>*{width:100%}
+.h1{font-size:30px;font-weight:600;letter-spacing:-.6px;margin-bottom:5px}
+.h2{font-size:14.5px;color:var(--ts);margin-bottom:22px}
+.card{border:1px solid var(--bd);background:#ffffff06;border-radius:var(--r-md)}
+.pill{display:inline-flex;align-items:center;gap:7px;height:26px;padding:0 11px;border-radius:99px;font-size:12.5px;font-weight:600;font-family:JBMono,monospace}
+.pill.ok{background:var(--okb);color:var(--ok);border:1px solid #34c75955}
+.pill.warn{background:var(--warnb);color:var(--warn);border:1px solid #ff9f0a55}
+.pill.err{background:var(--errb);color:var(--err);border:1px solid #ff3b3055}
+.pill.info{background:var(--infob);color:var(--info);border:1px solid #007aff55}
+.tbl{width:100%;border-collapse:collapse;font-size:15px}
+.tbl th{text-align:left;font-size:11px;letter-spacing:1.3px;text-transform:uppercase;color:var(--tt);font-weight:600;padding:0 14px 11px}
+.tbl td{padding:12px 14px;border-top:1px solid #ffffff0d;font-family:JBMono,monospace;color:var(--tp);white-space:nowrap}
+.tbl td.t{font-family:Inter,sans-serif}
+.tbl td.dim{color:var(--ts)}
+
+/* wizard */
+.wz{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:1180px;display:flex;
+  border-radius:var(--r-lg);border:1px solid var(--bd2);background:var(--elev);box-shadow:0 40px 90px #000000cc;overflow:hidden}
+.wzrail{width:288px;flex:0 0 288px;background:#ffffff05;border-right:1px solid var(--bd);padding:26px 22px}
+.wzstep{display:flex;gap:13px;align-items:flex-start;padding:13px 0;font-size:15px;color:var(--ts)}
+.wzstep .n{width:26px;height:26px;flex:0 0 26px;border-radius:99px;border:1px solid var(--bd3);display:flex;align-items:center;justify-content:center;font-size:12.5px;font-family:JBMono,monospace}
+.wzstep.on{color:var(--tp)} .wzstep.on .n{background:var(--ac);border-color:var(--ac);color:#00121c;font-weight:700}
+.wzstep.done .n{background:var(--okb);border-color:#34c75966;color:var(--ok)}
+.wzmain{flex:1;padding:28px 30px}
+.cnt{display:flex;align-items:center;justify-content:space-between;padding:15px 18px;border-radius:var(--r-sm);border:1px solid var(--bd);background:#ffffff05;margin-bottom:11px}
+.cnt .lb{font-size:16px} .cnt .lb small{display:block;font-size:12.5px;color:var(--ts);margin-top:2px}
+.cnt .v{font-family:JBMono,monospace;font-size:26px;font-weight:500;color:var(--ac)}
+.gbtn{height:52px;border-radius:99px;background:var(--ac);color:#00121c;font-size:18px;font-weight:600;
+  display:flex;align-items:center;justify-content:center;gap:10px;margin-top:20px}
+
+/* template gallery */
+.gal{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.tcard{border-radius:var(--r-md);border:1px solid var(--bd);background:#ffffff06;padding:16px;overflow:hidden}
+.tcard.sel{border-color:var(--acb);background:var(--acs);box-shadow:0 0 0 1px var(--acb)}
+.tcard .tn{font-size:16.5px;font-weight:600;letter-spacing:-.2px}
+.tcard .tm{font-size:12.5px;color:var(--ts);font-family:JBMono,monospace;margin-top:3px}
+.tcard svg{width:100%;height:96px;margin:12px 0 10px;display:block}
+.tcard .tb{display:flex;gap:7px}
+.tbadge{font-size:11px;font-family:JBMono,monospace;padding:4px 9px;border-radius:99px;border:1px solid var(--bd2);color:var(--tt)}
+
+/* diff viewer */
+.dv{display:flex;gap:0;border-radius:var(--r-md);border:1px solid var(--bd);overflow:hidden;font-family:JBMono,monospace;font-size:16px}
+.dvcol{flex:1;min-width:0}
+.dvh{padding:12px 16px;background:#ffffff08;border-bottom:1px solid var(--bd);font-size:13.5px;color:var(--ts);font-family:Inter,sans-serif}
+.dvl{display:flex;gap:12px;padding:6px 16px;line-height:1.5;white-space:pre}
+.dvl .g{width:14px;flex:0 0 14px;color:var(--tph);text-align:center}
+.dvl.del{background:#ff3b3014} .dvl.del .g{color:var(--err)} .dvl.del span:last-child{color:#ff9b94}
+.dvl.add{background:#34c75914} .dvl.add .g{color:var(--ok)} .dvl.add span:last-child{color:#8ce9a6}
+.dvmid{width:1px;background:var(--bd)}
+
+/* dashboard rows */
+.drow{display:flex;align-items:center;gap:18px;padding:15px 18px;border-radius:var(--r-md);
+  border:1px solid var(--bd);background:#ffffff05;margin-bottom:10px}
+.drow .nm{font-family:JBMono,monospace;font-size:16px;width:230px}
+.drow .vd{font-size:13px;color:var(--ts);width:130px}
+.drow .sp{flex:1;height:26px}
+.drow .mt{font-family:JBMono,monospace;font-size:13px;color:var(--tph);width:150px;text-align:right}
+
+/* tools grid */
+.tgrid{display:grid;grid-template-columns:repeat(5,1fr);gap:16px}
+.tgcol .tgh{font-size:11px;letter-spacing:1.4px;text-transform:uppercase;color:var(--ac);font-weight:700;margin-bottom:11px}
+.tgi{padding:11px 13px;border-radius:var(--r-sm);border:1px solid var(--bd);background:#ffffff05;font-size:14px;margin-bottom:8px}
+
+/* path trace */
+.hop{display:flex;align-items:center;gap:16px;padding:14px 18px;border-radius:var(--r-md);
+  border:1px solid var(--bd);background:#ffffff05;margin-bottom:11px}
+.hop .ix{width:30px;height:30px;flex:0 0 30px;border-radius:99px;background:#ffffff0f;color:var(--tt);
+  display:flex;align-items:center;justify-content:center;font-family:JBMono,monospace;font-size:13px}
+.hop.up .ix{background:var(--ac);color:#00121c;font-weight:700}
+.hop .hn{font-family:JBMono,monospace;font-size:16.5px;width:250px}
+.hop .hi{font-size:13.5px;color:var(--ts);flex:1}
+.hop .hl{font-family:JBMono,monospace;font-size:15px;color:var(--ok);width:100px;text-align:right}
+
+/* rack */
+.rack{width:330px;border-radius:var(--r-md);border:1px solid var(--bd2);background:#ffffff05;padding:12px 12px 14px}
+.rack .rh{font-size:12.5px;color:var(--ts);font-family:JBMono,monospace;text-align:center;padding-bottom:10px}
+.ru{display:flex;align-items:center;gap:8px;height:30px;margin-bottom:4px}
+.ru .un{width:26px;font-family:JBMono,monospace;font-size:11px;color:var(--tph);text-align:right}
+.ru .ub{flex:1;height:100%;border-radius:5px;border:1px solid var(--bd);background:#ffffff05}
+.ru .ub.f{display:flex;align-items:center;padding:0 10px;font-family:JBMono,monospace;font-size:12.5px}
+
 /* ---------- opening brand card: bookends the end card ---------- */
 .openbrand{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;
   justify-content:center;gap:26px;transform-origin:50% 50%;
@@ -531,6 +621,50 @@ function typedMarkup(src,p){
   return {html:out,done:seen>=plain.length};
 }
 
+
+/* ---------------- shared chrome for the short-form screens ---------------- */
+// These are additional product surfaces, not re-dressed versions of the master's shots:
+// Blueprint wizard, Templates, Config Compare, addressing plan, Watchtower, the tools
+// suite, publish preflight, Looking Glass and rack/BOM. Every one is a real feature on
+// netforge.ai (/tools and /templates enumerate them); none of the copy is invented.
+function pageShell(g, o){
+  const btns=(o.btns||['Validate','Export','Publish']);
+  g.innerHTML=`<div class="pg">
+    <div class="topbar">
+      <div class="logo"><span class="m">${I.logo}</span>Netforge.ai</div>
+      <div class="crumb">${o.crumb||''}</div>
+      <div class="tbtns">${btns.map((b,i)=>`<div class="btn${i===btns.length-1?' pri':''}">${b}</div>`).join('')}<div class="av">TB</div></div>
+    </div>
+    ${o.tabs?`<div class="pgtabs">${o.tabs.map((t,i)=>`<div class="${i===(o.tabOn||0)?'on':''}">${t}</div>`).join('')}</div>`:''}
+    <div class="pgbody">${o.body||''}</div>
+  </div>`;
+}
+// stagger helper: reveal child elements one after another
+function stagger(nodes, lt, start, step, dur){
+  nodes.forEach((el,i)=>{
+    const p=easeOut(clamp(seg(lt, start+i*step, start+i*step+dur)));
+    el.style.opacity=p;
+    el.style.transform=`translateY(${lerp(14,0,p)}px)`;
+  });
+}
+function miniTopo(kind){
+  const L=(x1,y1,x2,y2,c='#38bdf8aa')=>`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${c}" stroke-width="1.6"/>`;
+  const N=(x,y,c='#38bdf8')=>`<rect x="${x-9}" y="${y-6}" width="18" height="12" rx="3" fill="${c}22" stroke="${c}" stroke-width="1.3"/>`;
+  if(kind==='spine'){let h='';for(let i=0;i<4;i++)for(let j=0;j<6;j++)h+=L(40+i*60,22,25+j*40,78);
+    for(let i=0;i<4;i++)h+=N(40+i*60,22);for(let j=0;j<6;j++)h+=N(25+j*40,78);return h;}
+  if(kind==='star'){let h='';for(let i=0;i<6;i++){const a=i/6*Math.PI*2,x=140+Math.cos(a)*95,y=50+Math.sin(a)*34;h+=L(140,50,x,y,'#8e8e93aa')+N(x,y,'#8e8e93');}return h+N(140,50);}
+  if(kind==='tier'){let h=L(140,18,80,52)+L(140,18,200,52)+L(80,52,40,84)+L(80,52,120,84)+L(200,52,170,84)+L(200,52,240,84);
+    return h+N(140,18)+N(80,52)+N(200,52)+N(40,84)+N(120,84)+N(170,84)+N(240,84);}
+  if(kind==='ring'){let h='';const pts=[[60,30],[140,20],[220,30],[240,70],[140,88],[50,70]];
+    pts.forEach((p,i)=>{const q=pts[(i+1)%pts.length];h+=L(p[0],p[1],q[0],q[1],'#00adefaa');});
+    pts.forEach(p=>h+=N(p[0],p[1],'#00adef'));return h;}
+  if(kind==='pair'){return L(100,50,180,50)+N(100,50)+N(180,50);}
+  if(kind==='cloud'){return L(140,26,80,74,'#007affaa')+L(140,26,200,74,'#007affaa')
+    +`<ellipse cx="140" cy="26" rx="42" ry="16" fill="#007aff22" stroke="#007aff" stroke-width="1.3"/>`
+    +N(80,74,'#007aff')+N(200,74,'#007aff');}
+  return L(140,24,140,80)+N(140,24)+N(140,80);
+}
+
 /* ============================ SCENES ============================ */
 // Each: {a,b,go(lt,d,t)}   lt = local time, d = duration
 const SCENES=[
@@ -805,6 +939,351 @@ const SCENES=[
   caption('',0);chips(null);badge(null,'',0);
 }},
 
+/* ================= additional product surfaces (short-form) ================= */
+
+/* ---------- 17. Blueprint wizard ---------- */
+{a:0,b:9,go(lt,d){
+  hideApp(); const g=$('#gfx');
+  const SITES=[['Data centres','leaf-spine · EVPN VXLAN',2],['Campuses','3-tier · OSPF core',3],
+               ['Branches','SD-WAN · EdgeConnect',12]];
+  if(!g.dataset.n1){g.dataset.n1='1';
+    pageShell(g,{crumb:'netforge.ai / new project / <b>global-estate</b>',btns:['Cancel','Save draft','Generate'],body:`
+      <div class="wz">
+        <div class="wzrail">
+          <div style="font-size:12px;letter-spacing:1.4px;text-transform:uppercase;color:var(--tt);font-weight:700;margin-bottom:14px">Blueprint wizard</div>
+          <div class="wzstep done" id="w0"><span class="n">1</span><div>Scope<small style="display:block;font-size:12.5px;color:var(--ts)">Multi-site estate</small></div></div>
+          <div class="wzstep on" id="w1"><span class="n">2</span><div>Sites<small style="display:block;font-size:12.5px;color:var(--ts)">Type and count</small></div></div>
+          <div class="wzstep" id="w2"><span class="n">3</span><div>Addressing<small style="display:block;font-size:12.5px;color:var(--ts)">Supernet and VLANs</small></div></div>
+        </div>
+        <div class="wzmain">
+          <div class="h1" style="font-size:25px">Never face a blank canvas</div>
+          <div class="h2">One tab per site, wired through a WAN overview.</div>
+          ${SITES.map((x,i)=>`<div class="cnt" id="c${i}"><div class="lb">${x[0]}<small>${x[1]}</small></div><div class="v" id="v${i}">0</div></div>`).join('')}
+          <div class="gbtn" id="gb">Generate 17 sites</div>
+        </div>
+      </div>`});}
+  const p=easeOut(seg(lt,.2,1.1));
+  const wz=g.querySelector('.wz'); wz.style.opacity=p;
+  wz.style.transform=`translate(-50%,-50%) scale(${lerp(.97,1,p)})`;
+  SITES.forEach((x,i)=>{
+    const t=easeOut(clamp(seg(lt,1.0+i*.7,2.0+i*.7)));
+    g.querySelector('#c'+i).style.opacity=lerp(.35,1,t);
+    g.querySelector('#v'+i).textContent=Math.round(t*x[2]);
+  });
+  const gp=easeOut(seg(lt,3.4,4.2));
+  const gb=g.querySelector('#gb');
+  gb.style.opacity=gp;
+  gb.style.transform=`scale(${1+.03*Math.max(0,Math.sin(Math.max(0,lt-4.4)*3.2))})`;
+  if(lt>5.0){g.querySelector('#w1').className='wzstep done';g.querySelector('#w2').className='wzstep on';}
+  wz.style.opacity=p*(1-seg(lt,d-.6,d));
+  chips(null);
+}},
+
+/* ---------- 18. multi-site WAN overview ---------- */
+{a:0,b:9,go(lt,d){
+  hideApp(); const g=$('#gfx');
+  const SITES=[['DC-1','10.10.0.0/16',-330,-150],['DC-2','10.20.0.0/16',330,-150],
+               ['CAMPUS-A','10.30.0.0/16',-430,60],['CAMPUS-B','10.31.0.0/16',0,150],
+               ['CAMPUS-C','10.32.0.0/16',430,60],['BRANCH ×12','10.40.0.0/14',-90,-190]];
+  if(!g.dataset.n2){g.dataset.n2='1';
+    pageShell(g,{crumb:'netforge.ai / projects / <b>global-estate</b>',
+      tabs:['WAN overview','DC-1','DC-2','CAMPUS-A','CAMPUS-B','CAMPUS-C','BRANCH-01','+11 more'],tabOn:0,body:`
+      <svg id="wan" style="position:absolute;inset:0;width:100%;height:100%"></svg>`});}
+  const svg=g.querySelector('#wan'); const CX=920,CY=520;
+  let h=`<ellipse cx="${CX}" cy="${CY}" rx="150" ry="58" fill="#38bdf815" stroke="var(--ac)" stroke-width="1.6" opacity="${easeOut(seg(lt,.2,1.1))}"/>
+    <text x="${CX}" y="${CY+6}" fill="var(--ac)" font-size="21" font-family="Inter" font-weight="600" text-anchor="middle" opacity="${easeOut(seg(lt,.4,1.3))}">WAN</text>`;
+  SITES.forEach((st,i)=>{
+    const pr=easeOut(clamp(seg(lt,.9+i*.42,1.9+i*.42)));
+    const x=CX+st[2]*pr, y=CY+st[3]*pr;
+    h+=`<line x1="${CX}" y1="${CY}" x2="${x}" y2="${y}" stroke="var(--fiber)" stroke-width="2" opacity="${pr*.7}"/>`;
+    h+=`<g opacity="${pr}"><rect x="${x-108}" y="${y-30}" width="216" height="60" rx="12" fill="#1c1c1e" stroke="#ffffff29"/>
+      <text x="${x}" y="${y-5}" fill="#f5f5f7" font-size="17" font-family="Inter" font-weight="600" text-anchor="middle">${st[0]}</text>
+      <text x="${x}" y="${y+17}" fill="#98989f" font-size="14" font-family="JBMono" text-anchor="middle">${st[1]}</text></g>`;
+  });
+  svg.innerHTML=h;
+  g.querySelector('.pg').style.opacity=1-seg(lt,d-.6,d);
+  chips(['17 sites','1 blueprint','one canvas'],seg(lt,4.4,6.0));
+}},
+
+/* ---------- 19. Templates gallery ---------- */
+{a:0,b:9,go(lt,d){
+  hideApp(); const g=$('#gfx');
+  const T=[['Leaf-Spine EVPN VXLAN','4 spine · 8 leaf · 96 ports','spine',['EOS','AVD']],
+           ['Branch SD-WAN','2 edge · 1 firewall · dual ISP','star',['EdgeConnect','PAN-OS']],
+           ['Campus 3-Tier','core · dist · access','tier',['IOS-XE','ArubaOS-CX']],
+           ['DC Collapsed Core','2 core · 6 ToR','spine',['NX-OS']],
+           ['Metro Ring','6 nodes · MPLS','ring',['IOS-XE']],
+           ['Hybrid Azure Hub','VNet · VPN GW · NSG','cloud',['Terraform']],
+           ['Branch SD-WAN · Dual Hub','2 edge · 2 hubs','star',['EdgeConnect']],
+           ['PCI Segmented Campus','core · dist · PCI zone','tier',['IOS-XE','PAN-OS']],
+           ['Small Site Collapsed','1 switch · 1 firewall','pair',['ArubaOS-CX','PAN-OS']]];
+  if(!g.dataset.n3){g.dataset.n3='1';
+    pageShell(g,{crumb:'netforge.ai / <b>templates</b>',btns:['Community','Featured','Open Designer'],
+      tabs:['Featured reference designs','Community templates','My templates'],tabOn:0,body:`
+      <div class="h1">Start from a production-ready design</div>
+      <div class="h2">Pre-built topologies. Click any card to preview, or use it as a starting point.</div>
+      <div class="gal">${T.map((t,i)=>`<div class="tcard" id="t${i}">
+        <div class="tn">${t[0]}</div><div class="tm">${t[1]}</div>
+        <svg viewBox="0 0 280 100">${miniTopo(t[2])}</svg>
+        <div class="tb">${t[3].map(b=>`<span class="tbadge">${b}</span>`).join('')}</div></div>`).join('')}</div>`});}
+  stagger([...g.querySelectorAll('.tcard')], lt, .3, .28, .8);
+  const sel=g.querySelector('#t0');
+  if(lt>4.6)sel.classList.add('sel'); else sel.classList.remove('sel');
+  g.querySelector('.pg').style.opacity=1-seg(lt,d-.6,d);
+  chips(null);
+}},
+
+/* ---------- 20. Config Compare ---------- */
+{a:0,b:9,go(lt,d){
+  hideApp(); const g=$('#gfx');
+  const LEFT=[['','interface Vlan30'],['','  description VOICE'],['-','  ip address 10.50.30.1 255.255.255.0'],
+              ['','!'],['','router bgp 65001'],['-','  neighbor 10.0.0.2 remote-as 65001'],
+              ['','!'],['','interface Po1'],['-','  switchport trunk native vlan 1'],
+              ['','  switchport mode trunk'],['','!'],['','system jumbomtu 9216'],
+              ['','spanning-tree mode rapid-pvst']];
+  const RIGHT=[['','interface Vlan30'],['','  description VOICE'],['+','  ip address 10.50.30.1 255.255.255.0'],
+               ['','!'],['','router bgp 65002'],['+','  neighbor 10.0.0.2 remote-as 65002'],
+               ['','!'],['','interface Po1'],['+','  switchport trunk native vlan 99'],
+               ['','  switchport mode trunk'],['','!'],['','system jumbomtu 9216'],
+               ['','spanning-tree mode rapid-pvst']];
+  const row=(r,cls)=>`<div class="dvl ${r[0]==='-'?'del':r[0]==='+'?'add':''}"><span class="g">${r[0]||' '}</span><span>${r[1]}</span></div>`;
+  if(!g.dataset.n4){g.dataset.n4='1';
+    pageShell(g,{crumb:'netforge.ai / tools / <b>config compare</b>',btns:['Swap','Export diff','Fix on canvas'],
+      tabs:['Config Compare','Traceroute','Port check','Subnet calculator','CIDR aggregator'],tabOn:0,body:`
+      <div class="h1">Intended vs running</div>
+      <div class="h2">RSITE-CORE-01 · captured 2 minutes ago</div>
+      <div class="dv">
+        <div class="dvcol"><div class="dvh">intended — generated from the canvas</div><div id="dl">${LEFT.map(r=>row(r)).join('')}</div></div>
+        <div class="dvmid"></div>
+        <div class="dvcol"><div class="dvh">running — read from the device</div><div id="dr">${RIGHT.map(r=>row(r)).join('')}</div></div>
+      </div>
+      <div style="display:flex;gap:14px;align-items:center;margin-top:20px" id="dsum">
+        <span class="pill err">3 differences</span>
+        <span class="pill warn">1 will drop the voice VLAN</span>
+        <span style="font-size:14px;color:var(--ts)">last verified — never</span>
+      </div>`});}
+  const rows=[...g.querySelectorAll('.dvl')];
+  stagger(rows, lt, .25, .055, .5);
+  rows.forEach(el=>{ if(el.classList.contains('del')||el.classList.contains('add')){
+    const on=lt>2.6; el.style.filter=on?'none':'saturate(.15)'; }});
+  const sp=easeOut(seg(lt,3.4,4.3));
+  g.querySelector('#dsum').style.opacity=sp;
+  g.querySelector('.pg').style.opacity=1-seg(lt,d-.6,d);
+  chips(null);
+}},
+
+/* ---------- 21. addressing plan ---------- */
+{a:0,b:9,go(lt,d){
+  hideApp(); const g=$('#gfx');
+  const R=[['DC-1','10','MGMT','10.10.10.0/24','10.10.10.1','254','MGMT'],
+           ['DC-1','20','SERVER','10.10.20.0/23','10.10.20.1','510','PROD'],
+           ['DC-2','10','MGMT','10.20.10.0/24','10.20.10.1','254','MGMT'],
+           ['CAMPUS-A','30','USER','10.30.30.0/22','10.30.30.1','1022','CORP'],
+           ['CAMPUS-A','31','VOICE','10.30.31.0/24','10.30.31.1','254','VOICE'],
+           ['CAMPUS-B','30','USER','10.31.30.0/22','10.31.30.1','1022','CORP'],
+           ['BRANCH-01','40','USER','10.40.1.0/24','10.40.1.1','254','CORP'],
+           ['BRANCH-02','40','USER','10.40.2.0/24','10.40.2.1','254','CORP'],
+           ['BRANCH-03','40','USER','10.40.3.0/24','10.40.3.1','254','CORP'],
+           ['BRANCH-04','41','VOICE','10.40.4.0/24','10.40.4.1','254','VOICE'],
+           ['DC-1','30','STORAGE','10.10.30.0/24','10.10.30.1','254','PROD'],
+           ['DC-2','20','SERVER','10.20.20.0/23','10.20.20.1','510','PROD'],
+           ['CAMPUS-C','30','USER','10.32.30.0/22','10.32.30.1','1022','CORP'],
+           ['CAMPUS-C','32','GUEST','10.32.32.0/24','10.32.32.1','254','GUEST']];
+  if(!g.dataset.n5){g.dataset.n5='1';
+    pageShell(g,{crumb:'netforge.ai / projects / global-estate / <b>addressing</b>',btns:['Recalculate','Export CSV','Apply'],
+      tabs:['Addressing plan','VLAN map','VRFs','CIDR aggregation'],tabOn:0,body:`
+      <div style="display:flex;gap:30px">
+        <div style="flex:1;min-width:0">
+          <div class="h1">Generated from the topology</div>
+          <div class="h2">No spreadsheet. 214 subnets allocated from one supernet.</div>
+          <table class="tbl"><thead><tr><th>Site</th><th>VLAN</th><th>Name</th><th>Subnet</th><th>Gateway</th><th>Usable</th><th>VRF</th></tr></thead>
+          <tbody>${R.map((r,i)=>`<tr id="r${i}"><td class="t">${r[0]}</td><td>${r[1]}</td><td class="dim">${r[2]}</td><td>${r[3]}</td><td class="dim">${r[4]}</td><td class="dim">${r[5]}</td><td>${r[6]}</td></tr>`).join('')}</tbody></table>
+        </div>
+        <div style="width:360px;flex:0 0 360px">
+          <div class="card" style="padding:20px" id="agg">
+            <div style="font-size:11px;letter-spacing:1.3px;text-transform:uppercase;color:var(--tt);font-weight:700;margin-bottom:14px">CIDR aggregation</div>
+            <div style="font-family:JBMono,monospace;font-size:24px;color:var(--ac);margin-bottom:6px">10.0.0.0/8</div>
+            <div style="font-size:13.5px;color:var(--ts);margin-bottom:18px">aggregated to 4 supernets</div>
+            ${['10.10.0.0/15 · data centres','10.30.0.0/14 · campuses','10.40.0.0/14 · branches','10.50.0.0/16 · remote sites']
+              .map(x=>`<div style="font-family:JBMono,monospace;font-size:14px;color:var(--tp);padding:7px 0;border-top:1px solid #ffffff0d">${x}</div>`).join('')}
+            <div style="display:flex;gap:8px;margin-top:16px"><span class="pill ok">0 overlaps</span><span class="pill info">214 subnets</span></div>
+          </div>
+        </div>
+      </div>`});}
+  stagger([...g.querySelectorAll('tbody tr')], lt, .3, .16, .5);
+  g.querySelector('#agg').style.opacity=easeOut(seg(lt,2.4,3.4));
+  g.querySelector('.pg').style.opacity=1-seg(lt,d-.6,d);
+  chips(null);
+}},
+
+/* ---------- 22. Watchtower ---------- */
+{a:0,b:9,go(lt,d){
+  hideApp(); const g=$('#gfx');
+  const DEV=[['RSITE-CORE-01','Cisco NX-OS','ok','4m ago'],['RSITE-FW-01','PAN-OS','ok','4m ago'],
+             ['RSITE-WAN-01','EdgeConnect','ok','5m ago'],['RSITE-ACC-01','ArubaOS-CX','ok','5m ago'],
+             ['RSITE-ACC-02','ArubaOS-CX','drift','just now'],['RSITE-AP-04','ArubaOS','ok','6m ago'],
+             ['DC1-SPINE-01','Arista EOS','ok','3m ago'],['DC1-LEAF-04','Arista EOS','ok','3m ago'],
+             ['CAMPUS-A-CORE','IOS-XE','ok','7m ago']];
+  const spark=(seed,bad)=>{let h='',x=0;const pts=[];
+    for(let i=0;i<34;i++){const v=Math.sin((i+seed)*0.7)*0.3+Math.cos((i+seed)*0.31)*0.22;
+      pts.push(`${i*8},${13-v*9}`);}
+    h+=`<polyline points="${pts.join(' ')}" fill="none" stroke="${bad?'var(--warn)':'var(--ok)'}" stroke-width="1.6" opacity=".85"/>`;
+    return `<svg viewBox="0 0 272 26" style="width:272px;height:26px">${h}</svg>`;};
+  if(!g.dataset.n6){g.dataset.n6='1';
+    pageShell(g,{crumb:'netforge.ai / <b>watchtower</b>',btns:['Add device','Alerts','Re-verify all'],
+      tabs:['Monitored devices','Drift history','Alerts','Schedules'],tabOn:0,body:`
+      <div style="display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:20px">
+        <div><div class="h1">Still what you designed?</div>
+        <div class="h2" style="margin:0">Watchtower re-reads every device and compares it to the canvas.</div></div>
+        <div style="display:flex;gap:9px" id="wsum"><span class="pill ok">8 in sync</span><span class="pill warn">1 drifted</span></div>
+      </div>
+      ${DEV.map((x,i)=>`<div class="drow" id="w${i}">
+        <span class="nm">${x[0]}</span><span class="vd">${x[1]}</span>
+        <span class="sp">${spark(i*3,x[2]==='drift')}</span>
+        <span id="wp${i}"></span>
+        <span class="mt">${x[3]}</span></div>`).join('')}`});}
+  stagger([...g.querySelectorAll('.drow')], lt, .3, .2, .55);
+  DEV.forEach((x,i)=>{
+    const el=g.querySelector('#wp'+i);
+    const flip=(x[2]==='drift' && lt>3.6);
+    el.innerHTML=flip?'<span class="pill warn">drift · 2 lines</span>'
+                     :(x[2]==='drift'&&lt<=3.6?'<span class="pill ok">in sync</span>':'<span class="pill ok">in sync</span>');
+    if(flip)g.querySelector('#w'+i).style.borderColor='#ff9f0a4d';
+  });
+  g.querySelector('#wsum').style.opacity=easeOut(seg(lt,3.8,4.6));
+  g.querySelector('.pg').style.opacity=1-seg(lt,d-.6,d);
+  chips(null);
+}},
+
+/* ---------- 23. free network tools ---------- */
+{a:0,b:9,go(lt,d){
+  hideApp(); const g=$('#gfx');
+  const CATS=[['Diagnostics',['DNS Lookup','Ping','Traceroute','Port Check','Speed Test','Config Compare']],
+              ['Addressing',['Subnet Calculator','IPv6 Tools','CIDR Aggregator','My IP','IP Geolocation','MAC Lookup']],
+              ['DNS & Domains',['DNS Propagation','WHOIS','RDAP Lookup','Email Auth']],
+              ['Security & Web',['SSL / TLS Check','HTTP Headers','Blacklist Check']],
+              ['Monitoring',['Watchtower']]];
+  if(!g.dataset.n7){g.dataset.n7='1';
+    pageShell(g,{crumb:'netforge.ai / <b>network tools</b>',btns:['Sign in','Open Designer'],body:`
+      <div class="h1">Nineteen tools. No sign-in.</div>
+      <div class="h2">The diagnostics you keep a bookmark folder for — in one place.</div>
+      <div class="tgrid">${CATS.map((c,i)=>`<div class="tgcol" id="g${i}"><div class="tgh">${c[0]}</div>
+        ${c[1].map(t=>`<div class="tgi">${t}</div>`).join('')}</div>`).join('')}</div>
+      <div style="display:flex;gap:10px;margin-top:26px" id="tsum">
+        <span class="pill info">no sign-in</span><span class="pill info">no rate limits</span>
+        <span class="pill ok">netforge.ai/tools</span></div>`});}
+  stagger([...g.querySelectorAll('.tgcol')], lt, .3, .34, .8);
+  g.querySelector('#tsum').style.opacity=easeOut(seg(lt,2.6,3.5));
+  g.querySelector('.pg').style.opacity=1-seg(lt,d-.6,d);
+  chips(null);
+}},
+
+/* ---------- 24. publish preflight ---------- */
+{a:0,b:9,go(lt,d){
+  hideApp(); const g=$('#gfx');
+  const STEPS=[['Snapshot running-config','6 devices'],['Create rollback point','rev 12 → rev 13'],
+               ['Dry-run RSITE-CORE-01','0 errors'],['Dry-run RSITE-FW-01','0 errors'],
+               ['Dry-run access layer','0 errors'],['Order of operations','core → dist → access']];
+  if(!g.dataset.n8){g.dataset.n8='1';
+    pageShell(g,{crumb:'netforge.ai / projects / remote-site / <b>publish</b>',btns:['Cancel','Dry run','Publish'],body:`
+      <div style="max-width:1180px;margin:0 auto">
+        <div class="h1">Before it reaches a device</div>
+        <div class="h2">Every publish is dry-run and rollback-backed. Nothing is pushed blind.</div>
+        ${STEPS.map((x,i)=>`<div class="drow" id="p${i}" style="margin-bottom:11px">
+          <span id="pi${i}" style="width:24px;flex:0 0 24px"></span>
+          <span class="nm" style="width:400px;font-family:Inter,sans-serif;font-size:16.5px">${x[0]}</span>
+          <span class="vd" style="flex:1;width:auto">${x[1]}</span>
+          <span id="pp${i}"></span></div>`).join('')}
+        <div style="display:flex;gap:14px;align-items:center;margin-top:22px" id="psum">
+          <span class="pill ok">dry run clean</span>
+          <span class="pill info">rollback point ready</span>
+          <span style="font-size:14px;color:var(--ts)">publish window 02:00–04:00</span>
+        </div>
+      </div>`});}
+  STEPS.forEach((x,i)=>{
+    const p=easeOut(clamp(seg(lt,.3+i*.5,.9+i*.5)));
+    const row=g.querySelector('#p'+i);
+    row.style.opacity=p; row.style.transform=`translateY(${lerp(12,0,p)}px)`;
+    const done=lt>1.1+i*.5;
+    g.querySelector('#pi'+i).innerHTML=done
+      ?`<span style="width:22px;height:22px;border-radius:99px;background:var(--ok);display:flex;align-items:center;justify-content:center">${I.chk}</span>`
+      :`<span style="width:22px;height:22px;border-radius:99px;border:1.6px solid var(--bd3);display:block"></span>`;
+    g.querySelector('#pp'+i).innerHTML=done?'<span class="pill ok">pass</span>':'';
+  });
+  g.querySelector('#psum').style.opacity=easeOut(seg(lt,3.9,4.8));
+  g.querySelector('.pg').style.opacity=1-seg(lt,d-.6,d);
+  chips(null);
+}},
+
+/* ---------- 25. Looking Glass path trace ---------- */
+{a:0,b:9,go(lt,d){
+  hideApp(); const g=$('#gfx');
+  const HOPS=[['RSITE-ACC-02','Vlan30 · 10.50.30.1','0.3 ms'],['RSITE-CORE-01','Po1 · 10.50.10.2','0.7 ms'],
+              ['RSITE-FW-01','eth1/2 · 10.50.0.1','1.2 ms'],['RSITE-WAN-01','tunnel0 · 10.50.254.1','1.7 ms'],
+              ['AZ-VPN-GW','gw0 · 10.50.255.1','2.1 ms'],['AZ-HUB-VNET','10.50.0.0/16','2.4 ms']];
+  if(!g.dataset.n9){g.dataset.n9='1';
+    pageShell(g,{crumb:'netforge.ai / tools / <b>looking glass</b>',btns:['Re-run','Save','Open Designer'],
+      tabs:['Path trace','Ping','DNS lookup','Port check','SSL / TLS check'],tabOn:0,body:`
+      <div style="max-width:1180px;margin:0 auto">
+        <div class="h1">Did the site come back?</div>
+        <div class="h2">10.50.30.40 → 10.50.0.0/16 · after publish</div>
+        ${HOPS.map((h,i)=>`<div class="hop" id="h${i}"><span class="ix">${i+1}</span>
+          <span class="hn">${h[0]}</span><span class="hi">${h[1]}</span><span class="hl" id="hl${i}"></span></div>`).join('')}
+        <div style="display:flex;gap:14px;align-items:center;margin-top:22px" id="hsum">
+          <span class="pill ok">reachable</span><span class="pill info">6 hops</span>
+          <span style="font-size:14px;color:var(--ts)">matches the designed path exactly</span>
+        </div>
+      </div>`});}
+  HOPS.forEach((h,i)=>{
+    const p=easeOut(clamp(seg(lt,.3+i*.62,.95+i*.62)));
+    const el=g.querySelector('#h'+i);
+    el.style.opacity=p; el.style.transform=`translateX(${lerp(-14,0,p)}px)`;
+    const live=lt>.85+i*.62;
+    el.classList.toggle('up',live);
+    g.querySelector('#hl'+i).textContent=live?h[2]:'…';
+  });
+  g.querySelector('#hsum').style.opacity=easeOut(seg(lt,3.4,4.3));
+  g.querySelector('.pg').style.opacity=1-seg(lt,d-.6,d);
+  chips(null);
+}},
+
+/* ---------- 26. rack elevation + BOM ---------- */
+{a:0,b:9,go(lt,d){
+  hideApp(); const g=$('#gfx');
+  const RACK=[[42,'PATCH-01 · 24p',' '],[40,'RSITE-CORE-01','var(--cisco)'],[38,'RSITE-ACC-01','var(--aruba)'],
+              [36,'RSITE-ACC-02','var(--aruba)'],[33,'RSITE-FW-01','var(--palo)'],[31,'RSITE-WAN-01','var(--sp)'],
+              [29,'RSITE-AP-CTRL','var(--aruba)'],[27,'PATCH-02 · 24p',' '],[26,'UPS-01','var(--gen)']];
+  const BOM=[['1','N9K-C93180YC-EX','Nexus 9300 48p 10/25G','core'],['2','JL679A','Aruba CX 6300M 24p','access'],
+             ['1','PA-3410','PA-3410 firewall','security'],['1','EC-XS','EdgeConnect XS','wan'],
+             ['4','SFP-10G-SR','10G SR optic','optics'],['12','CAB-CAT6A-3M','Cat6A 3 m patch','copper'],
+             ['2','QSFP-40G-SR4','40G uplink optic','optics'],['1','PWR-C1-715W','redundant PSU','power'],
+             ['24','CAB-LC-LC-2M','LC-LC OM4 2 m','fibre'],['1','RACK-42U','42U cabinet','rack']];
+  if(!g.dataset.n10){g.dataset.n10='1';
+    pageShell(g,{crumb:'netforge.ai / projects / remote-site / <b>build pack</b>',btns:['PDF','XLSX','Export all'],
+      tabs:['Rack elevation','Bill of materials','Cable schedule','Design package'],tabOn:0,body:`
+      <div style="display:flex;gap:36px">
+        <div class="rack" id="rk"><div class="rh">RACK A · 42U · remote-site</div>
+          ${Array.from({length:17},(_x,i)=>{const u=42-i*1;const f=RACK.find(r=>r[0]===u);
+            return `<div class="ru" id="u${i}"><span class="un">${u}</span>
+              <span class="ub ${f?'f':''}" style="${f?`background:${f[2]}1a;border-color:${f[2]}66;color:var(--tp)`:''}">${f?f[1]:''}</span></div>`;}).join('')}
+        </div>
+        <div style="flex:1;min-width:0">
+          <div class="h1">The paperwork, generated</div>
+          <div class="h2">Rack elevation, bill of materials and cable schedule — from the same canvas.</div>
+          <table class="tbl"><thead><tr><th>Qty</th><th>Part</th><th>Description</th><th>Role</th></tr></thead>
+          <tbody>${BOM.map((b,i)=>`<tr id="b${i}"><td>${b[0]}</td><td>${b[1]}</td><td class="t dim">${b[2]}</td><td class="dim">${b[3]}</td></tr>`).join('')}</tbody></table>
+          <div style="display:flex;gap:10px;margin-top:20px" id="bsum">
+            <span class="pill info">PDF</span><span class="pill info">VSDX</span><span class="pill info">XLSX</span>
+            <span class="pill info">CSV</span><span class="pill ok">in sync with canvas</span></div>
+        </div>
+      </div>`});}
+  stagger([...g.querySelectorAll('.ru')], lt, .25, .1, .45);
+  stagger([...g.querySelectorAll('tbody tr')], lt, 1.5, .17, .5);
+  g.querySelector('#bsum').style.opacity=easeOut(seg(lt,3.4,4.3));
+  g.querySelector('.pg').style.opacity=1-seg(lt,d-.6,d);
+  chips(null);
+}},
+
 /* ---------- 16. standalone brand card (shorts open on this) ---------- */
 {a:0,b:3,go(lt,d){
   hideApp(); const g=$('#gfx');
@@ -840,7 +1319,7 @@ const SCENES=[
 ];
 
 function showApp(){$('#app').classList.remove('hide');$('#gfx').classList.add('hide');vignette(false);
-  ['s1','s4','s13','s15','s16','sb'].forEach(k=>$('#gfx').dataset[k]='');}
+  ['s1','s4','s13','s15','s16','sb','n1','n2','n3','n4','n5','n6','n7','n8','n9','n10'].forEach(k=>$('#gfx').dataset[k]='');}
 function hideApp(){$('#app').classList.add('hide');$('#gfx').classList.remove('hide');$('#overlay').classList.add('hide');vignette(true);}
 
 /* ============================ seek ============================ */
@@ -868,7 +1347,7 @@ window.seek=function(t){
   if(window.__scene!==sc){ // scene entry: clear graphic caches so each scene rebuilds cleanly
     const src=(sc._src!==undefined)?sc._src:SCENES.indexOf(sc);
     if(src<3||src>=11)hideApp(); window.__scene=sc;
-    ['s1','s4','s13','s15','s16','sb'].forEach(k=>$('#gfx').dataset[k]='');
+    ['s1','s4','s13','s15','s16','sb','n1','n2','n3','n4','n5','n6','n7','n8','n9','n10'].forEach(k=>$('#gfx').dataset[k]='');
   }
   caption('',0); chips(null); cursorAt(0,0,false);
   sc.go(t-sc.a, sc.b-sc.a, t);

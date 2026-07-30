@@ -21,77 +21,81 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import vo
 
 SPEED = 1.10
-BRAND, ENDCARD = 14, 15
-PRODUCT = {3, 4, 5, 6, 7, 8, 9, 10, 11, 12}      # scenes that show the product
+BRAND, ENDCARD = 24, 25
+# Scene indices of the additional product surfaces built for these shorts:
+BLUEPRINT, MULTISITE, TEMPLATES, CONFIGCMP = 14, 15, 16, 17
+ADDRESSING, WATCHTOWER, TOOLS, PREFLIGHT   = 18, 19, 20, 21
+LOOKINGGLASS, RACKBOM                      = 22, 23
+PRODUCT = set(range(3, 24))                      # anything that shows the product
 PADS = (0.35, 0.35, 0.55)                        # intro, gap between lines, tail
 
-# Each variant: slots = [(scene_index, visual_floor)], lines = [(slot, text)]
+# Every short shows screens that appear in NO other video and none of the master's shots.
+# The point is variation in content, not a re-edit: ten new surfaces were built for these,
+# each one a real netforge.ai feature (/tools and /templates enumerate them).
 VARIANTS = [
- dict(slug='s1-2am', title='The 2 a.m. autopsy',
+ dict(slug='s1-autopsy', title='The 2 a.m. autopsy',
       use='story-driven — video or pitch opener',
-      slots=[(BRAND,3.0), (0,None), (1,None), (6,None), (9,4.2), (ENDCARD,5.0)],
+      screens='Config Compare -> Watchtower',
+      slots=[(BRAND,3.0), (CONFIGCMP,6.5), (WATCHTOWER,6.5), (ENDCARD,5.0)],
       lines=[
         (1, "Every major network outage has the same autopsy. The design was right. "
             "The config was typed by hand."),
-        (1, "A transposed VLAN. A missing BGP neighbor. One line out of ten thousand."),
-        (2, "And nobody verified it. Not until the site went down."),
-        (3, "Netforge.ai closes that gap. Draw the network on a canvas, and every design "
-            "is checked before it ships."),
-        (5, "Netforge.ai. From sketch to spine."),
+        (1, "So compare them. Line by line. Intended against running."),
+        (2, "Then keep comparing. Watchtower re-reads every device, and tells you the "
+            "moment one drifts from the design."),
+        (3, "Netforge.ai. From sketch to spine."),
       ]),
 
  dict(slug='s2-in-2026', title='In 2026',
       use='punchy — landing page or demo intro',
-      slots=[(BRAND,3.0), (0,None), (3,None), (11,None), (ENDCARD,5.0)],
+      screens='Templates gallery -> Blueprint wizard',
+      slots=[(BRAND,3.0), (TEMPLATES,6.5), (BLUEPRINT,7.0), (ENDCARD,5.0)],
       lines=[
         (1, "We design billion-dollar networks in Visio. Then we retype them into a "
-            "terminal, line by line, and hope nothing breaks."),
-        (1, "In twenty twenty-six."),
-        (2, "Netforge.ai ends the retyping. Drag your topology onto the canvas."),
-        (3, "It generates the configs, catches the IP conflicts, and flags the single "
-            "points of failure. Before deployment. Not after the outage."),
-        (4, "Netforge.ai. From sketch to spine."),
+            "terminal, line by line, and hope nothing breaks. In twenty twenty-six."),
+        (1, "Start from a production-ready design instead."),
+        (2, "Or let the Blueprint wizard build the whole estate. Data centres, campuses, "
+            "branches. One tab per site."),
+        (3, "Netforge.ai. From sketch to spine."),
       ]),
 
  dict(slug='s3-weeks-to-hours', title='Weeks to hours',
       use='stat-style — sales deck or webinar',
-      slots=[(BRAND,3.0), (5,None), (6,None), (11,None), (ENDCARD,5.0)],
+      screens='multi-site WAN overview -> addressing plan',
+      slots=[(BRAND,3.0), (MULTISITE,7.5), (ADDRESSING,7.0), (ENDCARD,5.0)],
       lines=[
-        (1, "A typical enterprise fabric design takes weeks. Diagram it. Spreadsheet the "
+        (1, "A multi-site design takes weeks. Diagram every site. Spreadsheet the "
             "addressing. Hand-write the configs. Peer review. Pray."),
-        (1, "Netforge.ai collapses that into hours."),
-        (2, "Design visually, and walk away with validated EVPN VXLAN configs and an AI "
-            "design review."),
-        (3, "The Visio, the BOM and the cable schedules are already exported."),
-        (4, "Netforge.ai. From sketch to spine."),
+        (1, "Seventeen sites, wired through one WAN overview."),
+        (2, "And the addressing comes with it. Two hundred and fourteen subnets from a "
+            "single supernet, with zero overlaps. No spreadsheet."),
+        (3, "Netforge.ai. From sketch to spine."),
       ]),
 
  dict(slug='s4-deploy-minute', title='The deploy minute',
       use='conversational — social or founder-voice',
-      slots=[(BRAND,3.0), (7,None), (8,None), (9,4.2), (ENDCARD,5.0)],
+      screens='publish preflight -> Looking Glass path trace',
+      slots=[(BRAND,3.0), (PREFLIGHT,7.0), (LOOKINGGLASS,6.5), (ENDCARD,5.0)],
       lines=[
         (1, "Ask any network engineer their most dreaded moment. It isn't the design. "
             "It's the deploy."),
-        (1, "That silent minute after you paste the config, waiting to see if the site "
-            "comes back."),
-        (2, "Netforge.ai was built for that minute. Every design checked for conflicts, "
-            "gaps, and single points of failure."),
-        (3, "Before it ever reaches a device."),
-        (4, "Netforge.ai. From sketch to spine."),
+        (1, "So every publish is dry-run and rollback-backed. Nothing is pushed blind."),
+        (2, "And when it lands, Looking Glass traces the path, and confirms it matches "
+            "the design. Hop for hop."),
+        (3, "Netforge.ai. From sketch to spine."),
       ]),
 
- # Mine: the cloud angle. The other four are all about configs you are about to write.
- # This one is about the network you already have and never documented.
- dict(slug='s5-already-running', title="The network you already have",
-      use='cloud / hybrid audience — retargeting',
-      slots=[(BRAND,3.0), (12,None), (11,None), (ENDCARD,5.0)],
+ # Mine. The other four are all about the config. Nobody ever budgets for the paperwork,
+ # and it is the least glamorous, most reliably painful part of a build.
+ dict(slug='s5-paperwork', title='The paperwork',
+      use='documentation angle — top of funnel, free-tools CTA',
+      screens='rack elevation + BOM -> free network tools',
+      slots=[(BRAND,3.0), (RACKBOM,7.5), (TOOLS,6.0), (ENDCARD,5.0)],
       lines=[
-        (1, "You can't document what you can't see. Most cloud networks were never drawn "
-            "at all."),
-        (1, "Netforge.ai reverse-engineers a live Azure subscription onto a canvas. Every "
-            "VNet, subnet, gateway and security group."),
-        (1, "Then pushes it back as Terraform."),
-        (2, "With the diagram and the documentation you never had."),
+        (1, "Nobody budgets time for the paperwork. The rack elevation. The bill of "
+            "materials. The cable schedule."),
+        (1, "All of it generated from the same canvas, so it can't drift from the design."),
+        (2, "Plus nineteen free network tools. No sign-in."),
         (3, "Netforge.ai. From sketch to spine."),
       ]),
 ]
@@ -236,6 +240,7 @@ def build(v, do_synth=True):
               open(f'timeline_{slug}.json', 'w'), indent=1)
 
     print(f"\n  {v['title']}  ({slug})  --  {v['use']}")
+    print(f"    screens: {v['screens']}")
     print(f"    scenes {order}   runtime {DUR:.2f}s ({int(DUR//60)}:{DUR%60:05.2f})")
     for r in report: print(r)
     return DUR
