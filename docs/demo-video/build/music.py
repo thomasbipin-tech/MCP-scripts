@@ -118,6 +118,11 @@ def pluck(f, level=1.0):
          + 0.16 * np.sin(2 * np.pi * f * 3 * tt))
     return v * np.exp(-tt * 7.5) * level
 
+# ---------------- OPENING: brand card, then down into the dark ----------------
+# A soft chime on the logo, bookending the end-card chime.
+add(shim, bell(NOTE['C5'], 0.16, dur=2.8), 0.35)
+add(shim, bell(NOTE['G4'], 0.10, dur=2.4), 0.62)
+
 # ---------------- ACT 1: sparse, dark, unresolved ----------------
 add(pad, pad_voice([NOTE['A2'], NOTE['E3']], TURN + 1.0, level=0.30), 0.0)
 add(pad, pad_voice([NOTE['C3'], NOTE['F3']], 14.0, level=0.16), 16.0)

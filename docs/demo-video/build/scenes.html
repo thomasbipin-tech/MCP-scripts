@@ -37,6 +37,11 @@ body{font-family:Inter,sans-serif;color:var(--tp);-webkit-font-smoothing:antiali
 .kin .l.em{color:var(--ac)}
 .vig{position:absolute;inset:0;background:radial-gradient(ellipse 70% 55% at 50% 50%,#0000 0%,#000000ad 100%);pointer-events:none}
 
+/* ---------- opening brand card: bookends the end card ---------- */
+.openbrand{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;
+  justify-content:center;gap:26px;transform-origin:50% 50%;
+  background:radial-gradient(ellipse 60% 50% at 50% 45%,#38bdf814 0%,#0000 70%),#000}
+
 /* ---------- act 1: two artefacts, and what disagrees between them ---------- */
 .ttl{position:absolute;top:62px;left:0;right:0;text-align:center;font-size:46px;font-weight:600;letter-spacing:-1.1px}
 .pane.p2{top:186px;height:700px}
@@ -509,7 +514,11 @@ function buildPanes(g){
       ${MISMATCH.map((m,i)=>`<div class="vchip r" id="cr${i}" style="top:${CHIP_TOP[i]}px;opacity:0">${m[1]}</div>`).join('')}
     </div>
     <svg id="bridge"></svg>
-    <div class="gapfoot" id="gfoot" style="opacity:0">4 differences · 11 months since the diagram was touched</div>`;
+    <div class="gapfoot" id="gfoot" style="opacity:0">4 differences · 11 months since the diagram was touched</div>
+    <div class="openbrand" id="ob">
+      <div class="endlogo"><span class="m">${I.logo}</span><span class="n">Netforge.ai</span></div>
+      <div class="endtag">From Sketch to Spine.</div>
+    </div>`;
 }
 // reveal the typed config up to progress p, without splitting HTML tags
 function typedMarkup(src,p){
@@ -530,19 +539,26 @@ const SCENES=[
 {a:0,b:14,go(lt,d){
   const g=$('#gfx');
   if(!g.dataset.s1){g.dataset.s1='1';buildPanes(g);}
-  // Order is deliberate: title, then the drawing, and only once the opening line has
-  // actually finished does the running-config pane arrive. Pinned to the VO timeline
-  // rather than hardcoded, so a re-recorded or re-paced line keeps the beat.
+  // The video opens on the brand card and dissolves into the demo exactly as the hook
+  // starts speaking. BRAND_OUT is pinned to the VO line's own start so a re-recorded or
+  // re-paced hook keeps the transition on the word, not on a hardcoded number.
   const l1=voSpan('01');
-  const cfgIn=(l1 ? l1.e - SCENES[0].a : 3.7) + 0.35;
-  const tp=easeOut(seg(lt,.3,1.8));
-  const ttl=g.querySelector('#ttl');
-  ttl.style.opacity=tp; ttl.style.transform=`translateY(${lerp(20,0,tp)}px)`;
+  const brandOut=(l1 ? l1.s - SCENES[0].a : 2.6);        // hook begins here
+  const brandEnd=brandOut+1.3;                          // cross-dissolve length
+  const ob=g.querySelector('#ob');
+  const bIn=easeOut(seg(lt,.25,1.5)), bOut=easeInOut(seg(lt,brandOut,brandEnd));
+  ob.style.opacity=bIn*(1-bOut);
+  ob.style.transform=`scale(${lerp(1,1.05,bOut)})`;
+  ob.style.display=bOut>=1?'none':'flex';
+
+  // everything below rides after the dissolve
+  const cfgIn=(l1 ? l1.e - SCENES[0].a : 7.2) + 0.35;
+  g.querySelector('#ttl').style.opacity=0;   // heading moved to scene 2
   const L=g.querySelector('#pL'),R=g.querySelector('#pR');
-  const pl=easeOut(seg(lt,1.2,2.5)), pr=easeOut(seg(lt,cfgIn,cfgIn+1.3));
+  const pl=easeOut(seg(lt,brandOut+0.85,brandEnd+0.9)), pr=easeOut(seg(lt,cfgIn,cfgIn+1.3));
   L.style.opacity=pl; L.style.transform=`translateX(${lerp(-38,0,pl)}px)`;
   R.style.opacity=pr; R.style.transform=`translateX(${lerp(38,0,pr)}px)`;
-  g.querySelector('#stamp').style.opacity=easeOut(seg(lt,2.5,3.3));
+  g.querySelector('#stamp').style.opacity=easeOut(seg(lt,brandEnd+0.9,brandEnd+1.7));
   const tm=typedMarkup(TERM_SCRIPT,seg(lt,cfgIn+1.5,d-1.4));
   g.querySelector('#term').innerHTML=tm.html+(!tm.done&&Math.floor(lt*2.2)%2?'<span class="caret"></span>':'');
   chips(null);
@@ -552,13 +568,20 @@ const SCENES=[
 {a:14,b:25,go(lt,d){
   const g=$('#gfx');
   if(!g.dataset.s1){g.dataset.s1='1';buildPanes(g);}
-  g.querySelector('#ttl').style.opacity=1-seg(lt,0,.8);     // title clears for the comparison
+  g.querySelector('#ob').style.display='none';             // brand card belongs to scene 1 only
+  // the heading lands here, framing the disagreement rather than the empty panes
+  const ttl=g.querySelector('#ttl');
+  const tp=easeOut(seg(lt,.3,1.6));
+  ttl.style.opacity=tp*(1-seg(lt,d-.7,d));
+  ttl.style.transform=`translateY(${lerp(18,0,tp)}px)`;
   const tm=typedMarkup(TERM_SCRIPT,1);
   g.querySelector('#term').innerHTML=tm.html;
   // the artefacts recede so the disagreement reads
-  const dim=lerp(1,.3,easeOut(seg(lt,.2,1.2)));
+  // the config text is long enough to collide with the value chips, so it recedes hard --
+  // the chips carry the meaning here, the panes are just context
+  const dim=lerp(1,.28,easeOut(seg(lt,.2,1.2)));
   g.querySelector('#oldmap').style.opacity=.5*dim;
-  g.querySelector('#term').style.opacity=dim;
+  g.querySelector('#term').style.opacity=lerp(1,.11,easeOut(seg(lt,.2,1.2)));
   let svg='';
   MISMATCH.forEach((m,i)=>{
     const p=easeOut(clamp(seg(lt,.9+i*.95,1.8+i*.95)));

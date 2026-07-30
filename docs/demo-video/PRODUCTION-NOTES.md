@@ -1,7 +1,7 @@
 # Netforge.ai demo video — production notes
 
-**Current deliverable:** `netforge-demo-v5.mp4` — 1920×1080, 30 fps, H.264 high profile,
-**2:20**, AAC stereo 48 kHz, `+faststart`.
+**Current deliverable:** `netforge-demo-v7.mp4` — 1920×1080, 30 fps, H.264 high profile,
+**2:31**, AAC stereo 48 kHz, `+faststart`.
 
 | | | |
 |---|---|---|
@@ -9,7 +9,32 @@
 | v2 | 2:31 | Piper VO + score; invented logo fixed |
 | v3 | 2:46 | Kokoro VO; pronunciation by respelling |
 | v4 | 2:40 | phoneme-level pronunciation; subtitles removed |
-| **v5** | **2:20** | **act 1 recut (product at 0:36), gap shown as a bridge, major-key reveal** |
+| v5 | 2:20 | act 1 recut; gap shown as a bridge; major-key reveal |
+| v6 | 2:29 | client hook at 1.2x; screen-only validation result; Azure lead-in; end-card tagline |
+| **v7** | **2:31** | **opens on the brand card; heading moved to slide 2** |
+
+## v7 — opening brand card
+
+The video now opens on the same card it ends on: logo, wordmark, and
+**From Sketch to Spine.** — no URL, so the open reads as a title and the close as a CTA.
+It holds silent for 2.7s, then cross-dissolves into the demo **on the hook's first word**.
+
+That transition is pinned to the narration, not to a hardcoded time: scene 1 reads
+`voSpan('01').s` from `timeline.json`, so re-recording or re-pacing the hook keeps the
+dissolve on the word. A soft two-note chime sits under the logo, bookending the end-card
+chime; the score then drops into act 1's A-minor drone.
+
+**Heading placement.** "Designed once. Configured by hand." is invented copy — written
+when the client hook replaced the old opening line, so the screen wouldn't just echo the
+narration. It sat on slide 1, which read as unexplained; it now appears on **slide 2**,
+where it frames the four disagreements rather than an empty pair of panes. Verified by
+sampling the top band of the frame: brightness 0.16 on the brand card, 0.05 mid-dissolve,
+0.41 on slide 1, 4.11 on slide 2.
+
+**One collision fixed:** the config pane's text was lengthened in v6 to fill the longer
+opening shot, which put it underneath the value chips in the comparison. The terminal now
+recedes to 11% opacity in that scene — the chips carry the meaning there, the panes are
+context.
 
 ## The voice
 
@@ -171,9 +196,10 @@ sidebar metrics and vendor colours all come from the site's stylesheet.
 
 | | |
 |---|---|
-| 0:00–0:27 | The gap — hook, stale `.vsdx` vs live CLI, the rift opens |
-| 0:27–0:36 | The turn — reframe, `From Sketch to Spine. Instantly Connected.` |
-| 0:36–1:07 | **Design** — drag device, link ports, scale to leaf-spine fabric |
+| 0:00–0:03 | Brand card — logo + tagline |
+| 0:03–0:29 | The gap — hook, stale `.vsdx` vs live CLI, the rift opens |
+| 0:29–0:38 | The turn — reframe, `From Sketch to Spine. Instantly Connected.` |
+| 0:38–1:07 | **Design** — drag device, link ports, scale to leaf-spine fabric |
 | 1:07–1:42 | **Validate** — checks stream, IP conflict caught, AI Architect, then green |
 | 1:42–1:59 | **Ship** — export package, CLI, artefact fan, Cloud on Canvas → Terraform |
 | 1:59–2:20 | Outcome + end card |
@@ -229,7 +255,7 @@ python3 vo.py          # narration + timeline.json
 python3 vo.py audit     # pronunciation table -> phonemes
 python3 vo.py voices    # voice-options.wav for picking by ear
 python3 music.py       # score, keyed to timeline.json
-node capture.js all    # 4195 frames -> frames/       (~10 min)
+node capture.js all    # 4539 frames -> frames/       (~11 min)
 
 ffmpeg -i vo.wav -i music.wav -filter_complex \
  "[0:a]aresample=48000,pan=stereo|c0=c0|c1=c0,volume=0.92[v];[1:a]aresample=48000[m];\

@@ -144,7 +144,9 @@ SPEED_BY_LINE = {'01': 1.2, '02': 1.2}
 
 SCENE_MIN = {1:16, 2:8, 3:7, 4:6.5, 5:6.5, 6:8, 7:5.5, 8:8,
              9:7, 10:5.5, 11:6.5, 12:7, 13:6.5, 14:8, 15:8}
-PACE = {1:(0.5,0.45,0.9), 2:(0.8,0.6,1.4), 3:(1.0,0.7,1.1),   # tail no longer holds a title card
+# scene 1's intro pad is long on purpose: the brand card holds on screen before the hook
+# begins speaking, and the picture dissolves into the demo on the hook's first word.
+PACE = {1:(2.7,0.45,0.9), 2:(0.8,0.6,1.4), 3:(1.0,0.7,1.1),   # tail no longer holds a title card
         4:(0.8,0.5,1.2), 5:(0.8,0.5,1.2), 6:(0.8,0.5,1.2), 7:(0.6,0.5,0.9),
         8:(0.6,0.5,1.1), 9:(0.6,0.5,1.1), 10:(0.5,0.5,1.5), 11:(0.6,0.5,1.0),
         12:(0.6,0.5,1.0), 13:(0.6,0.5,1.0), 14:(0.8,0.6,1.2), 15:(0.8,0.5,2.2)}
