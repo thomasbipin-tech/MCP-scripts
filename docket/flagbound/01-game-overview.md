@@ -49,16 +49,17 @@ respectful one.
 
 ## Visual identity
 
-Flagbound is a **rounded block world** — rolling green ground under a clear sky,
-stone walls and towers, trees with rounded canopies, and rounded humanoid figures
-with big friendly eyes. Familiar and readable, but every mass is a softened form
-rather than a hard cube.
+Flagbound pairs **cel-shaded anime characters** with a **vivid stylised world**.
+Slim, sharply-drawn figures with dramatic hair, oversized expressive eyes and
+trailing scarves, fighting across saturated, boldly-shaped terrain under a bright
+sky. Hard shadow terminators, ink silhouettes and hot rim light — drawn rather
+than photographed.
 
 Underneath, the world is simulated as a **grid of half-metre cells**, and that is
 the load-bearing decision: it is what lets the battlefield genuinely come apart
 and re-stack, making the collapse and the ascent *natural* instead of the hardest
-thing in the project to build. The grid is the simulation; the rounded look is how
-it is drawn.
+thing in the project to build. The grid is the simulation; the cel-shaded styling
+is how it is drawn.
 
 Full treatment in [10 — Art Direction](10-art-direction-and-cinematics.md).
 

@@ -1,66 +1,96 @@
 # 10 — Art Direction & Cinematics
 
-## Direction: a rounded block world
+## Direction: cel-shaded anime characters in a vivid stylised world
 
 From the brief: prioritise **creativity, scale and exciting environments** over
 photorealism. Players should feel like they are inside an epic adventure.
 
-**Style target:** a **grid-built world drawn in soft rounded forms.** Green rolling
-ground, grey stone walls and towers, trees with rounded canopies, a clear daylight
-sky. Recognisable and readable — a classic battlefield — but every mass is a
-softened, spherified form rather than a hard cube, and the figures are rounded
-humanoids with big friendly eyes rather than armoured soldiers.
+**Style target, in two halves:**
 
-The result reads as familiar and welcoming rather than either harsh or abstract.
+- **Characters — anime.** Slim, tall, stylish figures with sharp silhouettes,
+  dramatic spiky hair, oversized expressive eyes, and scarves and coats that
+  trail behind them. Cel-shaded: hard-edged shadow terminators, ink-dark
+  silhouette lines, hot rim light, and bright specular pops on hair and armour.
+  They should look like characters from an action anime, not like soldiers.
+- **World — stylised, vivid, large.** Saturated colour, bold readable silhouettes,
+  exaggerated scale, spectacle over detail. The reference point for the *world* is
+  a modern stylised battle-royale look: instantly legible, colourful, and
+  cheerful, with the drama coming from scale and events rather than surface
+  realism.
 
-## The important distinction: grid underneath, rounded on top
+The combination is the pitch: **anime heroes doing impossible things on a
+battlefield that keeps falling apart.**
 
-The world is **simulated** as a grid of half-metre cells. That is what makes the
-transitions work — see [11](11-technical-architecture.md#the-voxel-data-model).
-What differs from a conventional block game is how those cells are **drawn**: each
-renders as a spherified, smooth-shaded mass, oversized slightly so neighbours
-interlock into one continuous surface.
+## What this actually costs to build
 
-So the technical argument for a grid world survives intact while the surface
-treatment stays soft:
+Stated plainly, because this is the most expensive art direction in the docket and
+the requirement should not be discovered late:
 
-| Transition | Still works because |
+| Need | Why |
 |---|---|
-| **The Collapse** | The terrain genuinely comes apart into its constituent cells. They tumble as rounded masses instead of cubes — the same system, softer forms. |
-| **The Underground** | Just more cells below. Same world, same grid, deeper down — no second map to load, no handoff. |
-| **The Ascent** | Cells detach and re-stack upward into towers. The world rebuilds itself in place. |
+| **Sculpted, rigged character models** | Anime figures live or die on face, hair and silhouette. These must be authored by character artists — they cannot be assembled from primitives. |
+| **Hair as authored geometry** | Anime hair is a designed shape, not a simulation. Each character needs bespoke hair. |
+| **Cloth or bone-driven cloth** | Trailing scarves and coats are half the appeal, and they must move. |
+| **A facial rig** | Expression is the point of an anime character. At minimum: blink, eye direction, and a few emotive states. |
+| **A cel-shading pipeline** | Ramp textures, a controllable terminator, an outline pass (inverted hull or post-process edge detect), and per-material control. Not a single shader. |
+| **Skeletal animation** | A full locomotion set plus ability animations, and anime style demands *pose-driven* animation with strong silhouettes and snappy timing. |
 
-**This is the whole technical argument, and no styling choice changes it.** In a
-conventional art pipeline the collapse is three authored destruction set-pieces
-that must look identical on 16 clients. On a grid it is one system that produces
-spectacle almost for free, and the acts stop being separate maps that need
-swapping — they are one continuous world you travel through vertically. The
-brief's *"it should feel like a continuation of the same battle"* becomes
-literally true rather than an illusion to maintain.
+**The prototype does not have any of this** and cannot. It approximates the
+*look* — cel bands, ink edges, rim, spiky hair blocked out of primitives, big eyes
+with highlights — to prove the direction reads. Actual character quality is an
+art-staffing question, and it is the single largest budget line this direction
+implies.
 
-## Why rounded, and why a familiar setting
+## The rendering signature
 
-### 1. Readable at a glance
+Four choices carry the anime read. All are cheap, and the prototype implements
+all four:
 
-Two teams, a flag, hazards, and a world that keeps changing. Soft masses in
-naturalistic colours — green ground, grey stone, blue sky — give players an
-instantly legible space, and saturated team colours pop cleanly against it.
+- **Hard-stepped light.** Three bands with sharp terminators instead of a smooth
+  falloff. This one choice does more than the rest combined.
+- **Ink silhouette.** Grazing-angle darkening toward near-black, so every figure
+  is outlined against whatever is behind it. In production this becomes a proper
+  outline pass; the prototype fakes it with a fresnel term, which is convincing
+  in motion and cheap.
+- **Hot rim light.** A bright, hard-edged rim tracing each silhouette — the
+  signature of anime key art, and it also solves the gameplay problem of figures
+  separating from a busy background.
+- **Specular pops.** Tight highlights on hair and armour. Small, and they are what
+  make a character look *drawn* rather than lit.
 
-### 2. Rounded is the differentiator
+**Applied unevenly on purpose:** figures get the full treatment; terrain gets
+about a third of it. Outlining every terrain cell would turn the ground into
+visual noise — the same crowding mistake described below, arriving through the
+shader instead of through props.
 
-A grid world in cubes invites exactly one comparison, and it is not a flattering
-one. Rounding every form breaks the resemblance immediately while keeping all the
-benefits of a grid. See the rules below.
+## The world still sits on a grid
 
-### 3. Age-appropriate by construction
+Unchanged and non-negotiable, because it is what makes the transitions work — see
+[11](11-technical-architecture.md#the-voxel-data-model). Terrain is a grid of
+half-metre cells drawn as soft rounded masses, so it genuinely comes apart into
+its constituent pieces during the Collapse and re-stacks during the Ascent.
 
-Softened, wide-eyed figures in a bright landscape read as adventure. No uncanny
-valley, no injury detail, no realism to push it anywhere uncomfortable.
+**Production note:** a shipping version would likely keep the *terrain* on the
+destructible grid while building *structures* — towers, bridges, bases — from
+authored meshes that shatter into pre-fractured pieces. That gets sculpted,
+interesting architecture without giving up the destruction that the whole game
+depends on. The grid is a simulation requirement, not an aesthetic one.
 
-### 4. Scale is cheap
+## Where the "wow" actually comes from
 
-Enormous environments come from a small vocabulary — a rounded mass, a sphere, a
-palette per act. A small team can build a huge world.
+Not from surface detail. From four things, in rough order of impact:
+
+1. **The transitions.** A battlefield coming apart under you is a bigger moment
+   than any texture.
+2. **Ability spectacle** ([13](13-abilities-and-skills.md)). Anime-scale effects:
+   an afterimage trail on a dash, a hooked enemy dragged across the ground, an
+   updraft launching a teammate onto a tower.
+3. **Impact framing.** Two techniques worth budgeting for, both cheap and both
+   central to how anime action feels: **hit-stop** — a few frames of freeze on a
+   heavy connect — and **impact frames**, a single high-contrast flash on the
+   biggest hits. Nothing else buys as much perceived punch per unit of effort.
+4. **Camera drama on ultimates.** A brief push-in and time dilation when an
+   ultimate fires, then straight back to play.
 
 ## Restraint is part of the style
 
@@ -83,45 +113,13 @@ The correction, which the prototype now follows:
 Density is a gameplay decision disguised as an art decision. Every prop added to
 the middle of the map removes a sightline from a defender.
 
-## Keeping clear of the obvious comparison
-
-A rounded grid world is not a cube world, but the family resemblance is worth
-managing deliberately:
-
-- **Rounded geometry, never cubes.** This is the primary differentiator and it is
-  visible in every frame.
-- **No copied textures.** Every surface is originally authored. Nothing traced,
-  recoloured, or ripped.
-- **No signature content of any other game.** No borrowed creatures, items, or
-  crafting metaphors.
-- **Different lighting identity.** Smooth normals, a warm key with a cool sky
-  fill, and a subtle rim on every silhouette — soft and lit, not flat and ambient.
-- **Different subject.** This is a 15-minute team match on a world that comes
-  apart twice, not a calm solitary sandbox.
-
-## The rendering signature
-
-Three choices do most of the work, and all three are cheap:
-
-- **Spherified geometry.** Every world cell is a subdivided cube pulled ~45%
-  toward a sphere, with smooth normals, rendered slightly oversized so cells
-  interlock into a continuous mass.
-- **Two-tone lighting.** A warm key with a cool sky-coloured fill from the
-  opposite side, so shadowed faces read as daylight-tinted rather than grey.
-- **A subtle rim.** A restrained rim term traces silhouettes so characters and
-  structures separate from the background. Kept low — pushed hard it turns
-  dreamlike, which is not the target.
-
-The sky is a gradient behind the scene, not geometry — cheaper and smoother than
-any dome, and it cross-fades when the phase changes.
-
 ## Grid and scale (proposed)
 
 | Element | Size |
 |---|---|
 | **World cell** | 0.5 m — terrain, structures, towers (drawn rounded, not cubic) |
 | **Detail element** | 0.125 m — props, trim |
-| **Player height** | ~1.75 m (3.5 cells) — rounded humanoid |
+| **Player height** | ~1.85 m — slim anime build, long-legged |
 | **Arch / structure height** | 10–20 m — must still feel monumental |
 | **Sky tower height** | 100 m+ |
 
@@ -163,24 +161,20 @@ opposed.
 
 ## Characters
 
-**Rounded humanoid figures.** Head, torso, two arms, two legs — the familiar,
-instantly readable blocky silhouette — but every part is a softened spherified
-form like the rest of the world, so nothing has a hard edge. Roughly **1.75 m**
-(3.5 cells), with a head about as wide as the torso.
+**Anime figures.** Slim and tall — roughly **1.85 m**, long-legged, narrow through
+the waist and shoulders, closer to seven heads tall than to a stocky game
+silhouette. Nothing about the proportions is realistic; they are drawn
+proportions, chosen to look striking in motion.
 
-**Why humanoid rather than an abstract shape.** A humanoid reads its facing,
-stance and motion at a glance, which matters in a game where knowing whether an
-opponent is coming toward you or running away decides a fight. It also gives the
-four classes far more silhouette range to work with than a single body shape can.
+The features that do the work, in order:
 
-**Limbs swing from their joints.** Legs and arms pivot on a hip and shoulder as
-the figure walks, with the arms counter-swinging. It costs almost nothing and it
-is most of what makes a figure look alive rather than dragged along the ground.
-
-**The face carries the likability.** Large eyes set proud of the head's front so
-they read at third-person distance, faintly emissive so they stay visible in the
-caverns, blinking on a loose timer, with a small mouth below. Friendlier than a
-realistic figure without being childish.
+| Feature | Why it matters |
+|---|---|
+| **Hair** | The strongest anime signal available, and the fastest way to make a character recognisable at distance. Bold swept spikes with a designed shape, in a colour that reads as an accent. |
+| **Eyes** | Oversized, tall, with a defined iris and a bright specular highlight. Set proud of the face so they read at third-person distance. Blinking on a loose timer. |
+| **Trailing cloth** | A scarf or coat tail that swings against the stride. Cheap, and it is most of what makes a figure feel fast. |
+| **Silhouette accessories** | One bold, class-defining shape per class — the thing you recognise before you recognise anything else. |
+| **Pose and timing** | Snappy, exaggerated, strongly-posed animation. An anime character never moves smoothly through a transition; it snaps between readable shapes. |
 
 The four classes must be identifiable **by silhouette alone**, because in a fight
 that is all a player gets. Class reads through proportion and one accessory,
@@ -188,23 +182,23 @@ never through colour — colour belongs to the team:
 
 | Class | Silhouette |
 |---|---|
-| **Guardian** | Broadest and heaviest, thick limbs, low stance, a shield slab on one arm. Reads as a wall. |
-| **Swiftblade** | Slight and narrow, leaning forward, a trailing scarf. Reads as fast even standing still. |
-| **Element Warrior** | Tall and upright, robed lower half, motes orbiting in the current element's colour, eyes tinted to match. Reads as dangerous at range. |
-| **Shadow Runner** | Small and hooded, body darkened, eyes the only bright thing about it. Reads as *hard to see*, which is the point. |
+| **Guardian** | Heaviest build, broad shoulder plates, an oversized shield slung on one arm, a long coat. Reads as a wall. |
+| **Swiftblade** | Slightest and fastest, hair swept hard back, a long trailing scarf, a blade held low. Reads as fast even standing still. |
+| **Element Warrior** | Tall and upright, layered robes, motes orbiting in the current element's colour, eyes tinted to match. Reads as dangerous at range. |
+| **Shadow Runner** | Hooded, hunched, darkened, eyes the only bright thing about it. Reads as *hard to see*, which is the point. |
 
 **Team identity:** every character has its own colour, but one team's palette is
 entirely **cool** and the other entirely **warm** — personality without costing
 team readability. Warm-versus-cool also survives colour-blindness where
-red-versus-green would not. On top of that, a floating team-coloured marker above
-allies.
+red-versus-green would not. Hair takes an accent colour drawn from the same
+temperature, so a bright hairstyle never makes a player misread which side someone
+is on. On top of that, a floating team-coloured marker above allies.
 
-**On heads and skin:** the prototype tints heads with a lightened version of the
-character's own colour, which sidesteps skin tone entirely and reads as a
-costumed figure. A shipping game should instead offer proper character
-customisation, including skin tone, as part of the cosmetic unlocks in
-[09](09-progression-and-rewards.md) — a game for this audience needs players to
-be able to make a character that looks like them.
+**Character customisation** is where the cosmetic economy in
+[09](09-progression-and-rewards.md) earns its keep. An anime direction is a
+natural fit for outfits, hairstyles, colours and accessories — and it must include
+skin tone and body options, because an audience this age needs to be able to make
+a character that looks like them.
 
 **The player's own character** floats a spinning gold gem, so a player can always
 find themselves in a crowd.

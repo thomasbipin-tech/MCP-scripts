@@ -15,7 +15,7 @@
 | **Match length** | ~15 minutes |
 | **Players** | Real players, backfilled by intelligent AI bots |
 | **Target audience** | Ages 10+ |
-| **Art style** | A rounded block world — soft natural forms that come apart and rebuild |
+| **Art style** | Cel-shaded anime characters in a vivid stylised world that comes apart and rebuilds |
 | **Main goal** | Steal the enemy flag and return it to your base while the battlefield transforms underneath you |
 
 ## The one-line pitch
@@ -26,8 +26,8 @@ so no strategy survives the whole match.
 
 ## Core features
 
-- **Rounded block world** — grid-simulated so it genuinely comes apart and
-  re-stacks when it transforms, but drawn as soft rounded masses, never as cubes
+- **Cel-shaded anime look** — hard shadow bands, ink silhouettes, hot rim light;
+  the world stays grid-simulated so it genuinely comes apart and re-stacks
 - Dynamic transforming world (surface → underground → sky), three acts per match
 - Skill-based action combat: attack, block, dodge, sprint, jump
 - **Skills worth pressing** — dash, glide, grapple, ground slam, barriers, stealth,
