@@ -168,6 +168,8 @@ EPISODES = [
           "carriers between them, and which of them are currently clean."),
        (2,"This is not seventeen separate designs that happen to live in one project. It is "
           "one graph, drawn across several canvases."),
+       (2,"Each canvas still keeps its own address block and its own validation state, so you "
+          "can work on one branch without carrying the other sixteen around with you."),
        (3,"Inter-site connectivity is declared once, on the Overview, and mirrored onto each "
           "site tab as a WAN stub cloud."),
        (3,"That is the whole trick. A WAN link has exactly one definition, so it cannot exist "
@@ -182,6 +184,8 @@ EPISODES = [
        (5,"The branch team gets the branch pack — nine devices, fourteen cable runs, its own "
           "bill of materials — rather than a two-hundred-device document with their site "
           "somewhere inside it."),
+       (5,"It is the same validated canvas either way. The filter scopes what gets generated, "
+          "rather than trimming a finished document afterwards."),
        (6,TAG),
       ]),
 
@@ -193,6 +197,9 @@ EPISODES = [
        (1,"It checks address conflicts, VLAN consistency, trunk and native VLAN matching, BGP "
           "reciprocity and AS consistency, spanning-tree root placement, MTU, gateway "
           "redundancy, and management reachability."),
+       (1,"Because it runs as you draw, the feedback arrives while the fix is still a click on "
+          "the canvas — rather than a change request against a network that is already "
+          "carrying traffic."),
        (2,"When something is wrong, it is specific: the two interfaces that collide, on which "
           "devices, and what it will break."),
        (2,"Address conflicts are the most expensive simple mistake in networking. They pass "
@@ -209,6 +216,9 @@ EPISODES = [
           "in each platform's own syntax."),
        (5,"Not a starting point you finish by hand. The configuration that the validation you "
           "just watched was run against."),
+       (5,"And it comes out of the same validated canvas as the cabling, the bill of materials "
+          "and the documentation, at the same moment — which is what stops the configuration "
+          "and the paperwork describing two different networks."),
        (6,TAG),
       ]),
 
@@ -222,6 +232,8 @@ EPISODES = [
        (1,"From then on you stop typing addresses. You allocate from a pool."),
        (2,"The addressing plan is the readable form of that: every subnet, its VLAN, its "
           "gateway, its usable count, and what it is for — across the whole design."),
+       (2,"It reads as a plan rather than a spreadsheet, because it is generated from the "
+          "design instead of maintained alongside it."),
        (3,"Behind it, every address traces back to a pool. SVIs, routed links and first-hop "
           "redundancy addresses are assigned consistently, and each allocation keeps its "
           "origin, its device and its interface."),
@@ -232,11 +244,17 @@ EPISODES = [
           "packed automatically, and overridable per site."),
        (4,"Blocks pin when they are generated, and there is reserve left over, so adding a "
           "site later takes from the reserve rather than from a neighbour."),
+       (4,"Anything from a slash eight to a slash sixteen works as the supernet, so the scheme "
+          "can match the address space you were actually given rather than the other way "
+          "round."),
        (5,"And then the overlap checker. Pool-based allocation makes conflicts structurally "
           "impossible for managed ranges; the checker exists for everything else."),
        (5,"Duplicate host addresses, pool overlaps between canvases, and addresses sitting "
           "outside every defined range — caught across the whole design rather than one site "
           "at a time."),
+       (5,"Which matters because an address conflict is the most expensive simple mistake in "
+          "networking. It passes every syntax check, deploys cleanly, and then takes down two "
+          "segments at once."),
        (6,TAG),
       ]),
 
@@ -255,6 +273,8 @@ EPISODES = [
        (2,"A design package, an editable Visio topology, a bill of materials, a cable "
           "schedule, per-device configs, and an AVD Ansible package. So the documentation "
           "cannot drift away from the design — it has no opportunity to."),
+       (2,"On a multi-site project each of them takes a site filter, so the pack matches the "
+          "audience rather than the estate."),
        (3,"Rack elevations show what goes where, and the bill of materials aggregates "
           "chassis, line cards, optics and cables with quantities."),
        (3,"Those optics are not guesswork. They are sized from the link speeds you chose when "
@@ -268,6 +288,9 @@ EPISODES = [
        (5,"Publishing defaults to private. Choosing public shares the design as a community "
           "template, and the scrubber runs first, stripping secrets before anything leaves "
           "your organization."),
+       (5,"And because every one of these comes from the same canvas, changing the design "
+          "changes all of them the next time you publish. There is no second copy anyone has "
+          "to remember to update."),
        (6,TAG),
       ]),
 
@@ -314,11 +337,16 @@ EPISODES = [
           "scales to a full Arista leaf-spine VXLAN EVPN fabric."),
        (1,"Same drawing surface, same validation, same bill of materials — the difference is "
           "the number of boxes, not the tool."),
+       (1,"And the fabric does not have to live on its own. Cisco, Arista, Aruba, Palo Alto "
+          "and Silver Peak coexist on one canvas, each configured in its own dialect rather "
+          "than a lowest common denominator."),
        (2,"The AVD wizard follows Arista's own model: architect, validate, deploy. You set "
           "the fabric parameters — underlay and overlay AS numbering, VTEP and router-id "
           "sources, anycast gateway, underlay MTU, spine and leaf counts."),
        (2,"There is full validation parity with single devices, and the fabric's optics land "
           "in the bill of materials like any other link."),
+       (2,"So the same checks apply — address conflicts, MTU, BGP reciprocity and AS "
+          "consistency — to a forty-eight-device fabric and to a two-device branch closet."),
        (3,"Cloud is the same story. Azure resources are real nodes on the canvas — virtual "
           "networks, subnets, security groups, gateways — not a picture of your subscription."),
        (3,"You can design them from scratch alongside the physical estate, in one drawing and "
@@ -326,6 +354,8 @@ EPISODES = [
        (4,"Or run the subscription import and reverse-engineer what already exists. It reads "
           "the subscription and draws it, and from there it behaves like anything else on the "
           "canvas — validated, documented, and comparable against reality."),
+       (4,"What you get back is not a picture of the subscription. It is nodes, with the same "
+          "standing as the switches next to them."),
        (5,"The Terraform stays synchronized with the drawing, so the canvas and the "
           "infrastructure code are the same artefact rather than two that have to be kept in "
           "step by hand."),
@@ -354,6 +384,8 @@ EPISODES = [
           "subnet and address calculators, config comparison, and reference lookups."),
        (3,"They need no account and nothing leaves your browser, which is the point: they are "
           "the things you reach for mid-incident, not mid-project."),
+       (3,"Config Compare is in that suite — the same comparison the drift check performs, "
+          "available without a design and without an account."),
        (4,"Watchtower monitors uptime with multi-channel alerting, and watches the platform "
           "itself from outside."),
        (4,"The drift scheduler reuses those same channels, so operational alerting is one "
@@ -363,6 +395,8 @@ EPISODES = [
           "keep verifying afterwards."),
        (5,"Less retyping, more verification, and a shorter distance between the drawing and "
           "the running network."),
+       (5,"One idea underneath all ten: the drawing is the source of truth, and everything "
+          "else is generated from it."),
        (6,TAG),
       ]),
 ]
