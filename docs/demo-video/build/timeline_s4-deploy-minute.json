@@ -1,12 +1,12 @@
 {
- "duration": 25.47,
+ "duration": 26.15,
  "voice": "am_onyx",
  "speed": 1.1,
  "order": [
-  24,
+  32,
   21,
   22,
-  25
+  33
  ],
  "brandInPanes": false,
  "anchors": {
@@ -31,7 +31,7 @@
   },
   {
    "a": 20.47,
-   "b": 25.47
+   "b": 26.15
   }
  ],
  "cues": [],
@@ -54,7 +54,7 @@
   {
    "id": "03",
    "start": 20.82,
-   "dur": 3.22
+   "dur": 4.78
   }
  ]
 }

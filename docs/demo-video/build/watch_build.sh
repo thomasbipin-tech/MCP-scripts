@@ -4,7 +4,7 @@
 #   - if the frame count stops moving, the renderer is restarted with RESUME=1
 #   - when all frames exist, it encodes
 cd "$(dirname "$0")"
-SLUG="$1"; PORT="${2:-8500}"; N="$3"
+SLUG="$1"; PORT="${2:-8500}"; N="$3"; RPID="${4:-}"   # RPID = renderer we own, if any
 # ffmpeg: the system build if present, else the wheel-bundled one. The container is
 # rebuilt between sessions and only one of the two survives.
 FF=$(command -v ffmpeg || echo /usr/local/lib/python3.11/dist-packages/imageio_ffmpeg/binaries/ffmpeg-linux-x86_64-v7.0.2)
@@ -17,9 +17,14 @@ while :; do
   last=$have
   if [ "$stall" -ge 4 ]; then
     echo "$(date +%H:%M:%S) stalled at ${have}/${N} — restarting renderer"
-    pkill -9 -x node 2>/dev/null; pkill -9 -x chrome 2>/dev/null; sleep 3
+    # Kill ONLY the renderer this script owns. A blanket `pkill -9 -x node` also kills
+    # unrelated renders running in parallel -- same class of bug as `pkill -f capture.js`
+    # matching this script's own command line.
+    [ -n "$RPID" ] && kill -9 "$RPID" 2>/dev/null
+    sleep 3
     TL="timeline_${SLUG}.json" FRAMES="frames_${SLUG}" PORT="$PORT" RESUME=1 \
       nohup node capture.js all >> "render_${SLUG}.log" 2>&1 &
+    RPID=$!
     stall=0; sleep 20
   fi
   sleep 30

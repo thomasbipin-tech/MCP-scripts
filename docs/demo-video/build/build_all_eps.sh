@@ -15,7 +15,9 @@ while read -r SLUG N <&3; do
     -map "[a]" -ar 48000 -ac 2 -c:a pcm_s16le "audio_${SLUG}.wav"
   TL="timeline_${SLUG}.json" FRAMES="frames_${SLUG}" PORT="$port" RESUME=1 \
     nohup node capture.js all >> "render_${SLUG}.log" 2>&1 </dev/null &
+  rpid=$!
   sleep 15
-  ./watch_build.sh "$SLUG" "$port" "$N" </dev/null
+  # hand the watchdog the PID it owns, so a stall restart cannot kill a parallel render
+  ./watch_build.sh "$SLUG" "$port" "$N" "$rpid" </dev/null
 done 3< episodes.txt
 echo "=== ALL EPISODES DONE ==="
