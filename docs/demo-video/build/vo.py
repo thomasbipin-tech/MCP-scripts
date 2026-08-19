@@ -64,6 +64,7 @@ PHON = {
     'Visio':       'vˈɪzioʊ',            # native: vˈɪsɪˌoʊ ("VIS-ee-oh")
     'Netforge.ai': 'nˈɛtfɔːɹdʒ dˌɑːt ˌeɪˈaɪ',
     'Netforge':    'nˈɛtfɔːɹdʒ',
+    'Pulumi':      'pəlˈuːmi',           # native: guesses "POO-loo-my". Wrong.
     # --- transport / topology ---
     'WAN':         'wˈæn',               # native: wˈɑːn -- the English word "wan". Wrong.
     'LAN':         'lˈæn',
@@ -113,6 +114,19 @@ PHON = {
     'NIST':        'nˈɪst',
     'AS':          'ˌeɪˈɛs',           # BGP autonomous system: "ay-ESS", not the word "as"
     'CIS':         'sˌiːˌaɪˈɛs',
+    'RPKI':        'ˌɑːɹpˌiːkˌeɪˈaɪ',      # ar-pee-kay-EYE
+    'NAT':         'nˈæt',
+    'SKU':         'skjˈuː',              # said "skew"
+    'SMS':         'ˌɛsˌɛmˈɛs',
+    'HTTP':        'ˌeɪtʃtˌiːtˌiːpˈiː',
+    'TCP':         'tˌiːsˌiːpˈiː',
+    'UDP':         'jˌuːdˌiːpˈiː',
+    'API':         'ˌeɪpˌiːˈaɪ',
+    'RIPE':        'ɹˈaɪp',
+    'IOS':        'ˌaɪˌoʊˈɛs',
+    'CX':         'sˌiːˈɛks',
+    'LC':         'ˌɛlsˈiː',
+    'Clos':        'klˈoʊ',              # the fabric, after Charles Clos -- not "kloss"
 }
 # longest first so "VLANs" wins over "VLAN" and "Netforge.ai" over "Netforge"
 _TERMS = sorted(PHON, key=len, reverse=True)
@@ -212,10 +226,10 @@ LINES = [
            "drift from the design.", None),
  # the Azure section had no lead-in; it now turns into the section instead of cutting to it
  ('21',13, "Or, if you want to visualize an environment that already exists: reverse-engineer a "
-           "live Azure subscription onto the canvas, and push it back as Terraform.", None),
+           "live Azure subscription onto the canvas, and push it back as Terraform, or Pulumi.", None),
  ('22',14, "Design. Configure. Validate. Deploy. One canvas, one source of truth.", None),
  ('23',14, "The drawing and the network. Finally the same thing.", None),
- ('24',15, "Netforge.ai. From sketch to spine.", None),
+ ('24',15, "Netforge.ai. Draw the network once. Everything else is generated.", None),
 ]
 
 # Per-line speed. The hook's prose runs at 1.2x. Two lines are deliberately left at 1.0:

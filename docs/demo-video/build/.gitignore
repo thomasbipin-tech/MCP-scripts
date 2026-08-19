@@ -13,3 +13,5 @@ __pycache__/
 node_modules/
 package-lock.json
 timeline_probe.json
+timeline_probe*.json
+scenes_dark_backup.html

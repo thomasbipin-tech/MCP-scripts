@@ -1,5 +1,12 @@
 # Netforge.ai — Demo Video Script (v1)
 
+> **v8 (2026-08-19):** the live site was redesigned -- light theme, new hero, tagline
+> replaced. The shipped narration and screens now follow the redesign; this file's act
+> structure still stands, but the closing line is now *"Netforge.ai. Draw the network
+> once. Everything else is generated."* and every screen renders the light UI. See
+> PRODUCTION-NOTES.md "v8" for the full delta.
+
+
 **Runtime target:** 2:15 · **Aspect:** 16:9, 1920×1080 · **VO:** ~340 words @ ~150 wpm
 
 > **Timecodes below are the original plan, not the shipped cut.** Once real narration

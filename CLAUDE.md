@@ -26,6 +26,7 @@ straight into the synthesiser (`is_phonemes=True` in `docs/demo-video/build/vo.p
 | `Visio` | VIZ-ee-oh | `vˈɪzioʊ` | `vˈɪsɪˌoʊ` — "VIS-ee-oh" |
 | `Netforge.ai` | NET-forj dot ay-eye | `nˈɛtfɔːɹdʒ dˌɑːt ˌeɪˈaɪ` | joins the dot into the word |
 | `Netforge` | NET-forj | `nˈɛtfɔːɹdʒ` | — |
+| `Pulumi` | puh-LOO-mee | `pəlˈuːmi` | "POO-loo-my" |
 | `WAN` | wan (rhymes with "van") | `wˈæn` | `wˈɑːn` — the English word "wan", pale |
 | `SD-WAN` | ess-dee-WAN | `ˌɛsdˌiːwˈæn` | reads "SD" as a word |
 | `LAN` | lan | `lˈæn` | correct natively; pinned anyway |
@@ -71,6 +72,15 @@ straight into the synthesiser (`is_phonemes=True` in `docs/demo-video/build/vo.p
 | `NIST` | nist | `nˈɪst` | correct natively; pinned anyway |
 | `CIS` | see-eye-ESS | `sˌiːˌaɪˈɛs` | `sˈɪs` — "sis" |
 | `AS` (autonomous system) | ay-ESS | `ˌeɪˈɛs` | `æz` — the word "as" |
+| `RPKI` | ar-pee-kay-EYE | `ˌɑːɹpˌiːkˌeɪˈaɪ` | mangles the cluster |
+| `NAT` | nat | `nˈæt` | correct natively; pinned anyway |
+| `SKU` | skew | `skjˈuː` | spells the letters |
+| `SMS` | ess-em-ESS | `ˌɛsˌɛmˈɛs` | correct natively; pinned anyway |
+| `HTTP` / `TCP` / `UDP` / `API` | letters | `ˌeɪtʃtˌiːtˌiːpˈiː` / `tˌiːsˌiːpˈiː` / `jˌuːdˌiːpˈiː` / `ˌeɪpˌiːˈaɪ` | correct natively; pinned anyway |
+| `RIPE` | ripe (word) | `ɹˈaɪp` | correct natively; pinned anyway |
+| `Clos` | KLOH (after Charles Clos) | `klˈoʊ` | "kloss" |
+| `IOS` | eye-oh-ESS | `ˌaɪˌoʊˈɛs` | correct natively; pinned anyway |
+| `CX` / `LC` | letters | `sˌiːˈɛks` / `ˌɛlsˈiː` | correct natively; pinned anyway |
 | `HMAC-SHA1` | aitch-mack shah ONE | `ˌeɪtʃmˈæk ʃˈɑː wˈʌn` | unintelligible |
 | `HMAC-SHA2-256` | aitch-mack shah two, two-fifty-six | `ˌeɪtʃmˈæk ʃˈɑː tˈuː tˌuːfˈɪfti sˈɪks` | unintelligible |
 

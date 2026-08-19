@@ -1,3 +1,62 @@
+# v8 — re-grounded on the redesigned netforge.ai (2026-08-19)
+
+The live site was redesigned; the whole video set re-grounds against it. Crawled the
+homepage, /pricing, /trust, /tools, /templates, /docs (25 pages) and the release history
+before touching anything. Facts below are the site's own.
+
+## The redesign, as it affects the videos
+
+- **Tagline replaced.** "From Sketch to Spine." is gone site-wide (zero hits in the HTML
+  and every JS chunk). The hero H1 is **"The Drawing is the Source of Truth."** with the
+  support line **"Draw the network once. Everything else is generated."** The videos open
+  on the thesis line (gradient-filled, as the live hero renders it) and close on the
+  support line -- it is also the headline of the site's own OG share card, and the
+  catchier of the two, per client note.
+- **Light theme by default.** `:root` is now the light palette; dark is opt-in. All
+  product screens re-themed: bg #fff/#f5f5f7, text #1d1d1f/#6e6e73, accent **#0284c7**
+  (dark-mode keeps #38bdf8 -- no longer used here), canvas #f9f9fb with #00000038 dots.
+  Code surfaces stay dark by the site's own tokens (--nm-code-bg #0b1220) -- terminals,
+  diff embeds and Terraform panes render as dark panels on the light page.
+- **JetBrains Mono is gone.** The site self-hosts Inter only; mono is the system stack
+  whose listed fallback "Liberation Mono" is installed in the render container, so
+  renders stay deterministic.
+- **Vendor palette:** Arista **#b4283c** (was #ed1c24), Palo Alto **#fa582d** (new),
+  Azure #0078d4. Catalog groups are by vendor and now include SD-WAN, Lantronix, FRR,
+  Nokia and Azure. The marketing strip is five vendors; Lantronix is framed as OOB
+  console support.
+- **Logo unchanged** -- live icon.svg is byte-identical to our embedded copy.
+- **New icon system** (NfIcon): 24-unit grid, stroke currentColor, size-stepped weight
+  (<=13px -> 2, <=16 -> 1.8, >16 -> 1.5), round caps, secondary detail strokes at 0.8x
+  weight / 0.55 opacity, nodes as filled dots. The eight real glyphs (topology, config,
+  validation, architect, fabric, export, cloud, blueprint) are adopted verbatim.
+
+## Fact corrections carried into narration
+
+- 30-office Enterprise WAN: **108 devices / 296 links** (was narrated as 70 devices).
+- /tools: **21 tools in 6 groups**, incl. the new Routing & BGP group with Looking
+  Glass. Only four tools are fully browser-local; Config Compare's own "nothing leaves
+  your browser" claim is still true (confirmed on /trust) and stays.
+- /templates: **28 reference designs / 8 categories**, incl. three new families (L2
+  DCI, low-latency trading, AI/ML Clos) and nine Azure designs.
+- Azure ships as **Terraform or Pulumi**, per project, choice locked after first apply.
+
+## New feature coverage (walkthrough grew 36 -> 41 shots)
+
+Azure Designer drawer * Terraform/Pulumi deploy with live preflight * Firewall Studio
+with hit-count dead-rule detection * Firewall what-if * Looking Glass (BGP scorecard) *
+Watchtower rebuilt to its real shape (HTTP/TCP/UDP/ping/DNS/keyword/change/heartbeat/
+API + BGP monitors, status pages) * public blueprint pages with embeds + last-verified *
+rack elevations with patch panels + fibre LIU priced in a PANELS BOM section * as-built
+import got its own shot * per-collection Ansible host_vars in the deploy narration *
+roadmap chapter rewritten from the August 2026 release notes * a free-vs-Enterprise beat
+("everything that draws is free").
+
+## Flag for the client
+
+`/.well-known/security.txt` lists a second canonical domain, `rackloom.com`, referenced
+nowhere else on the site. If a rebrand is in flight, say so before the next cut is
+distributed; the end cards say netforge.ai.
+
 # Netforge.ai demo video — production notes
 
 **Current deliverable:** `netforge-demo-v7.mp4` — 1920×1080, 30 fps, H.264 high profile,

@@ -6,29 +6,32 @@
 @font-face{font-family:Inter;src:url(fonts/inter-500.woff2)format('woff2');font-weight:500;font-display:block}
 @font-face{font-family:Inter;src:url(fonts/inter-600.woff2)format('woff2');font-weight:600;font-display:block}
 @font-face{font-family:Inter;src:url(fonts/inter-700.woff2)format('woff2');font-weight:700;font-display:block}
-@font-face{font-family:JBMono;src:url(fonts/jbmono-400.woff2)format('woff2');font-weight:400;font-display:block}
-@font-face{font-family:JBMono;src:url(fonts/jbmono-500.woff2)format('woff2');font-weight:500;font-display:block}
 
 :root{
-  --bg:#000; --bg2:#0a0a0c; --elev:#1c1c1e;
-  --bd:#ffffff1a; --bd2:#ffffff29; --bd3:#ffffff3d; --edge:#ffffff0f;
-  --tp:#f5f5f7; --ts:#98989f; --tt:#aeaeb2; --tph:#48484a;
-  --ac:#38bdf8; --ac2:#0ea5e9; --acs:#38bdf824; --acb:#38bdf840; --acg:#38bdf857;
+  /* Light theme -- the site's default since the redesign. Values are the live
+     --nm-* tokens verbatim; dark is now opt-in on the product and unused here. */
+  --bg:#fff; --bg2:#f5f5f7; --elev:#fff; --cv:#f9f9fb;
+  --bd:#00000014; --bd2:#0000001f; --bd3:#0000002e; --edge:#0000000a;
+  --tp:#1d1d1f; --ts:#6e6e73; --tt:#aeaeb2; --tph:#c7c7cc;
+  --ac:#0284c7; --ac2:#0ea5e9; --acs:#0ea5e91f; --acb:#0284c733; --acg:#0284c738;
   --ok:#34c759; --okb:#34c7591a; --err:#ff3b30; --errb:#ff3b301a;
   --warn:#ff9f0a; --warnb:#ff9f0a1a; --info:#007aff; --infob:#007aff1a;
-  --cisco:#1ba0d7; --arista:#ed1c24; --aruba:#ff8300; --sp:#00adef; --gen:#8e8e93;
+  --cisco:#1ba0d7; --arista:#b4283c; --aruba:#ff8300; --sp:#00adef; --gen:#8e8e93;
+  --palo:#fa582d; --azure:#0078d4;
   --fiber:#007aff; --copper:#8e8e93; --down:#ff3b30;
-  --dot:#ffffff29; --r-xs:6px; --r-sm:10px; --r-md:14px; --r-lg:20px; --r-xl:26px;
-  --shadow-node:0 2px 12px #000000b3, 0 0 0 1px #ffffff12;
+  --dot:#00000038; --r-xs:6px; --r-sm:10px; --r-md:14px; --r-lg:20px; --r-xl:26px;
+  --shadow-node:0 2px 8px #00000014, 0 0 0 1px #0000000f;
+  /* code surfaces stay dark on the light site (--nm-code-*) */
+  --code-bg:#0b1220; --code-tx:#d5dde8; --code-ph:#d5dde861;
   --topbar:50px; --sbl:272px; --sbr:600px;
 }
 *{margin:0;padding:0;box-sizing:border-box}
-html,body{width:1920px;height:1080px;overflow:hidden;background:#000}
+html,body{width:1920px;height:1080px;overflow:hidden;background:#fff}
 body{font-family:Inter,sans-serif;color:var(--tp);-webkit-font-smoothing:antialiased}
-#stage{position:relative;width:1920px;height:1080px;overflow:hidden;background:#000}
+#stage{position:relative;width:1920px;height:1080px;overflow:hidden;background:#fff}
 .layer{position:absolute;inset:0}
 .hide{display:none!important}
-.mono{font-family:JBMono,monospace}
+.mono{font-family:"Liberation Mono",monospace}
 
 /* ---------- kinetic type ---------- */
 .kin{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;padding:0 200px;text-align:center}
@@ -49,145 +52,145 @@ body{font-family:Inter,sans-serif;color:var(--tp);-webkit-font-smoothing:antiali
 .pgbody>*{width:100%}
 .h1{font-size:30px;font-weight:600;letter-spacing:-.6px;margin-bottom:5px}
 .h2{font-size:14.5px;color:var(--ts);margin-bottom:22px}
-.card{border:1px solid var(--bd);background:#ffffff06;border-radius:var(--r-md)}
-.pill{display:inline-flex;align-items:center;gap:7px;height:26px;padding:0 11px;border-radius:99px;font-size:12.5px;font-weight:600;font-family:JBMono,monospace}
+.card{border:1px solid var(--bd);background:#00000006;border-radius:var(--r-md)}
+.pill{display:inline-flex;align-items:center;gap:7px;height:26px;padding:0 11px;border-radius:99px;font-size:12.5px;font-weight:600;font-family:"Liberation Mono",monospace}
 .pill.ok{background:var(--okb);color:var(--ok);border:1px solid #34c75955}
 .pill.warn{background:var(--warnb);color:var(--warn);border:1px solid #ff9f0a55}
 .pill.err{background:var(--errb);color:var(--err);border:1px solid #ff3b3055}
 .pill.info{background:var(--infob);color:var(--info);border:1px solid #007aff55}
 .tbl{width:100%;border-collapse:collapse;font-size:15px}
 .tbl th{text-align:left;font-size:11px;letter-spacing:1.3px;text-transform:uppercase;color:var(--tt);font-weight:600;padding:0 14px 11px}
-.tbl td{padding:12px 14px;border-top:1px solid #ffffff0d;font-family:JBMono,monospace;color:var(--tp);white-space:nowrap}
+.tbl td{padding:12px 14px;border-top:1px solid #0000000d;font-family:"Liberation Mono",monospace;color:var(--tp);white-space:nowrap}
 .tbl td.t{font-family:Inter,sans-serif}
 .tbl td.dim{color:var(--ts)}
 
 /* wizard */
 .wz{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:1180px;display:flex;
-  border-radius:var(--r-lg);border:1px solid var(--bd2);background:var(--elev);box-shadow:0 40px 90px #000000cc;overflow:hidden}
-.wzrail{width:288px;flex:0 0 288px;background:#ffffff05;border-right:1px solid var(--bd);padding:26px 22px}
+  border-radius:var(--r-lg);border:1px solid var(--bd2);background:var(--elev);box-shadow:0 32px 64px #0000001f,0 8px 24px #0000000f;overflow:hidden}
+.wzrail{width:288px;flex:0 0 288px;background:#00000005;border-right:1px solid var(--bd);padding:26px 22px}
 .wzstep{display:flex;gap:13px;align-items:flex-start;padding:13px 0;font-size:15px;color:var(--ts)}
-.wzstep .n{width:26px;height:26px;flex:0 0 26px;border-radius:99px;border:1px solid var(--bd3);display:flex;align-items:center;justify-content:center;font-size:12.5px;font-family:JBMono,monospace}
-.wzstep.on{color:var(--tp)} .wzstep.on .n{background:var(--ac);border-color:var(--ac);color:#00121c;font-weight:700}
+.wzstep .n{width:26px;height:26px;flex:0 0 26px;border-radius:99px;border:1px solid var(--bd3);display:flex;align-items:center;justify-content:center;font-size:12.5px;font-family:"Liberation Mono",monospace}
+.wzstep.on{color:var(--tp)} .wzstep.on .n{background:var(--ac);border-color:var(--ac);color:#fff;font-weight:700}
 .wzstep.done .n{background:var(--okb);border-color:#34c75966;color:var(--ok)}
 .wzmain{flex:1;padding:28px 30px}
-.cnt{display:flex;align-items:center;justify-content:space-between;padding:15px 18px;border-radius:var(--r-sm);border:1px solid var(--bd);background:#ffffff05;margin-bottom:11px}
+.cnt{display:flex;align-items:center;justify-content:space-between;padding:15px 18px;border-radius:var(--r-sm);border:1px solid var(--bd);background:#00000005;margin-bottom:11px}
 .cnt .lb{font-size:16px} .cnt .lb small{display:block;font-size:12.5px;color:var(--ts);margin-top:2px}
-.cnt .v{font-family:JBMono,monospace;font-size:26px;font-weight:500;color:var(--ac)}
-.gbtn{height:52px;border-radius:99px;background:var(--ac);color:#00121c;font-size:18px;font-weight:600;
+.cnt .v{font-family:"Liberation Mono",monospace;font-size:26px;font-weight:500;color:var(--ac)}
+.gbtn{height:52px;border-radius:99px;background:var(--ac);color:#fff;font-size:18px;font-weight:600;
   display:flex;align-items:center;justify-content:center;gap:10px;margin-top:20px}
 
 /* template gallery */
 .gal{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
-.tcard{border-radius:var(--r-md);border:1px solid var(--bd);background:#ffffff06;padding:16px;overflow:hidden}
+.tcard{border-radius:var(--r-md);border:1px solid var(--bd);background:#00000006;padding:16px;overflow:hidden}
 .tcard.sel{border-color:var(--acb);background:var(--acs);box-shadow:0 0 0 1px var(--acb)}
 .tcard .tn{font-size:16.5px;font-weight:600;letter-spacing:-.2px}
-.tcard .tm{font-size:12.5px;color:var(--ts);font-family:JBMono,monospace;margin-top:3px}
+.tcard .tm{font-size:12.5px;color:var(--ts);font-family:"Liberation Mono",monospace;margin-top:3px}
 .tcard svg{width:100%;height:96px;margin:12px 0 10px;display:block}
 .tcard .tb{display:flex;gap:7px}
-.tbadge{font-size:11px;font-family:JBMono,monospace;padding:4px 9px;border-radius:99px;border:1px solid var(--bd2);color:var(--tt)}
+.tbadge{font-size:11px;font-family:"Liberation Mono",monospace;padding:4px 9px;border-radius:99px;border:1px solid var(--bd2);color:var(--tt)}
 
 /* diff viewer */
-.dv{display:flex;gap:0;border-radius:var(--r-md);border:1px solid var(--bd);overflow:hidden;font-family:JBMono,monospace;font-size:16px}
+.dv{display:flex;gap:0;border-radius:var(--r-md);border:1px solid var(--bd);overflow:hidden;font-family:"Liberation Mono",monospace;font-size:16px}
 .dvcol{flex:1;min-width:0}
-.dvh{padding:12px 16px;background:#ffffff08;border-bottom:1px solid var(--bd);font-size:13.5px;color:var(--ts);font-family:Inter,sans-serif}
+.dvh{padding:12px 16px;background:#00000008;border-bottom:1px solid var(--bd);font-size:13.5px;color:var(--ts);font-family:Inter,sans-serif}
 .dvl{display:flex;gap:12px;padding:6px 16px;line-height:1.5;white-space:pre}
 .dvl .g{width:14px;flex:0 0 14px;color:var(--tph);text-align:center}
 .dvl .tx{flex:1;min-width:0;white-space:pre-wrap;word-break:break-all}
 /* Config Compare colours the row by STRUCTURE, not by side:
    green = identical, yellow = same line with edits, red = no counterpart. */
-.dvl.same{background:#34c75918} .dvl.same .g{color:var(--ok)}
-.dvl.edit{background:#ff9f0a28} .dvl.edit .g{color:var(--warn)}
-.dvl.none{background:#ff3b3028} .dvl.none .g{color:var(--err)} .dvl.none .tx{color:#ff9b94}
-.dvl.gap{background:repeating-linear-gradient(135deg,#ffffff08 0 7px,transparent 7px 14px)}
+.dvl.same{background:#34c75914} .dvl.same .g{color:var(--ok)}
+.dvl.edit{background:#ff9f0a1f} .dvl.edit .g{color:var(--warn)}
+.dvl.none{background:#ff3b301f} .dvl.none .g{color:var(--err)} .dvl.none .tx{color:#b42318}
+.dvl.gap{background:repeating-linear-gradient(135deg,#00000008 0 7px,transparent 7px 14px)}
 .dvl.gap .g,.dvl.gap .tx{color:var(--tph)}
-.dvl .tk{font-style:normal;border-radius:4px;padding:1px 5px;background:#ff9f0a40;color:#ffd48a}
-.dvl.none .tk{background:#ff3b3038;color:#ff9b94}
+.dvl .tk{font-style:normal;border-radius:4px;padding:1px 5px;background:#ff9f0a38;color:#8a5a00}
+.dvl.none .tk{background:#ff3b3030;color:#b42318}
 .sev{font-family:Inter,sans-serif;font-size:11px;letter-spacing:.04em;text-transform:uppercase;
      padding:2px 8px;border-radius:99px;align-self:center;flex:0 0 auto}
-.sev.major{background:var(--errb);color:#ff9b94;border:1px solid #ff3b3040}
-.sev.minor{background:var(--warnb);color:#ffd48a;border:1px solid #ff9f0a40}
+.sev.major{background:var(--errb);color:#c62b22;border:1px solid #ff3b3040}
+.sev.minor{background:var(--warnb);color:#8a5a00;border:1px solid #ff9f0a40}
 .dvkey{display:flex;gap:22px;align-items:center;font-family:Inter,sans-serif;font-size:14px;color:var(--ts)}
 .dvkey i{width:11px;height:11px;border-radius:3px;display:inline-block;margin-right:8px;vertical-align:-1px}
 .dvmid{width:1px;background:var(--bd)}
 
 /* dashboard rows */
 .drow{display:flex;align-items:center;gap:18px;padding:15px 18px;border-radius:var(--r-md);
-  border:1px solid var(--bd);background:#ffffff05;margin-bottom:10px}
-.drow .nm{font-family:JBMono,monospace;font-size:16px;width:230px}
+  border:1px solid var(--bd);background:#00000005;margin-bottom:10px}
+.drow .nm{font-family:"Liberation Mono",monospace;font-size:16px;width:230px}
 .drow .vd{font-size:13px;color:var(--ts);width:130px}
 .drow .sp{flex:1;height:26px}
-.drow .mt{font-family:JBMono,monospace;font-size:13px;color:var(--tph);width:150px;text-align:right}
+.drow .mt{font-family:"Liberation Mono",monospace;font-size:13px;color:var(--tph);width:150px;text-align:right}
 
 /* tools grid */
-.tgrid{display:grid;grid-template-columns:repeat(5,1fr);gap:16px}
+.tgrid{display:grid;grid-template-columns:repeat(6,1fr);gap:14px}
 .tgcol .tgh{font-size:11px;letter-spacing:1.4px;text-transform:uppercase;color:var(--ac);font-weight:700;margin-bottom:11px}
-.tgi{padding:11px 13px;border-radius:var(--r-sm);border:1px solid var(--bd);background:#ffffff05;font-size:14px;margin-bottom:8px}
+.tgi{padding:11px 13px;border-radius:var(--r-sm);border:1px solid var(--bd);background:#00000005;font-size:14px;margin-bottom:8px}
 
 /* path trace */
 .hop{display:flex;align-items:center;gap:16px;padding:14px 18px;border-radius:var(--r-md);
-  border:1px solid var(--bd);background:#ffffff05;margin-bottom:11px}
-.hop .ix{width:30px;height:30px;flex:0 0 30px;border-radius:99px;background:#ffffff0f;color:var(--tt);
-  display:flex;align-items:center;justify-content:center;font-family:JBMono,monospace;font-size:13px}
-.hop.up .ix{background:var(--ac);color:#00121c;font-weight:700}
-.hop .hn{font-family:JBMono,monospace;font-size:16.5px;width:250px}
+  border:1px solid var(--bd);background:#00000005;margin-bottom:11px}
+.hop .ix{width:30px;height:30px;flex:0 0 30px;border-radius:99px;background:#0000000f;color:var(--tt);
+  display:flex;align-items:center;justify-content:center;font-family:"Liberation Mono",monospace;font-size:13px}
+.hop.up .ix{background:var(--ac);color:#fff;font-weight:700}
+.hop .hn{font-family:"Liberation Mono",monospace;font-size:16.5px;width:250px}
 .hop .hi{font-size:13.5px;color:var(--ts);flex:1}
-.hop .hl{font-family:JBMono,monospace;font-size:15px;color:var(--ok);width:100px;text-align:right}
+.hop .hl{font-family:"Liberation Mono",monospace;font-size:15px;color:var(--ok);width:100px;text-align:right}
 
 /* rack */
-.rack{width:330px;border-radius:var(--r-md);border:1px solid var(--bd2);background:#ffffff05;padding:12px 12px 14px}
-.rack .rh{font-size:12.5px;color:var(--ts);font-family:JBMono,monospace;text-align:center;padding-bottom:10px}
+.rack{width:330px;border-radius:var(--r-md);border:1px solid var(--bd2);background:#00000005;padding:12px 12px 14px}
+.rack .rh{font-size:12.5px;color:var(--ts);font-family:"Liberation Mono",monospace;text-align:center;padding-bottom:10px}
 .ru{display:flex;align-items:center;gap:8px;height:30px;margin-bottom:4px}
-.ru .un{width:26px;font-family:JBMono,monospace;font-size:11px;color:var(--tph);text-align:right}
-.ru .ub{flex:1;height:100%;border-radius:5px;border:1px solid var(--bd);background:#ffffff05}
-.ru .ub.f{display:flex;align-items:center;padding:0 10px;font-family:JBMono,monospace;font-size:12.5px}
+.ru .un{width:26px;font-family:"Liberation Mono",monospace;font-size:11px;color:var(--tph);text-align:right}
+.ru .ub{flex:1;height:100%;border-radius:5px;border:1px solid var(--bd);background:#00000005}
+.ru .ub.f{display:flex;align-items:center;padding:0 10px;font-family:"Liberation Mono",monospace;font-size:12.5px}
 
 
 /* ---------- batch 2 screens ---------- */
 .form{max-width:560px}
 .frow{margin-bottom:15px}
 .frow label{display:block;font-size:11px;letter-spacing:1.2px;text-transform:uppercase;color:var(--tt);font-weight:600;margin-bottom:6px}
-.frow .fi{height:44px;border-radius:var(--r-sm);border:1px solid var(--bd2);background:#ffffff08;display:flex;align-items:center;padding:0 14px;font-size:15.5px;color:var(--tp)}
+.frow .fi{height:44px;border-radius:var(--r-sm);border:1px solid var(--bd2);background:#00000008;display:flex;align-items:center;padding:0 14px;font-size:15.5px;color:var(--tp)}
 .frow .fi.ok{border-color:#34c75955;background:var(--okb)}
 .chk{display:flex;align-items:center;gap:10px;font-size:14.5px;color:var(--ts);padding:6px 0}
 .chk i{width:18px;height:18px;border-radius:5px;border:1.5px solid var(--bd3);display:flex;align-items:center;justify-content:center;flex:0 0 18px}
 .chk i svg{width:11px;height:11px}
 .chk.on{color:var(--tp)} .chk.on i{background:var(--ok);border-color:var(--ok)}
 .totp{display:flex;gap:10px;margin-top:6px}
-.totp span{width:52px;height:62px;border-radius:var(--r-sm);border:1px solid var(--bd2);background:#ffffff08;
-  display:flex;align-items:center;justify-content:center;font-family:JBMono,monospace;font-size:28px;color:var(--ac)}
+.totp span{width:52px;height:62px;border-radius:var(--r-sm);border:1px solid var(--bd2);background:#00000008;
+  display:flex;align-items:center;justify-content:center;font-family:"Liberation Mono",monospace;font-size:28px;color:var(--ac)}
 .qr{width:150px;height:150px;border-radius:var(--r-sm);background:#fff;padding:9px}
 .qr svg{width:100%;height:100%}
 
 .rolegrid{width:100%;border-collapse:collapse;font-size:15px}
 .rolegrid th{text-align:left;font-size:11px;letter-spacing:1.2px;text-transform:uppercase;color:var(--tt);font-weight:600;padding:0 12px 12px}
 .rolegrid th.c,.rolegrid td.c{text-align:center;width:110px}
-.rolegrid td{padding:13px 12px;border-top:1px solid #ffffff0d;font-size:15px}
-.rolegrid td.r{font-family:JBMono,monospace;color:var(--tp)}
+.rolegrid td{padding:13px 12px;border-top:1px solid #0000000d;font-size:15px}
+.rolegrid td.r{font-family:"Liberation Mono",monospace;color:var(--tp)}
 .dot{width:20px;height:20px;border-radius:99px;display:inline-flex;align-items:center;justify-content:center}
-.dot.y{background:var(--ok)} .dot.n{background:#ffffff12}
+.dot.y{background:var(--ok)} .dot.n{background:#00000012}
 .dot svg{width:11px;height:11px}
 
 .proppane{display:flex;gap:0;border-radius:var(--r-md);border:1px solid var(--bd);overflow:hidden}
-.propnav{width:230px;flex:0 0 230px;background:#ffffff05;border-right:1px solid var(--bd);padding:12px}
+.propnav{width:230px;flex:0 0 230px;background:#00000005;border-right:1px solid var(--bd);padding:12px}
 .propnav div{padding:11px 13px;border-radius:var(--r-sm);font-size:14.5px;color:var(--ts)}
 .propnav div.on{background:var(--acs);color:var(--ac);font-weight:600}
 .propbody{flex:1;padding:20px 24px;min-width:0}
-.kv{display:flex;gap:16px;padding:11px 0;border-top:1px solid #ffffff0d;font-size:15px;align-items:center}
+.kv{display:flex;gap:16px;padding:11px 0;border-top:1px solid #0000000d;font-size:15px;align-items:center}
 .kv .k{width:250px;color:var(--ts)}
-.kv .v{font-family:JBMono,monospace;color:var(--tp)}
-.kv .badge{margin-left:auto;font-size:11px;padding:3px 9px;border-radius:99px;border:1px solid var(--bd2);color:var(--tt);font-family:JBMono,monospace}
-.kv .badge.inh{border-color:#38bdf84d;color:var(--ac);background:var(--acs)}
+.kv .v{font-family:"Liberation Mono",monospace;color:var(--tp)}
+.kv .badge{margin-left:auto;font-size:11px;padding:3px 9px;border-radius:99px;border:1px solid var(--bd2);color:var(--tt);font-family:"Liberation Mono",monospace}
+.kv .badge.inh{border-color:#0284c74d;color:var(--ac);background:var(--acs)}
 .kv .badge.ovr{border-color:#ff9f0a4d;color:var(--warn);background:var(--warnb)}
 
 .fmtgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:8px}
-.fmt{border-radius:var(--r-md);border:1px solid var(--bd);background:#ffffff06;padding:20px;display:flex;gap:16px;align-items:flex-start}
+.fmt{border-radius:var(--r-md);border:1px solid var(--bd);background:#00000006;padding:20px;display:flex;gap:16px;align-items:flex-start}
 .fmt .ic{width:52px;height:52px;flex:0 0 52px;border-radius:var(--r-sm);display:flex;align-items:center;justify-content:center;border:1px solid var(--bd2)}
 .fmt .ic svg{width:26px;height:26px}
 .fmt .nm{font-size:17px;font-weight:600;letter-spacing:-.2px}
-.fmt .ext{font-family:JBMono,monospace;font-size:12.5px;color:var(--ac);margin-top:2px}
+.fmt .ext{font-family:"Liberation Mono",monospace;font-size:12.5px;color:var(--ac);margin-top:2px}
 .fmt .ds{font-size:13.5px;color:var(--ts);margin-top:7px;line-height:1.45}
 
-.docpg{width:250px;height:324px;border-radius:8px;background:#f5f5f7;box-shadow:0 18px 40px #000000a6;padding:18px;flex:0 0 250px}
+.docpg{width:250px;height:324px;border-radius:8px;background:#f5f5f7;box-shadow:0 18px 40px #00000021;padding:18px;flex:0 0 250px}
 .docpg .dt{font-size:13px;font-weight:700;color:#1d1d1f}
 .docpg .ds{font-size:9px;color:#6e6e73;margin-top:2px}
 .docpg .dl{height:5px;background:#d8d8dd;border-radius:2px;margin-top:7px}
@@ -195,67 +198,71 @@ body{font-family:Inter,sans-serif;color:var(--tp);-webkit-font-smoothing:antiali
 
 /* ---------- batch 3 screens: one dedicated screen per episode topic ---------- */
 .cat{display:flex;gap:0;border-radius:var(--r-md);border:1px solid var(--bd);overflow:hidden;height:692px}
-.catrail{width:340px;flex:0 0 340px;background:#ffffff05;border-right:1px solid var(--bd);padding:14px}
-.catsearch{height:38px;border-radius:99px;border:1px solid var(--bd2);background:#ffffff08;display:flex;
+.catrail{width:340px;flex:0 0 340px;background:#00000005;border-right:1px solid var(--bd);padding:14px}
+.catsearch{height:38px;border-radius:99px;border:1px solid var(--bd2);background:#00000008;display:flex;
   align-items:center;padding:0 15px;font-size:14px;color:var(--ts);margin-bottom:14px}
 .catgrp{font-size:11px;letter-spacing:1.3px;text-transform:uppercase;color:var(--ac);font-weight:700;margin:10px 0 6px}
 .catit{display:flex;align-items:center;gap:11px;padding:7px 11px;border-radius:var(--r-sm);border:1px solid var(--bd);
-  background:#ffffff05;margin-bottom:5px;font-size:14px}
+  background:#00000005;margin-bottom:5px;font-size:14px}
 .catit .ci{width:26px;height:26px;flex:0 0 26px;border-radius:6px;display:flex;align-items:center;justify-content:center}
 .catit .ci svg{width:15px;height:15px}
-.catit small{display:block;font-family:JBMono,monospace;font-size:11.5px;color:var(--ts)}
+.catit small{display:block;font-family:"Liberation Mono",monospace;font-size:11.5px;color:var(--ts)}
 .catcv{flex:1;position:relative;background:
-  linear-gradient(#ffffff08 1px,transparent 1px) 0 0/34px 34px,
-  linear-gradient(90deg,#ffffff08 1px,transparent 1px) 0 0/34px 34px}
+  linear-gradient(#00000008 1px,transparent 1px) 0 0/34px 34px,
+  linear-gradient(90deg,#00000008 1px,transparent 1px) 0 0/34px 34px}
 
 .mtr{display:flex;gap:12px;align-items:center;margin-bottom:9px}
 .mtr .ml{width:210px;font-size:14px;color:var(--ts)}
-.mtr .mb{flex:1;height:9px;border-radius:99px;background:#ffffff10;overflow:hidden}
+.mtr .mb{flex:1;height:9px;border-radius:99px;background:#00000010;overflow:hidden}
 .mtr .mb i{display:block;height:100%;border-radius:99px;background:var(--ac)}
-.mtr .mv{width:120px;text-align:right;font-family:JBMono,monospace;font-size:14px;color:var(--tp)}
+.mtr .mv{width:120px;text-align:right;font-family:"Liberation Mono",monospace;font-size:14px;color:var(--tp)}
 
 .split{display:flex;gap:20px}
 .split>*{flex:1;min-width:0}
-.panel{border-radius:var(--r-md);border:1px solid var(--bd);background:#ffffff05;padding:18px 20px}
+.panel{border-radius:var(--r-md);border:1px solid var(--bd);background:#00000005;padding:18px 20px}
 .panel .pt{font-size:12px;letter-spacing:1.2px;text-transform:uppercase;color:var(--tt);font-weight:700;margin-bottom:12px}
 
 .find{display:flex;gap:14px;align-items:flex-start;padding:13px 16px;border-radius:var(--r-md);
-  border:1px solid var(--bd);background:#ffffff05;margin-bottom:9px}
+  border:1px solid var(--bd);background:#00000005;margin-bottom:9px}
 .find .fx{width:24px;height:24px;flex:0 0 24px;border-radius:99px;display:flex;align-items:center;justify-content:center}
 .find .fx svg{width:12px;height:12px}
 .find .ft{font-size:15px} .find .fs{font-size:13px;color:var(--ts);margin-top:3px}
-.find .fw{margin-left:auto;font-family:JBMono,monospace;font-size:12.5px;color:var(--ac);white-space:nowrap;align-self:center}
+.find .fw{margin-left:auto;font-family:"Liberation Mono",monospace;font-size:12.5px;color:var(--ac);white-space:nowrap;align-self:center}
 
 .bar{display:flex;height:34px;border-radius:7px;overflow:hidden;border:1px solid var(--bd2)}
-.bar i{display:flex;align-items:center;justify-content:center;font-family:JBMono,monospace;font-size:12px;color:#00121c}
-.tfline{font-family:JBMono,monospace;font-size:15.5px;line-height:1.85;white-space:pre}
-.tfline .a{color:var(--ok)} .tfline .c{color:var(--warn)} .tfline .k{color:var(--ac)} .tfline .s{color:var(--ts)}
+.bar i{display:flex;align-items:center;justify-content:center;font-family:"Liberation Mono",monospace;font-size:12px;color:#fff}
+.tfline{font-family:"Liberation Mono",monospace;font-size:15.5px;line-height:1.85;white-space:pre;background:var(--code-bg);color:var(--code-tx);border-radius:var(--r-sm);padding:14px 18px;overflow:hidden}
+.tfline .a{color:#8ce9a6} .tfline .c{color:#ffd48a} .tfline .k{color:#7dd3fc} .tfline .s{color:#8b98a9}
 
 /* ---------- opening brand card: bookends the end card ---------- */
 .openbrand{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;
   justify-content:center;gap:26px;transform-origin:50% 50%;
-  background:radial-gradient(ellipse 60% 50% at 50% 45%,#38bdf814 0%,#0000 70%),#000}
+  background:radial-gradient(ellipse 60% 50% at 50% 45%,#0ea5e912 0%,#0000 70%),#fff}
 
 /* ---------- act 1: two artefacts, and what disagrees between them ---------- */
 .ttl{position:absolute;top:62px;left:0;right:0;text-align:center;font-size:46px;font-weight:600;letter-spacing:-1.1px}
 .pane.p2{top:186px;height:700px}
 .vchip{position:absolute;height:36px;display:flex;align-items:center;padding:0 15px;border-radius:var(--r-sm);
-  font-family:JBMono,monospace;font-size:19px;border:1px solid var(--bd2);background:#ffffff08;white-space:nowrap}
+  font-family:"Liberation Mono",monospace;font-size:19px;border:1px solid var(--bd2);background:var(--bg2);white-space:nowrap}
 .vchip.l{right:22px;color:var(--ts)}
-.vchip.l.bad{border-color:#ff3b3055;background:var(--errb);color:#ff8b84;
+.vchip.l.bad{border-color:#ff3b3055;background:var(--errb);color:#c62b22;
   text-decoration:line-through;text-decoration-color:#ff3b30a6}
 .vchip.r{left:22px;color:var(--tp)}
 .vchip.r.hit{border-color:#ff9f0a5c;background:var(--warnb);color:var(--warn)}
 .gapfoot{position:absolute;top:910px;left:0;right:0;text-align:center;
-  font-family:JBMono,monospace;font-size:18px;color:var(--tt)}
+  font-family:"Liberation Mono",monospace;font-size:18px;color:var(--tt)}
 #bridge{position:absolute;inset:0;width:1920px;height:1080px;pointer-events:none;overflow:visible}
 
 /* ---------- act 1 split ---------- */
-.pane{position:absolute;top:196px;height:672px;width:760px;border-radius:var(--r-lg);background:var(--bg2);border:1px solid var(--bd);overflow:hidden}
-.pane .ph{height:44px;border-bottom:1px solid var(--bd);display:flex;align-items:center;gap:10px;padding:0 18px;font-size:15px;color:var(--ts);font-weight:500}
+.pane{position:absolute;top:196px;height:672px;width:760px;border-radius:var(--r-lg);background:var(--elev);border:1px solid var(--bd2);overflow:hidden;box-shadow:var(--nmxl,0 20px 48px #0000001a,0 4px 16px #0000000d)}
+.pane .ph{height:44px;border-bottom:1px solid var(--bd);display:flex;align-items:center;gap:10px;padding:0 18px;font-size:15px;color:var(--ts);font-weight:500;background:var(--bg2)}
+/* the running-config pane is a terminal: code surfaces stay dark on the light site */
+.pane.term{background:var(--code-bg);border-color:#00000052}
+.pane.term .ph{background:#0f1626;border-bottom-color:#ffffff17;color:#8b98a9}
+.pane.term .cli b{color:#7dd3fc}
 .dotrow{display:flex;gap:6px}.dotrow i{width:10px;height:10px;border-radius:99px;display:block}
 .stamp{position:absolute;right:22px;top:64px;font-size:13px;letter-spacing:1.6px;text-transform:uppercase;color:var(--warn);border:1px solid var(--warn);border-radius:var(--r-xs);padding:5px 10px;font-weight:600;transform:rotate(-3deg);background:var(--warnb)}
-.cli{padding:20px 22px;font-family:JBMono,monospace;font-size:16.5px;line-height:1.85;color:#c9d4de;white-space:pre-wrap}
+.cli{padding:20px 22px;font-family:"Liberation Mono",monospace;font-size:16.5px;line-height:1.85;color:#c9d4de;white-space:pre-wrap}
 .cli b{color:var(--ac);font-weight:500}.cli u{color:var(--ok);text-decoration:none}.cli s{color:#5f6b76;text-decoration:none}
 .gaplabel{position:absolute;top:60px;font-size:17px;letter-spacing:2.6px;text-transform:uppercase;color:var(--tt);font-weight:600}
 
@@ -267,10 +274,10 @@ body{font-family:Inter,sans-serif;color:var(--tp);-webkit-font-smoothing:antiali
 .logo .m svg{width:24px;height:24px}
 .crumb{font-size:13.5px;color:var(--ts)}.crumb b{color:var(--tp);font-weight:500}
 .tbtns{margin-left:auto;display:flex;align-items:center;gap:9px}
-.btn{height:32px;padding:0 15px;border-radius:99px;border:1px solid var(--bd2);background:#ffffff0a;color:var(--tp);font-size:13.5px;font-weight:500;display:flex;align-items:center;gap:7px}
-.btn.pri{background:var(--ac);border-color:var(--ac);color:#00121c;font-weight:600}
+.btn{height:32px;padding:0 15px;border-radius:99px;border:1px solid var(--bd2);background:var(--elev);color:var(--tp);font-size:13.5px;font-weight:500;display:flex;align-items:center;gap:7px;box-shadow:0 1px 2px #0000000f}
+.btn.pri{background:var(--ac);border-color:var(--ac);color:#fff;font-weight:600}
 .btn.on{background:var(--acs);border-color:var(--acb);color:var(--ac)}
-.av{width:28px;height:28px;border-radius:99px;background:linear-gradient(135deg,#38bdf8,#0369a1);font-size:12px;font-weight:600;display:flex;align-items:center;justify-content:center;color:#00121c}
+.av{width:28px;height:28px;border-radius:99px;background:linear-gradient(135deg,#0ea5e9,#0369a1);font-size:12px;font-weight:600;display:flex;align-items:center;justify-content:center;color:#fff}
 .body{flex:1;display:flex;min-height:0}
 
 /* left palette */
@@ -280,25 +287,29 @@ body{font-family:Inter,sans-serif;color:var(--tp);-webkit-font-smoothing:antiali
 .chip{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:var(--r-sm);font-size:13.5px;color:var(--tp);border:1px solid transparent}
 .chip .sw{width:26px;height:26px;border-radius:var(--r-xs);display:flex;align-items:center;justify-content:center;border:1px solid var(--bd2)}
 .chip .sw svg{width:15px;height:15px}
-.chip small{margin-left:auto;font-size:11px;color:var(--tph);font-family:JBMono,monospace}
+.chip small{margin-left:auto;font-size:11px;color:var(--tph);font-family:"Liberation Mono",monospace}
 .chip.act{background:var(--acs);border-color:var(--acb)}
+.vrowh{display:flex;align-items:center;gap:10px;padding:10px 8px;font-size:12px;font-weight:700;
+  letter-spacing:1.2px;color:var(--ts)}
+.vrowh i{width:9px;height:9px;border-radius:3px;flex:0 0 9px}
+.vrowh .chev{width:13px;height:13px;margin-left:auto;color:var(--tph)}
 
-/* canvas */
+/* canvas -- the site's --nm-canvas-bg with its dotted grid */
 .cv{flex:1;position:relative;overflow:hidden;background:
   radial-gradient(circle,var(--dot) 1px,#0000 1.2px) 0 0/26px 26px,
-  var(--bg)}
+  var(--cv)}
 .cvinner{position:absolute;inset:0;transform-origin:50% 50%}
 .node{position:absolute;width:186px;border-radius:var(--r-md);background:var(--elev);box-shadow:var(--shadow-node);border:1px solid var(--edge);overflow:hidden}
 .node .nh{display:flex;align-items:center;gap:9px;padding:10px 12px 8px}
 .node .ic{width:28px;height:28px;border-radius:var(--r-xs);display:flex;align-items:center;justify-content:center;flex:0 0 28px}
 .node .ic svg{width:16px;height:16px}
 .node .nm{font-size:13px;font-weight:600;letter-spacing:-.2px;line-height:1.25}
-.node .vd{font-size:10.5px;color:var(--ts);font-family:JBMono,monospace;margin-top:1px}
+.node .vd{font-size:10.5px;color:var(--ts);font-family:"Liberation Mono",monospace;margin-top:1px}
 .node .ports{display:flex;gap:3px;padding:0 12px 11px;flex-wrap:wrap}
-.node .ports i{width:13px;height:7px;border-radius:2px;background:#ffffff0f;display:block}
+.node .ports i{width:13px;height:7px;border-radius:2px;background:#0000000f;display:block}
 .node .ports i.up{background:var(--ok)}
 .node .ports i.fib{background:var(--fiber)}
-.node.sel{box-shadow:0 0 0 2px var(--ac),0 6px 20px #38bdf866}
+.node.sel{box-shadow:0 0 0 2px var(--ac),0 4px 16px #0284c733}
 .node.bad{box-shadow:0 0 0 2px var(--err),0 6px 20px #ff3b3066}
 .node.sm{width:126px}.node.sm .nm{font-size:11.5px}.node.sm .vd{font-size:9.5px}
 .node.sm .ic{width:22px;height:22px;flex:0 0 22px}.node.sm .ic svg{width:13px;height:13px}
@@ -310,27 +321,27 @@ body{font-family:Inter,sans-serif;color:var(--tp);-webkit-font-smoothing:antiali
 .sbr{width:var(--sbr);flex:0 0 var(--sbr);background:var(--bg2);border-left:1px solid var(--bd);display:flex;flex-direction:column;overflow:hidden}
 .prh{padding:15px 20px 0}
 .prh .t{font-size:17px;font-weight:600;letter-spacing:-.3px;display:flex;align-items:center;gap:10px}
-.prh .s{font-size:12.5px;color:var(--ts);margin-top:3px;font-family:JBMono,monospace}
+.prh .s{font-size:12.5px;color:var(--ts);margin-top:3px;font-family:"Liberation Mono",monospace}
 .tabs{display:flex;gap:22px;padding:0 20px;border-bottom:1px solid var(--bd);margin-top:14px}
 .tabs div{font-size:13.5px;color:var(--ts);padding:0 0 10px;font-weight:500;border-bottom:2px solid transparent;margin-bottom:-1px}
 .tabs div.on{color:var(--ac);border-bottom-color:var(--ac)}
 .pbody{padding:16px 20px;overflow:hidden;flex:1}
 .fld{margin-bottom:13px}
 .fld label{display:block;font-size:11px;letter-spacing:1.2px;text-transform:uppercase;color:var(--tt);font-weight:600;margin-bottom:6px}
-.fld .inp{height:38px;border-radius:var(--r-sm);border:1px solid var(--bd2);background:#ffffff08;display:flex;align-items:center;padding:0 13px;font-size:14px;font-family:JBMono,monospace;color:var(--tp)}
+.fld .inp{height:38px;border-radius:var(--r-sm);border:1px solid var(--bd2);background:#00000008;display:flex;align-items:center;padding:0 13px;font-size:14px;font-family:"Liberation Mono",monospace;color:var(--tp)}
 .fld .inp.foc{border-color:var(--ac);box-shadow:0 0 0 3px var(--acs)}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .caret{display:inline-block;width:1.5px;height:17px;background:var(--ac);vertical-align:-3px;margin-left:1px}
 
 /* validation rows */
-.vrow{display:flex;align-items:center;gap:11px;padding:9px 0;border-bottom:1px solid #ffffff0d;font-size:14px}
+.vrow{display:flex;align-items:center;gap:11px;padding:9px 0;border-bottom:1px solid #0000000d;font-size:14px}
 .vrow .b{width:19px;height:19px;border-radius:99px;display:flex;align-items:center;justify-content:center;flex:0 0 19px}
 .vrow .b svg{width:11px;height:11px}
-.vrow .nmx{color:var(--tp)}.vrow .mt{margin-left:auto;font-family:JBMono,monospace;font-size:12px;color:var(--tph)}
+.vrow .nmx{color:var(--tp)}.vrow .mt{margin-left:auto;font-family:"Liberation Mono",monospace;font-size:12px;color:var(--tph)}
 .vsum{display:flex;align-items:center;gap:12px;padding:14px 16px;border-radius:var(--r-md);border:1px solid;margin-bottom:14px;font-size:15.5px;font-weight:600}
 .vsum.ok{background:var(--okb);border-color:#34c75955;color:var(--ok)}
 .vsum.bad{background:var(--errb);border-color:#ff3b3055;color:var(--err)}
-.vsum .big{margin-left:auto;font-family:JBMono,monospace;font-size:13px;font-weight:500;color:var(--ts)}
+.vsum .big{margin-left:auto;font-family:"Liberation Mono",monospace;font-size:13px;font-weight:500;color:var(--ts)}
 .aicard{border:1px solid var(--acb);background:var(--acs);border-radius:var(--r-md);padding:14px 16px;margin-bottom:12px}
 .aicard .h{display:flex;align-items:center;gap:9px;font-size:13.5px;font-weight:600;color:var(--ac);margin-bottom:8px}
 .aicard p{font-size:14px;line-height:1.55;color:var(--tp)}
@@ -338,13 +349,13 @@ body{font-family:Inter,sans-serif;color:var(--tp);-webkit-font-smoothing:antiali
 
 /* callout ring + magnifier */
 .ring{position:absolute;border:2px solid var(--err);border-radius:var(--r-md);box-shadow:0 0 0 6px #ff3b3021;pointer-events:none}
-.mag{position:absolute;border-radius:var(--r-md);border:1px solid var(--bd3);background:var(--elev);box-shadow:0 32px 64px #000000cc;overflow:hidden;padding:13px 16px}
+.mag{position:absolute;border-radius:var(--r-md);border:1px solid var(--bd3);background:var(--elev);box-shadow:0 32px 64px #0000001f,0 8px 24px #0000000f;overflow:hidden;padding:13px 16px}
 .mag .mt{font-size:11px;letter-spacing:1.3px;text-transform:uppercase;color:var(--err);font-weight:700;margin-bottom:7px}
-.mag .mv{font-family:JBMono,monospace;font-size:19px;color:var(--tp);line-height:1.5}
+.mag .mv{font-family:"Liberation Mono",monospace;font-size:19px;color:var(--tp);line-height:1.5}
 
 /* export */
-.expcard{position:absolute;border-radius:var(--r-md);border:1px solid var(--bd2);background:var(--elev);box-shadow:0 20px 48px #000000b3;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;width:182px;height:226px}
-.expcard .x{font-family:JBMono,monospace;font-size:17px;font-weight:500;letter-spacing:1px}
+.expcard{position:absolute;border-radius:var(--r-md);border:1px solid var(--bd2);background:var(--elev);box-shadow:0 20px 48px #0000001a,0 4px 16px #0000000d;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;width:182px;height:226px}
+.expcard .x{font-family:"Liberation Mono",monospace;font-size:17px;font-weight:500;letter-spacing:1px}
 .expcard .y{font-size:12.5px;color:var(--ts);text-align:center;padding:0 10px;line-height:1.35}
 .expcard .ix{width:52px;height:52px;border-radius:var(--r-sm);display:flex;align-items:center;justify-content:center;border:1px solid var(--bd2)}
 
@@ -354,20 +365,22 @@ body{font-family:Inter,sans-serif;color:var(--tp);-webkit-font-smoothing:antiali
 /* captions + chips */
 #cap{position:absolute;left:0;right:0;bottom:74px;display:flex;justify-content:center;z-index:50}
 #cap .box{max-width:1360px;text-align:center;font-size:33px;font-weight:500;line-height:1.42;letter-spacing:-.4px;
-  background:#000000b8;border:1px solid var(--bd);border-radius:var(--r-md);padding:15px 30px;backdrop-filter:blur(8px)}
+  background:#ffffffe0;border:1px solid var(--bd);border-radius:var(--r-md);padding:15px 30px;backdrop-filter:blur(8px)}
 #cap .box em{font-style:normal;color:var(--ac)}
 #chips{position:absolute;left:0;right:0;bottom:24px;display:flex;justify-content:center;gap:9px;z-index:50}
-#chips span{font-family:JBMono,monospace;font-size:15px;padding:7px 14px;border-radius:99px;border:1px solid var(--bd2);background:#000000b8;color:var(--tt)}
-#badge{position:absolute;z-index:55;font-family:JBMono,monospace;font-weight:500}
+#chips span{font-family:"Liberation Mono",monospace;font-size:15px;padding:7px 14px;border-radius:99px;border:1px solid var(--bd2);background:#ffffffe0;color:var(--ts);box-shadow:0 1px 3px #00000012}
+#badge{position:absolute;z-index:55;font-family:"Liberation Mono",monospace;font-weight:500}
 
 /* end card */
-.endwrap{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:26px;background:radial-gradient(ellipse 60% 50% at 50% 45%,#38bdf814 0%,#0000 70%),#000}
+.endwrap{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:26px;background:radial-gradient(ellipse 60% 50% at 50% 45%,#0ea5e912 0%,#0000 70%),#fff}
 .endlogo{display:flex;align-items:center;gap:16px}
 .endlogo .m{width:82px;height:82px;display:flex;align-items:center;justify-content:center}
 .endlogo .m svg{width:82px;height:82px}
 .endlogo .n{font-size:52px;font-weight:700;letter-spacing:-1.4px}
-.endtag{font-size:40px;font-weight:600;letter-spacing:-1px;color:var(--ac);white-space:nowrap}
-.endurl{font-family:JBMono,monospace;font-size:23px;color:var(--tt);letter-spacing:.5px}
+.endtag{font-size:37px;font-weight:600;letter-spacing:-1px;color:var(--ac);white-space:nowrap}
+.heroflow{background:linear-gradient(90deg,#0369a1,#0ea5e9,#22d3ee,#14b8a6,#34c759,#14b8a6,#22d3ee,#0ea5e9,#0369a1) 0 0/200% 100%;
+  -webkit-background-clip:text;background-clip:text;color:transparent}
+.endurl{font-family:"Liberation Mono",monospace;font-size:23px;color:var(--tt);letter-spacing:.5px}
 .endsub{font-size:19px;color:var(--ts)}
 </style>
 
@@ -437,22 +450,40 @@ const I={
   x:'<svg viewBox="0 0 24 24" fill="none" stroke="#1a0000" stroke-width="3.4" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>',
   spark:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.1 6.3L20.5 10l-6.4 1.7L12 18l-2.1-6.3L3.5 10l6.4-1.7z"/></svg>',
   doc:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"><path d="M6 2.5h8l4.5 4.5v14.5H6z"/><path d="M14 2.5V7h4.5"/></svg>',
-  arrow:'<svg viewBox="0 0 24 24" fill="none" stroke="#00121c" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h15M13 6l6 6-6 6"/></svg>'
+  arrow:'<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h15M13 6l6 6-6 6"/></svg>',
+  nfTopology:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10.61 7.77 6.39 16.23m6.99-8.46 4.22 8.46M8.1 19h7.8" opacity=".55" stroke-width="1.2"/><circle cx="12" cy="5" r="2.3" fill="currentColor" stroke="none"/><circle cx="5" cy="19" r="2.3" fill="currentColor" stroke="none"/><circle cx="19" cy="19" r="2.3" fill="currentColor" stroke="none"/></svg>',
+  nfConfig:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3.5H8a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V7.5z"/><path d="M14 3.5V7a1 1 0 0 0 1 1h3" opacity=".55" stroke-width="1.2"/><path d="M10.2 11.6c-1 .3-1 .9-1 1.4s0 1.1 1 1.4m3.6-2.8c1 .3 1 .9 1 1.4s0 1.1-1 1.4" opacity=".8"/></svg>',
+  nfValidation:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12.5c0 5-3.5 7.6-7.7 9h-.6C7.5 20.1 4 17.5 4 12.5v-6l8-3 8 3z"/><path d="m7.9 12.2 3.2 3.2 4.9-5.1"/></svg>',
+  nfArchitect:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.2c.4 2.2 1.8 3.6 4 4-2.2.4-3.6 1.8-4 4-.4-2.2-1.8-3.6-4-4 2.2-.4 3.6-1.8 4-4Z"/><path d="M6 16.5h6.5M6 16.5 9 20m-3-3.5V13" opacity=".55" stroke-width="1.2"/><circle cx="6" cy="16.5" r="1.6" fill="currentColor" stroke="none"/><circle cx="14" cy="16.5" r="1.4" fill="currentColor" stroke="none" opacity=".7"/></svg>',
+  nfFabric:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6.93 8.3 5.48 16.35m1.68-8.09 3.73 8.28m-3.6-8.37 9.73 9M16.71 8.17l-9.73 9m9.86-8.91-3.73 8.28m3.98-8.24 1.45 8.05" opacity=".55" stroke-width="1.2"/><circle cx="7" cy="7" r="1.7" fill="currentColor" stroke="none"/><circle cx="17" cy="7" r="1.7" fill="currentColor" stroke="none"/><circle cx="5" cy="18" r="1.7" fill="currentColor" stroke="none"/><circle cx="12" cy="18" r="1.7" fill="currentColor" stroke="none"/><circle cx="19" cy="18" r="1.7" fill="currentColor" stroke="none"/></svg>',
+  nfExport:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="4.5" y="4" width="15" height="16" rx="2"/><path d="M8 8h8M8 11h5" opacity=".55" stroke-width="1.2"/><path d="M11.5 17.8V13.6m-1.9 2.3 1.9 1.9 1.9-1.9"/></svg>',
+  nfCloud:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 19H15a7 7 0 1 0-6.71-9h-1.79a4.5 4.5 0 1 0 0 9Z"/></svg>',
+  nfBlueprint:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11.25 6.7 8.6 16.2m4.15-9.5 2.65 9.5"/><path d="M9.44 12.25a7.5 7.5 0 0 0 5.12 0" opacity=".55" stroke-width="1.2"/><circle cx="12" cy="5.4" r="1.8" fill="currentColor" stroke="none"/><path d="M7.7 18.4h1.9m4.8 0h1.9" opacity=".55" stroke-width="1.2"/></svg>'
 };
 document.body.innerHTML=document.body.innerHTML.replace('${ICON_LOGO}',I.logo);
 
-const V={cisco:'#1ba0d7',arista:'#ed1c24',aruba:'#ff8300',sp:'#00adef',palo:'#ff9f0a',gen:'#8e8e93',az:'#007aff'};
+const V={cisco:'#1ba0d7',arista:'#b4283c',aruba:'#ff8300',sp:'#00adef',palo:'#fa582d',gen:'#8e8e93',az:'#0078d4'};
 
 /* ============================ static build: palette ============================ */
 const PALETTE=[
-  ['Routing',[['Router','IOS-XE',V.cisco,I.router],['WAN Edge','EdgeConnect',V.sp,I.wan]]],
-  ['Switching',[['Core Switch','NX-OS',V.cisco,I.switch],['Leaf Switch','EOS',V.arista,I.switch],['Access Switch','ArubaOS-CX',V.aruba,I.switch]]],
-  ['Security',[['Firewall','PAN-OS',V.palo,I.fw]]],
-  ['Wireless',[['Access Point','ArubaOS',V.aruba,I.ap]]],
-  ['Cloud',[['Azure VNet','Terraform',V.az,I.cloud]]]
+  ['Cisco',V.cisco,[['Core Switch','NX-OS',V.cisco,I.switch],['Router','IOS-XE',V.cisco,I.router]]],
+  ['Arista',V.arista,[['Leaf Switch','EOS',V.arista,I.switch]]],
+  ['Palo Alto',V.palo,[]],
+  ['SD-WAN',V.sp,[]],
+  ['Aruba',V.aruba,[]],
+  ['Lantronix',V.gen,[]],
+  ['FRR',V.gen,[]],
+  ['Nokia',V.gen,[]],
+  ['Azure',V.az,[]],
 ];
 (function(){const s=$('#sbl');
-  PALETTE.forEach(([g,items])=>{ s.appendChild(el('div','sbtitle',g));
+  s.appendChild(el('div','sbtitle','Device catalog'));
+  const srch=el('div','catsearch'); srch.textContent='Search devices\u2026'; srch.style.margin='0 4px 10px'; s.appendChild(srch);
+  PALETTE.forEach(([g,vc,items])=>{
+    const row=el('div','vrowh');
+    row.innerHTML=`<i style="background:${vc}"></i><span>${g.toUpperCase()}</span>`
+      +`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="chev"${items.length?' style="transform:rotate(90deg)"':''}><path d="m9 6 6 6-6 6"/></svg>`;
+    s.appendChild(row);
     items.forEach(([n,v,c,ic])=>{ const ch=el('div','chip');
       ch.innerHTML=`<span class="sw" style="background:${c}1a;color:${c}">${ic}</span><span>${n}</span><small>${v}</small>`;
       ch.dataset.n=n; s.appendChild(ch); }); });
@@ -538,7 +569,7 @@ function panelProps(o={}){
     <div class="fld"><label>BGP neighbour</label><div class="inp">10.0.0.2 · remote-as 65001</div></div>
     <div class="fld"><label>Spanning tree</label><div class="inp">rapid-pvst · root primary</div></div>
     <div class="sbtitle" style="padding:0;margin:20px 0 10px">Generated config preview</div>
-    <div class="cli" style="padding:14px 16px;border:1px solid var(--bd);border-radius:var(--r-sm);background:#ffffff05;font-size:14.5px;line-height:1.75">${o.cli||''}</div>
+    <div class="cli" style="padding:14px 16px;border:1px solid #00000052;border-radius:var(--r-sm);background:var(--code-bg);font-size:14.5px;line-height:1.75">${o.cli||''}</div>
   </div>`;
 }
 const CHECKS=[
@@ -570,7 +601,7 @@ function panelAI(o={}){
         <p>${body}${o.caret?'<span class="caret"></span>':''}</p>
         ${o.fix?`<div class="fix"><span style="width:15px;height:15px;flex:0 0 15px;color:var(--ok)">${I.spark}</span><span>Suggested fix — dual-home RSITE-ACC-02 to a second core uplink and bundle both into Po1.</span></div>`:''}
       </div>
-      ${o.second?`<div class="aicard" style="border-color:var(--bd2);background:#ffffff08"><div class="h" style="color:var(--tt)"><span style="width:15px;height:15px;display:block">${I.doc}</span>CVD / AVD alignment</div>
+      ${o.second?`<div class="aicard" style="border-color:var(--bd2);background:#00000008"><div class="h" style="color:var(--tt)"><span style="width:15px;height:15px;display:block">${I.doc}</span>CVD / AVD alignment</div>
         <p style="color:var(--ts)">Leaf-spine underlay matches Arista AVD reference. Overlay EVPN RT scheme is consistent across all 8 leaves.</p></div>`:''}
     </div>`;
 }
@@ -603,22 +634,22 @@ function panelExport(o={}){
   return `<div class="prh"><div class="t">Export package</div><div class="s">remote-site · rev 12 · in sync with canvas</div></div>
   <div class="tabs"><div>Validation</div><div>AI Architect</div><div class="on">Export</div><div>History</div></div>
   <div class="pbody">
-    ${items.map(([a,b],i)=>`<div class="vrow" style="opacity:${i<n?1:.25}"><span class="b" style="background:${i<n?'var(--ok)':'#ffffff1a'}">${i<n?I.chk:''}</span>
-      <span class="nmx" style="font-family:JBMono,monospace">${a}</span><span class="mt">${b}</span></div>`).join('')}
+    ${items.map(([a,b],i)=>`<div class="vrow" style="opacity:${i<n?1:.25}"><span class="b" style="background:${i<n?'var(--ok)':'#0000001a'}">${i<n?I.chk:''}</span>
+      <span class="nmx" style="font-family:"Liberation Mono",monospace">${a}</span><span class="mt">${b}</span></div>`).join('')}
     <div class="sbtitle" style="padding:0;margin:20px 0 10px">RSITE-CORE-01.cfg</div>
-    <div class="cli" style="padding:14px 16px;border:1px solid var(--bd);border-radius:var(--r-sm);background:#ffffff05;font-size:14.5px;line-height:1.75">${o.cli||''}</div>
+    <div class="cli" style="padding:14px 16px;border:1px solid #00000052;border-radius:var(--r-sm);background:var(--code-bg);font-size:14.5px;line-height:1.75">${o.cli||''}</div>
   </div>`;
 }
 function panelCloud(o={}){
   const rows=[['azurerm_virtual_network','AZ-HUB-VNET'],['azurerm_subnet','core / dmz / mgmt'],['azurerm_network_security_group','AZ-NSG-CORE'],['azurerm_virtual_network_gateway','AZ-VPN-GW'],['azurerm_local_network_gateway','RSITE-WAN-01']];
   const n=o.n||0;
   return `<div class="prh"><div class="t">Cloud on Canvas</div><div class="s">Azure subscription · prod-hub-eu-west</div></div>
-  <div class="tabs"><div class="on">Imported</div><div>Terraform</div><div>Drift</div><div>History</div></div>
+  <div class="tabs"><div class="on">Imported</div><div>Terraform</div><div>Pulumi</div><div>Drift</div></div>
   <div class="pbody">
-    ${rows.map(([a,b],i)=>`<div class="vrow" style="opacity:${i<n?1:.25}"><span class="b" style="background:${i<n?'var(--info)':'#ffffff1a'}">${i<n?I.chk:''}</span>
+    ${rows.map(([a,b],i)=>`<div class="vrow" style="opacity:${i<n?1:.25}"><span class="b" style="background:${i<n?'var(--info)':'#0000001a'}">${i<n?I.chk:''}</span>
       <span class="nmx mono" style="font-size:13px">${a}</span><span class="mt">${b}</span></div>`).join('')}
     <div class="sbtitle" style="padding:0;margin:20px 0 10px">main.tf</div>
-    <div class="cli" style="padding:14px 16px;border:1px solid var(--bd);border-radius:var(--r-sm);background:#ffffff05;font-size:14.5px;line-height:1.75">${o.cli||''}</div>
+    <div class="cli" style="padding:14px 16px;border:1px solid #00000052;border-radius:var(--r-sm);background:var(--code-bg);font-size:14.5px;line-height:1.75">${o.cli||''}</div>
   </div>`;
 }
 const TF=`<s># generated by netforge.ai</s>
@@ -650,7 +681,7 @@ function chips(list,p){const c=$('#chips');
   c.classList.remove('hide');const n=clamp(p)*list.length;
   c.innerHTML=list.map((s,i)=>{const a=clamp(n-i);return `<span style="opacity:${a};transform:translateY(${lerp(10,0,a)}px)">${s}</span>`}).join('');}
 function badge(html,style,op){const b=$('#badge');if(!html||op<=.01){b.classList.add('hide');return}
-  b.classList.remove('hide');b.innerHTML=html;b.style.cssText='position:absolute;z-index:55;font-family:JBMono,monospace;font-weight:500;opacity:'+op+';'+style;}
+  b.classList.remove('hide');b.innerHTML=html;b.style.cssText='position:absolute;z-index:55;font-family:"Liberation Mono",monospace;font-weight:500;opacity:'+op+';'+style;}
 function cursorAt(x,y,vis){const c=$('#cur');c.style.opacity=vis?1:0;c.style.left=x+'px';c.style.top=y+'px';}
 // canvas vertical offset used to centre topologies in the canvas viewport
 const CY=118;
@@ -687,10 +718,10 @@ const DOTS='<span class="dotrow"><i style="background:#ff5f57"></i><i style="bac
 function oldMapSVG(){
   let h='';
   [[300,20],[150,170],[450,170],[80,320],[300,320],[520,320]].forEach(([x,y],i)=>{
-    h+=`<rect x="${x}" y="${y}" width="130" height="52" rx="6" fill="none" stroke="#8e8e93" stroke-width="1.6"/>`
-      +`<text x="${x+65}" y="${y+31}" fill="#8e8e93" font-size="15" font-family="Inter" text-anchor="middle">DEVICE-0${i+1}</text>`;});
-  h+=`<path d="M365 72 V170 M365 72 H215 V170 M365 72 H515 V170" stroke="#8e8e93" stroke-width="1.4" fill="none"/>`
-    +`<path d="M215 222 V320 H145 M215 222 H365 V320 M515 222 V320 H585" stroke="#8e8e93" stroke-width="1.4" fill="none"/>`;
+    h+=`<rect x="${x}" y="${y}" width="130" height="52" rx="6" fill="none" stroke="#6e6e73" stroke-width="1.6"/>`
+      +`<text x="${x+65}" y="${y+31}" fill="#6e6e73" font-size="15" font-family="Inter" text-anchor="middle">DEVICE-0${i+1}</text>`;});
+  h+=`<path d="M365 72 V170 M365 72 H215 V170 M365 72 H515 V170" stroke="#6e6e73" stroke-width="1.4" fill="none"/>`
+    +`<path d="M215 222 V320 H145 M215 222 H365 V320 M515 222 V320 H585" stroke="#6e6e73" stroke-width="1.4" fill="none"/>`;
   return h;
 }
 function buildPanes(g){
@@ -702,7 +733,7 @@ function buildPanes(g){
       <svg id="oldmap" viewBox="0 0 760 400" style="position:absolute;top:74px;left:0;width:760px;height:340px;opacity:.5">${oldMapSVG()}</svg>
       ${MISMATCH.map((m,i)=>`<div class="vchip l" id="cl${i}" style="top:${CHIP_TOP[i]}px;opacity:0">${m[0]}</div>`).join('')}
     </div>
-    <div class="pane p2" id="pR" style="left:1040px">
+    <div class="pane p2 term" id="pR" style="left:1040px">
       <div class="ph">${DOTS}CORE-SW-01 · running-config</div>
       <div class="cli" id="term" style="font-size:17px;line-height:1.9"></div>
       ${MISMATCH.map((m,i)=>`<div class="vchip r" id="cr${i}" style="top:${CHIP_TOP[i]}px;opacity:0">${m[1]}</div>`).join('')}
@@ -711,7 +742,7 @@ function buildPanes(g){
     <div class="gapfoot" id="gfoot" style="opacity:0">4 differences · 11 months since the diagram was touched</div>
     <div class="openbrand" id="ob">
       <div class="endlogo"><span class="m">${I.logo}</span><span class="n">Netforge.ai</span></div>
-      <div class="endtag">From Sketch to Spine.</div>
+      <div class="endtag heroflow" id="obtag">The Drawing is the Source of Truth.</div>
     </div>`;
 }
 // reveal the typed config up to progress p, without splitting HTML tags
@@ -752,8 +783,8 @@ function stagger(nodes, lt, start, step, dur){
   });
 }
 function miniTopo(kind){
-  const L=(x1,y1,x2,y2,c='#38bdf8aa')=>`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${c}" stroke-width="1.6"/>`;
-  const N=(x,y,c='#38bdf8')=>`<rect x="${x-9}" y="${y-6}" width="18" height="12" rx="3" fill="${c}22" stroke="${c}" stroke-width="1.3"/>`;
+  const L=(x1,y1,x2,y2,c='#0284c7aa')=>`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${c}" stroke-width="1.6"/>`;
+  const N=(x,y,c='#0284c7')=>`<rect x="${x-9}" y="${y-6}" width="18" height="12" rx="3" fill="${c}22" stroke="${c}" stroke-width="1.3"/>`;
   if(kind==='spine'){let h='';for(let i=0;i<4;i++)for(let j=0;j<6;j++)h+=L(40+i*60,22,25+j*40,78);
     for(let i=0;i<4;i++)h+=N(40+i*60,22);for(let j=0;j<6;j++)h+=N(25+j*40,78);return h;}
   if(kind==='star'){let h='';for(let i=0;i<6;i++){const a=i/6*Math.PI*2,x=140+Math.cos(a)*95,y=50+Math.sin(a)*34;h+=L(140,50,x,y,'#8e8e93aa')+N(x,y,'#8e8e93');}return h+N(140,50);}
@@ -785,6 +816,7 @@ const SCENES=[
   const brandOut=hasBrand ? (l1 ? l1.s - ACTIVE[0].a : 2.6) : 0;
   const brandEnd=brandOut+1.3;                          // cross-dissolve length
   const ob=g.querySelector('#ob');
+  const obt=g.querySelector('#obtag'); if(obt) obt.style.backgroundPosition=`${(lt*44)%200}% 0`;
   if(!hasBrand){ ob.style.display='none'; }
   else {
     const bIn=easeOut(seg(lt,.25,1.5)), bOut2=easeInOut(seg(lt,brandOut,brandEnd));
@@ -976,7 +1008,7 @@ const SCENES=[
   // green sweep across the topology
   const p=easeOut(seg(lt,.2,1.4));
   [...document.querySelectorAll('.node')].forEach((n,i)=>{
-    const a=clamp(p*6-i*.55); n.style.boxShadow=a>0?`0 0 0 ${lerp(0,2,a)}px #34c759${a>.5?'':'80'},0 2px 12px #000000b3`:'var(--shadow-node)';});
+    const a=clamp(p*6-i*.55); n.style.boxShadow=a>0?`0 0 0 ${lerp(0,2,a)}px #34c759${a>.5?'':'80'},0 2px 8px #00000014`:'var(--shadow-node)';});
   badge(`<div style="display:flex;align-items:center;gap:14px;background:#0a0a0ce8;border:1px solid #34c75966;border-radius:20px;padding:20px 30px;box-shadow:0 24px 60px #000c">
       <span style="width:34px;height:34px;border-radius:99px;background:var(--ok);display:flex;align-items:center;justify-content:center">${I.chk}</span>
       <span style="font-size:34px;color:var(--ok);font-weight:600">0 conflicts · 42 checks passed</span></div>`,
@@ -1094,15 +1126,15 @@ const SCENES=[
       tabs:['WAN overview','DC-1','DC-2','CAMPUS-A','CAMPUS-B','CAMPUS-C','BRANCH-01','+11 more'],tabOn:0,body:`
       <svg id="wan" style="position:absolute;inset:0;width:100%;height:100%"></svg>`});}
   const svg=g.querySelector('#wan'); const CX=920,CY=520;
-  let h=`<ellipse cx="${CX}" cy="${CY}" rx="150" ry="58" fill="#38bdf815" stroke="var(--ac)" stroke-width="1.6" opacity="${easeOut(seg(lt,.2,1.1))}"/>
+  let h=`<ellipse cx="${CX}" cy="${CY}" rx="150" ry="58" fill="#0284c712" stroke="var(--ac)" stroke-width="1.6" opacity="${easeOut(seg(lt,.2,1.1))}"/>
     <text x="${CX}" y="${CY+6}" fill="var(--ac)" font-size="21" font-family="Inter" font-weight="600" text-anchor="middle" opacity="${easeOut(seg(lt,.4,1.3))}">WAN</text>`;
   SITES.forEach((st,i)=>{
     const pr=easeOut(clamp(seg(lt,.9+i*.42,1.9+i*.42)));
     const x=CX+st[2]*pr, y=CY+st[3]*pr;
     h+=`<line x1="${CX}" y1="${CY}" x2="${x}" y2="${y}" stroke="var(--fiber)" stroke-width="2" opacity="${pr*.7}"/>`;
-    h+=`<g opacity="${pr}"><rect x="${x-108}" y="${y-30}" width="216" height="60" rx="12" fill="#1c1c1e" stroke="#ffffff29"/>
-      <text x="${x}" y="${y-5}" fill="#f5f5f7" font-size="17" font-family="Inter" font-weight="600" text-anchor="middle">${st[0]}</text>
-      <text x="${x}" y="${y+17}" fill="#98989f" font-size="14" font-family="JBMono" text-anchor="middle">${st[1]}</text></g>`;
+    h+=`<g opacity="${pr}"><rect x="${x-108}" y="${y-30}" width="216" height="60" rx="12" fill="#fff" stroke="#0000001f"/>
+      <text x="${x}" y="${y-5}" fill="#1d1d1f" font-size="17" font-family="Inter" font-weight="600" text-anchor="middle">${st[0]}</text>
+      <text x="${x}" y="${y+17}" fill="#6e6e73" font-size="14" font-family="Liberation Mono, monospace" text-anchor="middle">${st[1]}</text></g>`;
   });
   svg.innerHTML=h;
   g.querySelector('.pg').style.opacity=1-seg(lt,d-.6,d);
@@ -1112,20 +1144,20 @@ const SCENES=[
 /* ---------- 19. Templates gallery ---------- */
 {a:0,b:9,go(lt,d){
   hideApp(); const g=$('#gfx');
-  const T=[['Leaf-Spine EVPN VXLAN','4 spine · 8 leaf · 96 ports','spine',['EOS','AVD']],
-           ['Branch SD-WAN','2 edge · 1 firewall · dual ISP','star',['EdgeConnect','PAN-OS']],
-           ['Campus 3-Tier','core · dist · access','tier',['IOS-XE','ArubaOS-CX']],
-           ['DC Collapsed Core','2 core · 6 ToR','spine',['NX-OS']],
-           ['Metro Ring','6 nodes · MPLS','ring',['IOS-XE']],
-           ['Hybrid Azure Hub','VNet · VPN GW · NSG','cloud',['Terraform']],
-           ['Branch SD-WAN · Dual Hub','2 edge · 2 hubs','star',['EdgeConnect']],
-           ['PCI Segmented Campus','core · dist · PCI zone','tier',['IOS-XE','PAN-OS']],
-           ['Small Site Collapsed','1 switch · 1 firewall','pair',['ArubaOS-CX','PAN-OS']]];
+  const T=[['Arista Spine-Leaf DC','11 devices · 32 links','spine',['EOS','AVD']],
+           ['AI/ML Clos Fabric — Large','28 devices · 516 links','spine',['EOS','NEW']],
+           ['Low-Latency Trading — Colo','13 devices · 39 links','tier',['EOS','NEW']],
+           ['Arista L2 DCI — EVPN','12 devices · 20 links','ring',['EOS','NEW']],
+           ['30-Office Enterprise WAN','108 devices · 296 links','star',['SD-WAN']],
+           ['Azure Enterprise Landing Zone','26 resources · 26 links','cloud',['Terraform','Pulumi']],
+           ['Three-Tier Campus','13 devices · 40 links','tier',['IOS-XE','ArubaOS-CX']],
+           ['Small Branch Office','6 devices · 16 links','pair',['EdgeConnect','PAN-OS']],
+           ['Cisco Nexus Collapsed-Core DC','11 devices · 32 links','spine',['NX-OS']]];
   if(!g.dataset.n3){g.dataset.n3='1';
     pageShell(g,{crumb:'netforge.ai / <b>templates</b>',btns:['Community','Featured','Open Designer'],
       tabs:['Featured reference designs','Community templates','My templates'],tabOn:0,body:`
       <div class="h1">Start from a production-ready design</div>
-      <div class="h2">Pre-built topologies. Click any card to preview, or use it as a starting point.</div>
+      <div class="h2">Twenty-eight reference designs in eight categories — data centre, campus, Enterprise WAN, Azure, L2 DCI, low-latency trading, AI/ML fabrics. Open any card on the canvas, no account needed.</div>
       <div class="gal">${T.map((t,i)=>`<div class="tcard" id="t${i}">
         <div class="tn">${t[0]}</div><div class="tm">${t[1]}</div>
         <svg viewBox="0 0 280 100">${miniTopo(t[2])}</svg>
@@ -1241,10 +1273,10 @@ const SCENES=[
         <div style="width:360px;flex:0 0 360px">
           <div class="card" style="padding:20px" id="agg">
             <div style="font-size:11px;letter-spacing:1.3px;text-transform:uppercase;color:var(--tt);font-weight:700;margin-bottom:14px">CIDR aggregation</div>
-            <div style="font-family:JBMono,monospace;font-size:24px;color:var(--ac);margin-bottom:6px">10.0.0.0/8</div>
+            <div style="font-family:"Liberation Mono",monospace;font-size:24px;color:var(--ac);margin-bottom:6px">10.0.0.0/8</div>
             <div style="font-size:13.5px;color:var(--ts);margin-bottom:18px">aggregated to 4 supernets</div>
             ${['10.10.0.0/15 · data centres','10.30.0.0/14 · campuses','10.40.0.0/14 · branches','10.50.0.0/16 · remote sites']
-              .map(x=>`<div style="font-family:JBMono,monospace;font-size:14px;color:var(--tp);padding:7px 0;border-top:1px solid #ffffff0d">${x}</div>`).join('')}
+              .map(x=>`<div style="font-family:"Liberation Mono",monospace;font-size:14px;color:var(--tp);padding:7px 0;border-top:1px solid #0000000d">${x}</div>`).join('')}
             <div style="display:flex;gap:8px;margin-top:16px"><span class="pill ok">0 overlaps</span><span class="pill info">214 subnets</span></div>
           </div>
         </div>
@@ -1258,37 +1290,39 @@ const SCENES=[
 /* ---------- 22. Watchtower ---------- */
 {a:0,b:9,go(lt,d){
   hideApp(); const g=$('#gfx');
-  const DEV=[['RSITE-CORE-01','Cisco NX-OS','ok','4m ago'],['RSITE-FW-01','PAN-OS','ok','4m ago'],
-             ['RSITE-WAN-01','EdgeConnect','ok','5m ago'],['RSITE-ACC-01','ArubaOS-CX','ok','5m ago'],
-             ['RSITE-ACC-02','ArubaOS-CX','drift','just now'],['RSITE-AP-04','ArubaOS','ok','6m ago'],
-             ['DC1-SPINE-01','Arista EOS','ok','3m ago'],['DC1-LEAF-04','Arista EOS','ok','3m ago'],
-             ['CAMPUS-A-CORE','IOS-XE','ok','7m ago']];
-  const spark=(seed,bad)=>{let h='',x=0;const pts=[];
+  const MON=[['HTTPS','portal.acme.com','200 in 214 ms','up',0],
+             ['PING','RSITE-WAN-01 · 198.51.100.14','12 ms','up',3],
+             ['DNS','acme.com A + AAAA','resolves · 28 ms','up',6],
+             ['TCP','vpn.acme.com : 443','open · 41 ms','up',9],
+             ['HEARTBEAT','backup-job nightly','last beat 22 m ago','up',12],
+             ['BGP','203.0.113.0/24','origin AS 64511 · ROA valid','watch',15],
+             ['KEYWORD','status.carrier.net','"maintenance" not present','up',18]];
+  const spark=(seed,bad)=>{const pts=[];
     for(let i=0;i<34;i++){const v=Math.sin((i+seed)*0.7)*0.3+Math.cos((i+seed)*0.31)*0.22;
       pts.push(`${i*8},${13-v*9}`);}
-    h+=`<polyline points="${pts.join(' ')}" fill="none" stroke="${bad?'var(--warn)':'var(--ok)'}" stroke-width="1.6" opacity=".85"/>`;
-    return `<svg viewBox="0 0 272 26" style="width:272px;height:26px">${h}</svg>`;};
+    return `<svg viewBox="0 0 272 26" style="width:272px;height:26px"><polyline points="${pts.join(' ')}" fill="none" stroke="${bad?'var(--info)':'var(--ok)'}" stroke-width="1.6" opacity=".85"/></svg>`;};
   if(!g.dataset.n6){g.dataset.n6='1';
-    pageShell(g,{crumb:'netforge.ai / <b>watchtower</b>',btns:['Add device','Alerts','Re-verify all'],
-      tabs:['Monitored devices','Drift history','Alerts','Schedules'],tabOn:0,body:`
-      <div style="display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:20px">
-        <div><div class="h1">Still what you designed?</div>
-        <div class="h2" style="margin:0">Watchtower re-reads every device and compares it to the canvas.</div></div>
-        <div style="display:flex;gap:9px" id="wsum"><span class="pill ok">8 in sync</span><span class="pill warn">1 drifted</span></div>
+    pageShell(g,{crumb:'netforge.ai / tools / <b>watchtower</b>',btns:['Status page','Alert contacts','Add monitor'],
+      tabs:['Monitors','Incidents','Status pages','Maintenance windows'],tabOn:0,body:`
+      <div style="display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:18px">
+        <div><div class="h1">Know before the phone rings</div>
+        <div class="h2" style="margin:0">HTTP, TCP, UDP, ping, DNS, keyword, change, heartbeat, API — and BGP, watching how the internet routes you.</div></div>
+        <div style="display:flex;gap:9px" id="wsum"><span class="pill ok">6 up</span><span class="pill info">1 BGP watch</span></div>
       </div>
-      ${DEV.map((x,i)=>`<div class="drow" id="w${i}">
-        <span class="nm">${x[0]}</span><span class="vd">${x[1]}</span>
-        <span class="sp">${spark(i*3,x[2]==='drift')}</span>
-        <span id="wp${i}"></span>
-        <span class="mt">${x[3]}</span></div>`).join('')}`});}
-  stagger([...g.querySelectorAll('.drow')], lt, .3, .2, .55);
-  DEV.forEach((x,i)=>{
-    const el=g.querySelector('#wp'+i);
-    const flip=(x[2]==='drift' && lt>3.6);
-    el.innerHTML=flip?'<span class="pill warn">drift · 2 lines</span>'
-                     :(x[2]==='drift'&&lt<=3.6?'<span class="pill ok">in sync</span>':'<span class="pill ok">in sync</span>');
-    if(flip)g.querySelector('#w'+i).style.borderColor='#ff9f0a4d';
-  });
+      ${MON.map((x,i)=>`<div class="drow" id="w${i}">
+        <span class="nm" style="width:120px;color:var(--ac);font-size:12px;letter-spacing:.08em">${x[0]}</span>
+        <span class="nm" style="width:300px">${x[1]}</span>
+        <span class="sp">${spark(x[4],x[3]==='watch')}</span>
+        <span class="vd" style="width:220px">${x[2]}</span>
+        <span id="wp${i}"></span></div>`).join('')}
+      <div style="display:flex;gap:10px;margin-top:18px" id="wfoot">
+        <span class="pill info">alerts: e-mail · SMS / voice · Telegram · push</span>
+        <span class="pill info">status pages shared with a token</span>
+        <span class="pill warn">BGP: withdrawn = down · everything else = a named change</span></div>`});}
+  stagger([...g.querySelectorAll('.drow')], lt, .3, .22, .55);
+  MON.forEach((x,i)=>{const el=g.querySelector('#wp'+i);
+    el.innerHTML=x[3]==='watch'?'<span class="pill info">watching</span>':'<span class="pill ok">up</span>';});
+  g.querySelector('#wfoot').style.opacity=easeOut(seg(lt,3.4,4.3));
   g.querySelector('#wsum').style.opacity=easeOut(seg(lt,3.8,4.6));
   g.querySelector('.pg').style.opacity=1-seg(lt,d-.6,d);
   chips(null);
@@ -1298,18 +1332,19 @@ const SCENES=[
 {a:0,b:9,go(lt,d){
   hideApp(); const g=$('#gfx');
   const CATS=[['Diagnostics',['DNS Lookup','Ping','Traceroute','Port Check','Speed Test','Config Compare']],
+              ['Routing & BGP',['Looking Glass']],
               ['Addressing',['Subnet Calculator','IPv6 Tools','CIDR Aggregator','My IP','IP Geolocation','MAC Lookup']],
               ['DNS & Domains',['DNS Propagation','WHOIS','RDAP Lookup','Email Auth']],
               ['Security & Web',['SSL / TLS Check','HTTP Headers','Blacklist Check']],
               ['Monitoring',['Watchtower']]];
   if(!g.dataset.n7){g.dataset.n7='1';
     pageShell(g,{crumb:'netforge.ai / <b>network tools</b>',btns:['Sign in','Open Designer'],body:`
-      <div class="h1">Nineteen tools. No sign-in.</div>
+      <div class="h1">Twenty-one tools. No sign-in.</div>
       <div class="h2">The diagnostics you keep a bookmark folder for — in one place.</div>
       <div class="tgrid">${CATS.map((c,i)=>`<div class="tgcol" id="g${i}"><div class="tgh">${c[0]}</div>
         ${c[1].map(t=>`<div class="tgi">${t}</div>`).join('')}</div>`).join('')}</div>
       <div style="display:flex;gap:10px;margin-top:26px" id="tsum">
-        <span class="pill info">no sign-in</span><span class="pill info">no rate limits</span>
+        <span class="pill info">no sign-in</span><span class="pill info">new: Looking Glass</span>
         <span class="pill ok">netforge.ai/tools</span></div>`});}
   stagger([...g.querySelectorAll('.tgcol')], lt, .3, .34, .8);
   g.querySelector('#tsum').style.opacity=easeOut(seg(lt,2.6,3.5));
@@ -1389,13 +1424,17 @@ const SCENES=[
 /* ---------- 26. rack elevation + BOM ---------- */
 {a:0,b:9,go(lt,d){
   hideApp(); const g=$('#gfx');
-  const RACK=[[42,'PATCH-01 · 24p',' '],[40,'RSITE-CORE-01','var(--cisco)'],[38,'RSITE-ACC-01','var(--aruba)'],
-              [36,'RSITE-ACC-02','var(--aruba)'],[33,'RSITE-FW-01','var(--palo)'],[31,'RSITE-WAN-01','var(--sp)'],
-              [29,'RSITE-AP-CTRL','var(--aruba)'],[27,'PATCH-02 · 24p',' '],[26,'UPS-01','var(--gen)']];
+  const RACK=[[42,'FIBER LIU · 24p LC','pnl'],[41,'PANEL-A01 · 48p Cat6A','pnl'],
+              [40,'RSITE-CORE-01','var(--cisco)'],[38,'PANEL-A02 · 24p Cat6A','pnl'],
+              [37,'RSITE-ACC-01','var(--aruba)'],[35,'PANEL-A03 · 24p Cat6A','pnl'],
+              [34,'RSITE-ACC-02','var(--aruba)'],[32,'RSITE-FW-01','var(--palo)'],
+              [30,'RSITE-WAN-01','var(--sp)'],[28,'UPS-01','var(--gen)']];
   const BOM=[['1','N9K-C93180YC-EX','Nexus 9300 48p 10/25G','core'],['2','JL679A','Aruba CX 6300M 24p','access'],
              ['1','PA-3410','PA-3410 firewall','security'],['1','EC-XS','EdgeConnect XS','wan'],
              ['4','SFP-10G-SR','10G SR optic','optics'],['12','CAB-CAT6A-3M','Cat6A 3 m patch','copper'],
-             ['2','QSFP-40G-SR4','40G uplink optic','optics'],['1','PWR-C1-715W','redundant PSU','power'],
+             ['1','PNL-48-CAT6A','48-port Cat6A patch panel','panels'],
+             ['2','PNL-24-CAT6A','24-port Cat6A patch panel','panels'],
+             ['1','LIU-24-LC','24-port LC fiber panel','panels'],
              ['24','CAB-LC-LC-2M','LC-LC OM4 2 m','fibre'],['1','RACK-42U','42U cabinet','rack']];
   if(!g.dataset.n10){g.dataset.n10='1';
     pageShell(g,{crumb:'netforge.ai / projects / remote-site / <b>build pack</b>',btns:['PDF','XLSX','Export all'],
@@ -1403,17 +1442,19 @@ const SCENES=[
       <div style="display:flex;gap:36px">
         <div class="rack" id="rk"><div class="rh">RACK A · 42U · remote-site</div>
           ${Array.from({length:17},(_x,i)=>{const u=42-i*1;const f=RACK.find(r=>r[0]===u);
+            const pnl=f&&f[2]==='pnl';
             return `<div class="ru" id="u${i}"><span class="un">${u}</span>
-              <span class="ub ${f?'f':''}" style="${f?`background:${f[2]}1a;border-color:${f[2]}66;color:var(--tp)`:''}">${f?f[1]:''}</span></div>`;}).join('')}
+              <span class="ub ${f?'f':''}" style="${pnl?'border-style:dashed;border-color:#0000003d;color:var(--ts);background:#00000005'
+                :f?`background:${f[2]}1a;border-color:${f[2]}66;color:var(--tp)`:''}">${f?f[1]:''}</span></div>`;}).join('')}
         </div>
         <div style="flex:1;min-width:0">
           <div class="h1">The paperwork, generated</div>
-          <div class="h2">Rack elevation, bill of materials and cable schedule — from the same canvas.</div>
+          <div class="h2">Rack elevation with the passive hardware drawn in — every RJ45 switch gets its matching patch panel, carrier fiber lands on an LC panel — and a PANELS section prices it in the BOM.</div>
           <table class="tbl"><thead><tr><th>Qty</th><th>Part</th><th>Description</th><th>Role</th></tr></thead>
           <tbody>${BOM.map((b,i)=>`<tr id="b${i}"><td>${b[0]}</td><td>${b[1]}</td><td class="t dim">${b[2]}</td><td class="dim">${b[3]}</td></tr>`).join('')}</tbody></table>
           <div style="display:flex;gap:10px;margin-top:20px" id="bsum">
             <span class="pill info">PDF</span><span class="pill info">VSDX</span><span class="pill info">XLSX</span>
-            <span class="pill info">CSV</span><span class="pill ok">in sync with canvas</span></div>
+            <span class="pill info">CSV</span><span class="pill ok">panels derived from the design</span><span class="pill ok">layout saves · Apply is undoable</span></div>
         </div>
       </div>`});}
   stagger([...g.querySelectorAll('.ru')], lt, .25, .1, .45);
@@ -1467,7 +1508,7 @@ const SCENES=[
   const code='418302';
   [...g.querySelectorAll('#tp span')].forEach((el,i)=>{
     el.textContent = lt>3.0+i*.22 ? code[i] : '';
-    el.style.borderColor = lt>3.0+i*.22 ? '#38bdf866' : '';
+    el.style.borderColor = lt>3.0+i*.22 ? '#0284c740' : '';
   });
   g.querySelector('#asum').style.opacity=easeOut(seg(lt,4.8,5.7));
   g.querySelector('.pg').style.opacity=p*(1-seg(lt,d-.6,d));
@@ -1595,7 +1636,7 @@ const SCENES=[
            ['Rack elevation','RACK A · 42U','rack']];
   const art=k=>k==='topology'
     ? `<svg viewBox="0 0 210 96"><rect x="80" y="4" width="50" height="18" rx="3" fill="none" stroke="#8e8e93"/><rect x="20" y="40" width="50" height="18" rx="3" fill="none" stroke="#8e8e93"/><rect x="140" y="40" width="50" height="18" rx="3" fill="none" stroke="#8e8e93"/><rect x="80" y="74" width="50" height="18" rx="3" fill="none" stroke="#8e8e93"/><path d="M105 22V40M105 22H45V40M105 22H165V40M45 58v16h60M165 58v16h-60" stroke="#8e8e93" fill="none"/></svg>`
-    : k==='rack' ? `<svg viewBox="0 0 210 96">${Array.from({length:7},(_x,i)=>`<rect x="60" y="${4+i*13}" width="90" height="10" rx="2" fill="${i%3?'#e5e5ea':'#38bdf8'}" opacity="${i%3?1:.7}"/>`).join('')}</svg>`
+    : k==='rack' ? `<svg viewBox="0 0 210 96">${Array.from({length:7},(_x,i)=>`<rect x="60" y="${4+i*13}" width="90" height="10" rx="2" fill="${i%3?'#d8d8dd':'#0284c7'}" opacity="${i%3?1:.7}"/>`).join('')}</svg>`
     : `<svg viewBox="0 0 210 96">${Array.from({length:7},(_x,i)=>`<rect x="6" y="${5+i*13}" width="${198-((i*37)%60)}" height="7" rx="2" fill="#d8d8dd"/>`).join('')}</svg>`;
   if(!g.dataset.n16){g.dataset.n16='1';
     pageShell(g,{crumb:'netforge.ai / remote-site / publish / <b>design document</b>',btns:['Preview','Site filter','Download PDF'],
@@ -1741,7 +1782,7 @@ const SCENES=[
           <div style="font-size:11px;letter-spacing:1.3px;text-transform:uppercase;color:var(--tt);font-weight:700;margin-bottom:12px">SLC-01 · Lantronix terminal server</div>
           ${P.map((x,i)=>`<div class="drow" id="cp${i}" style="margin-bottom:9px;padding:12px 16px">
             <span class="nm" style="width:110px;font-size:14.5px">${x[0]}</span>
-            <span style="flex:1;font-family:JBMono,monospace;font-size:15px;color:${x[1]==='—'?'var(--tph)':'var(--tp)'}">${x[1]}</span>
+            <span style="flex:1;font-family:"Liberation Mono",monospace;font-size:15px;color:${x[1]==='—'?'var(--tph)':'var(--tp)'}">${x[1]}</span>
             <span class="pill ${x[2]==='free'?'info':'ok'}" style="height:22px;font-size:11.5px">${x[2]}</span>
             <span class="mt" style="width:110px">${x[3]}</span></div>`).join('')}
         </div>
@@ -1780,7 +1821,7 @@ const SCENES=[
         </div>
         <div style="width:520px;flex:0 0 520px">
           <div style="font-size:11px;letter-spacing:1.3px;text-transform:uppercase;color:var(--tt);font-weight:700;margin-bottom:12px">Generated config</div>
-          <div class="cli" style="padding:16px 18px;border:1px solid var(--bd);border-radius:var(--r-sm);background:#ffffff05;font-size:15px;line-height:1.8" id="cvcli"></div>
+          <div class="cli" style="padding:16px 18px;border:1px solid #00000052;border-radius:var(--r-sm);background:var(--code-bg);font-size:15px;line-height:1.8" id="cvcli"></div>
           <div style="display:flex;gap:10px;margin-top:18px" id="cvsum">
             <span class="pill ok">encrypted per organization</span><span class="pill info">scrubbed from shares</span></div>
         </div>
@@ -1832,11 +1873,12 @@ const SCENES=[
   hideApp(); const g=$('#gfx');
   if(!g.dataset.sb){g.dataset.sb='1';g.innerHTML=`<div class="endwrap">
     <div class="endlogo" id="bl"><span class="m">${I.logo}</span><span class="n">Netforge.ai</span></div>
-    <div class="endtag" id="bt">From Sketch to Spine.</div></div>`;}
+    <div class="endtag heroflow" id="bt">The Drawing is the Source of Truth.</div></div>`;}
   const p1=easeOut(seg(lt,.15,1.2)),p2=easeOut(seg(lt,.8,1.9));
   const L=g.querySelector('#bl'),T=g.querySelector('#bt');
   L.style.opacity=p1;L.style.transform=`translateY(${lerp(16,0,p1)}px) scale(${lerp(.97,1,p1)})`;
   T.style.opacity=p2;T.style.transform=`translateY(${lerp(14,0,p2)}px)`;
+  T.style.backgroundPosition=`${(lt*44)%200}% 0`;
   g.querySelector('.endwrap').style.opacity=1-seg(lt,d-.6,d);
   caption('',0);chips(null);badge(null,'',0);
 }},
@@ -1849,12 +1891,13 @@ const SCENES=[
   hideApp(); const g=$('#gfx');
   if(!g.dataset.s16){g.dataset.s16='1';g.dataset.s15='';g.innerHTML=`<div class="endwrap">
     <div class="endlogo" id="el"><span class="m">${I.logo}</span><span class="n">Netforge.ai</span></div>
-    <div class="endtag" id="et">From Sketch to Spine.</div>
+    <div class="endtag heroflow" id="et">Draw the network once. Everything else is generated.</div>
     <div class="endurl" id="eu">netforge.ai</div></div>`;}
   const L=g.querySelector('#el'),T=g.querySelector('#et'),U=g.querySelector('#eu');
   const p1=easeOut(seg(lt,.2,1.6)),p2=easeOut(seg(lt,1.3,2.8)),p3=easeOut(seg(lt,2.6,4.0));
   L.style.opacity=p1;L.style.transform=`translateY(${lerp(20,0,p1)}px) scale(${lerp(.96,1,p1)})`;
   T.style.opacity=p2;T.style.transform=`translateY(${lerp(16,0,p2)}px)`;
+  T.style.backgroundPosition=`${(lt*44)%200}% 0`;
   U.style.opacity=p3*.85;
   g.querySelector('.endwrap').style.opacity=1-seg(lt,d-.8,d);
   caption('',0);chips(null);badge(null,'',0);
@@ -1886,13 +1929,13 @@ const SCENES=[
         </div>
         <div class="catcv">
           <svg viewBox="0 0 1100 520" style="position:absolute;inset:0;width:100%;height:100%">
-            <path d="M550 150 V236 M550 150 H330 V236 M550 150 H770 V236" stroke="#38bdf866" stroke-width="2" fill="none"/>
-            <path d="M330 288 V372 H210 M330 288 H450 V372 M770 288 V372 H890" stroke="#38bdf866" stroke-width="2" fill="none"/>
+            <path d="M550 150 V236 M550 150 H330 V236 M550 150 H770 V236" stroke="#0284c740" stroke-width="2" fill="none"/>
+            <path d="M330 288 V372 H210 M330 288 H450 V372 M770 288 V372 H890" stroke="#0284c740" stroke-width="2" fill="none"/>
             ${[[550,120,'RSITE-WAN-01',V.sp],[330,262,'RSITE-CORE-01',V.cisco],[770,262,'RSITE-FW-01',V.palo],
                [210,398,'RSITE-ACC-01',V.aruba],[450,398,'RSITE-ACC-02',V.aruba],[890,398,'RSITE-AP-04',V.aruba]]
               .map(([x,y,n,c])=>`<g><rect x="${x-84}" y="${y-26}" width="168" height="52" rx="9"
                  fill="${c}1a" stroke="${c}" stroke-width="1.6"/>
-                 <text x="${x}" y="${y+5}" fill="#f5f5f7" font-size="15" font-family="JBMono, monospace"
+                 <text x="${x}" y="${y+5}" fill="#1d1d1f" font-size="15" font-family="Liberation Mono, monospace"
                  text-anchor="middle">${n}</text></g>`).join('')}
           </svg>
         </div>
@@ -2195,7 +2238,7 @@ const SCENES=[
       tabs:['Pools','Allocations','Supernet','Conflicts'],tabOn:2,body:`
       <div class="h1">One supernet, right-sized per site</div>
       <div class="h2">Anything from a slash eight to a slash sixteen. Roughly a slash twenty for a data centre or campus, a slash twenty-one for a branch — packed automatically, overridable per site.</div>
-      <div style="font-family:JBMono,monospace;font-size:19px;color:var(--ac);margin-bottom:14px" id="sn">10.16.0.0/12</div>
+      <div style="font-family:"Liberation Mono",monospace;font-size:19px;color:var(--ac);margin-bottom:14px" id="sn">10.16.0.0/12</div>
       <div class="bar" id="snbar">${SEG.map((s,i)=>
         `<i id="sg${i}" style="width:${s[3]}%;background:${s[2]};opacity:0">${s[1]}</i>`).join('')}</div>
       <div style="display:flex;gap:26px;margin-top:16px;flex-wrap:wrap" class="dvkey">
@@ -2367,10 +2410,253 @@ const SCENES=[
   g.querySelector('.pg').style.opacity=1-seg(lt,d-.6,d);
   chips(null);
 }},
+
+/* ================= batch 4: the August 2026 feature set ================= */
+
+/* ---------- 55. Azure Designer drawer ---------- */
+{a:0,b:9,go(lt,d){
+  hideApp(); const g=$('#gfx');
+  const STEPS=[['Scope','done'],['Topology','done'],['Subnets','done'],['Security','done'],
+               ['Connectivity','on'],['Workloads',''],['Review','']];
+  if(!g.dataset.n40){g.dataset.n40='1';
+    pageShell(g,{crumb:'netforge.ai / acme-estate / azure-hub / <b>Azure Designer</b>',btns:['Templates','Validate','Create'],body:`
+      <div class="h1">A landing zone, step by step</div>
+      <div class="h2">The drawer builds it while the canvas renders it live beside you. Start from a template — hub-and-spoke with forced tunnelling, a secured web app, hybrid transit.</div>
+      <div class="wz" style="position:relative;left:auto;top:auto;transform:none;width:100%;box-shadow:none">
+        <div class="wzrail">${STEPS.map((st,i)=>`<div class="wzstep ${st[1]}" id="az${i}">
+          <span class="n">${st[1]==='done'?'✓':i+1}</span><span>${st[0]}</span></div>`).join('')}</div>
+        <div class="wzmain" style="display:flex;gap:22px">
+          <div style="flex:1">
+            <div class="pt" style="font-size:12px;letter-spacing:1.2px;text-transform:uppercase;color:var(--tt);font-weight:700;margin-bottom:12px">vnet-hub-uks — 10.90.0.0/16 · uksouth</div>
+            ${[['GatewaySubnet','10.90.0.0/27','reserved — real name, minimum size'],
+               ['AzureFirewallSubnet','10.90.1.0/26','reserved — appears when the firewall does'],
+               ['snet-app','10.90.4.0/24','carved from the supernet'],
+               ['snet-data','10.90.8.0/24','carved from the supernet']]
+              .map((r,i)=>`<div class="kv" id="sb${i}"><span class="k" style="font-family:'Liberation Mono',monospace">${r[0]}</span>
+                <span class="v">${r[1]}</span><span class="badge inh">${r[2]}</span></div>`).join('')}
+            <div style="display:flex;gap:10px;margin-top:18px" id="azsum">
+              <span class="pill info">VNets and subnets draw as containers</span>
+              <span class="pill ok">re-entrant — Edit in Azure Designer reopens it</span></div>
+          </div>
+          <div style="flex:0 0 400px">
+            <div class="pt" style="font-size:12px;letter-spacing:1.2px;text-transform:uppercase;color:var(--tt);font-weight:700;margin-bottom:12px">Connectivity</div>
+            ${[['VPN gateway','BGP · ASN 65515 · advertised prefixes'],
+               ['ExpressRoute','private peering + gateway'],
+               ['Peering','both directions generate — per-side flags'],
+               ['Forced tunnelling','0.0.0.0/0 → the canvas firewall, by reference']]
+              .map((r,i)=>`<div class="find" id="cn${i}"><span class="fx" style="background:#0078d41a;color:#0078d4">${I.nfCloud}</span>
+                <div><div class="ft">${r[0]}</div><div class="fs">${r[1]}</div></div></div>`).join('')}
+          </div>
+        </div>
+      </div>`});}
+  stagger([...g.querySelectorAll('.kv')], lt, .3, .18, .5);
+  stagger([...g.querySelectorAll('.find')], lt, 1.4, .24, .5);
+  g.querySelector('#azsum').style.opacity=easeOut(seg(lt,3.2,4.1));
+  g.querySelector('.pg').style.opacity=1-seg(lt,d-.6,d);
+  chips(null);
+}},
+
+/* ---------- 56. deploy as Terraform or Pulumi, with preflight ---------- */
+{a:0,b:9,go(lt,d){
+  hideApp(); const g=$('#gfx');
+  const PRE=[['Global names are free','vnet-hub-uks · pip-vgw-hub · kv-acme-hub','ok'],
+             ['SKU available in region','VpnGw2AZ in uksouth','ok'],
+             ['Quota headroom','4 of 20 public IPs in use','ok'],
+             ['Resource providers registered','Network · Compute · KeyVault','ok'],
+             ['State backend','your storage account — created inline on first deploy','ok'],
+             ['Deprecated SKUs','none — currency checks ran on the canvas','ok']];
+  if(!g.dataset.n41){g.dataset.n41='1';
+    pageShell(g,{crumb:'netforge.ai / acme-estate / azure-hub / <b>deploy</b>',btns:['Plan','Destroy','Apply'],
+      tabs:['Terraform','Pulumi','Drift schedule','History'],tabOn:0,body:`
+      <div class="h1">Terraform or Pulumi — the subscription is asked first</div>
+      <div class="h2">Each project picks its engine; the choice locks after the first apply, because the two state formats are not interchangeable. A live preflight asks before money is spent.</div>
+      <div class="split">
+        <div class="panel"><div class="pt">Preflight — against the live subscription</div>
+          ${PRE.map((p,i)=>`<div class="find" id="pf${i}">
+            <span class="fx" style="background:var(--okb);color:var(--ok)">${I.chk}</span>
+            <div><div class="ft">${p[0]}</div><div class="fs">${p[1]}</div></div>
+            <span class="fw">pass</span></div>`).join('')}</div>
+        <div class="panel"><div class="pt">Credentials and state</div>
+          ${[['Service principal','saved server-side, per project','encrypted at rest — never returned to the browser'],
+             ['State','tfstate in your own storage account','apply twice → no changes; Destroy destroys what was built'],
+             ['Export ZIP','runnable terraform/ and pulumi/ bundles','provider pinned']]
+            .map((r,i)=>`<div class="find" id="cs${i}"><span class="fx" style="background:var(--acs);color:var(--ac)">${I.nfConfig}</span>
+              <div><div class="ft">${r[0]} — ${r[1]}</div><div class="fs">${r[2]}</div></div></div>`).join('')}
+          <div style="margin-top:14px;display:flex;gap:10px" id="tsum2">
+            <span class="pill ok">30 Azure checks · canvas and deploy gate fire the same codes</span></div>
+        </div>
+      </div>`});}
+  stagger([...g.querySelectorAll('.find')], lt, .3, .2, .5);
+  g.querySelector('#tsum2').style.opacity=easeOut(seg(lt,3.2,4.1));
+  g.querySelector('.pg').style.opacity=1-seg(lt,d-.6,d);
+  chips(null);
+}},
+
+/* ---------- 57. Firewall Studio ---------- */
+{a:0,b:9,go(lt,d){
+  hideApp(); const g=$('#gfx');
+  const R=[['10','allow-web-inbound','untrust → dmz','web-vips','tcp/443','allow','2,384,112',''],
+           ['20','allow-app-to-db','dmz → trust','app-tier → db-tier','tcp/5432','allow','912,004',''],
+           ['30','allow-branch-voice','branch → trust','voice-nets','udp/5060-5061','allow','66,410',''],
+           ['40','legacy-ftp-in','untrust → dmz','ftp-server','tcp/21','allow','never','dead'],
+           ['50','temp-vendor-access','untrust → trust','vendor-jump','tcp/3389','allow','never','dead'],
+           ['60','deny-all-log','any → any','any','any','deny','18,220','']];
+  if(!g.dataset.n42){g.dataset.n42='1';
+    pageShell(g,{crumb:'netforge.ai / remote-site / RSITE-FW-01 / <b>Firewall Studio</b>',btns:['Import hit counts','What-if','Apply'],
+      tabs:['Security rules','NAT','Objects','Zones','What-if'],tabOn:0,body:`
+      <div class="h1">Zones, objects, NAT and rules — with the receipts</div>
+      <div class="h2">Drop your firewall's hit-count export onto the policy: every enabled rule that has never matched is a removal candidate. The file is read in the browser and never saved.</div>
+      <table class="tbl"><thead><tr><th>#</th><th>Rule</th><th>Zones</th><th>Match</th>
+        <th>Service</th><th>Action</th><th>Hits</th><th></th></tr></thead>
+      <tbody>${R.map((r,i)=>`<tr id="fr${i}">${r.slice(0,6).map((c,j)=>`<td class="${j===1?'t':''} ${j>1&&j<5?'dim':''}">${c}</td>`).join('')}
+        <td class="${r[6]==='never'?'':'dim'}" style="${r[6]==='never'?'color:var(--err);font-weight:700':''}">${r[6]}</td>
+        <td>${r[7]?'<span class="pill err">remove candidate</span>':''}</td></tr>`).join('')}</tbody></table>
+      <div style="display:flex;gap:10px;margin-top:20px" id="fsum2">
+        <span class="pill err">2 rules never matched</span>
+        <span class="pill info">counters read from the vendor's own export</span>
+        <span class="pill ok">analysis runs in your browser — check DevTools</span></div>`});}
+  stagger([...g.querySelectorAll('tbody tr')], lt, .3, .22, .5);
+  g.querySelector('#fsum2').style.opacity=easeOut(seg(lt,3.0,4.0));
+  g.querySelector('.pg').style.opacity=1-seg(lt,d-.6,d);
+  chips(null);
+}},
+
+/* ---------- 58. Firewall what-if ---------- */
+{a:0,b:9,go(lt,d){
+  hideApp(); const g=$('#gfx');
+  const F=[['err','Breaks: branch voice to call server','branch-041 phones → VOICE-SBC-01 · udp/5060','allowed by 30 → no match'],
+           ['warn','Newly allowed: vendor jump to db tier','vendor-jump → db-tier · tcp/5432','no match → allowed by 25'],
+           ['info','Reroutes: app tier to internet','app-tier → 0.0.0.0/0','egress-fw-01 → egress-fw-02'],
+           ['warn','Shadows rule 40','the draft fully covers legacy-ftp-in','it can never match again'],
+           ['ok','Resolves: over-permissive any-any','draft narrows source to app-tier','hygiene finding closed']];
+  const C={err:['var(--errb)','var(--err)'],warn:['var(--warnb)','var(--warn)'],info:['var(--infob)','var(--info)'],ok:['var(--okb)','var(--ok)']};
+  if(!g.dataset.n43){g.dataset.n43='1';
+    pageShell(g,{crumb:'netforge.ai / RSITE-FW-01 / Firewall Studio / <b>what-if</b>',btns:['Add probe','Copy change ticket','Accept (undoable)'],
+      tabs:['Security rules','NAT','Objects','Zones','What-if'],tabOn:4,body:`
+      <div class="h1">See what a rule change does before you make it</div>
+      <div class="h2">Draft the change, and reachability is traced across the whole design twice — as it is, and as it would be. Every flow that breaks, is newly allowed, or reroutes, with before and after.</div>
+      ${F.map((f,i)=>`<div class="find" id="wf${i}">
+        <span class="fx" style="background:${C[f[0]][0]};color:${C[f[0]][1]}">${f[0]==='ok'?I.chk:I.x}</span>
+        <div><div class="ft">${f[1]}</div><div class="fs">${f[2]}</div></div>
+        <span class="fw">${f[3]}</span></div>`).join('')}
+      <div style="display:flex;gap:10px;margin-top:20px" id="wsum2">
+        <span class="pill info">probes derived from the rule — add your own flow</span>
+        <span class="pill ok">nothing applies until you accept · one undoable step</span></div>`});}
+  stagger([...g.querySelectorAll('.find')], lt, .3, .3, .55);
+  g.querySelector('#wsum2').style.opacity=easeOut(seg(lt,3.2,4.1));
+  g.querySelector('.pg').style.opacity=1-seg(lt,d-.6,d);
+  chips(null);
+}},
+
+/* ---------- 59. Looking Glass (Tools → Routing & BGP) ---------- */
+{a:0,b:9,go(lt,d){
+  hideApp(); const g=$('#gfx');
+  const CH=[['Announced','203.0.113.0/24 carried by the global table','pass'],
+            ['Origin / MOAS','one origin — AS 64511, no second origin seen','pass'],
+            ['RPKI','ROA valid for AS 64511 · maxLength /24','pass'],
+            ['IRR','route object matches the announcing AS','pass'],
+            ['Communities','no blackhole, no suppression','pass']];
+  if(!g.dataset.n44){g.dataset.n44='1';
+    pageShell(g,{crumb:'netforge.ai / tools / routing & bgp / <b>looking glass</b>',btns:['Copy Markdown','Export CSV','Run check'],
+      tabs:['Looking Glass'],tabOn:0,body:`
+      <div class="h1">How the internet sees your prefix</div>
+      <div class="h2">One input — domain, IP, prefix or ASN. No packets are sent to your network: the report reads what ~370 BGP sessions on RIPE's route collectors already record.</div>
+      <div class="split">
+        <div class="panel">
+          <div style="display:flex;align-items:center;gap:14px;margin-bottom:16px">
+            <span class="pill ok" style="height:34px;font-size:15px">Healthy</span>
+            <span style="font-size:15px;color:var(--ts)">“The internet sees this the way it should.”</span></div>
+          ${CH.map((c,i)=>`<div class="find" id="lg${i}">
+            <span class="fx" style="background:var(--okb);color:var(--ok)">${I.chk}</span>
+            <div><div class="ft">${c[0]}</div><div class="fs">${c[1]}</div></div>
+            <span class="fw">${c[2]}</span></div>`).join('')}</div>
+        <div class="panel"><div class="pt">Route collectors</div>
+          <svg viewBox="0 0 400 190" style="width:100%;height:220px">
+            <rect x="0" y="0" width="400" height="190" rx="10" fill="#00000005"/>
+            ${[[70,60],[120,45],[168,75],[210,52],[255,66],[300,48],[95,110],[150,128],[205,118],[262,132],[318,105],[352,72],[48,88],[338,140]]
+              .map(([x,y],i)=>`<circle cx="${x}" cy="${y}" r="${5+(i%3)*2}" fill="var(--ok)" opacity=".55" id="rc${i}"/>`).join('')}
+            <text x="14" y="176" fill="var(--ts)" font-size="12" font-family="Inter">23 RIPE collectors · ~370 peer sessions · sized by sessions carrying the route</text>
+          </svg>
+          <div style="display:flex;gap:10px;margin-top:12px">
+            <span class="pill info">visibility 97% of peers</span>
+            <span class="pill info">verdicts: Healthy · Needs attention · Problem</span></div>
+        </div>
+      </div>`});}
+  stagger([...g.querySelectorAll('.find')], lt, .3, .24, .5);
+  [...g.querySelectorAll('circle[id^=rc]')].forEach((el,i)=>{el.style.opacity=.55*easeOut(seg(lt,.5+i*.12,1.2+i*.12));});
+  g.querySelector('.pg').style.opacity=1-seg(lt,d-.6,d);
+  chips(null);
+}},
+
+/* ---------- 60. public blueprint page + embed ---------- */
+{a:0,b:9,go(lt,d){
+  hideApp(); const g=$('#gfx');
+  if(!g.dataset.n45){g.dataset.n45='1';
+    pageShell(g,{crumb:'netforge.ai <b>/b/ai-ml-clos-fabric-small</b>',btns:['Copy link','Embed','Open in NetForge'],body:`
+      <div style="display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:16px">
+        <div><div class="h1">AI/ML Clos Fabric — Small</div>
+        <div class="h2" style="margin:0">A published design's permanent public address: an interactive viewer, the inventory, and a link preview from the real node positions.</div></div>
+        <span class="pill ok" id="lv">● last verified 3 days ago</span>
+      </div>
+      <div class="split">
+        <div class="panel" style="position:relative;min-height:300px">
+          <svg viewBox="0 0 280 104" style="width:100%;height:250px">${miniTopo('spine')}</svg>
+          <div style="position:absolute;left:18px;bottom:14px;display:flex;gap:10px">
+            <span class="pill info">17 devices · 83 links</span><span class="pill info">interactive — pan and zoom</span></div>
+        </div>
+        <div class="panel"><div class="pt">Embed this blueprint</div>
+          <div class="tfline" style="font-size:13.5px;line-height:1.7"><span class="s">&lt;iframe</span> <span class="k">src</span>=<span class="a">"https://netforge.ai/b/ai-ml-clos-fabric-small/embed"</span>
+        <span class="k">width</span>=<span class="a">"960"</span> <span class="k">height</span>=<span class="a">"540"</span><span class="s">&gt;&lt;/iframe&gt;</span></div>
+          ${[['Stays in sync','the embed renders the published design, not a screenshot'],
+             ['Scrubbed on publish','management addresses, credentials and pools never leave'],
+             ['Minted once','unpublish and republish never breaks a shared link']]
+            .map((r,i)=>`<div class="find" id="em${i}"><span class="fx" style="background:var(--okb);color:var(--ok)">${I.chk}</span>
+              <div><div class="ft">${r[0]}</div><div class="fs">${r[1]}</div></div></div>`).join('')}
+        </div>
+      </div>`});}
+  stagger([...g.querySelectorAll('.find')], lt, 1.2, .3, .55);
+  g.querySelector('#lv').style.opacity=easeOut(seg(lt,2.6,3.4));
+  g.querySelector('.pg').style.opacity=1-seg(lt,d-.6,d);
+  chips(null);
+}},
+
+
+/* ---------- 61. what's new — the release timeline ---------- */
+{a:0,b:9,go(lt,d){
+  hideApp(); const g=$('#gfx');
+  // Straight off /docs/whats-new, newest first. The roadmap chapter used to be narrated
+  // over the outcome screen, which held for 68s; this gives it its own picture.
+  const REL=[['Aug 2026','The Azure Designer','a seven-step drawer that builds a landing zone while the canvas renders it live'],
+             ['Aug 2026','Terraform or Pulumi','per project, with a live preflight against the subscription and state in your own account'],
+             ['Aug 2026','Firewall what-if','draft a rule change and see every flow that breaks, is newly allowed, or reroutes'],
+             ['Aug 2026','Looking Glass + BGP monitors','the internet’s view of your prefix — RPKI, IRR, communities, and alerts when it moves'],
+             ['Aug 2026','Rack panels, priced','patch panels and fibre LIUs derived from the design, into a PANELS section of the BOM'],
+             ['Aug 2026','Public blueprint pages','a permanent address per published design, with an embed that stays in sync'],
+             ['Jul 2026','Config Compare','a change-review diff in the toolbox — nothing leaves the browser'],
+             ['Jul 2026','Blueprint wizard v2','flexible addressing, subnet profiles, routing designs, out-of-band'],
+             ['Jul 2026','Multi-canvas projects','site tabs, the WAN Overview, and a joined-graph validator']];
+  if(!g.dataset.n46){g.dataset.n46='1';
+    pageShell(g,{crumb:'netforge.ai / docs / <b>what’s new</b>',btns:['RSS','Docs','Open Designer'],body:`
+      <div class="h1">Where it’s going, in the order it shipped</div>
+      <div class="h2">Feature history, newest first — the direction is consistent: less retyping, more verification, and a shorter distance between the drawing and the running network.</div>
+      <div style="display:flex;flex-direction:column;gap:9px">
+        ${REL.map((r,i)=>`<div class="find" id="rl${i}">
+          <span class="fw" style="margin-left:0;width:86px;text-align:left;color:${i<6?'var(--ac)':'var(--tt)'}">${r[0]}</span>
+          <div><div class="ft">${r[1]}</div><div class="fs">${r[2]}</div></div></div>`).join('')}
+      </div>
+      <div style="display:flex;gap:10px;margin-top:20px" id="rsum">
+        <span class="pill ok">everything that draws stays free</span>
+        <span class="pill info">what carries a price is what touches a live network</span></div>`});}
+  stagger([...g.querySelectorAll('.find')], lt, .3, .26, .55);
+  g.querySelector('#rsum').style.opacity=easeOut(seg(lt,3.6,4.6));
+  g.querySelector('.pg').style.opacity=1-seg(lt,d-.6,d);
+  chips(null);
+}},
+
 ];
 
 function showApp(){$('#app').classList.remove('hide');$('#gfx').classList.add('hide');vignette(false);
-  ['s1','s4','s13','s15','s16','sb','n1','n2','n3','n4','n5','n6','n7','n8','n9','n10','n11','n12','n13','n14','n15','n16','n17','n18','n19','n20','n21','n22','n23','n24','n25','n26','n27','n28','n29','n30','n31','n32','n33','n34','n35','n36','n37','n38','n39'].forEach(k=>$('#gfx').dataset[k]='');}
+  ['s1','s4','s13','s15','s16','sb','n1','n2','n3','n4','n5','n6','n7','n8','n9','n10','n11','n12','n13','n14','n15','n16','n17','n18','n19','n20','n21','n22','n23','n24','n25','n26','n27','n28','n29','n30','n31','n32','n33','n34','n35','n36','n37','n38','n39','n40','n41','n42','n43','n44','n45','n46'].forEach(k=>$('#gfx').dataset[k]='');}
 function hideApp(){$('#app').classList.add('hide');$('#gfx').classList.remove('hide');$('#overlay').classList.add('hide');vignette(true);}
 
 /* ============================ seek ============================ */
@@ -2398,13 +2684,13 @@ window.seek=function(t){
   if(window.__scene!==sc){ // scene entry: clear graphic caches so each scene rebuilds cleanly
     const src=(sc._src!==undefined)?sc._src:SCENES.indexOf(sc);
     if(src<3||src>=11)hideApp(); window.__scene=sc;
-    ['s1','s4','s13','s15','s16','sb','n1','n2','n3','n4','n5','n6','n7','n8','n9','n10','n11','n12','n13','n14','n15','n16','n17','n18','n19','n20','n21','n22','n23','n24','n25','n26','n27','n28','n29','n30','n31','n32','n33','n34','n35','n36','n37','n38','n39'].forEach(k=>$('#gfx').dataset[k]='');
+    ['s1','s4','s13','s15','s16','sb','n1','n2','n3','n4','n5','n6','n7','n8','n9','n10','n11','n12','n13','n14','n15','n16','n17','n18','n19','n20','n21','n22','n23','n24','n25','n26','n27','n28','n29','n30','n31','n32','n33','n34','n35','n36','n37','n38','n39','n40','n41','n42','n43','n44','n45','n46'].forEach(k=>$('#gfx').dataset[k]='');
   }
   caption('',0); chips(null); cursorAt(0,0,false);
   sc.go(t-sc.a, sc.b-sc.a, t);
   renderCues(t);
   // global fade from/to black at the very top and tail
-  $('#vig').style.background=`radial-gradient(ellipse 70% 55% at 50% 50%,#0000 0%,#000000ad 100%)`;
+  $('#vig').style.background=`radial-gradient(ellipse 70% 55% at 50% 50%,#0000 0%,#00000014 100%)`;
   document.documentElement.style.setProperty('--gfade',1);
   const g=Math.min(seg(t,0,.7),1-seg(t,DURATION-.7,DURATION));
   $('#stage').style.opacity=g;

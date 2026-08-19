@@ -21,7 +21,9 @@ from series import (BRAND, ENDCARD, PANES, BRIDGE, REFRAME, DRAG, PORTS, FABRIC,
                     DRIFTDASH, DEPLOYRUN, SITEAREAS, CONSOLEOOB, VAULT, MGMTPLANE,
                     VALIDATE, CONFLICT, AIARCH, GREEN, CLIOUT, EXPORTS, CLOUD, OUTCOME,
                     BLUEPRINT, MULTISITE, TEMPLATES, CONFIGCMP, ADDRESSING, WATCHTOWER,
-                    TOOLS, PREFLIGHT, LOOKINGGLASS, RACKBOM)
+                    TOOLS, PREFLIGHT, LOOKINGGLASS, RACKBOM, ASBUILT,
+                    AZDESIGNER, IACDEPLOY, FWSTUDIO, FWWHATIF, LGBGP, BLUEPRINTPAGE,
+                    WHATSNEW)
 
 WALKTHROUGH = dict(
   slug='walkthrough', title='Netforge.ai — full walkthrough',
@@ -32,7 +34,7 @@ WALKTHROUGH = dict(
     (REFRAME,None),       # 3  the idea
     (ACCOUNT,None),       # 4  sign up, verify, 2FA
     (ROLES,None),         # 5  who can do what
-    (TEMPLATES,None),     # 6  templates
+    (TEMPLATES,None),     # 6  templates -- 28 designs / 8 categories
     (DRAG,None),          # 7  catalog / placing
     (PORTS,None),         # 8  cabling / link editor
     (DEVPROPS,None),      # 9  interfaces, sub-ints, loopbacks, FHRP
@@ -40,28 +42,36 @@ WALKTHROUGH = dict(
     (SITEAREAS,None),     # 11 site inheritance
     (CONSOLEOOB,None),    # 12 console + OOB
     (VAULT,None),         # 13 credential vault
-    (FABRIC,None),        # 10 scale / AVD fabric
-    (BLUEPRINT,None),     # 11 blueprint wizard
-    (MULTISITE,None),     # 12 site tabs
-    (ADDRESSING,None),    # 13 IPAM
-    (VALIDATE,None),      # 14 validation
-    (CONFLICT,None),      # 15 a real finding
-    (AIARCH,None),        # 16 AI review
-    (GREEN,4.5),          # 17 green
-    (PREFLIGHT,None),     # 18 publish
-    (CLIOUT,None),        # 19 the generated config
-    (CABLESCHED,None),    # 20 cable schedule
-    (RACKBOM,None),       # 21 rack + BOM
-    (DESIGNDOC,None),     # 22 design document
-    (EXPORTFMT,None),     # 23 the six deliverables
-    (DEPLOYRUN,None),     # 24 deploy
-    (LOOKINGGLASS,None),  # 25 verify the path
-    (DRIFTDASH,None),     # 26 drift states
-    (CONFIGCMP,None),     # 27 config compare
-    (WATCHTOWER,None),    # 28 monitoring
-    (CLOUD,None),         # 29 azure
-    (OUTCOME,None),       # 30 close / direction
-    (ENDCARD,6.0),        # 31
+    (FABRIC,None),        # 14 scale / AVD fabric
+    (BLUEPRINT,None),     # 15 blueprint wizard
+    (MULTISITE,None),     # 16 site tabs
+    (ADDRESSING,None),    # 17 IPAM
+    (VALIDATE,None),      # 18 validation
+    (CONFLICT,None),      # 19 a real finding
+    (AIARCH,None),        # 20 AI review
+    (GREEN,4.5),          # 21 green
+    (PREFLIGHT,None),     # 22 publish
+    (CLIOUT,None),        # 23 the generated config
+    (CABLESCHED,None),    # 24 cable schedule
+    (RACKBOM,None),       # 25 rack + BOM + panels
+    (DESIGNDOC,None),     # 26 design document
+    (EXPORTFMT,None),     # 27 the six deliverables
+    (BLUEPRINTPAGE,None), # 28 public page + embed + last-verified
+    (DEPLOYRUN,None),     # 29 deploy (per-collection Ansible)
+    (LOOKINGGLASS,None),  # 30 verify the path
+    (DRIFTDASH,None),     # 31 drift states
+    (CONFIGCMP,None),     # 32 config compare
+    (ASBUILT,None),       # 33 as-built import
+    (FWSTUDIO,None),      # 34 firewall studio + dead rules
+    (FWWHATIF,None),      # 35 what-if
+    (WATCHTOWER,None),    # 36 uptime + BGP monitors
+    (LGBGP,None),         # 37 looking glass
+    (CLOUD,None),         # 38 azure on canvas
+    (AZDESIGNER,None),    # 39 the Azure Designer drawer
+    (IACDEPLOY,None),     # 40 terraform / pulumi + preflight
+    (OUTCOME,None),       # 41 close / summary + what stays free
+    (WHATSNEW,None),      # 42 the release timeline / direction
+    (ENDCARD,6.0),        # 43
   ],
   lines=[
     # ---------------- what this is ----------------
@@ -103,12 +113,13 @@ WALKTHROUGH = dict(
        "ordered path through exactly the pages that role needs."),
 
     # ---------------- templates + canvas ----------------
-    (6,"You rarely start from nothing. The Templates page carries featured reference designs "
-       "and community-shared ones — leaf-spine fabrics, branch SD-WAN, campus three-tier, "
-       "collapsed core, hybrid Azure."),
-    (6,"There's also an Enterprise WAN family: a thirty-office overview with seventy devices, "
-       "a data centre and a branch office, as parameterized blueprints where you set a "
-       "company code and an office count."),
+    (6,"You rarely start from nothing. The Templates page now carries twenty-eight reference "
+       "designs in eight categories — leaf-spine fabrics, branch SD-WAN, campus three-tier, "
+       "collapsed core, a nine-design Azure family, layer-two data-centre interconnect, "
+       "low-latency trading floors, and Clos fabrics sized for AI clusters."),
+    (6,"There's also an Enterprise WAN family, topped by a thirty-office estate — a hundred "
+       "and eight devices across nearly three hundred links — plus its data centre and "
+       "branch designs. Every card opens on the canvas with no account needed."),
     (6,"Open any card to preview it, or use it as your starting point. And if you already "
        "have drawings, the Import wizard reads a Visio topology and flags the generic "
        "elements it couldn't map, so gaps are explicit rather than silent."),
@@ -208,60 +219,130 @@ WALKTHROUGH = dict(
     (23,"What you get: complete per-device, per-vendor CLI for the whole design."),
     (24,"A cabling schedule — every link, with A-end and B-end device, port, media and speed. "
         "One row per run, ready for the rack team."),
-    (25,"Rack elevations showing what goes where."),
+    (25,"Rack elevations showing what goes where — including the passive hardware a real "
+        "rack needs. Every switch with copper access ports gets its matching patch panel "
+        "seated above it, and carrier fiber terminates on an LC panel, drawn dashed so "
+        "passive reads at a glance."),
     (25,"A bill of materials aggregating chassis, line cards, optics and cables with "
-        "quantities — sized from the link speeds you chose when you drew the cabling."),
+        "quantities — sized from the link speeds you chose when you drew the cabling. A new "
+        "panels section prices the hardware nobody remembers until install day, and the "
+        "layout itself saves: rack names and positions are durable, and Apply is one "
+        "undoable step."),
     (26,"And a design document: the drawing plus per-device summaries for the hand-off pack."),
     (27,"Six deliverables, all generated from the same validated canvas at the same moment. On "
         "a multi-site project each takes a site filter, so the branch team gets the branch "
         "pack rather than the whole estate."),
-    (28,"Or push toward deployment. It's Ansible-based, and credentials come from the shared "
+    (28,"A design published publicly now gets a permanent page of its own — an interactive "
+        "viewer, the inventory, and a copy-paste embed that keeps a wiki or a design doc in "
+        "sync with the published design, instead of rotting the way a screenshot does. The "
+        "scrubber runs first, and the address is minted once, so republishing never breaks "
+        "a link somebody shared."),
+    (28,"Each design also carries a last-verified date, deliberately separate from last "
+        "edited — because editing a diagram is not the same as vouching for it. One click "
+        "marks it verified, and the gallery shows the freshness at a glance."),
+    (29,"Or push toward deployment. It's Ansible-based, and credentials come from the shared "
         "store at deploy time — never embedded in the design and never part of a share."),
+    (29,"The bundle now writes host variables in the schema each collection actually "
+        "accepts — Cisco IOS, Arista EOS and Aruba CX genuinely disagree — and any intent "
+        "with no module to land in is listed in comments at the top of the playbook, rather "
+        "than emitted as variables that would fail on the first run."),
     (27,"Publishing defaults to private. Choosing public shares the design as a community "
         "template, and the scrubber runs first, stripping secrets before anything leaves "
         "your organization."),
 
     # ---------------- verify + operate ----------------
-    (29,"After deployment, Looking Glass traces the path hop by hop and confirms it matches "
+    (30,"After deployment, Looking Glass traces the path hop by hop and confirms it matches "
         "the design. On a multi-site project it runs over the joined graph, so a trace "
         "crosses site boundaries the way real traffic does."),
-    (30,"Then the loop closes. The Drift action compares each device's live running-config "
+    (31,"Then the loop closes. The Drift action compares each device's live running-config "
         "against the config Netforge.ai last deployed for it — the intended baseline, not "
         "another file somebody kept."),
-    (30,"Every device reports in sync, drifted, unreachable, or no baseline. Drifted gives "
+    (31,"Every device reports in sync, drifted, unreachable, or no baseline. Drifted gives "
         "you a line diff and a structural one, and badges the node on the canvas. "
         "Running-configs are secret-scrubbed before any diff is stored."),
-    (31,"The manual equivalent is Config Compare, free in the tools suite. Drop in two "
+    (32,"The manual equivalent is Config Compare, free in the tools suite. Drop in two "
         "configs and the panes become a live comparison — no compare button, nothing leaves "
         "your browser."),
-    (31,"Green is identical, yellow is the same line with minor edits, red is a line with no "
+    (32,"Green is identical, yellow is the same line with minor edits, red is a line with no "
         "counterpart. Block-aware sorting cancels out reordering, changes are classified "
         "major or minor fail-closed, and it exports as a unified diff or an HTML report."),
-    (32,"Watchtower monitors uptime with multi-channel alerting, and watches the platform "
-        "itself from outside. The drift scheduler reuses those same channels, so operational "
-        "alerting is one system rather than two."),
-    (32,"And when reality has already moved on, the Import wizard's as-built mode pulls a "
+    (34,"Firewalls get their own studio: zones, address objects, NAT and the security "
+        "policy, edited as a policy rather than as lines. And it reads receipts — drop your "
+        "firewall's own hit-count export onto the policy, and every enabled rule that has "
+        "never matched is listed as a removal candidate. Never means never, not a date."),
+    (34,"The file is read in your browser and never saved — hit counts are an operational "
+        "snapshot, not part of your design."),
+    (35,"Before you touch a rule, what-if shows you the blast radius. Draft the change, and "
+        "reachability is traced across the whole design twice — as it is, and as it would "
+        "be — naming every flow that breaks, is newly allowed, or reroutes, with the before "
+        "and after paths."),
+    (35,"It also reports the hygiene the change creates or resolves — rules it shadows, "
+        "rules it makes redundant — and copies out as a change-ticket summary. Nothing is "
+        "applied until you accept it, and accepting is a single, undoable step."),
+    (36,"Watchtower is the uptime side: HTTP, TCP, UDP, ping, DNS, keyword, page-change, "
+        "heartbeat and API monitors, with alerting over e-mail, SMS, voice, Telegram and "
+        "browser push — and status pages you can share with a token. The drift scheduler "
+        "reuses those same channels, so operational alerting is one system rather than two."),
+    (36,"And a BGP monitor watches how the internet routes your prefix, from outside. It "
+        "alerts when the origin changes, when RPKI goes invalid, or when a blackhole "
+        "community appears. A withdrawn prefix is the one condition reported as down — "
+        "everything else is a named change."),
+    (37,"That same outside-in view is free in the toolbox, as Looking Glass. One input — a "
+        "domain, an IP, a prefix or an AS number — returns a graded verdict on how the "
+        "global routing table carries it: announced, origin, RPKI validity, registry data "
+        "and communities, with a world map of which route collectors can see you."),
+    (37,"It sends no packets at all. It reads what roughly three hundred and seventy BGP "
+        "sessions on RIPE's route collectors already record — which is how it catches a "
+        "quiet hijack that a reachability check from any single point would miss."),
+    (33,"And when reality has already moved on, the Import wizard's as-built mode pulls a "
         "live device and its LLDP neighbours through the credential vault and reconciles "
         "matched, new and missing against your design. The apply is additive and undoable."),
-    (33,"Cloud is the same story. Azure resources are real nodes — virtual networks, subnets, "
-        "security groups, gateways — with synchronized Terraform. Design them from scratch, "
+    (38,"Cloud is the same story. Azure resources are real nodes — virtual networks and "
+        "subnets draw as containers with their address ranges, security groups and gateways "
+        "nest inside — and the infrastructure code stays synchronized. Design from scratch, "
         "or run the subscription import and reverse-engineer what already exists."),
-    (33,"Then push it back as Terraform and schedule drift checks against it. The same closed "
-        "loop as the physical estate, in one canvas and one bill of materials."),
+    (38,"Then push it back as Terraform — or Pulumi — and schedule drift checks against it. "
+        "The same closed loop as the physical estate, in one canvas and one bill of "
+        "materials."),
+    (39,"Building that cloud environment is now a guided drawer: the Azure Designer walks "
+        "scope, topology, subnets, security, connectivity, workloads and review, while the "
+        "canvas renders it live beside you. The address plan carves itself from a supernet, "
+        "and reserved subnets appear with their real names and minimum sizes the moment an "
+        "appliance needs them."),
+    (39,"Azure networking is typed and directional. Peering generates both directions with "
+        "per-side flags, and forced tunnelling writes a default route whose next hop is a "
+        "reference to the canvas firewall — never a hand-typed address. The review step "
+        "runs whole-design validation, so Create commits a clean environment or tells you "
+        "why not."),
+    (40,"Deployment picks its engine per project — Terraform or Pulumi — and the choice "
+        "locks after the first apply, because the two state formats are not "
+        "interchangeable. State lives in your own storage account, and a live preflight "
+        "asks the subscription before money is spent: are the names free, is the SKU "
+        "available in that region, is there quota headroom."),
+    (40,"Service principals are saved server-side, encrypted, and never returned to the "
+        "browser. And thirty Azure-specific checks run at keystroke latency on the canvas, "
+        "then again at the deploy gate — firing the same codes in both places, so the "
+        "drawer and the server can never disagree."),
 
     # ---------------- where it's going ----------------
-    (34,"So that's the product: design on a canvas, configure with real per-vendor depth, "
+    (41,"So that's the product: design on a canvas, configure with real per-vendor depth, "
         "validate continuously, publish once, deploy safely, and keep verifying afterwards."),
-    (34,"As for where it's going — the most recent releases show the direction. Config "
-        "Compare landed in the toolbox. The Blueprint wizard reached version two with "
-        "flexible addressing and subnet profiles. Projects became multi-canvas with site "
-        "tabs and a joined-graph validator."),
-    (34,"Drift became closed-loop against a deployed baseline, with as-built import. The "
-        "credential vault moved every secret out of designs. Two-factor became mandatory for "
-        "privileged roles, and a lab-editor role arrived for live labs."),
-    (34,"The pattern is consistent: less retyping, more verification, and a shorter distance "
+    (41,"And the price of all the design work is nothing. Everything that turns a drawing "
+        "into an artefact is free, without an account for most of it — what carries a "
+        "price is what reaches out and touches a live network."),
+    (42,"As for where it's going — the most recent releases show the direction. The Azure "
+        "Designer rebuilt cloud design end to end, with Terraform and Pulumi deployment "
+        "behind a live preflight. Firewall Studio gained what-if analysis and dead-rule "
+        "detection. Looking Glass and BGP monitoring brought the internet's view of your "
+        "network inside."),
+    (42,"Rack elevations grew patch panels that price into the bill of materials. Drawings "
+        "learned to route links around unrelated devices and bundle port-channels into one "
+        "stroke. Public blueprint pages made designs embeddable anywhere. And the pricing "
+        "line is a commitment: everything that draws is free — what carries a price is only "
+        "what touches a live network."),
+    (42,"The pattern is consistent: less retyping, more verification, and a shorter distance "
         "between the drawing and the running network."),
-    (35,"Netforge.ai. From sketch to spine."),
+    (43,"Netforge.ai. Draw the network once. Everything else is generated."),
   ])
 
 if __name__ == '__main__':

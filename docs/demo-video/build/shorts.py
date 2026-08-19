@@ -113,6 +113,9 @@ EXPECT = {
     'YAML':        ('yaml', 'yamal', 'yammel', 'yamil'),
     'VXLAN':       ('vxlan', 'vexlan'),
     'AVD':         ('avd', 'avid'),
+    # a correct 'klˈoʊ' comes back spelled any number of ways -- the pin is right, the
+    # oracle just has no way to know the word. Same class as Visio -> "Vizio".
+    'Clos':        ('clo', 'close', 'claw', 'klo', 'chloe', 'cloe'),
 }
 
 def norm(s):
