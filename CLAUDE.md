@@ -73,6 +73,7 @@ straight into the synthesiser (`is_phonemes=True` in `docs/demo-video/build/vo.p
 | `CIS` | see-eye-ESS | `sˌiːˌaɪˈɛs` | `sˈɪs` — "sis" |
 | `AS` (autonomous system) | ay-ESS | `ˌeɪˈɛs` | `æz` — the word "as" |
 | `RPKI` | ar-pee-kay-EYE | `ˌɑːɹpˌiːkˌeɪˈaɪ` | mangles the cluster |
+| `ROA` | ar-oh-AY | `ˌɑːɹˌoʊˈeɪ` | reads it as the word "roah" |
 | `NAT` | nat | `nˈæt` | correct natively; pinned anyway |
 | `SKU` | skew | `skjˈuː` | spells the letters |
 | `SMS` | ess-em-ESS | `ˌɛsˌɛmˈɛs` | correct natively; pinned anyway |

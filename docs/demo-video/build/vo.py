@@ -114,6 +114,7 @@ PHON = {
     'NIST':        'nˈɪst',
     'AS':          'ˌeɪˈɛs',           # BGP autonomous system: "ay-ESS", not the word "as"
     'CIS':         'sˌiːˌaɪˈɛs',
+    'ROA':        'ˌɑːɹˌoʊˈeɪ',        # letters: ar-oh-AY
     'RPKI':        'ˌɑːɹpˌiːkˌeɪˈaɪ',      # ar-pee-kay-EYE
     'NAT':         'nˈæt',
     'SKU':         'skjˈuː',              # said "skew"

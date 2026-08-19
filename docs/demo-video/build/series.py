@@ -40,7 +40,7 @@ EVPNCFG, TERRAFORM, SUBIMPORT, ASBUILT = 51, 52, 53, 54
 AZDESIGNER, IACDEPLOY, FWSTUDIO, FWWHATIF, LGBGP, BLUEPRINTPAGE = 55, 56, 57, 58, 59, 60
 WHATSNEW = 61
 
-TAG = "Netforge.ai. From sketch to spine."
+TAG = "Netforge.ai. Draw the network once. Everything else is generated."
 
 # Every episode owns its screens. No scene appears in two episodes, and none appears
 # twice inside one -- the previous cut re-used VALIDATE, CLIOUT and EXPORTS across four
@@ -89,7 +89,7 @@ EPISODES = [
       ]),
 
  dict(slug='ep02-device-config', title='Episode 2 — Configuring a device',
-      slots=[(BRAND,3.0),(INTERFACES,None),(FHRP,None),(MGMTPLANE,None),(CONSOLEOOB,None),(VAULT,None),(ENDCARD,5.0)],
+      slots=[(BRAND,3.0),(INTERFACES,None),(FHRP,None),(MGMTPLANE,None),(CONSOLEOOB,None),(VAULT,None),(FWSTUDIO,None),(ENDCARD,5.0)],
       lines=[
        (1,"Episode two: what you can actually configure. The usual objection to design tools "
           "is that they generate something shallow — a hostname, an address, and then you "
@@ -123,18 +123,26 @@ EPISODES = [
        (5,"The design carries the reference, not the value. The generated configuration "
           "renders the real secret and marks it, and a design you share carries no "
           "credentials at all."),
-       (6,TAG),
+       (6,"Firewalls get the same depth, in their own studio: zones, address objects, NAT "
+          "and the security policy, edited as a policy rather than as lines."),
+       (6,"And it reads receipts. Export the hit counts from your firewall, drop the file "
+          "onto the imported policy, and every enabled rule that has never matched is listed "
+          "as a removal candidate — never meaning never, not a date somebody guessed."),
+       (6,"The file is read in your browser and never saved. Hit counts are an operational "
+          "snapshot, not part of your design."),
+       (7,TAG),
       ]),
 
  dict(slug='ep03-blueprint', title='Episode 3 — Blueprints and templates',
       slots=[(BRAND,3.0),(TEMPLATES,None),(BLUEPRINT,None),(SUBNETPROF,None),(BPGEN,None),(SITEAREAS,None),(ENDCARD,5.0)],
       lines=[
-       (1,"Episode three: not starting from nothing. The Templates page carries featured "
-          "reference designs and community-shared ones — leaf-spine fabrics, branch SD-WAN, "
-          "campus three-tier, collapsed core, hybrid Azure."),
-       (1,"There is also an Enterprise WAN family: a thirty-office overview with seventy "
-          "devices, a data centre, and a branch office, as parameterized blueprints where you "
-          "set a company code and an office count."),
+       (1,"Episode three: not starting from nothing. The Templates page carries twenty-eight "
+          "reference designs across eight categories — leaf-spine fabrics, branch SD-WAN, "
+          "campus three-tier, collapsed core, nine Azure designs, layer-two data-centre "
+          "interconnect, low-latency trading floors, and Clos fabrics sized for AI clusters."),
+       (1,"There is also an Enterprise WAN family, topped by a thirty-office estate — a "
+          "hundred and eight devices across nearly three hundred links — plus its data centre "
+          "and branch office designs. Every card opens on the canvas with no account needed."),
        (1,"Open any card to preview it, or use it as your starting point. And if you already "
           "have drawings, the Import wizard reads a Visio topology and flags the generic "
           "elements it could not map, so the gaps are explicit rather than silent."),
@@ -193,7 +201,7 @@ EPISODES = [
       ]),
 
  dict(slug='ep05-generate', title='Episode 5 — Validation and generation',
-      slots=[(BRAND,3.0),(VALIDATE,None),(CONFLICT,None),(AIARCH,None),(GREEN,4.5),(CLIOUT,None),(ENDCARD,5.0)],
+      slots=[(BRAND,3.0),(VALIDATE,None),(CONFLICT,None),(AIARCH,None),(GREEN,4.5),(CLIOUT,None),(FWWHATIF,None),(ENDCARD,5.0)],
       lines=[
        (1,"Episode five: the part that earns the trust. Validation in Netforge.ai is "
           "continuous — not a button you have to remember to press before you ship."),
@@ -222,7 +230,15 @@ EPISODES = [
        (5,"And it comes out of the same validated canvas as the cabling, the bill of materials "
           "and the documentation, at the same moment — which is what stops the configuration "
           "and the paperwork describing two different networks."),
-       (6,TAG),
+       (6,"Validation has a forward-looking cousin: what-if. Draft a firewall rule change — "
+          "add, modify, disable, delete or reposition — and reachability is traced across the "
+          "whole design twice. As it is, and as it would be."),
+       (6,"You get every flow that breaks, every flow that is newly allowed, and every flow "
+          "that reroutes, each with its before and after path. Plus the hygiene the change "
+          "creates or resolves: rules it shadows, rules it makes redundant."),
+       (6,"Nothing is applied until you accept it, and accepting is a single undoable step. "
+          "It copies out as a change-ticket summary."),
+       (7,TAG),
       ]),
 
  dict(slug='ep06-ipam', title='Episode 6 — Addressing and IPAM',
@@ -262,7 +278,7 @@ EPISODES = [
       ]),
 
  dict(slug='ep07-publish', title='Episode 7 — Publish and handover',
-      slots=[(BRAND,3.0),(PREFLIGHT,None),(EXPORTFMT,None),(RACKBOM,None),(CABLESCHED,None),(DESIGNDOC,None),(ENDCARD,5.0)],
+      slots=[(BRAND,3.0),(PREFLIGHT,None),(EXPORTFMT,None),(RACKBOM,None),(CABLESCHED,None),(DESIGNDOC,None),(BLUEPRINTPAGE,None),(ENDCARD,5.0)],
       lines=[
        (1,"Episode seven: getting the design out of the tool. Publish is deliberately one "
           "action on the canvas toolbar."),
@@ -294,7 +310,16 @@ EPISODES = [
        (5,"And because every one of these comes from the same canvas, changing the design "
           "changes all of them the next time you publish. There is no second copy anyone has "
           "to remember to update."),
-       (6,TAG),
+       (6,"A publicly published design also gets a permanent page of its own: an interactive "
+          "viewer, the full device inventory, and a link preview drawn from the real node "
+          "positions."),
+       (6,"There is a copy-paste embed for it, so a wiki page or a design document shows the "
+          "living design instead of a screenshot that rots. It stays in sync with what you "
+          "published, and the address is minted once — unpublishing and republishing never "
+          "breaks a link somebody already shared."),
+       (6,"Each design also carries a last-verified date, deliberately separate from last "
+          "edited, because editing a diagram is not the same as vouching for it."),
+       (7,TAG),
       ]),
 
  dict(slug='ep08-drift', title='Episode 8 — Deploy, verify and drift',
@@ -334,7 +359,7 @@ EPISODES = [
       ]),
 
  dict(slug='ep09-fabric-cloud', title='Episode 9 — Fabrics and cloud',
-      slots=[(BRAND,3.0),(FABRIC,None),(EVPNCFG,None),(CLOUD,None),(SUBIMPORT,None),(TERRAFORM,None),(ENDCARD,5.0)],
+      slots=[(BRAND,3.0),(FABRIC,None),(EVPNCFG,None),(CLOUD,None),(AZDESIGNER,None),(SUBIMPORT,None),(TERRAFORM,None),(IACDEPLOY,None),(ENDCARD,5.0)],
       lines=[
        (1,"Episode nine: the two ends of the range. The same canvas that held a branch closet "
           "scales to a full Arista leaf-spine VXLAN EVPN fabric."),
@@ -354,21 +379,34 @@ EPISODES = [
           "networks, subnets, security groups, gateways — not a picture of your subscription."),
        (3,"You can design them from scratch alongside the physical estate, in one drawing and "
           "one bill of materials."),
-       (4,"Or run the subscription import and reverse-engineer what already exists. It reads "
+       (4,"Building one is a guided drawer — the Azure Designer walks scope, topology, "
+          "subnets, security, connectivity, workloads and review, while the canvas renders it "
+          "live beside you. Start from a template: hub-and-spoke with forced tunnelling, a "
+          "secured web app, hybrid transit."),
+       (4,"The address plan carves itself out of a supernet, and reserved subnets appear with "
+          "their real names and minimum sizes the moment an appliance needs them. The review "
+          "step runs the same whole-design validation as everything else, so Create commits a "
+          "clean environment or tells you why not."),
+       (5,"Or run the subscription import and reverse-engineer what already exists. It reads "
           "the subscription and draws it, and from there it behaves like anything else on the "
           "canvas — validated, documented, and comparable against reality."),
-       (4,"What you get back is not a picture of the subscription. It is nodes, with the same "
+       (5,"What you get back is not a picture of the subscription. It is nodes, with the same "
           "standing as the switches next to them."),
-       (5,"The Terraform stays synchronized with the drawing, so the canvas and the "
-          "infrastructure code are the same artefact rather than two that have to be kept in "
-          "step by hand."),
-       (5,"Push it back as Terraform, and schedule drift checks against it. The same closed "
-          "loop as the physical estate."),
-       (6,TAG),
+       (6,"The infrastructure code stays synchronized with the drawing, so the canvas and the "
+          "code are the same artefact rather than two that have to be kept in step by hand."),
+       (6,"Push it back as Terraform — or Pulumi, the engine is chosen per project — and "
+          "schedule drift checks against it. The same closed loop as the physical estate."),
+       (7,"Deployment asks the subscription before money is spent. A live preflight checks "
+          "that the global names are free, that the SKU is available in that region, that "
+          "there is quota headroom, and that the resource providers are registered."),
+       (7,"State lives in your own storage account, created inline on the first deploy — so "
+          "applying twice reports no changes, and Destroy destroys what was built. Service "
+          "principals are saved encrypted, server-side, and never returned to the browser."),
+       (8,TAG),
       ]),
 
  dict(slug='ep10-tools-access', title='Episode 10 — Access, tools and monitoring',
-      slots=[(BRAND,3.0),(ACCOUNT,None),(ROLES,None),(TOOLS,None),(WATCHTOWER,None),(OUTCOME,None),(ENDCARD,5.0)],
+      slots=[(BRAND,3.0),(ACCOUNT,None),(ROLES,None),(TOOLS,None),(LGBGP,None),(WATCHTOWER,None),(OUTCOME,None),(WHATSNEW,None),(ENDCARD,5.0)],
       lines=[
        (1,"Episode ten, the last one: everything around the design work. Register with a "
           "valid email — that address is your username — and a verification link arrives "
@@ -383,24 +421,41 @@ EPISODES = [
           "so a teammate can build straight away."),
        (2,"Only the owner changes anyone's role, and viewers get a genuinely read-only canvas "
           "rather than one that lets them make changes they cannot save."),
-       (3,"Alongside the platform there is a suite of free network tools — diagnostics, "
-          "subnet and address calculators, config comparison, and reference lookups."),
-       (3,"They need no account and nothing leaves your browser, which is the point: they are "
-          "the things you reach for mid-incident, not mid-project."),
+       (3,"Alongside the platform there is a suite of twenty-one free network tools in six "
+          "groups — diagnostics, routing and BGP, addressing, DNS and domains, security and "
+          "web, and monitoring."),
+       (3,"None of them need an account, which is the point: they are the things you reach "
+          "for mid-incident, not mid-project. The calculators and the speed test run entirely "
+          "in your browser; the diagnostics measure outward from the platform's own server."),
        (3,"Config Compare is in that suite — the same comparison the drift check performs, "
           "available without a design and without an account."),
-       (4,"Watchtower monitors uptime with multi-channel alerting, and watches the platform "
-          "itself from outside."),
-       (4,"The drift scheduler reuses those same channels, so operational alerting is one "
-          "system rather than two that have to be configured separately."),
-       (5,"That is the whole product, across ten episodes: design on a canvas, configure with "
+       (4,"One of them is worth its own minute. Looking Glass answers the question your own "
+          "routers cannot: how does the internet see me? One input — a domain, an IP, a "
+          "prefix or an AS number — returns a graded verdict on how the global routing table "
+          "carries it."),
+       (4,"Announced or not, one origin or several, RPKI validity, registry objects, and the "
+          "communities that quietly suppress a route. It sends no packets at all — it reads "
+          "what roughly three hundred and seventy BGP sessions on RIPE's route collectors "
+          "already record about you."),
+       (5,"Watchtower is the inside-out half: HTTP, TCP, UDP, ping, DNS, keyword, page-change, "
+          "heartbeat and API monitors, alerting over e-mail, SMS, voice, Telegram and browser "
+          "push, with status pages you can share."),
+       (5,"There is a BGP monitor too, watching the same outside view for an origin change, a "
+          "ROA going invalid, or a blackhole community appearing. And the drift scheduler "
+          "reuses those same channels, so operational alerting is one system rather than two."),
+       (6,"That is the whole product, across ten episodes: design on a canvas, configure with "
           "real per-vendor depth, validate continuously, publish once, deploy safely, and "
           "keep verifying afterwards."),
-       (5,"Less retyping, more verification, and a shorter distance between the drawing and "
-          "the running network."),
-       (5,"One idea underneath all ten: the drawing is the source of truth, and everything "
-          "else is generated from it."),
-       (6,TAG),
+       (6,"And the design half is free — permanently, most of it without an account. What "
+          "carries a price is only what reaches out and touches a live network."),
+       (7,"As for where it is going, the release history shows the direction: the Azure "
+          "Designer, deployment as Terraform or Pulumi, firewall what-if, Looking Glass and "
+          "BGP monitoring, rack panels priced into the bill of materials, and public "
+          "blueprint pages you can embed anywhere."),
+       (7,"The pattern is consistent — less retyping, more verification, and a shorter "
+          "distance between the drawing and the running network. One idea underneath all ten: "
+          "the drawing is the source of truth, and everything else is generated from it."),
+       (8,TAG),
       ]),
 ]
 

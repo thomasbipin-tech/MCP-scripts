@@ -43,7 +43,7 @@ VARIANTS = [
         (1, "So compare them. Line by line. Intended against running."),
         (2, "Then keep comparing. Watchtower re-reads every device, and tells you the "
             "moment one drifts from the design."),
-        (3, "Netforge.ai. From sketch to spine."),
+        (3, "Netforge.ai. Draw the network once. Everything else is generated."),
       ]),
 
  dict(slug='s2-in-2026', title='In 2026',
@@ -56,7 +56,7 @@ VARIANTS = [
         (1, "Start from a production-ready design instead."),
         (2, "Or let the Blueprint wizard build the whole estate. Data centres, campuses, "
             "branches. One tab per site."),
-        (3, "Netforge.ai. From sketch to spine."),
+        (3, "Netforge.ai. Draw the network once. Everything else is generated."),
       ]),
 
  dict(slug='s3-weeks-to-hours', title='Weeks to hours',
@@ -69,7 +69,7 @@ VARIANTS = [
         (1, "Seventeen sites, wired through one WAN overview."),
         (2, "And the addressing comes with it. Two hundred and fourteen subnets from a "
             "single supernet, with zero overlaps. No spreadsheet."),
-        (3, "Netforge.ai. From sketch to spine."),
+        (3, "Netforge.ai. Draw the network once. Everything else is generated."),
       ]),
 
  dict(slug='s4-deploy-minute', title='The deploy minute',
@@ -82,7 +82,7 @@ VARIANTS = [
         (1, "So every publish is dry-run and rollback-backed. Nothing is pushed blind."),
         (2, "And when it lands, Looking Glass traces the path, and confirms it matches "
             "the design. Hop for hop."),
-        (3, "Netforge.ai. From sketch to spine."),
+        (3, "Netforge.ai. Draw the network once. Everything else is generated."),
       ]),
 
  # Mine. The other four are all about the config. Nobody ever budgets for the paperwork,
@@ -95,8 +95,8 @@ VARIANTS = [
         (1, "Nobody budgets time for the paperwork. The rack elevation. The bill of "
             "materials. The cable schedule."),
         (1, "All of it generated from the same canvas, so it can't drift from the design."),
-        (2, "Plus nineteen free network tools. No sign-in."),
-        (3, "Netforge.ai. From sketch to spine."),
+        (2, "Plus twenty-one free network tools. No sign-in."),
+        (3, "Netforge.ai. Draw the network once. Everything else is generated."),
       ]),
 ]
 
