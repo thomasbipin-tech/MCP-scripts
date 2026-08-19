@@ -3,10 +3,10 @@
  "voice": "am_onyx",
  "speed": 1.1,
  "order": [
-  32,
+  36,
   16,
   14,
-  33
+  37
  ],
  "brandInPanes": false,
  "anchors": {

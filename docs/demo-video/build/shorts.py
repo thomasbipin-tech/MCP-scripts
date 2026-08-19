@@ -21,7 +21,14 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import vo
 
 SPEED = 1.10
-BRAND, ENDCARD = 32, 33
+# Scene indices are series.py's to own. Read them from there rather than keeping a
+# second copy: this file held a stale `32, 33` after twelve screens were inserted ahead
+# of the brand card, so every short rendered afterwards opened on the Site Areas screen
+# and closed on Console & OOB. Parsed rather than imported -- series.py imports this
+# module, so importing it back would be circular.
+_SERIES_SRC = open(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'series.py')).read()
+BRAND, ENDCARD = (int(x) for x in
+                  re.search(r'^BRAND, ENDCARD = (\d+), (\d+)', _SERIES_SRC, re.M).groups())
 # Scene indices of the additional product surfaces built for these shorts:
 BLUEPRINT, MULTISITE, TEMPLATES, CONFIGCMP = 14, 15, 16, 17
 ADDRESSING, WATCHTOWER, TOOLS, PREFLIGHT   = 18, 19, 20, 21
