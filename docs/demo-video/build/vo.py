@@ -249,6 +249,11 @@ PACE = {1:(2.7,0.45,0.9), 2:(0.8,0.6,1.4), 3:(1.0,0.7,1.1),   # tail no longer h
         8:(0.6,0.5,1.1), 9:(0.6,0.5,1.1), 10:(0.5,0.5,1.5), 11:(0.6,0.5,1.0),
         12:(0.6,0.5,1.0), 13:(0.6,0.5,1.0), 14:(0.8,0.6,1.2), 15:(0.8,0.5,2.2)}
 N_SCENES = 15
+# The end card lives in the shared library, after every screen added since. Read the index
+# from series.py rather than hardcoding it, so appending screens can never move it again.
+ENDCARD_SCENE = int(re.search(r'^BRAND, ENDCARD = \d+, (\d+)',
+                              open(os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                                                'series.py')).read(), re.M).group(1))
 
 def ipa(s):
     return subprocess.run(['espeak-ng','-v','en-us','--ipa','-q',s],
@@ -392,7 +397,13 @@ def build():
     bed *= 10**(-3.0/20) / max(np.abs(bed).max(), 1e-6)
     write_wav('vo.wav', bed)
 
-    json.dump({'duration':DUR,'voice':VOICE,'speed':SPEED,
+    # Emit an EXPLICIT scene order. Without it the player falls back to identity mapping
+    # (slot i -> SCENES[i]), which was fine when the library ended at the end card and
+    # silently wrong once screens were appended: the master's last slot started landing on
+    # whatever now sat at index 14, so the sign-off played over the Blueprint wizard.
+    # Scenes 1..14 are the master's own shots; its 15th is the shared end card.
+    order = list(range(N_SCENES - 1)) + [ENDCARD_SCENE]
+    json.dump({'duration':DUR,'voice':VOICE,'speed':SPEED,'order':order,
                'scenes':[{'a':s['a'],'b':s['b']} for s in scenes],'cues':cues,
                'vo':[{'id':l,'start':s,'dur':round(d,2)} for l,s,d,_ in placed]},
               open('timeline.json','w'), indent=1)
