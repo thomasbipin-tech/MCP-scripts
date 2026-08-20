@@ -47,9 +47,10 @@ def ts(sec):
 def chapters(tl):
     """Scene spans -> YouTube chapters, merging anything under the 10s minimum."""
     d = json.load(open(tl))
+    order = d.get('order') or list(range(len(d['scenes'])))   # matches the player's fallback
     raw = []
     for i, sc in enumerate(d['scenes']):
-        idx = d['order'][i]
+        idx = order[i]
         if idx in BOOKEND:
             continue
         raw.append([sc['a'], sc['b'], NAME.get(idx, f'Scene {idx}')])
