@@ -1,8 +1,63 @@
 # YouTube upload pack — Netforge.ai video set
-Generated from the shipped timelines, so every chapter mark lands on the real cut.
-Upload order below is the suggested playlist order. Set the series as a playlist
-("Netforge.ai — the ten-part walkthrough"); the master demo and the full walkthrough
-sit outside it.
+
+Everything needed to upload, per video: the file, its runtime, the title, the description
+(chapters included), and the tags. Chapter marks are computed from the shipped timelines,
+so they land on the real cut rather than an estimate.
+
+## The files
+
+All paths are relative to `docs/demo-video/` on branch
+`claude/netforge-demo-video-wqb9sw`.
+
+| File | Runtime | Size | Notes |
+|---|---|---|---|
+| `netforge-demo-v8.mp4` | 2:31 | 9.7 MB | Master demo — the one to feature |
+| `series/netforge-walkthrough.mp4` | 17:48 | 58.2 MB | Full walkthrough — UPLOAD THIS ONE |
+| `series/netforge-walkthrough-web.mp4` | 17:48 | 28.4 MB | same cut, compressed for chat — do not upload |
+| `series/netforge-ep01-canvas.mp4` | 2:41 | 7.9 MB | Episode 1 |
+| `series/netforge-ep02-device-config.mp4` | 2:56 | 10.1 MB | Episode 2 |
+| `series/netforge-ep03-blueprint.mp4` | 2:17 | 8.3 MB | Episode 3 |
+| `series/netforge-ep04-multicanvas.mp4` | 2:02 | 7.0 MB | Episode 4 |
+| `series/netforge-ep05-generate.mp4` | 2:38 | 7.8 MB | Episode 5 |
+| `series/netforge-ep06-ipam.mp4` | 2:12 | 7.6 MB | Episode 6 |
+| `series/netforge-ep07-publish.mp4` | 2:47 | 9.5 MB | Episode 7 |
+| `series/netforge-ep08-drift.mp4` | 2:12 | 8.1 MB | Episode 8 |
+| `series/netforge-ep09-fabric-cloud.mp4` | 3:12 | 11.6 MB | Episode 9 |
+| `series/netforge-ep10-tools-access.mp4` | 3:31 | 11.7 MB | Episode 10 |
+| `shorts/netforge-s1-autopsy.mp4` | 0:26 | 2.6 MB | Short |
+| `shorts/netforge-s2-in-2026.mp4` | 0:27 | 2.6 MB | Short |
+| `shorts/netforge-s3-weeks-to-hours.mp4` | 0:28 | 2.3 MB | Short |
+| `shorts/netforge-s4-deploy-minute.mp4` | 0:26 | 2.1 MB | Short |
+| `shorts/netforge-s5-paperwork.mp4` | 0:26 | 2.3 MB | Short |
+
+**Upload the CRF 17 masters, not the `-web` copy.** The walkthrough has two files: the
+full-quality master, and a compressed copy made only to fit a 30 MB chat limit. The
+compressed one is visibly softer — YouTube re-encodes anyway, so always feed it the
+master. Every other video has a single file, already full quality.
+
+## Settings that apply to all of them
+
+- **Resolution / format:** 1920×1080, 30 fps, H.264 High, AAC 192 kbit/s, `+faststart`.
+- **Audio:** normalised to −16 LUFS integrated, −1.5 dBTP — inside YouTube's target, so
+  it will not be loudness-adjusted on playback.
+- **Category:** Science & Technology. **Language:** English. **Captions:** none burned
+  in; let YouTube auto-caption, or ask me for an SRT — the narration text is scripted, so
+  a perfectly accurate caption file is a few minutes of work rather than a transcription.
+- **Playlist:** put the ten episodes in one, in order, titled
+  *"Netforge.ai — the ten-part series"*. The master demo and the full walkthrough sit
+  outside it.
+- **Visibility:** if you want to review before publishing, upload as **Unlisted** and
+  flip to Public — chapters and thumbnails can be set either way.
+- **Shorts:** the five short cuts are 16:9, not 9:16. YouTube will accept them as regular
+  uploads; for the Shorts shelf specifically they need a vertical crop, which I can
+  produce if you want them there.
+
+## Suggested upload order
+
+1. Master demo (the channel's front door)
+2. Full walkthrough
+3. Episodes 1–10, in order, as a playlist
+4. The five shorts
 
 ---
 

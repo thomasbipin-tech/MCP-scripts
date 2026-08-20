@@ -6,7 +6,7 @@ YouTube's rules are enforced here rather than discovered on upload: the first ch
 must start at 00:00, there must be at least three, and each must run 10s or longer --
 so the brand card and any short shot are folded into their neighbour.
 """
-import json, os, re, sys
+import json, os, re, subprocess, sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import series, shorts as shortsmod, walkthrough as wt
 
@@ -119,11 +119,74 @@ SHORT_META = {
  's5-paperwork':     ('Nobody Budgets for the Paperwork', 'Rack elevation, BOM, cable schedule — all generated.'),
 }
 
-doc = ['# YouTube upload pack — Netforge.ai video set\n',
-       f'Generated from the shipped timelines, so every chapter mark lands on the real cut.\n',
-       'Upload order below is the suggested playlist order. Set the series as a playlist\n'
-       '("Netforge.ai — the ten-part walkthrough"); the master demo and the full walkthrough\n'
-       'sit outside it.\n\n---\n\n']
+def filesize(p):
+    return f'{os.path.getsize(p)/1048576:.1f} MB' if os.path.exists(p) else '-'
+
+def runtime(p):
+    if not os.path.exists(p):
+        return '-'
+    d = float(subprocess.run(['ffprobe','-v','error','-show_entries','format=duration',
+                              '-of','csv=p=0',p], capture_output=True, text=True).stdout)
+    return f'{int(d)//60}:{int(d)%60:02d}'
+
+DELIVERY = [
+ ('netforge-demo-v8.mp4',                 '../netforge-demo-v8.mp4',              'Master demo — the one to feature'),
+ ('series/netforge-walkthrough.mp4',      '../series/netforge-walkthrough.mp4',   'Full walkthrough — UPLOAD THIS ONE'),
+ ('series/netforge-walkthrough-web.mp4',  '../series/netforge-walkthrough-web.mp4','same cut, compressed for chat — do not upload'),
+] + [(f'series/netforge-{e["slug"]}.mp4', f'../series/netforge-{e["slug"]}.mp4', f'Episode {i}')
+     for i, e in enumerate(series.EPISODES, 1)] + \
+    [(f'shorts/netforge-{v["slug"]}.mp4', f'../shorts/netforge-{v["slug"]}.mp4', 'Short')
+     for v in shortsmod.VARIANTS]
+
+rows = '\n'.join(f'| `{n}` | {runtime(p)} | {filesize(p)} | {note} |' for n, p, note in DELIVERY)
+
+doc = [f"""# YouTube upload pack — Netforge.ai video set
+
+Everything needed to upload, per video: the file, its runtime, the title, the description
+(chapters included), and the tags. Chapter marks are computed from the shipped timelines,
+so they land on the real cut rather than an estimate.
+
+## The files
+
+All paths are relative to `docs/demo-video/` on branch
+`claude/netforge-demo-video-wqb9sw`.
+
+| File | Runtime | Size | Notes |
+|---|---|---|---|
+{rows}
+
+**Upload the CRF 17 masters, not the `-web` copy.** The walkthrough has two files: the
+full-quality master, and a compressed copy made only to fit a 30 MB chat limit. The
+compressed one is visibly softer — YouTube re-encodes anyway, so always feed it the
+master. Every other video has a single file, already full quality.
+
+## Settings that apply to all of them
+
+- **Resolution / format:** 1920×1080, 30 fps, H.264 High, AAC 192 kbit/s, `+faststart`.
+- **Audio:** normalised to −16 LUFS integrated, −1.5 dBTP — inside YouTube's target, so
+  it will not be loudness-adjusted on playback.
+- **Category:** Science & Technology. **Language:** English. **Captions:** none burned
+  in; let YouTube auto-caption, or ask me for an SRT — the narration text is scripted, so
+  a perfectly accurate caption file is a few minutes of work rather than a transcription.
+- **Playlist:** put the ten episodes in one, in order, titled
+  *"Netforge.ai — the ten-part series"*. The master demo and the full walkthrough sit
+  outside it.
+- **Visibility:** if you want to review before publishing, upload as **Unlisted** and
+  flip to Public — chapters and thumbnails can be set either way.
+- **Shorts:** the five short cuts are 16:9, not 9:16. YouTube will accept them as regular
+  uploads; for the Shorts shelf specifically they need a vertical crop, which I can
+  produce if you want them there.
+
+## Suggested upload order
+
+1. Master demo (the channel's front door)
+2. Full walkthrough
+3. Episodes 1–10, in order, as a playlist
+4. The five shorts
+
+---
+
+"""]
 
 doc.append(block('Netforge.ai — Draw the Network Once',
   f"""Every enterprise network begins as a clean diagram. Almost every outage begins the same way too — not because the design was wrong, but because someone had to translate it by hand into thousands of lines of configuration.
