@@ -51,12 +51,6 @@ import got its own shot * per-collection Ansible host_vars in the deploy narrati
 roadmap chapter rewritten from the August 2026 release notes * a free-vs-Enterprise beat
 ("everything that draws is free").
 
-## Flag for the client
-
-`/.well-known/security.txt` lists a second canonical domain, `rackloom.com`, referenced
-nowhere else on the site. If a rebrand is in flight, say so before the next cut is
-distributed; the end cards say netforge.ai.
-
 ## v8 — the three bookend bugs
 
 Three cuts shipped or nearly shipped with the wrong first or last screen, all the same
