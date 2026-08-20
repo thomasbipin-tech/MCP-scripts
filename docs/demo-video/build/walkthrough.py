@@ -96,21 +96,14 @@ WALKTHROUGH = dict(
        "that works in practice."),
 
     # ---------------- getting started ----------------
-    (4,"First, getting in. Register at netforge.ai with a valid email — that address is your "
-       "username. A verification link arrives immediately and the account activates when you "
-       "click it. If it hasn't shown up, check junk; there's a resend on the sign-in screen."),
-    (4,"Passwords follow a compliance policy: at least twelve characters, upper and lower "
-       "case, a number and a special character, and you can't reuse recent ones."),
-    (4,"Two-factor authentication is available to everyone from your profile, and required "
-       "for owner, admin and lab-editor accounts. Enrolment is enforced on every request, so "
-       "a promotion into a privileged role takes effect immediately rather than at next "
-       "sign-in."),
+    # Sign-up detail was three lines and held this screen for 39s. Nobody watching a
+    # product walkthrough needs the password policy read to them -- one line, then move on.
+    (4,"First, create an account: your email is your username, a verification link activates "
+       "it, and two-factor is required for the privileged roles. That is the whole of it — "
+       "the interesting part is what you do next."),
     (5,"Roles run owner, admin, editor, viewer and observer. New sign-ups now start as "
        "editor, so a teammate can build straight away. Only the owner changes anyone's role. "
        "Viewers get a genuinely read-only canvas."),
-    (5,"The documentation has four guided tracks depending on why you're here: pre-sales and "
-       "design, professional services, enterprise and NetOps, or admin and owner. Each is an "
-       "ordered path through exactly the pages that role needs."),
 
     # ---------------- templates + canvas ----------------
     (6,"You rarely start from nothing. The Templates page now carries twenty-eight reference "
