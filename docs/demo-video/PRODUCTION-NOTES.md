@@ -57,6 +57,47 @@ roadmap chapter rewritten from the August 2026 release notes * a free-vs-Enterpr
 nowhere else on the site. If a rebrand is in flight, say so before the next cut is
 distributed; the end cards say netforge.ai.
 
+## v8 — the three bookend bugs
+
+Three cuts shipped or nearly shipped with the wrong first or last screen, all the same
+shape: a timeline whose scene indices stopped meaning what the code assumed, after
+screens were appended to the shared library.
+
+| Where | What happened |
+|---|---|
+| `shorts.py` | kept its own `BRAND, ENDCARD = 32, 33`. Twelve screens were inserted ahead of the brand card, `series.py` moved to 36/37, this file did not. Every short rendered afterwards opened on Site Areas and closed on Console & OOB. |
+| `vo.py` / `timeline.json` | emitted no `order` array, so the player fell back to identity mapping slot→scene. Fine while the library ended at the end card; once it grew, the master's last slot landed on the Blueprint wizard and the sign-off played over "Never face a blank canvas". |
+| `watch_build.sh` | restarted stalls with a blanket `pkill -9 -x node`, which kills unrelated renders — the same class of bug as the old `pkill -f capture.js` matching the script's own command line. |
+
+Fixes are structural, not careful-next-time: scene indices now have **one owner**
+(`series.py`; `shorts.py` and `vo.py` read from it), timelines always carry an explicit
+`order`, and the watchdog kills only the PID it launched.
+
+**`verify_cuts.py` is the gate.** It runs against the *encoded* files, not the source,
+because that is what reaches the client. Per cut it asserts: an explicit `order` exists,
+the first shot is the brand card and the last is the end card, the runtime matches the
+timeline, and no content screen repeats. Run it before any delivery:
+
+```
+python3 verify_cuts.py              # every cut with an encoded file
+python3 verify_cuts.py walkthrough  # one
+```
+
+All three bugs would have been caught by it in under a minute. They were caught by eye
+instead, after delivery.
+
+## v8 — the shipped set
+
+| Cut | Runtime |
+|---|---|
+| master demo | 2:32 |
+| full walkthrough | 17:49 (44 shots) |
+| episodes 1–10 | 2:03 – 3:32, 26.5 min total |
+| shorts 1–5 | ~27s each |
+
+58 distinct content screens across the ten episodes, none shared between any two.
+Upload metadata for all 17 cuts is in `YOUTUBE.md`, generated from the timelines.
+
 # Netforge.ai demo video — production notes
 
 **Current deliverable:** `netforge-demo-v7.mp4` — 1920×1080, 30 fps, H.264 high profile,

@@ -1,5 +1,11 @@
 # Netforge.ai — short-form set
 
+> **v8 (2026-08-20):** rebuilt on the redesigned site — light theme, new brand/end cards,
+> and the close is now *"Draw the network once. Everything else is generated."* Also fixed:
+> these had been rendering with the wrong opening and closing screens because `shorts.py`
+> held a stale copy of the scene indices. See PRODUCTION-NOTES.md "the three bookend bugs".
+
+
 Five shorts, all 1920×1080 / 30fps / H.264 + AAC.
 
 **Every screen in these is new.** None of them reuse a shot from the master cut, and no
