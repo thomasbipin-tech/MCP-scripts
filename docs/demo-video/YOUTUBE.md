@@ -24,6 +24,7 @@ All paths are relative to `docs/demo-video/` on branch
 | `series/netforge-ep08-drift.mp4` | 2:12 | 8.1 MB | Episode 8 |
 | `series/netforge-ep09-fabric-cloud.mp4` | 3:12 | 11.6 MB | Episode 9 |
 | `series/netforge-ep10-tools-access.mp4` | 3:31 | 11.7 MB | Episode 10 |
+| `howto/netforge-howto-route-an-office.mp4` | 6:33 | 20.9 MB | How-to guide |
 | `shorts/netforge-s1-autopsy.mp4` | 0:26 | 2.6 MB | Short |
 | `shorts/netforge-s2-in-2026.mp4` | 0:27 | 2.6 MB | Short |
 | `shorts/netforge-s3-weeks-to-hours.mp4` | 0:28 | 2.3 MB | Short |
@@ -33,7 +34,8 @@ All paths are relative to `docs/demo-video/` on branch
 **Upload the CRF 17 masters, not the `-web` copy.** The walkthrough has two files: the
 full-quality master, and a compressed copy made only to fit a 30 MB chat limit. The
 compressed one is visibly softer — YouTube re-encodes anyway, so always feed it the
-master. Every other video has a single file, already full quality.
+master. A how-to whose master overran that limit has the same pair; the rest have a
+single file, already full quality.
 
 ## Settings that apply to all of them
 
@@ -44,8 +46,10 @@ master. Every other video has a single file, already full quality.
   in; let YouTube auto-caption, or ask me for an SRT — the narration text is scripted, so
   a perfectly accurate caption file is a few minutes of work rather than a transcription.
 - **Playlist:** put the ten episodes in one, in order, titled
-  *"Netforge.ai — the ten-part series"*. The master demo and the full walkthrough sit
-  outside it.
+  *"Netforge.ai — the ten-part series"*, and the how-to guides in a second one titled
+  *"Netforge.ai — How-to guides"*. Keep them separate: the series answers "what does this
+  part of the product do", a how-to answers "how do I finish this job". The master demo
+  and the full walkthrough sit outside both.
 - **Visibility:** if you want to review before publishing, upload as **Unlisted** and
   flip to Public — chapters and thumbnails can be set either way.
 - **Shorts:** the five short cuts are 16:9, not 9:16. YouTube will accept them as regular
@@ -57,7 +61,8 @@ master. Every other video has a single file, already full quality.
 1. Master demo (the channel's front door)
 2. Full walkthrough
 3. Episodes 1–10, in order, as a playlist
-4. The five shorts
+4. The how-to guides, as a second playlist
+5. The five shorts
 
 ---
 
@@ -493,6 +498,51 @@ https://netforge.ai
 **Tags**
 ```
 netforge, network design, network automation, network engineering, network documentation, config generation, cisco, arista, network diagram, looking glass, bgp monitoring, uptime monitoring, network tools, rpki
+```
+
+---
+
+## Netforge.ai — How to Route an Office, End to End
+
+**Title**
+```
+Netforge.ai — How to Route an Office, End to End
+```
+
+**Description**
+```
+A recipe rather than a feature tour: one job, start to finish, in the order you would actually work it. An office that is drawn but not yet routed, taken from an empty VLAN list to a configuration you can read line by line.
+
+Six steps — define the VLANs, trunk the uplinks, decide who holds the gateways, write the default route, reach the rest of the estate, then validate and generate.
+
+It also walks the six traps the product's own documentation names, because the traps are the reason a how-to beats a tour: the SVI checkbox that is a note to yourself and not an instruction, the trunk allowed-lists validation never checks, the VLAN field that is a free number rather than a picker, the 0.0.0.0 placeholder in Prefix and Mask, the access switch that is not counted as layer three, and Validate and Generate being two different pipelines.
+
+Budget about forty minutes the first time you work it yourself.
+
+Part of the Netforge.ai how-to guides.
+
+No account needed to draw a topology and generate real configs in your browser.
+
+Chapters
+0:00 Before you start
+0:46 Step 1 — Define the VLANs
+1:26 Step 2 — Trunk the uplinks
+1:58 Step 3 — Gateways on the core
+2:28 Step 3 — What auto-assign will let you do
+2:57 Step 3 — Gateways on the access switch
+3:36 Step 4 — The default route
+4:24 Step 5 — Reaching the rest of the estate
+5:07 Step 5 — A first-run decision
+5:23 Step 6 — Validate
+5:55 Step 6 — Generate, and read it
+
+Draw the network once. Everything else is generated.
+https://netforge.ai
+```
+
+**Tags**
+```
+netforge, network design, network automation, network engineering, network documentation, config generation, cisco, arista, network diagram, how to, network tutorial, vlan, svi, trunk port, static route, bgp, default route, network configuration
 ```
 
 ---
