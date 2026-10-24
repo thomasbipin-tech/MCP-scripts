@@ -2653,10 +2653,313 @@ const SCENES=[
   chips(null);
 }},
 
+
+/* ============ how-to set: "Route an office end to end" (scenes 62-70) ============
+   Every label, field, trap and CLI line below is from the product's own recipe at
+   /docs/how-to/route-an-office, kept in ../howto/SPEC-route-an-office.txt. Nothing here
+   is invented: where the recipe does not name a control, the shot does not show one. */
+
+/* ---------- 62. before you start — the four prerequisites ---------- */
+{a:0,b:9,go(lt,d){
+  hideApp(); const g=$('#gfx');
+  const P=[['A drawn office','Devices placed, cabled and named','Every hostname, filename and generated stanza keys off the device name — rename before you configure, not after'],
+           ['One address block','A slash twenty-one or slash twenty-two for the site','Carve it by hand as you go, or let pools do it'],
+           ['The firewall address','The address on the firewall’s inside interface','Decide it before step four, because the default route names it'],
+           ['Who holds the gateways','The core pair, or the access switches themselves','Step three settles it — the answer changes what you have to switch on first']];
+  if(!g.dataset.nH1){g.dataset.nH1='1';
+    pageShell(g,{crumb:'netforge.ai / docs / how to / <b>route an office end to end</b>',
+      btns:['Open the canvas'],body:`
+      <div class="h1">Six steps, on an office you have already drawn</div>
+      <div class="h2">Two Catalyst cores, four access switches, a firewall pair and two SD-WAN appliances — cabled and named. It starts at an empty VLAN list and ends at a configuration you can read line by line.</div>
+      ${P.map((p,i)=>`<div class="find" id="pq${i}">
+        <span class="fw" style="margin-left:0;width:28px;text-align:left;color:var(--ac);font-size:15px">${i+1}</span>
+        <div><div class="ft">${p[0]} — <span style="color:var(--ts);font-weight:400">${p[1]}</span></div>
+        <div class="fs">${p[2]}</div></div></div>`).join('')}
+      <div style="display:flex;gap:10px;margin-top:20px" id="pqs">
+        <span class="pill info">about forty minutes the first time</span>
+        <span class="pill ok">building a new site instead? the Blueprint wizard generates every step below</span></div>`});}
+  stagger([...g.querySelectorAll('.find')], lt, .35, .4, .65);
+  g.querySelector('#pqs').style.opacity=easeOut(seg(lt,3.2,4.2));
+  g.querySelector('.pg').style.opacity=1-seg(lt,d-.6,d);
+  chips(null);
+}},
+
+/* ---------- 63. step 1 — define the VLANs ---------- */
+{a:0,b:9,go(lt,d){
+  hideApp(); const g=$('#gfx');
+  const R=[['10','DATA','user access','active',0],
+           ['20','VOICE','handsets','active',1],
+           ['30','SERVERS','on-site servers','active',2],
+           ['40','GUEST','isolated','active',3],
+           ['99','MGMT','management','active',4]];
+  if(!g.dataset.nH2){g.dataset.nH2='1';
+    pageShell(g,{crumb:'netforge.ai / remote-site / CORE-01 / <b>L2 → VLANs</b>',
+      btns:['Save to database','+ Add VLAN'],
+      tabs:['General','L2','L3','Routing','Features','Management'],tabOn:1,body:`
+      <div class="h1">Step one — define the VLANs</div>
+      <div class="h2">Each row is an id, a name, an optional purpose and a state. Add VLAN proposes the next free id.</div>
+      <table class="tbl"><thead><tr><th>VLAN</th><th>Name</th><th>Purpose</th><th>State</th><th>SVI</th></tr></thead>
+      <tbody>${R.map(r=>`<tr id="vl${r[4]}"><td>${r[0]}</td><td class="t">${r[1]}</td>
+        <td class="t dim">${r[2]}</td><td><span class="pill ok">${r[3]}</span></td>
+        <td><span class="chk ${r[4]===0?'on':''}" style="padding:0"><i>${r[4]===0?I.chk:''}</i></span></td></tr>`).join('')}</tbody></table>
+      <div class="find" id="trap1" style="margin-top:22px;border-color:#ff9f0a55;background:var(--warnb)">
+        <span class="fx" style="background:var(--warnb);color:var(--warn)">${I.x}</span>
+        <div><div class="ft">The SVI checkbox is a note to yourself, not an instruction</div>
+        <div class="fs">Nothing reads it. It never reaches the configuration generator, and adding a real SVI in the L3 tab does not tick it. The gateway is created in step three.</div></div></div>
+      <div style="display:flex;gap:10px;margin-top:16px" id="vsum">
+        <span class="pill info">Save to database — the next switch picks it from a list instead of you retyping it</span></div>`});}
+  stagger([...g.querySelectorAll('tbody tr')], lt, .3, .3, .5);
+  g.querySelector('#trap1').style.opacity=easeOut(seg(lt,2.6,3.6));
+  g.querySelector('#vsum').style.opacity=easeOut(seg(lt,4.0,4.9));
+  g.querySelector('.pg').style.opacity=1-seg(lt,d-.6,d);
+  chips(null);
+}},
+
+/* ---------- 64. step 2 — trunk them, and land the ports ---------- */
+{a:0,b:9,go(lt,d){
+  hideApp(); const g=$('#gfx');
+  const T=[['Gi1/0/49','uplink → CORE-02','trunk','10,20,30,40,99','—','ok'],
+           ['Gi1/0/50','peer link → CORE-01','trunk','10,20,30,40,99','—','ok'],
+           ['Gi1/0/1','ACC-01 uplink','trunk','10,20,30,40,99','—','ok'],
+           ['Gi1/0/2','ACC-02 uplink','trunk','10,20,30,99','—','miss'],
+           ['Gi1/0/11','user port','access','—','10 · voice 20','ok'],
+           ['Gi1/0/12','user port','access','—','10 · voice 20','ok']];
+  if(!g.dataset.nH3){g.dataset.nH3='1';
+    pageShell(g,{crumb:'netforge.ai / remote-site / CORE-01 / <b>L2 → Switchports</b>',
+      btns:['Bulk edit','Apply'],
+      tabs:['General','L2','L3','Routing','Features','Management'],tabOn:1,body:`
+      <div class="h1">Step two — trunk them, and land the ports</div>
+      <div class="h2">Put the new ids on the allowed list of every uplink between the access layer and the cores, and set the access and voice VLAN on the user ports. On a pair of cores, the peer link carries them too.</div>
+      <table class="tbl"><thead><tr><th>Port</th><th>Description</th><th>Mode</th><th>Allowed VLANs</th><th>Access / voice</th></tr></thead>
+      <tbody>${T.map((r,i)=>`<tr id="sp${i}">${r.slice(0,3).map((c,j)=>`<td class="${j===1?'t':''}">${c}</td>`).join('')}
+        <td class="${r[5]==='miss'?'':'dim'}" style="${r[5]==='miss'?'color:var(--warn);font-weight:700':''}">${r[3]}</td>
+        <td class="dim">${r[4]}</td></tr>`).join('')}</tbody></table>
+      <div class="find" id="trap2" style="margin-top:22px;border-color:#ff9f0a55;background:var(--warnb)">
+        <span class="fx" style="background:var(--warnb);color:var(--warn)">${I.x}</span>
+        <div><div class="ft">An id left off one trunk is silent</div>
+        <div class="fs">Validation does not read trunk allowed lists. It is the most common reason a gateway that looks perfect does not answer: the SVI is up on the core and the VLAN never reaches it. Check the allowed lists by hand.</div></div></div>`});}
+  stagger([...g.querySelectorAll('tbody tr')], lt, .3, .26, .5);
+  g.querySelector('#trap2').style.opacity=easeOut(seg(lt,3.0,4.0));
+  g.querySelector('.pg').style.opacity=1-seg(lt,d-.6,d);
+  chips(null);
+}},
+
+/* ---------- 65. step 3 — give each VLAN a gateway ---------- */
+{a:0,b:9,go(lt,d){
+  hideApp(); const g=$('#gfx');
+  const S=[['10','10.20.10.2','/24','DATA gateway','HSRP 10 · 10.20.10.1'],
+           ['20','10.20.20.2','/24','VOICE gateway','HSRP 20 · 10.20.20.1'],
+           ['30','10.20.30.2','/24','SERVERS gateway','HSRP 30 · 10.20.30.1'],
+           ['99','10.20.99.2','/24','MGMT gateway','HSRP 99 · 10.20.99.1']];
+  if(!g.dataset.nH4){g.dataset.nH4='1';
+    pageShell(g,{crumb:'netforge.ai / remote-site / CORE-01 / <b>L3 → SVIs (VLAN Interfaces)</b>',
+      btns:['⚡ Auto-assign group IPs','+ Add'],
+      tabs:['General','L2','L3','Routing','Features','Management'],tabOn:2,body:`
+      <div class="h1">Step three — give each VLAN a gateway</div>
+      <div class="h2">One row per VLAN: VLAN, IP Address, Prefix, a description, and first-hop redundancy where a pair shares the gateway.</div>
+      <table class="tbl"><thead><tr><th>VLAN</th><th>IP address</th><th>Prefix</th><th>Description</th><th>First-hop redundancy</th></tr></thead>
+      <tbody>${S.map((r,i)=>`<tr id="sv${i}"><td>${r[0]}</td><td>${r[1]}</td><td class="dim">${r[2]}</td>
+        <td class="t dim">${r[3]}</td><td>${r[4]}</td></tr>`).join('')}</tbody></table>
+      <div class="split" style="margin-top:22px">
+        <div class="panel"><div class="pt">⚡ Auto-assign group IPs (VIP + members)</div>
+          ${[['Takes the subnet','from the first switch, in hostname order, that already has an address and a prefix on that VLAN'],
+             ['Numbers every switch','in the design that has an SVI on it — across every canvas tab, not just this site'],
+             ['The virtual address','the first usable address, with HSRP or VRRP to match the platform']]
+            .map((r,i)=>`<div class="find" id="aa${i}"><span class="fx" style="background:var(--okb);color:var(--ok)">${I.chk}</span>
+              <div><div class="ft">${r[0]}</div><div class="fs">${r[1]}</div></div></div>`).join('')}</div>
+        <div class="panel" style="border-color:#ff9f0a55;background:var(--warnb)">
+          <div class="pt" style="color:var(--warn)">Two things it will let you do</div>
+          <div class="find" style="background:transparent;border:none"><span class="fx" style="background:var(--warnb);color:var(--warn)">${I.x}</span>
+            <div><div class="ft">The VLAN field is a free number, not a picker</div>
+            <div class="fs">An SVI on a VLAN this switch does not have is accepted, saved, and generates an interface into a broadcast domain that is not there. Typing one-one-zero for ten costs you an afternoon.</div></div></div>
+          <div class="find" style="background:transparent;border:none"><span class="fx" style="background:var(--warnb);color:var(--warn)">${I.x}</span>
+            <div><div class="ft">An access switch is not counted as a layer-three switch</div>
+            <div class="fs">A pair of routed access switches gets member addresses and no virtual address — the very one the DHCP scope points at. Set first-hop redundancy by hand, or keep the gateways on the cores.</div></div></div>
+        </div>
+      </div>`});}
+  stagger([...g.querySelectorAll('tbody tr')], lt, .3, .28, .5);
+  stagger([...g.querySelectorAll('.panel .find')], lt, 2.2, .3, .55);
+  g.querySelector('.pg').style.opacity=1-seg(lt,d-.6,d);
+  chips(null);
+}},
+
+/* ---------- 66. the routed access switch opt-in ---------- */
+{a:0,b:9,go(lt,d){
+  hideApp(); const g=$('#gfx');
+  if(!g.dataset.nH5){g.dataset.nH5='1';
+    pageShell(g,{crumb:'netforge.ai / remote-site / ACC-01 / <b>L3</b>',btns:['Enable Layer 3 routing'],
+      tabs:['General','L2','L3','Routing','Features','Management'],tabOn:2,body:`
+      <div class="h1">If the gateway lives on the access switch</div>
+      <div class="h2">Open the L3 tab of an access switch and there are no sections — just a card.</div>
+      <div class="panel" id="l3card" style="max-width:860px;text-align:center;padding:44px 40px">
+        <div style="width:58px;height:58px;margin:0 auto 18px;border-radius:16px;background:var(--acs);
+          color:var(--ac);display:flex;align-items:center;justify-content:center">${I.nfTopology}</div>
+        <div style="font-size:20px;font-weight:600;margin-bottom:10px">This access switch is Layer 2 by default.</div>
+        <div style="font-size:15.5px;color:var(--ts);line-height:1.6;max-width:620px;margin:0 auto">
+          The hardware routes — enable Layer 3 to use it as the LAN gateway (SVIs with HSRP/VRRP, static routes, OSPF/EIGRP/BGP).</div>
+        <div class="gbtn" id="l3btn" style="max-width:280px;margin:22px auto 0">Enable Layer 3 routing</div>
+      </div>
+      <div class="find" id="trap3" style="margin-top:22px;border-color:#ff9f0a55;background:var(--warnb)">
+        <span class="fx" style="background:var(--warnb);color:var(--warn)">${I.x}</span>
+        <div><div class="ft">Configure the tab with the toggle off and none of it renders</div>
+        <div class="fs">Everything layer three on that switch hangs off this one toggle. The generator says so — but it says so in the device’s Config tab and in the Generate drawer, not in Validate, which checks the design and never sees the template.</div></div></div>`});}
+  const p=easeOut(seg(lt,.3,1.3));
+  const c=g.querySelector('#l3card'); c.style.opacity=p; c.style.transform=`translateY(${lerp(14,0,p)}px)`;
+  // the cursor arrives on the button, then the button lights
+  const m=easeInOut(seg(lt,1.9,3.0));
+  cursorAt(lerp(1500,980,m), lerp(880,612,m), lt>1.7 && lt<4.6);
+  const hit=lt>3.0;
+  const b=g.querySelector('#l3btn');
+  b.style.transform=`scale(${hit?0.985:1})`;
+  b.style.boxShadow=hit?'0 0 0 4px var(--acs)':'none';
+  g.querySelector('#trap3').style.opacity=easeOut(seg(lt,3.6,4.6));
+  g.querySelector('.pg').style.opacity=1-seg(lt,d-.6,d);
+  chips(null);
+}},
+
+
+/* ---------- 67. step 4 — the three routes an office core carries ---------- */
+{a:0,b:9,go(lt,d){
+  hideApp(); const g=$('#gfx');
+  const R=[['0.0.0.0 / 0.0.0.0','10.20.255.1','firewall','Internet-bound traffic, inspected on the way out','core'],
+           ['10.0.0.0 / 255.0.0.0','10.20.254.2','WAN edge','the corporate supernet — longer than the default, so it wins on prefix length','core'],
+           ['inside subnets','10.20.255.2','core','a route back for every subnet behind the core','firewall']];
+  if(!g.dataset.nH6){g.dataset.nH6='1';
+    pageShell(g,{crumb:'netforge.ai / remote-site / CORE-01 / <b>L3 → Static Routes</b>',btns:['+ Add','Apply'],
+      tabs:['General','L2','L3','Routing','Features','Management'],tabOn:2,body:`
+      <div class="h1">Step four — point the office at the firewall, and the firewall back at the office</div>
+      <div class="h2">A default is only half of it. An office core carries three routes, and the third one lives on the other box.</div>
+      ${R.map((r,i)=>`<div class="find" id="rt${i}">
+        <span class="fw" style="margin-left:0;width:150px;text-align:left;font-size:13.5px;color:${r[4]==='core'?'var(--ac)':'var(--palo)'}">on the ${r[4]}</span>
+        <div><div class="ft" style="font-family:'Liberation Mono',monospace;font-size:15px">${r[0]} <span style="color:var(--tt)">→</span> ${r[1]} <span style="color:var(--ts);font-family:Inter,sans-serif">(${r[2]})</span></div>
+        <div class="fs">${r[3]}</div></div></div>`).join('')}
+      <div class="find" id="trap4" style="margin-top:18px;border-color:#ff9f0a55;background:var(--warnb)">
+        <span class="fx" style="background:var(--warnb);color:var(--warn)">${I.x}</span>
+        <div><div class="ft">The zeros you can see in Prefix and Mask are placeholder text, not a value</div>
+        <div class="fs">Type them into both. A blank mask renders as 255.255.255.0 — a slash twenty-four whose description claims it is the default route. A blank prefix or next hop drops the route from the configuration entirely.</div></div></div>
+      <div class="tfline" id="rcli" style="margin-top:18px;font-size:14px;line-height:1.75">
+<span class="s">! Cisco IOS-XE — a tracked default, so the route withdraws when the probe stops answering</span>
+<span class="k">ip sla</span> 10
+ <span class="k">icmp-echo</span> 9.9.9.9 <span class="k">source-interface</span> Vlan10
+<span class="k">track</span> 10 <span class="k">ip sla</span> 10 reachability
+<span class="k">ip route</span> 0.0.0.0 0.0.0.0 10.20.255.1 <span class="k">track</span> 10 <span class="a">name</span> Internet-via-firewall
+<span class="k">ip route</span> 10.0.0.0 255.0.0.0 10.20.254.2 <span class="a">name</span> corporate-supernet-via-SD-WAN</div>`});}
+  stagger([...g.querySelectorAll('.find')], lt, .3, .36, .6);
+  g.querySelector('#rcli').style.opacity=easeOut(seg(lt,3.4,4.6));
+  g.querySelector('.pg').style.opacity=1-seg(lt,d-.6,d);
+  chips(null);
+}},
+
+/* ---------- 68. step 5 — reach the other offices ---------- */
+{a:0,b:9,go(lt,d){
+  hideApp(); const g=$('#gfx');
+  if(!g.dataset.nH7){g.dataset.nH7='1';
+    pageShell(g,{crumb:'netforge.ai / remote-site / <b>Blueprint → Routing → Site edge peering</b>',
+      btns:['Static routes','eBGP'],body:`
+      <div class="h1">Step five — reach the other offices</div>
+      <div class="h2">The office now has gateways and a way out. What it has not got is a path to the rest of the estate — and the firewall is not it. Two shapes, and which one you have was largely decided when the site was built.</div>
+      <div class="split">
+        <div class="panel"><div class="pt">Static toward the WAN edge</div>
+          <div style="font-size:15px;line-height:1.65;color:var(--tp)">The supernet route from step four is the whole design: everything corporate goes to the appliance, the overlay carries it, and the appliance holds a route back to the site block.</div>
+          <div style="display:flex;flex-direction:column;gap:9px;margin-top:16px">
+            <span class="pill ok" style="width:fit-content">no protocol, nothing to watch</span>
+            <span class="pill warn" style="width:fit-content">every new site is an edit on this core</span></div>
+          <div style="margin-top:16px;font-size:13.5px;color:var(--ts)">The shipped Enterprise WAN designs use this shape.</div>
+        </div>
+        <div class="panel"><div class="pt">eBGP between the core and the SD-WAN appliance</div>
+          <div class="tfline" style="font-size:13.5px;line-height:1.7">
+<span class="k">router bgp</span> 65001
+ <span class="a">bgp router-id</span> 10.20.255.11
+ <span class="a">neighbor</span> 10.20.254.2 <span class="k">remote-as</span> 65010
+ <span class="a">neighbor</span> 10.20.254.2 <span class="k">fall-over bfd</span>
+ <span class="s">address-family ipv4</span>
+ <span class="a">network</span> 10.20.0.0 <span class="k">mask</span> 255.255.0.0</div>
+          <div style="display:flex;flex-direction:column;gap:9px;margin-top:14px">
+            <span class="pill ok" style="width:fit-content">remote sites are learned — office thirty-one is not an edit on thirty cores</span>
+            <span class="pill info" style="width:fit-content">both halves generated: the appliance gets a bootstrap document for its orchestrator</span></div>
+        </div>
+      </div>
+      <div class="find" id="trap5" style="margin-top:18px;border-color:#ff9f0a55;background:var(--warnb)">
+        <span class="fx" style="background:var(--warnb);color:var(--warn)">${I.x}</span>
+        <div><div class="ft">This one is a first-run decision</div>
+        <div class="fs">Once any site in a plan has generated, the wizard becomes additive — the WAN architecture, the peering mode and the AS numbers are frozen. Switching an existing office from statics to eBGP afterwards is a hand edit on each core and each appliance.</div></div></div>`});}
+  stagger([...g.querySelectorAll('.panel')], lt, .3, .55, .8);
+  g.querySelector('#trap5').style.opacity=easeOut(seg(lt,3.4,4.4));
+  g.querySelector('.pg').style.opacity=1-seg(lt,d-.6,d);
+  chips(null);
+}},
+
+/* ---------- 69. step 6a — validate, and the four findings this recipe produces ---------- */
+{a:0,b:9,go(lt,d){
+  hideApp(); const g=$('#gfx');
+  const F=[['VLAN not defined','Step one against step three — an SVI or a port whose VLAN is in neither the switch’s list nor the project VLAN database','×3'],
+           ['next-hop off subnet','Step four written before the transit link was addressed','×1'],
+           ['subnet overlap','Two sites reusing a VLAN id and auto-assigned as one group','×2'],
+           ['BGP incomplete','Step five with a local AS or a peer address still empty — the session would never establish','×1']];
+  if(!g.dataset.nH8){g.dataset.nH8='1';
+    pageShell(g,{crumb:'netforge.ai / remote-site / <b>Validate</b>',btns:['Locate','Re-run'],
+      tabs:['Validate','Generate'],tabOn:0,body:`
+      <div class="h1">Step six — validate first</div>
+      <div class="h2">Generate stays unavailable while any error is open. Findings group by rule, so seven copies of one mistake read as one row with a count rather than seven problems.</div>
+      ${F.map((f,i)=>`<div class="find" id="fd${i}">
+        <span class="fx" style="background:var(--errb);color:var(--err)">${I.x}</span>
+        <div><div class="ft">${f[0]}</div><div class="fs">${f[1]}</div></div>
+        <span class="fw">${f[2]}</span></div>`).join('')}
+      <div style="display:flex;gap:10px;margin-top:20px" id="fsum">
+        <span class="pill info">Locate rings the device or link a finding names</span>
+        <span class="pill warn">the drawer sits beside the canvas — the design stays visible</span></div>`});}
+  stagger([...g.querySelectorAll('.find')], lt, .3, .34, .6);
+  g.querySelector('#fsum').style.opacity=easeOut(seg(lt,3.0,4.0));
+  g.querySelector('.pg').style.opacity=1-seg(lt,d-.6,d);
+  chips(null);
+}},
+
+/* ---------- 70. step 6b — generate, and the two-pipeline point ---------- */
+{a:0,b:9,go(lt,d){
+  hideApp(); const g=$('#gfx');
+  if(!g.dataset.nH9){g.dataset.nH9='1';
+    pageShell(g,{crumb:'netforge.ai / remote-site / <b>Publish → Generate Static Config</b>',
+      btns:['Download','Generate'],tabs:['Validate','Generate'],tabOn:1,body:`
+      <div class="h1">Then read what generated</div>
+      <div class="h2">It ends where the platform ends: a configuration per device you can read, copy and download, with every finding that stood between the drawing and the file already reported.</div>
+      <div class="split">
+        <div class="panel" style="padding:0;overflow:hidden">
+          <div class="dvh">CORE-01 · Cisco IOS-XE</div>
+          <div class="tfline" style="border-radius:0;font-size:14px;line-height:1.8">
+<span class="k">vlan</span> 10
+ <span class="a">name</span> DATA
+<span class="k">vlan</span> 20
+ <span class="a">name</span> VOICE
+<span class="k">interface</span> Vlan10
+ <span class="a">description</span> DATA gateway
+ <span class="a">ip address</span> 10.20.10.2 255.255.255.0
+ <span class="k">standby</span> 10 <span class="a">ip</span> 10.20.10.1
+ <span class="k">standby</span> 10 <span class="a">priority</span> 110
+ <span class="k">standby</span> 10 <span class="a">preempt</span>
+<span class="k">ip route</span> 0.0.0.0 0.0.0.0 10.20.255.1 <span class="k">track</span> 10</div>
+        </div>
+        <div class="panel"><div class="pt">Validate and Generate are two different pipelines</div>
+          ${[['Validate','checks the design','and never sees the template'],
+             ['The Config tab and the Generate drawer','render the templates','and report what the template found — the routed-access-switch warning, a tracked route on a platform with no probe, a first-hop gateway the platform cannot express']]
+            .map((r,i)=>`<div class="find" id="pp${i}"><span class="fx" style="background:var(--acs);color:var(--ac)">${I.nfValidation}</span>
+              <div><div class="ft">${r[0]} ${r[1]}</div><div class="fs">${r[2]}</div></div></div>`).join('')}
+          <div class="find" style="border-color:#ff9f0a55;background:var(--warnb)" id="trap6">
+            <span class="fx" style="background:var(--warnb);color:var(--warn)">${I.x}</span>
+            <div><div class="ft">A clean Validate is not a promise that every device rendered what you typed</div>
+            <div class="fs">Read one generated config per role before you call it done.</div></div></div>
+        </div>
+      </div>`});}
+  const tl=[...g.querySelectorAll('.tfline')][0];
+  tl.style.opacity=easeOut(seg(lt,.3,1.6));
+  stagger([...g.querySelectorAll('.panel .find')], lt, 1.6, .4, .6);
+  g.querySelector('.pg').style.opacity=1-seg(lt,d-.6,d);
+  chips(null);
+}},
+
 ];
 
 function showApp(){$('#app').classList.remove('hide');$('#gfx').classList.add('hide');vignette(false);
-  ['s1','s4','s13','s15','s16','sb','n1','n2','n3','n4','n5','n6','n7','n8','n9','n10','n11','n12','n13','n14','n15','n16','n17','n18','n19','n20','n21','n22','n23','n24','n25','n26','n27','n28','n29','n30','n31','n32','n33','n34','n35','n36','n37','n38','n39','n40','n41','n42','n43','n44','n45','n46'].forEach(k=>$('#gfx').dataset[k]='');}
+  ['s1','s4','s13','s15','s16','sb','n1','n2','n3','n4','n5','n6','n7','n8','n9','n10','n11','n12','n13','n14','n15','n16','n17','n18','n19','n20','n21','n22','n23','n24','n25','n26','n27','n28','n29','n30','n31','n32','n33','n34','n35','n36','n37','n38','n39','n40','n41','n42','n43','n44','n45','n46','nH1','nH2','nH3','nH4','nH5','nH6','nH7','nH8','nH9'].forEach(k=>$('#gfx').dataset[k]='');}
 function hideApp(){$('#app').classList.add('hide');$('#gfx').classList.remove('hide');$('#overlay').classList.add('hide');vignette(true);}
 
 /* ============================ seek ============================ */
@@ -2684,7 +2987,7 @@ window.seek=function(t){
   if(window.__scene!==sc){ // scene entry: clear graphic caches so each scene rebuilds cleanly
     const src=(sc._src!==undefined)?sc._src:SCENES.indexOf(sc);
     if(src<3||src>=11)hideApp(); window.__scene=sc;
-    ['s1','s4','s13','s15','s16','sb','n1','n2','n3','n4','n5','n6','n7','n8','n9','n10','n11','n12','n13','n14','n15','n16','n17','n18','n19','n20','n21','n22','n23','n24','n25','n26','n27','n28','n29','n30','n31','n32','n33','n34','n35','n36','n37','n38','n39','n40','n41','n42','n43','n44','n45','n46'].forEach(k=>$('#gfx').dataset[k]='');
+    ['s1','s4','s13','s15','s16','sb','n1','n2','n3','n4','n5','n6','n7','n8','n9','n10','n11','n12','n13','n14','n15','n16','n17','n18','n19','n20','n21','n22','n23','n24','n25','n26','n27','n28','n29','n30','n31','n32','n33','n34','n35','n36','n37','n38','n39','n40','n41','n42','n43','n44','n45','n46','nH1','nH2','nH3','nH4','nH5','nH6','nH7','nH8','nH9'].forEach(k=>$('#gfx').dataset[k]='');
   }
   caption('',0); chips(null); cursorAt(0,0,false);
   sc.go(t-sc.a, sc.b-sc.a, t);

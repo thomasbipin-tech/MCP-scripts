@@ -127,6 +127,8 @@ PHON = {
     'IOS':        'ˌaɪˌoʊˈɛs',
     'CX':         'sˌiːˈɛks',
     'LC':         'ˌɛlsˈiː',
+    'BFD':        'bˌiːˌɛfdˈiː',
+    'EIGRP':      'ˌiːˌaɪdʒˌiːˌɑːɹpˈiː',
     'Clos':        'klˈoʊ',              # the fabric, after Charles Clos -- not "kloss"
 }
 # longest first so "VLANs" wins over "VLAN" and "Netforge.ai" over "Netforge"
