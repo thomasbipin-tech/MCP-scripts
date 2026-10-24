@@ -8,7 +8,7 @@ so the brand card and any short shot are folded into their neighbour.
 """
 import json, os, re, subprocess, sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-import series, shorts as shortsmod, walkthrough as wt
+import series, shorts as shortsmod, walkthrough as wt, howto
 
 MIN_CHAPTER = 10.0
 URL = 'https://netforge.ai'
@@ -36,6 +36,12 @@ NAME = {
  54:'As-built import', 55:'The Azure Designer', 56:'Deploy with Terraform or Pulumi',
  57:'Firewall Studio', 58:'Firewall what-if', 59:'Looking Glass', 60:'Public blueprint pages',
  61:"What's new",
+ # how-to screens; the step numbering is the recipe's own, so a viewer can follow along
+ 62:'Before you start', 63:'Step 1 — Define the VLANs', 64:'Step 2 — Trunk the uplinks',
+ 65:'Step 3 — Gateways on the core', 71:'Step 3 — What auto-assign will let you do',
+ 66:'Step 3 — Gateways on the access switch', 67:'Step 4 — The default route',
+ 68:'Step 5 — Reaching the rest of the estate', 72:'Step 5 — A first-run decision',
+ 69:'Step 6 — Validate', 70:'Step 6 — Generate, and read it',
 }
 BOOKEND = {36, 37}
 
@@ -111,6 +117,21 @@ EP_META = {
    ['looking glass', 'bgp monitoring', 'uptime monitoring', 'network tools', 'rpki']),
 }
 
+HOWTOS = [howto.ROUTE_AN_OFFICE]
+
+HOWTO_META = {
+ 'howto-route-an-office': ('How to Route an Office, End to End',
+   """A recipe rather than a feature tour: one job, start to finish, in the order you would actually work it. An office that is drawn but not yet routed, taken from an empty VLAN list to a configuration you can read line by line.
+
+Six steps — define the VLANs, trunk the uplinks, decide who holds the gateways, write the default route, reach the rest of the estate, then validate and generate.
+
+It also walks the six traps the product's own documentation names, because the traps are the reason a how-to beats a tour: the SVI checkbox that is a note to yourself and not an instruction, the trunk allowed-lists validation never checks, the VLAN field that is a free number rather than a picker, the 0.0.0.0 placeholder in Prefix and Mask, the access switch that is not counted as layer three, and Validate and Generate being two different pipelines.
+
+Budget about forty minutes the first time you work it yourself.""",
+   ['how to', 'network tutorial', 'vlan', 'svi', 'trunk port', 'static route', 'bgp',
+    'default route', 'network configuration']),
+}
+
 SHORT_META = {
  's1-autopsy':       ('The 2 a.m. Autopsy', 'Two configs. One live comparison. No compare button.'),
  's2-in-2026':       ('Still Retyping Configs in 2026?', 'Start from a production-ready design instead.'),
@@ -118,6 +139,18 @@ SHORT_META = {
  's4-deploy-minute': ('The Deploy Minute', 'Dry run, rollback point, then the path traced hop by hop.'),
  's5-paperwork':     ('Nobody Budgets for the Paperwork', 'Rack elevation, BOM, cable schedule — all generated.'),
 }
+
+def howto_rows():
+    rows = []
+    for h in HOWTOS:
+        s = h['slug']
+        web = f'../howto/netforge-{s}-web.mp4'
+        rows.append((f'howto/netforge-{s}.mp4', f'../howto/netforge-{s}.mp4',
+                     'How-to guide — UPLOAD THIS ONE' if os.path.exists(web) else 'How-to guide'))
+        if os.path.exists(web):
+            rows.append((f'howto/netforge-{s}-web.mp4', web,
+                         'same cut, compressed for chat — do not upload'))
+    return rows
 
 def filesize(p):
     return f'{os.path.getsize(p)/1048576:.1f} MB' if os.path.exists(p) else '-'
@@ -135,6 +168,7 @@ DELIVERY = [
  ('series/netforge-walkthrough-web.mp4',  '../series/netforge-walkthrough-web.mp4','same cut, compressed for chat — do not upload'),
 ] + [(f'series/netforge-{e["slug"]}.mp4', f'../series/netforge-{e["slug"]}.mp4', f'Episode {i}')
      for i, e in enumerate(series.EPISODES, 1)] + \
+    howto_rows() + \
     [(f'shorts/netforge-{v["slug"]}.mp4', f'../shorts/netforge-{v["slug"]}.mp4', 'Short')
      for v in shortsmod.VARIANTS]
 
@@ -158,7 +192,8 @@ All paths are relative to `docs/demo-video/` on branch
 **Upload the CRF 17 masters, not the `-web` copy.** The walkthrough has two files: the
 full-quality master, and a compressed copy made only to fit a 30 MB chat limit. The
 compressed one is visibly softer — YouTube re-encodes anyway, so always feed it the
-master. Every other video has a single file, already full quality.
+master. A how-to whose master overran that limit has the same pair; the rest have a
+single file, already full quality.
 
 ## Settings that apply to all of them
 
@@ -169,8 +204,10 @@ master. Every other video has a single file, already full quality.
   in; let YouTube auto-caption, or ask me for an SRT — the narration text is scripted, so
   a perfectly accurate caption file is a few minutes of work rather than a transcription.
 - **Playlist:** put the ten episodes in one, in order, titled
-  *"Netforge.ai — the ten-part series"*. The master demo and the full walkthrough sit
-  outside it.
+  *"Netforge.ai — the ten-part series"*, and the how-to guides in a second one titled
+  *"Netforge.ai — How-to guides"*. Keep them separate: the series answers "what does this
+  part of the product do", a how-to answers "how do I finish this job". The master demo
+  and the full walkthrough sit outside both.
 - **Visibility:** if you want to review before publishing, upload as **Unlisted** and
   flip to Public — chapters and thumbnails can be set either way.
 - **Shorts:** the five short cuts are 16:9, not 9:16. YouTube will accept them as regular
@@ -182,7 +219,8 @@ master. Every other video has a single file, already full quality.
 1. Master demo (the channel's front door)
 2. Full walkthrough
 3. Episodes 1–10, in order, as a playlist
-4. The five shorts
+4. The how-to guides, as a second playlist
+5. The five shorts
 
 ---
 
@@ -210,6 +248,13 @@ for e in series.EPISODES:
     title, blurb, extra_tags = EP_META[slug]
     doc.append(block(f'Netforge.ai — {title}',
         f'{blurb}\n\nPart of the ten-part Netforge.ai series.\n\nNo account needed to draw a topology and generate real configs in your browser.',
+        BASE + extra_tags, f'timeline_{slug}.json'))
+
+for h in HOWTOS:
+    slug = h['slug']
+    title, blurb, extra_tags = HOWTO_META[slug]
+    doc.append(block(f'Netforge.ai — {title}',
+        f'{blurb}\n\nPart of the Netforge.ai how-to guides.\n\nNo account needed to draw a topology and generate real configs in your browser.',
         BASE + extra_tags, f'timeline_{slug}.json'))
 
 doc.append('## Shorts\n\nUnder 30s each — upload as Shorts (vertical crop optional; these are 16:9).\n\n')

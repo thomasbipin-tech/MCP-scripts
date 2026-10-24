@@ -21,6 +21,7 @@ TMP = '/tmp/verify_cuts'
 # where the encoded file for a given timeline slug lives
 def mp4_for(slug):
     for p in (f'../series/netforge-{slug}.mp4', f'../shorts/netforge-{slug}.mp4',
+              f'../howto/netforge-{slug}.mp4',
               f'netforge-{slug}.mp4', '../netforge-demo-v8.mp4' if slug == '' else ''):
         if p and os.path.exists(p):
             return p

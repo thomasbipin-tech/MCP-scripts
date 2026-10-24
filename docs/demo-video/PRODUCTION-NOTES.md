@@ -1,3 +1,45 @@
+# How-to guides — the recipe cuts (2026-10-24)
+
+The episodes answer "what does this part of the product do". A how-to answers "how do I
+finish this job, in the order I would actually work it". Different shape, so a different
+set rather than a re-edit: the episodes are organised by feature, a recipe is organised by
+the order of operations, and the interesting content of a recipe is the traps — the places
+where the product will happily let you do something that does not work.
+
+Source of truth is the product's own `/docs/how-to` pages, saved under `howto/` as
+`SPEC-*.txt`. That copy is committed deliberately: an earlier one lived only in `/tmp` and
+was lost with ~40 minutes of crawling when the container was rebuilt. Every UI label,
+field name and generated CLI line in a how-to has to trace back to one of those files.
+
+## #1 — How to route an office, end to end
+
+| | |
+|---|---|
+| Runtime | 6:33 (13 shots, 11 content screens) |
+| Scenes | 62–72, all new; nothing reused from the 58 the episodes already spent |
+| Source | `howto/SPEC-route-an-office.txt` |
+
+Six steps: define the VLANs, trunk the uplinks, decide who holds the gateways, write the
+default route, reach the rest of the estate, validate and generate. It carries all six
+traps the recipe names — the SVI checkbox nothing reads, the trunk allowed-lists
+validation never checks, the free-number VLAN field, the `0.0.0.0` placeholder in
+Prefix/Mask, the access switch not counted as layer three, and Validate and Generate
+being two separate pipelines.
+
+Two shots were split out after the first timing pass: slots 4 and 7 were holding a static
+picture for ~58s, which reads as a stall. `SVITRAPS` (71) and `FROZEN` (72) took the
+overflow, and the longest dwell came down to 48.3s.
+
+It overruns the 3–5 minute target set for this format. Kept, because the traps are the
+substance and the chapter marks let a viewer skip; worth revisiting if the watch-time
+data says otherwise.
+
+## Delivery gate
+
+`verify_cuts.py` now looks in `../howto/` as well as `../series/` and `../shorts/`.
+Without that it finds no file for a how-to slug and silently checks nothing — which is
+the same failure mode as the three bookend bugs the gate was written for.
+
 # v8 — re-grounded on the redesigned netforge.ai (2026-08-19)
 
 The live site was redesigned; the whole video set re-grounds against it. Crawled the
