@@ -2760,22 +2760,13 @@ const SCENES=[
       <table class="tbl"><thead><tr><th>VLAN</th><th>IP address</th><th>Prefix</th><th>Description</th><th>First-hop redundancy</th></tr></thead>
       <tbody>${S.map((r,i)=>`<tr id="sv${i}"><td>${r[0]}</td><td>${r[1]}</td><td class="dim">${r[2]}</td>
         <td class="t dim">${r[3]}</td><td>${r[4]}</td></tr>`).join('')}</tbody></table>
-      <div class="split" style="margin-top:22px">
+      <div style="margin-top:22px">
         <div class="panel"><div class="pt">⚡ Auto-assign group IPs (VIP + members)</div>
           ${[['Takes the subnet','from the first switch, in hostname order, that already has an address and a prefix on that VLAN'],
              ['Numbers every switch','in the design that has an SVI on it — across every canvas tab, not just this site'],
              ['The virtual address','the first usable address, with HSRP or VRRP to match the platform']]
             .map((r,i)=>`<div class="find" id="aa${i}"><span class="fx" style="background:var(--okb);color:var(--ok)">${I.chk}</span>
               <div><div class="ft">${r[0]}</div><div class="fs">${r[1]}</div></div></div>`).join('')}</div>
-        <div class="panel" style="border-color:#ff9f0a55;background:var(--warnb)">
-          <div class="pt" style="color:var(--warn)">Two things it will let you do</div>
-          <div class="find" style="background:transparent;border:none"><span class="fx" style="background:var(--warnb);color:var(--warn)">${I.x}</span>
-            <div><div class="ft">The VLAN field is a free number, not a picker</div>
-            <div class="fs">An SVI on a VLAN this switch does not have is accepted, saved, and generates an interface into a broadcast domain that is not there. Typing one-one-zero for ten costs you an afternoon.</div></div></div>
-          <div class="find" style="background:transparent;border:none"><span class="fx" style="background:var(--warnb);color:var(--warn)">${I.x}</span>
-            <div><div class="ft">An access switch is not counted as a layer-three switch</div>
-            <div class="fs">A pair of routed access switches gets member addresses and no virtual address — the very one the DHCP scope points at. Set first-hop redundancy by hand, or keep the gateways on the cores.</div></div></div>
-        </div>
       </div>`});}
   stagger([...g.querySelectorAll('tbody tr')], lt, .3, .28, .5);
   stagger([...g.querySelectorAll('.panel .find')], lt, 2.2, .3, .55);
@@ -2956,10 +2947,78 @@ const SCENES=[
   chips(null);
 }},
 
+
+/* ---------- 71. step 3, the two things auto-assign will let you do ---------- */
+{a:0,b:9,go(lt,d){
+  hideApp(); const g=$('#gfx');
+  const T=[['The VLAN field is a free number, not a picker',
+            'An SVI on a VLAN this switch does not have is accepted, saved, and generates an interface into a broadcast domain that is not there.',
+            'Typing one-one-zero for ten costs you an afternoon. Check the number against the L2 tab before you leave the row.'],
+           ['An access switch is not counted as a layer-three switch',
+            'A pair of routed access switches gets member addresses and no virtual address — the very address the DHCP scope points at is the one not created.',
+            'Set the first-hop redundancy by hand on both SVIs, or keep the gateways on the cores.']];
+  if(!g.dataset.nH10){g.dataset.nH10='1';
+    pageShell(g,{crumb:'netforge.ai / remote-site / CORE-01 / <b>L3 → SVIs</b>',btns:['Undo','Apply'],
+      tabs:['General','L2','L3','Routing','Features','Management'],tabOn:2,body:`
+      <div class="h1">Two things it will happily let you do</div>
+      <div class="h2">Auto-assign is mechanical, and that is the point — but neither of these is caught for you.</div>
+      ${T.map((t,i)=>`<div class="panel" id="tp${i}" style="margin-bottom:16px;border-color:#ff9f0a55;background:var(--warnb)">
+        <div style="display:flex;gap:16px;align-items:flex-start">
+          <span class="fx" style="background:var(--warnb);color:var(--warn);width:30px;height:30px;flex:0 0 30px;border-radius:99px;display:flex;align-items:center;justify-content:center">${I.x}</span>
+          <div><div style="font-size:18px;font-weight:600;margin-bottom:6px">${t[0]}</div>
+          <div style="font-size:15px;color:var(--tp);line-height:1.6;margin-bottom:8px">${t[1]}</div>
+          <div style="font-size:14px;color:var(--ts);line-height:1.55">${t[2]}</div></div>
+        </div></div>`).join('')}
+      <div style="display:flex;gap:10px;margin-top:4px" id="tps">
+        <span class="pill info">the design stays valid — it is just wrong</span></div>`});}
+  stagger([...g.querySelectorAll('.panel')], lt, .35, .75, .8);
+  g.querySelector('#tps').style.opacity=easeOut(seg(lt,2.8,3.8));
+  g.querySelector('.pg').style.opacity=1-seg(lt,d-.6,d);
+  chips(null);
+}},
+
+/* ---------- 72. step 5, the peering choice is frozen after the first generate ---------- */
+{a:0,b:9,go(lt,d){
+  hideApp(); const g=$('#gfx');
+  const STEPS=[['Sites','add the new site rows','on'],['Addressing','packed around the pinned blocks','on'],
+               ['Review','existing sites listed as unchanged','on'],
+               ['WAN architecture','settled for this network','frozen'],['Routing','peering mode and AS numbers','frozen'],
+               ['Vendor kits','settled for this network','frozen']];
+  if(!g.dataset.nH11){g.dataset.nH11='1';
+    pageShell(g,{crumb:'netforge.ai / remote-site / <b>Blueprint → Add site</b>',btns:['Cancel','Generate'],body:`
+      <div class="h1">After the first generate, the shape is settled</div>
+      <div class="h2">Reopening the wizard does not replay the eight steps. It opens on Sites and shows only the three that can still change.</div>
+      <div class="wz" style="position:relative;left:auto;top:auto;transform:none;width:100%;box-shadow:none">
+        <div class="wzrail" style="width:360px;flex:0 0 360px">
+          ${STEPS.map((st,i)=>`<div class="wzstep ${st[2]==='on'?'on':''}" id="fz${i}"
+            style="${st[2]==='frozen'?'opacity:.42':''}">
+            <span class="n">${st[2]==='on'?i+1:'—'}</span>
+            <span>${st[0]}<small style="display:block;font-size:12.5px;color:var(--ts)">${st[1]}</small></span>
+            ${st[2]==='frozen'?'<span class="sev minor" style="margin-left:auto">not shown</span>':''}</div>`).join('')}
+        </div>
+        <div class="wzmain">
+          <div class="pt" style="font-size:12px;letter-spacing:1.2px;text-transform:uppercase;color:var(--tt);font-weight:700;margin-bottom:14px">What that means for step five</div>
+          <div style="font-size:16px;line-height:1.7;color:var(--tp);max-width:620px">
+            The peering mode you pick the first time — static routes, or eBGP between the core and the appliance — is a first-run decision.</div>
+          <div class="find" style="margin-top:18px;border-color:#ff9f0a55;background:var(--warnb)">
+            <span class="fx" style="background:var(--warnb);color:var(--warn)">${I.x}</span>
+            <div><div class="ft">Switching an existing office afterwards is a hand edit</div>
+            <div class="fs">On each core, and on each appliance. The wizard will still add sites, address them and generate them — but it will not revisit this.</div></div></div>
+          <div style="display:flex;gap:10px;margin-top:18px">
+            <span class="pill ok">adding a site can never renumber an existing one</span></div>
+        </div>
+      </div>`});}
+  stagger([...g.querySelectorAll('.wzstep')], lt, .3, .22, .5);
+  const m=easeOut(seg(lt,2.2,3.4));
+  g.querySelector('.wzmain').style.opacity=m;
+  g.querySelector('.pg').style.opacity=1-seg(lt,d-.6,d);
+  chips(null);
+}},
+
 ];
 
 function showApp(){$('#app').classList.remove('hide');$('#gfx').classList.add('hide');vignette(false);
-  ['s1','s4','s13','s15','s16','sb','n1','n2','n3','n4','n5','n6','n7','n8','n9','n10','n11','n12','n13','n14','n15','n16','n17','n18','n19','n20','n21','n22','n23','n24','n25','n26','n27','n28','n29','n30','n31','n32','n33','n34','n35','n36','n37','n38','n39','n40','n41','n42','n43','n44','n45','n46','nH1','nH2','nH3','nH4','nH5','nH6','nH7','nH8','nH9'].forEach(k=>$('#gfx').dataset[k]='');}
+  ['s1','s4','s13','s15','s16','sb','n1','n2','n3','n4','n5','n6','n7','n8','n9','n10','n11','n12','n13','n14','n15','n16','n17','n18','n19','n20','n21','n22','n23','n24','n25','n26','n27','n28','n29','n30','n31','n32','n33','n34','n35','n36','n37','n38','n39','n40','n41','n42','n43','n44','n45','n46','nH1','nH2','nH3','nH4','nH5','nH6','nH7','nH8','nH9','nH10','nH11'].forEach(k=>$('#gfx').dataset[k]='');}
 function hideApp(){$('#app').classList.add('hide');$('#gfx').classList.remove('hide');$('#overlay').classList.add('hide');vignette(true);}
 
 /* ============================ seek ============================ */
@@ -2987,7 +3046,7 @@ window.seek=function(t){
   if(window.__scene!==sc){ // scene entry: clear graphic caches so each scene rebuilds cleanly
     const src=(sc._src!==undefined)?sc._src:SCENES.indexOf(sc);
     if(src<3||src>=11)hideApp(); window.__scene=sc;
-    ['s1','s4','s13','s15','s16','sb','n1','n2','n3','n4','n5','n6','n7','n8','n9','n10','n11','n12','n13','n14','n15','n16','n17','n18','n19','n20','n21','n22','n23','n24','n25','n26','n27','n28','n29','n30','n31','n32','n33','n34','n35','n36','n37','n38','n39','n40','n41','n42','n43','n44','n45','n46','nH1','nH2','nH3','nH4','nH5','nH6','nH7','nH8','nH9'].forEach(k=>$('#gfx').dataset[k]='');
+    ['s1','s4','s13','s15','s16','sb','n1','n2','n3','n4','n5','n6','n7','n8','n9','n10','n11','n12','n13','n14','n15','n16','n17','n18','n19','n20','n21','n22','n23','n24','n25','n26','n27','n28','n29','n30','n31','n32','n33','n34','n35','n36','n37','n38','n39','n40','n41','n42','n43','n44','n45','n46','nH1','nH2','nH3','nH4','nH5','nH6','nH7','nH8','nH9','nH10','nH11'].forEach(k=>$('#gfx').dataset[k]='');
   }
   caption('',0); chips(null); cursorAt(0,0,false);
   sc.go(t-sc.a, sc.b-sc.a, t);
